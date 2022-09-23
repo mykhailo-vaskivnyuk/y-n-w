@@ -1,0 +1,24 @@
+{
+  "name": "you-and-world",
+  "version": "1.0.0",
+  "description": "communication network for activity",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mykhailo-vaskivnyuk/y-n-w.git"
+  },
+  "keywords": [
+    "network",
+    "communication",
+    "activity"
+  ],
+  "author": "Mykhailo Vaskivnyuk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mykhailo-vaskivnyuk/y-n-w/issues"
+  },
+  "homepage": "https://github.com/mykhailo-vaskivnyuk/y-n-w#readme"
+}
