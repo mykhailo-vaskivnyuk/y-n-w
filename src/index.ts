@@ -1,10 +1,8 @@
-import { ITest } from "./types";
+import app = require('./app/app');
+import connection = require('./server/http');
+import routing = require('./routing/routing');
 
-setTimeout(() => { console.log('TIMER END') }, 10000);
-
-const obj: ITest = {
-  field1: 'field1',
-  field2: 'field2',
-};
-
-console.log(obj);
+app
+  .setConnection(connection)
+  .setRouting(routing)
+  .start();

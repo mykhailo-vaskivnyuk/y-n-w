@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/mykhailo-vaskivnyuk/y-n-w#readme",
   "devDependencies": {
+    "@types/node": "^18.7.23",
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
     "eslint": "^8.24.0",
