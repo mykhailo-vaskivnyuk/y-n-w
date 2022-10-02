@@ -1,5 +1,4 @@
-import { IOperation, IOperationResponce } from "../app/types";
-import { IRouting } from "../app/types";
+import { IRouting, IOperation, IOperationResponce } from "../app/types";
 
 class Routing implements IRouting {
     private routes;

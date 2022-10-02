@@ -1,5 +1,8 @@
+# compiled
+js/
+
 # IDE
-.vscode
+.vscode/
 
 # Logs
 logs

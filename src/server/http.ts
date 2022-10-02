@@ -1,4 +1,4 @@
-import { IConnection, IOperation, IOperationResponce } from "./types";
+import { IConnection, IOperation, IOperationResponce } from "../app/types";
 import http = require('http');
 
 class HttpConnection implements IConnection {
