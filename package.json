@@ -4,7 +4,11 @@
   "description": "communication network for activity",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node build/index.js",
+    "dev": "nodemon build/index.js",
+    "debug": "nodemon --inspect build/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc --watch"
   },
   "repository": {
     "type": "git",
@@ -20,5 +24,16 @@
   "bugs": {
     "url": "https://github.com/mykhailo-vaskivnyuk/y-n-w/issues"
   },
-  "homepage": "https://github.com/mykhailo-vaskivnyuk/y-n-w#readme"
+  "homepage": "https://github.com/mykhailo-vaskivnyuk/y-n-w#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.38.1",
+    "@typescript-eslint/parser": "^5.38.1",
+    "eslint": "^8.24.0",
+    "nodemon": "^2.0.20",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "nodemailer": "^6.8.0",
+    "pg": "^8.8.0"
+  }
 }
