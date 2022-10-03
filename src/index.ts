@@ -5,4 +5,4 @@ import routing = require('./routing/routing');
 app
   .setConnection(connection)
   .setRouting(routing)
-  .start();
+  .start(); 

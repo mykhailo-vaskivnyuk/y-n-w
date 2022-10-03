@@ -19,5 +19,5 @@ module.exports = {
     ],
     "rules": {
     },
-    "exclude": ["build"]
+    "project": "tsconfig.json",
 }
