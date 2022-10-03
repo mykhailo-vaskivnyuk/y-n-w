@@ -5,7 +5,8 @@ export interface IConnection {
 }
 
 export interface IOperation {
-
+    name: string[];
+    data: Record<string, unknown>;
 }
 
 export interface IOperationResponce {

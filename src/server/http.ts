@@ -1,6 +1,13 @@
 import { IConnection, IOperation, IOperationResponce } from "../app/types";
 import http = require('http');
 
+const CRUD = {
+    get: 'read',
+    post: 'create',
+    put: 'update',
+    delete: 'delete',
+}
+
 class HttpConnection implements IConnection {
     private server = http.createServer((req, res) => this.onRequest(req, res));
     private onOperationCb: ((operation: IOperation) => Promise<IOperationResponce>) | null = null;
@@ -16,8 +23,13 @@ class HttpConnection implements IConnection {
 
     private onRequest(...[req, res]: Parameters<http.RequestListener>) {
         const { method, url } = req;
-        const operation = { method, url } as IOperation;
-        console.log(operation);
+        const name = (url || '').slice(1).split("/");
+        const crud = CRUD[method?.toLowerCase() as keyof typeof CRUD];
+        crud && name.push(crud);
+        const data = {};
+        const operation = { name, data } as IOperation;
+        
+        console.log('operation', operation);
 
         if (!this.onOperationCb) return;
         
