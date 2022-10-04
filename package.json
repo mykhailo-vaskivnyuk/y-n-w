@@ -8,7 +8,8 @@
     "dev": "nodemon js/index.js",
     "debug": "nodemon --inspect js/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "tsc": "tsc --watch"
+    "tsc": "tsc --watch",
+    "db:setup": "cd src/db/setup && setup.sh"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
   "homepage": "https://github.com/mykhailo-vaskivnyuk/y-n-w#readme",
   "devDependencies": {
     "@types/node": "^18.7.23",
+    "@types/pg": "^8.6.5",
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
     "eslint": "^8.24.0",
