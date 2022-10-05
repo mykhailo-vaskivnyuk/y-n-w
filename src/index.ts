@@ -1,8 +1,10 @@
 import app = require('./app/app');
 import connection = require('./server/http');
-import routing = require('./routing/routing');
+import router = require('./router/router');
+import db = require('./db/db');
 
 app
-  .setConnection(connection)
-  .setRouting(routing)
+  .setInConnection(connection)
+  .setRouter(router)
+  .setDatabase(db)
   .start();

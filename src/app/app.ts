@@ -1,27 +1,34 @@
-import { IConnection, IRouting } from "./types";
+import { IConnection, IDatabase, IRouter } from './types';
 
 class App {
-    private connection: IConnection | null = null;
-    private routing: IRouting | null = null;
+  private connection?: IConnection;
+  private router?: IRouter;
+  private db?: IDatabase;
 
-    setConnection(connection: IConnection) {
-        this.connection = connection;
-        this.connection.onOperation((operation) => {
-            if (!this.routing) throw Error('Routing is not set') ;
-            return this.routing.runOperation(operation);
-        });
-        return this;
-    }
+  setInConnection(connection: IConnection) {
+    this.connection = connection;
+    this.connection.onOperation((operation) => {
+      if (!this.router) throw Error('Router is not set') ;
+      return this.router.exec(operation);
+    });
+    return this;
+  }
 
-    setRouting(routing: IRouting) {
-        this.routing = routing;
-        return this;
-    }
+  setRouter(router: IRouter) {
+    this.router = router;
+    return this;
+  }
 
-    start() {
-        this.connection?.start();
-        return this;
-    }
+  setDatabase(db: IDatabase) {
+    this.db = db;
+    return this;
+  }
+
+  async start() {
+    await this.router?.init();
+    await this.db?.init();
+    this.connection?.start();
+  }
 }
- 
+
 export = new App();

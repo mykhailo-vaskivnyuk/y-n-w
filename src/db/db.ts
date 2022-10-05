@@ -1,61 +1,57 @@
-import pg from 'pg';
+import { IDatabase } from '../app/types';
+import { IDatabaseConnection, IQueries, Query } from './types';
+import path from 'node:path';
+import fsp from 'node:fs/promises';
+import connection from './connection/pg';
 
-const pool = new pg.Pool({
-  host: '127.0.0.1',
-  port: 5432,
-  database: 'merega',
-  user: 'merega',
-  password: 'merega',
-});
+class Database implements IDatabase {
+  private db: IDatabaseConnection;
 
-export = pool;
+  constructor(db: IDatabaseConnection) {
+    this.db = db;
+  }
 
-/*
-module.exports = (table) => ({
-  query(sql, args) {
-    return pool.query(sql, args);
-  },
+  init() {
+    return this.getQueries('js/db/queries')
+      .then((queries) => Object.assign(global, { DbQueries: queries }))
+      .then(() => this);
+  }
 
-  read(id, fields = ['*']) {
-    const names = fields.join(', ');
-    const sql = `SELECT ${names} FROM ${table}`;
-    if (!id) return pool.query(sql);
-    return pool.query(`${sql} WHERE id = $1`, [id]);
-  },
-
-  async create({ ...record }) {
-    const keys = Object.keys(record);
-    const nums = new Array(keys.length);
-    const data = new Array(keys.length);
-    let i = 0;
-    for (const key of keys) {
-      data[i] = record[key];
-      nums[i] = `$${++i}`;
+  private async getQueries(dirPath: string): Promise<IQueries> {
+    const query: IQueries = {};
+    const queryPath = path.resolve(dirPath);
+    const dir = await fsp.opendir(queryPath);
+    for await (const item of dir) {
+      const ext = path.extname(item.name);
+      const name = path.basename(item.name, ext);
+      if (item.isFile()) {
+        if (ext !== '.js') continue;
+        const filePath = path.join(queryPath, name);
+        const queries = this.createQueries(filePath);
+        if (name === 'index') Object.assign(query, queries)
+        else query[name] = queries;
+      } else {
+        const dirPath = path.join(queryPath, name);
+        query[name] = await this.getQueries(dirPath);
+      }
     }
-    const fields = '"' + keys.join('", "') + '"';
-    const params = nums.join(', ');
-    const sql = `INSERT INTO "${table}" (${fields}) VALUES (${params})`;
-    return pool.query(sql, data);
-  },
+    return query;
+  }
 
-  async update(id, { ...record }) {
-    const keys = Object.keys(record);
-    const updates = new Array(keys.length);
-    const data = new Array(keys.length);
-    let i = 0;
-    for (const key of keys) {
-      data[i] = record[key];
-      updates[i] = `${key} = $${++i}`;
-    }
-    const delta = updates.join(', ');
-    const sql = `UPDATE ${table} SET ${delta} WHERE id = $${++i}`;
-    data.push(id);
-    return pool.query(sql, data);
-  },
+  private createQueries(filePath: string): IQueries {
+    const moduleExport = require(filePath);
+    return Object
+      .keys(moduleExport)
+      .reduce((queries: IQueries, key: string) => (
+        queries[key] = this.sqlToQuery(moduleExport[key]),
+        queries
+      ), {} as IQueries);
+  }  
 
-  delete(id) {
-    const sql = `DELETE FROM ${table} WHERE id = $1`;
-    return pool.query(sql, [id]);
-  },
-});
-*/
+
+  private sqlToQuery(sql: string): Query {
+    return (params: any[]) => this.db.query(sql, params);
+  }
+}
+
+export = new Database(connection);
