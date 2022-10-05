@@ -1,8 +1,8 @@
 --
--- Дамп даних таблиці `nets`
+-- Дамп даних таблиці "nets"
 --
 
-INSERT INTO `nets` (`net_id`, `net_level`, `net_address`, `parent_net_id`, `first_net_id`, `full_net_address`, `count_of_nets`) VALUES
+INSERT INTO "nets" ("net_id", "net_level", "net_address", "parent_net_id", "first_net_id", "full_net_address", "count_of_nets") VALUES
 (1, 1, 1, NULL, 1, 10000, 1),
 (224, 1, 1, NULL, 224, 10000, 1),
 (237, 1, 1, NULL, 237, 10000, 1);
@@ -10,10 +10,10 @@ INSERT INTO `nets` (`net_id`, `net_level`, `net_address`, `parent_net_id`, `firs
 -- --------------------------------------------------------
 
 --
--- Дамп даних таблиці `nets_data`
+-- Дамп даних таблиці "nets_data"
 --
 
-INSERT INTO `nets_data` (`net_id`, `name`, `goal`, `resource_name_1`, `resource_link_1`, `resource_name_2`, `resource_link_2`, `resource_name_3`, `resource_link_3`, `resource_name_4`, `resource_link_4`) VALUES
+INSERT INTO "nets_data" ("net_id", "name", "goal", "resource_name_1", "resource_link_1", "resource_name_2", "resource_link_2", "resource_name_3", "resource_link_3", "resource_name_4", "resource_link_4") VALUES
 (1, 'СПІЛЬНОТА ПРОЕКТУ "Ти і Світ"', 'Мета. Надати людині IT-інструмент, який надає їй можливість реалізувати свій ресурс для досягнення особистої мети (цілі).\r\n\r\nПовний текст:\r\nhttps://drive.google.com/file/d/0B_ERsyuQYfojemFGdWFvQ3hubzA/view?usp=sharing', 'ФБ група', 'https://www.facebook.com/groups/uandw/', 'Вибір домену', 'https://docs.google.com/spreadsheets/d/1KzwHb-zw9kaG8BNHtk7WPOw5EZ_X58JtRstSUL15RbM/edit?usp=sharing', 'Задача мінімум', 'https://drive.google.com/file/d/0B_ERsyuQYfojY3B2REtqTHFocjA/view?usp=sharing', 'Пропозиції', 'https://docs.google.com/spreadsheets/d/1ci_LLEOcClO5GZKTaR1KsjzPOA-yF-7gRtB_OWF0CUE/edit?usp=sharing'),
 (224, 'УНІВЕРСАЛЬНИЙ ОФІС', 'МЕТА. СТВОРИТИ спільний простір для спілкування, праці, творчості та відпочинку.\r\n\r\nЗАВДАННЯ. Зібрати однодумців, скинутись ресурсами за можливостями та бажанням кожного з учасників, знайти приміщення 30-50м2 і облаштувати його відповідно до МЕТИ.\r\n\r\nПЛАН. Зібрати 30-50 учасників. Скласти план реалізації ЗАВДАННЯ і виконати його.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (237, 'КАЗКОВИЙ КРАЙ', 'Розвивати УЯВУ в дітей та дорослих.\r\n\r\nЗАВДАННЯ. Створити сайт, на майданчику якого щодня буде викладатись аудіозапис казки. Забезпечити відвідуваність сайту 1000 користувачів в день.', 'ПЛАН', 'https://docs.google.com/document/d/1NPG3_EDv3h6cumuGhjwJzRLiSTxKV-dIicBx2C0MAbU/edit?usp=sharing', 'РОЛІ', 'https://docs.google.com/spreadsheets/d/1UCn5zXZUJeoR71vm3J8TzKp1Z_-tabye1vX41PXhkQ8/edit?usp=sharing', 'САЙТ ТЗ', 'https://docs.google.com/document/d/1PKTGwLm5TsuCVYC4ZEY8MF2DoPEUtLAOC8kOKiRBCMk/edit?usp=sharing', '', '');
@@ -21,10 +21,10 @@ INSERT INTO `nets_data` (`net_id`, `name`, `goal`, `resource_name_1`, `resource_
 -- --------------------------------------------------------
 
 --
--- Дамп даних таблиці `nets_users_data`
+-- Дамп даних таблиці "nets_users_data"
 --
 
-INSERT INTO `nets_users_data` (`net_id`, `user_id`, `email_show`, `name_show`, `mobile_show`) VALUES
+INSERT INTO "nets_users_data" ("net_id", "user_id", "email_show", "name_show", "mobile_show") VALUES
 (224, 63, b'0', b'0', b'0'),
 (237, 63, b'0', b'0', b'0'),
 (269, 1, b'0', b'0', b'0');
@@ -32,10 +32,12 @@ INSERT INTO `nets_users_data` (`net_id`, `user_id`, `email_show`, `name_show`, `
 -- --------------------------------------------------------
 
 --
--- Дамп даних таблиці `nodes`
+-- Дамп даних таблиці "nodes"
 --
 
-INSERT INTO `nodes` (`node_id`, `node_level`, `node_address`, `parent_node_id`, `first_node_id`, `full_node_address`, `count_of_members`, `node_date`, `blocked`, `changes`) VALUES
+INSERT INTO "nodes" ("node_id", "node_level", "node_address", "parent_node_id", "first_node_id", "full_node_address", "count_of_members", "node_date", "blocked", "changes")
+OVERRIDING SYSTEM VALUE
+VALUES
 (1, 1, 1, NULL, 1, 1000000, 1, '2017-09-27 23:24:16', b'0', b'0'),
 (2, 2, 1, 1, 1, 1100000, 0, '2017-02-18 13:31:21', b'0', b'0'),
 (3, 2, 2, 1, 1, 1200000, 0, '2017-02-03 10:49:36', b'0', b'0'),
@@ -61,10 +63,10 @@ INSERT INTO `nodes` (`node_id`, `node_level`, `node_address`, `parent_node_id`, 
 -- --------------------------------------------------------
 
 --
--- Дамп даних таблиці `nodes_users`
+-- Дамп даних таблиці "nodes_users"
 --
 
-INSERT INTO `nodes_users` (`node_id`, `user_id`, `invite`, `old_list_name`, `old_list_note`) VALUES
+INSERT INTO "nodes_users" ("node_id", "user_id", "invite", "old_list_name", "old_list_note") VALUES
 (1, 24, NULL, NULL, NULL),
 (224, 63, NULL, NULL, NULL),
 (237, 63, NULL, NULL, NULL);
@@ -72,10 +74,12 @@ INSERT INTO `nodes_users` (`node_id`, `user_id`, `invite`, `old_list_name`, `old
 -- --------------------------------------------------------
 
 --
--- Дамп даних таблиці `users`
+-- Дамп даних таблиці "users"
 --
 
-INSERT INTO `users` (`user_id`, `email`, `name`, `mobile`, `password`, `link`, `invite`, `restore`, `net_name`) VALUES
+INSERT INTO "users" ("user_id", "email", "name", "mobile", "password", "link", "invite", "restore", "net_name")
+OVERRIDING SYSTEM VALUE
+VALUES
 (1, 'email', 'Міша', '', 'pass', '', '', NULL, NULL),
 (16, 'email_1', 'Гарний Хлопець', '', 'pass', '', NULL, NULL, NULL),
 (24, 'email_2', 'Міша Васківнюк', '', 'pass', '', NULL, NULL, NULL),

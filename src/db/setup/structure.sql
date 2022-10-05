@@ -1,10 +1,11 @@
 -- --------------------------------------------------------
 
 --
--- Структура таблиці "members_users"
+
 --
 
 DROP TABLE IF EXISTS "members_users";
+
 CREATE TABLE "members_users" (
   "net_id" int DEFAULT NULL,
   "member_id" int DEFAULT NULL,
@@ -20,7 +21,7 @@ CREATE UNIQUE INDEX akMembersUsers ON "members_users" ("net_id","user_id","membe
 -- --------------------------------------------------------
 
 --
--- Структура таблиці "nets"
+-- Структура таблицi "nets"
 --
 
 DROP TABLE IF EXISTS "nets";
@@ -40,7 +41,7 @@ ALTER TABLE "nets"
 -- --------------------------------------------------------
 
 --
--- Структура таблиці "nets_data"
+-- Структура таблицi "nets_data"
 --
 
 DROP TABLE IF EXISTS "nets_data";
@@ -66,7 +67,7 @@ ALTER TABLE "nets_data"
 -- --------------------------------------------------------
 
 --
--- Структура таблиці "nets_events"
+-- Структура таблицi "nets_events"
 --
 
 DROP TABLE IF EXISTS "nets_events";
@@ -88,7 +89,7 @@ ALTER TABLE "nets_events"
 -- --------------------------------------------------------
 
 --
--- Структура таблиці "nets_users_data"
+-- Структура таблицi "nets_users_data"
 --
 
 DROP TABLE IF EXISTS "nets_users_data";
@@ -105,7 +106,7 @@ CREATE UNIQUE INDEX akUniqNetUser ON "nets_users_data" ("net_id","user_id");
 -- --------------------------------------------------------
 
 --
--- Структура таблиці "nodes"
+-- Структура таблицi "nodes"
 --
 
 DROP TABLE IF EXISTS "nodes";
@@ -128,7 +129,7 @@ ALTER TABLE "nodes"
 -- --------------------------------------------------------
 
 --
--- Структура таблиці "nodes_tmp"
+-- Структура таблицi "nodes_tmp"
 --
 
 DROP TABLE IF EXISTS "nodes_tmp";
@@ -144,7 +145,7 @@ CREATE UNIQUE INDEX akNodeId ON "nodes_tmp" ("node_id");
 -- --------------------------------------------------------
 
 --
--- Структура таблиці "nodes_users"
+-- Структура таблицi "nodes_users"
 --
 
 DROP TABLE IF EXISTS "nodes_users";
@@ -162,7 +163,7 @@ ALTER TABLE "nodes_users"
 -- --------------------------------------------------------
 
 --
--- Структура таблиці "notifications_tpl"
+-- Структура таблицi "notifications_tpl"
 --
 
 DROP TABLE IF EXISTS "notifications_tpl";
@@ -181,7 +182,7 @@ ALTER TABLE "notifications_tpl"
 -- --------------------------------------------------------
 
 --
--- Структура таблиці "users"
+-- Структура таблицi "users"
 --
 
 DROP TABLE IF EXISTS "users";
@@ -205,7 +206,7 @@ ALTER TABLE "users"
 -- --------------------------------------------------------
 
 --
--- Структура таблиці "users_notifications"
+-- Структура таблицi "users_notifications"
 --
 
 DROP TABLE IF EXISTS "users_notifications";
