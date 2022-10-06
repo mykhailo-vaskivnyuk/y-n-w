@@ -1,10 +1,12 @@
 import app = require('./app/app');
-import connection = require('./server/http');
+import logger = require('./logger/logger');
+import inConnection = require('./server/http');
 import router = require('./router/router');
-import db = require('./db/db');
+import dbConnection = require('./db/connection/pg');
 
 app
-  .setInConnection(connection)
+  .setLogger(logger)
+  .setInConnection(inConnection)
   .setRouter(router)
-  .setDatabase(db)
+  .setDatabase(dbConnection)
   .start();

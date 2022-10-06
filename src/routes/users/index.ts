@@ -3,12 +3,12 @@ import { type IOperation, type IOperationResponce } from '../../app/types';
 
 const create = (operation: IOperation['data']): IOperationResponce => {
   // @ts-ignore
-  return Queries.getUsers();
+  return execQuery.getUsers();
 }
 
 const update = (operation: IOperation['data']): IOperationResponce => {
   // @ts-ignore
-  return Queries.getUsers();
+  return execQuery.getUsers();
 }
 
 export = { create, update };

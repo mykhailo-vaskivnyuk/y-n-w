@@ -1,20 +1,19 @@
-import { IDatabase } from '../app/types';
-import { IDatabaseConnection, IQueries, Query } from './types';
+import { IDatabase, IDatabaseConnection, IQueries } from '../app/types';
+import { Query } from './types';
 import path from 'node:path';
 import fsp from 'node:fs/promises';
-import connection from './connection/pg';
 
 class Database implements IDatabase {
-  private db: IDatabaseConnection;
-
-  constructor(db: IDatabaseConnection) {
-    this.db = db;
-  }
+  private connection?: IDatabaseConnection;
 
   init() {
-    return this.getQueries('js/db/queries')
-      .then((queries) => Object.assign(global, { DbQueries: queries }))
-      .then(() => this);
+    if (!this.connection) throw Error('Connection to database is not set');
+    return this.getQueries('js/db/queries');
+  }
+
+  setConnection(connection: IDatabaseConnection) {
+    this.connection = connection;
+    return this;
   }
 
   private async getQueries(dirPath: string): Promise<IQueries> {
@@ -50,8 +49,8 @@ class Database implements IDatabase {
 
 
   private sqlToQuery(sql: string): Query {
-    return (params: any[]) => this.db.query(sql, params);
+    return (params) => this.connection!.query(sql, params);
   }
 }
 
-export = new Database(connection);
+export = new Database();

@@ -1,5 +1,5 @@
 import pg from 'pg';
-import { IDatabaseConnection } from '../types';
+import { IDatabaseConnection } from '../../app/types';
 
 const pool = new pg.Pool({
   host: '127.0.0.1',

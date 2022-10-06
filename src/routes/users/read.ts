@@ -1,7 +1,11 @@
 import { type IOperation, type IOperationResponce } from '../../app/types';
 
-export = async (operation: IOperation['data']): Promise<IOperationResponce> => {
-  if (typeof DbQueries?.getUsers !== 'function') return {};
-
-  return DbQueries.getUsers([]);
+const getUsers = async (operation: IOperation['data']): Promise<IOperationResponce> => {
+  logger.debug({ filed: 'field'});
+  logger.info('My info');
+  logger.warn('My warn');
+  logger.error(new Error('My errror'));
+  return execQuery.getUsers([]);
 };
+
+export = getUsers;

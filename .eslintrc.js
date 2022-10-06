@@ -25,6 +25,7 @@ module.exports = {
     'block-spacing': ['error', 'always'],
     '@typescript-eslint/no-var-requires': 'off',
   },
+  include: ['./src/**/*.*']
 };
 
 /*
