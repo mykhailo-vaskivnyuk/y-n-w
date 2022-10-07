@@ -1,4 +1,5 @@
 import { IConnection, IDatabase, IDatabaseConnection, ILogger, IRouter } from './types';
+import AppError from './errors';
 import db from '../db/db';
 
 class App {
@@ -10,7 +11,7 @@ class App {
   setInConnection(connection: IConnection) {
     this.connection = connection;
     this.connection.onOperation((operation) => {
-      if (!this.router) throw Error('Router is not set') ;
+      if (!this.router) throw Error('Router is not set');
       return this.router.exec(operation);
     });
     return this;
@@ -33,17 +34,21 @@ class App {
   }
 
   async start() {
-    Object.assign(global, { logger: this.logger });
+    try {
+      Object.assign(global, { logger: this.logger });
 
-    const execQuery = await this.db?.init();
-    Object.assign(global, { execQuery });
-    logger.info('DATABASE is OK');
-    
-    await this.router?.init();
-    logger.info('ROUTER is OK');
-
-    await this.connection?.start();
-    logger.info('SERVER is OK');
+      const execQuery = await this.db?.init();
+      Object.assign(global, { execQuery });
+      logger.info('DATABASE is READY');
+      
+      await this.router?.init();
+      logger.info('ROUTER is READY');
+      // throw new AppError('message');
+      await this.connection?.start();
+      logger.info('SERVER is READY');
+    } catch (e: any) {
+      this.logger?.error(e);
+    }
   }
 }
 

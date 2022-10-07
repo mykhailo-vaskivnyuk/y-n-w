@@ -1,13 +1,14 @@
-import { IDatabase, IDatabaseConnection, IQueries } from '../app/types';
-import { Query } from './types';
 import path from 'node:path';
 import fsp from 'node:fs/promises';
+import { IDatabase, IDatabaseConnection, IQueries } from '../app/types';
+import { Query } from './types';
+import { DatabaseError, DatabaseErrorEnum, DatabaseErrorCode } from './errors';
 
 class Database implements IDatabase {
   private connection?: IDatabaseConnection;
 
   init() {
-    if (!this.connection) throw Error('Connection to database is not set');
+    if (!this.connection) throw this.error(DatabaseErrorEnum.E_DB_CONNECTION);
     return this.getQueries('js/db/queries');
   }
 
@@ -47,9 +48,20 @@ class Database implements IDatabase {
       ), {} as IQueries);
   }  
 
-
   private sqlToQuery(sql: string): Query {
-    return (params) => this.connection!.query(sql, params);
+    return async (params) => {
+      try {
+        return await this.connection!.query(sql, params);
+      } catch (e: any) {
+        logger.error(e);
+        if (!this.connection) throw this.error(DatabaseErrorEnum.E_DB_CONNECTION);
+        else throw this.error(DatabaseErrorEnum.E_DB_QUERY, e?.message);
+      }
+    };
+  }
+
+  error(code: DatabaseErrorCode, message?: string) {
+    return new DatabaseError(code, message);
   }
 }
 

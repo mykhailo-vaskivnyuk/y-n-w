@@ -18,13 +18,14 @@ class HttpConnection implements IConnection {
   }
 
   start() {
-    return new Promise((rv, rj) => {
+    const cb = (...[rv, rj]: any) => {
       try {
-        this.server.listen(8000, () => rv(null))
+        this.server.listen(8000, rv);
       } catch (e) {
         rj(e);
       }
-    });
+    }
+    return new Promise(cb);
   }
 
   private onRequest(...[req, res]: Parameters<http.RequestListener>) {

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { type IOperation, type IOperationResponce } from '../../app/types';
+import { type IOperation, type IOperationResponce } from '../../../app/types';
 
 const create = (operation: IOperation['data']): IOperationResponce => {
   // @ts-ignore

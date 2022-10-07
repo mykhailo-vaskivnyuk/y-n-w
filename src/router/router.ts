@@ -2,13 +2,12 @@ import { IRouter, IOperation, IOperationResponce } from '../app/types';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { Handler, IRoutes } from './types';
-import { EventEmitter } from 'node:stream';
 
-class Router extends EventEmitter implements IRouter {
+class Router implements IRouter {
   private routes: IRoutes = {};
 
   init() {
-    return this.createRoutes('./js/routes')
+    return this.createRoutes('./js/router/routes')
       .then((routes) => { this.routes = routes });
   }
 
@@ -35,7 +34,7 @@ class Router extends EventEmitter implements IRouter {
         if (ext !== '.js') continue;
         const filePath = path.join(routePath, name);
         const moduleExport = require(filePath);
-        if (name === 'index') Object.assign(route, moduleExport)
+        if (name === 'index') Object.assign(route, moduleExport);
         else route[name] = moduleExport;
       } else {
         const dirPath = path.join(routePath, name);
