@@ -48,30 +48,32 @@ class HttpConnection implements IInputConnection {
     let result;
     try {
       result = await this.onOperationCb!(operation);
-    } catch (e: any) {
-      console.log(typeof ServerErrorEnum[404], typeof e.code);
-      switch(e?.code) {
-        case ServerErrorEnum[404]:
-          // logger.fatal('HERE');
-          res.statusCode = 404;
-          res.end(ServerErrorMap[404]);
-          break;
-        case ServerErrorEnum[409]:
-          res.statusCode = 409;
-          res.end(ServerErrorMap[409]);
-          break;
-        case ServerErrorEnum[503]:
-          res.statusCode = 503;
-          res.end(ServerErrorMap[503]);
-          break;
-        default:
-          res.statusCode = 500;
-          res.end(ServerErrorMap[500]);
-          throw e;
-      }
+    } catch (e) {
+      this.onError(e, res);
     }
 
     res.end(JSON.stringify(result));
+  }
+
+  private onError(e: any, res: Parameters<http.RequestListener>[1]) {
+    switch(e?.code) {
+    case ServerErrorEnum.E_NOT_FOUND:
+      res.statusCode = 404;
+      res.end(ServerErrorMap.E_NOT_FOUND);
+      break;
+    case ServerErrorEnum.E_BED_REQUEST:
+      res.statusCode = 409;
+      res.end(ServerErrorMap.E_BED_REQUEST);
+      break;
+    case ServerErrorEnum.E_UNAVAILABLE:
+      res.statusCode = 503;
+      res.end(ServerErrorMap.E_UNAVAILABLE);
+      break;
+    default:
+      res.statusCode = 500;
+      res.end(ServerErrorMap.E_SERVER_ERROR);
+      throw e;
+    }
   }
 
   error(code: ServerErrorCode, message?: string) {

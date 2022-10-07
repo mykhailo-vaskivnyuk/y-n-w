@@ -1,4 +1,4 @@
-import { getEnumFromMap } from "../utils/utils";
+import { getEnumFromMap } from '../utils/utils';
 
 export const DatabaseErrorMap = {
   E_DB_CONNECTION: 'Connection to database is not set',
@@ -8,12 +8,12 @@ export const DatabaseErrorMap = {
 
 export const DatabaseErrorEnum = getEnumFromMap(DatabaseErrorMap);
 
-export type DatabaseErrorCode = keyof typeof DatabaseErrorMap;
+type DatabaseErrorCode = keyof typeof DatabaseErrorMap;
 
 export class DatabaseError extends Error {
   public code: DatabaseErrorCode;
 
-  constructor(code: DatabaseErrorCode, message: string = '') {
+  constructor(code: DatabaseErrorCode, message = '') {
     super(message || DatabaseErrorMap[code]);
     this.name = this.constructor.name;
     this.code = code;

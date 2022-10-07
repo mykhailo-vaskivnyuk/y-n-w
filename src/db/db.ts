@@ -2,7 +2,7 @@ import path from 'node:path';
 import fsp from 'node:fs/promises';
 import { IDatabase, IDatabaseConnection, IQueries } from '../app/types';
 import { Query } from './types';
-import { DatabaseError, DatabaseErrorEnum, DatabaseErrorCode } from './errors';
+import { DatabaseError, DatabaseErrorEnum } from './errors';
 
 class Database implements IDatabase {
   private connection?: IDatabaseConnection;
@@ -12,14 +12,14 @@ class Database implements IDatabase {
       await this.connection!.connect();
     } catch (e: any) {
       logger.error(e);
-      throw this.error(DatabaseErrorEnum.E_DB_CONNECTION)
+      throw new DatabaseError(DatabaseErrorEnum.E_DB_CONNECTION)
     }
 
     try {
       return await this.getQueries('js/db/queries');
     } catch (e: any) {
       logger.error(e);
-      throw this.error(DatabaseErrorEnum.E_DB_INIT);
+      throw new DatabaseError(DatabaseErrorEnum.E_DB_INIT);
     }
   }
 
@@ -65,13 +65,9 @@ class Database implements IDatabase {
         return await this.connection!.query(sql, params);
       } catch (e: any) {
         logger.error(e);
-        throw this.error(DatabaseErrorEnum.E_DB_QUERY);
+        throw new DatabaseError(DatabaseErrorEnum.E_DB_QUERY);
       }
     };
-  }
-
-  error(code: DatabaseErrorCode, message?: string) {
-    return new DatabaseError(code, message);
   }
 }
 

@@ -1,4 +1,4 @@
-import { getEnumFromMap } from "../utils/utils";
+import { getEnumFromMap } from '../utils/utils';
 
 export const RouterErrorMap = {
   E_ROUTES: 'CAN\'T CREATE ROUTES',
@@ -8,12 +8,12 @@ export const RouterErrorMap = {
 
 export const RouterErrorEnum = getEnumFromMap(RouterErrorMap);
 
-export type RouterErrorCode = keyof typeof RouterErrorMap;
+type RouterErrorCode = keyof typeof RouterErrorMap;
 
 export class RouterError extends Error {
   public code: RouterErrorCode;
 
-  constructor(code: RouterErrorCode, message: string = '') {
+  constructor(code: RouterErrorCode, message = '') {
     super(message || RouterErrorMap[code]);
     this.name = this.constructor.name;
     this.code = code;

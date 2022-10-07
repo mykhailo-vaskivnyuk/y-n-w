@@ -1,7 +1,8 @@
 import { IInputConnection, IDatabase, IDatabaseConnection, ILogger, IRouter } from './types';
-import { AppError, AppErrorCode, AppErrorEnum } from './errors';
+import { AppError, AppErrorEnum } from './errors';
 import db from '../db/db';
 import { RouterErrorEnum } from '../router/errors';
+import { ServerError, ServerErrorEnum } from '../server/errors';
 
 class App {
   private logger?: ILogger;
@@ -23,23 +24,17 @@ class App {
   setInputConnection(inConnection: IInputConnection) {
     this.inConnection = inConnection;
 
-    // this.inConnection.on('error', (e: any) => {
-    //   logger.error(e);
-    //   if (!this.router) throw this.error(AppErrorEnum.E_SETUP);
-    //   else throw e;
-    // });
-
     this.inConnection.onOperation(async (operation) => {
       try {
         return await this.router!.exec(operation);
       } catch (e: any) {
         switch (e?.code) {
-          case RouterErrorEnum.E_NOT_FOUND:
-            throw this.inConnection!.error(404);
-          case RouterErrorEnum.E_HANDLER:
-            throw this.inConnection!.error(409);
-          default:
-            throw e;
+        case RouterErrorEnum.E_NOT_FOUND:
+          throw new ServerError(ServerErrorEnum.E_NOT_FOUND);
+        case RouterErrorEnum.E_HANDLER:
+          throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
+        default:
+          throw e;
         }
       }
     });
@@ -71,12 +66,8 @@ class App {
 
     } catch (e: any) {
       logger.error(e);
-      throw this.error(AppErrorEnum.E_START);
+      throw new AppError(AppErrorEnum.E_START);
     }
-  }
-
-  error(code: AppErrorCode, message?: string) {
-    return new AppError(code, message);
   }
 
   private setErrorHandlers() {

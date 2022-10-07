@@ -1,3 +1,3 @@
-const getUsers = 'SELECT * FROM, users';
+const getUsers = 'SELECT * FROM users';
 
 export = { getUsers };
