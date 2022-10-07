@@ -10,7 +10,7 @@ export interface IOperation {
   data: Record<string, unknown>;
 }
 
-export type IOperationResponce = string | boolean | any[] | Record<string, unknown>;
+export type IOperationResponce = string | boolean | unknown[] | Record<string, unknown>;
 
 export interface IRouter {
   init(): Promise<void>;
@@ -23,7 +23,7 @@ export interface IDatabase {
 }
 
 export interface IDatabaseConnection {
-  query(sql: string, params: any[]): Promise<any[]>;
+  query<T extends []>(sql: string, params: T): Promise<any>;
   connect: () => Promise<void>;
 }
 

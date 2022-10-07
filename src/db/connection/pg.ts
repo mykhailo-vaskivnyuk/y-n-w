@@ -9,7 +9,7 @@ const pool = new pg.Pool({
   password: 'merega',
 });
 
-const query = (sql: string, params: any[]) =>
+const query = <T extends []>(sql: string, params: T) =>
   pool.query(sql, params)
     .then((result) => result.rows);
 
