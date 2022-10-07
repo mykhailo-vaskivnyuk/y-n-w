@@ -1,11 +1,9 @@
-import { encode } from "node:punycode";
-import { TextEncoder } from "node:util";
 import { getEnumFromMap } from "../utils/utils";
-import encoding from 'iconv-lite';
 
 export const DatabaseErrorMap = {
   E_DB_CONNECTION: 'Connection to database is not set',
   E_DB_QUERY: 'Database query error',
+  E_DB_INIT: 'Initialization error',
 } as const;
 
 export const DatabaseErrorEnum = getEnumFromMap(DatabaseErrorMap);

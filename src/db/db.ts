@@ -7,9 +7,20 @@ import { DatabaseError, DatabaseErrorEnum, DatabaseErrorCode } from './errors';
 class Database implements IDatabase {
   private connection?: IDatabaseConnection;
 
-  init() {
-    if (!this.connection) throw this.error(DatabaseErrorEnum.E_DB_CONNECTION);
-    return this.getQueries('js/db/queries');
+  async init() {
+    try {
+      await this.connection!.connect();
+    } catch (e: any) {
+      logger.error(e);
+      throw this.error(DatabaseErrorEnum.E_DB_CONNECTION)
+    }
+
+    try {
+      return await this.getQueries('js/db/queries');
+    } catch (e: any) {
+      logger.error(e);
+      throw this.error(DatabaseErrorEnum.E_DB_INIT);
+    }
   }
 
   setConnection(connection: IDatabaseConnection) {
@@ -42,10 +53,10 @@ class Database implements IDatabase {
     const moduleExport = require(filePath);
     return Object
       .keys(moduleExport)
-      .reduce((queries: IQueries, key: string) => (
-        queries[key] = this.sqlToQuery(moduleExport[key]),
-        queries
-      ), {} as IQueries);
+      .reduce((queries: IQueries, key: string) => {
+        queries[key] = this.sqlToQuery(moduleExport[key]);
+        return queries;
+      }, {} as IQueries);
   }  
 
   private sqlToQuery(sql: string): Query {
@@ -54,8 +65,7 @@ class Database implements IDatabase {
         return await this.connection!.query(sql, params);
       } catch (e: any) {
         logger.error(e);
-        if (!this.connection) throw this.error(DatabaseErrorEnum.E_DB_CONNECTION);
-        else throw this.error(DatabaseErrorEnum.E_DB_QUERY, e?.message);
+        throw this.error(DatabaseErrorEnum.E_DB_QUERY);
       }
     };
   }

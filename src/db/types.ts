@@ -1,5 +1,5 @@
 export type Query = (params: any[]) => Promise<any[]>;
 
-export interface IDbQueries {
+export interface IDatabaseQueries {
   getUsers: Query;
 }

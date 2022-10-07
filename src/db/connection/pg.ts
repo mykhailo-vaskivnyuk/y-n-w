@@ -13,4 +13,6 @@ const query = (sql: string, params: any[]) =>
   pool.query(sql, params)
     .then((result) => result.rows);
 
-export = { query } as IDatabaseConnection;
+const connect = async () => { await pool.connect() };
+
+export = { query, connect } as IDatabaseConnection;
