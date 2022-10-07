@@ -18,15 +18,14 @@ module.exports = {
     '@typescript-eslint'
   ],
   root: true,
-  // 'project': 'tsconfig.json',
   'rules': {
     'indent': ['error', 2],
     'quotes': ['error', 'single'],
     'block-spacing': ['error', 'always'],
     '@typescript-eslint/no-var-requires': 'off',
-    '@typescript-eslint/no-non-null-assertion': 'off'
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-explicit-any': 'off'
   },
-  // include: ['./src']
 };
 
 /*

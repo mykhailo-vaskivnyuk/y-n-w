@@ -1,8 +1,8 @@
 import { IInputConnection, IDatabase, IDatabaseConnection, ILogger, IRouter } from './types';
 import { AppError, AppErrorEnum } from './errors';
-import db from '../db/db';
-import { RouterErrorEnum } from '../router/errors';
 import { ServerError, ServerErrorEnum } from '../server/errors';
+import { RouterErrorEnum } from '../router/errors';
+import db from '../db/db';
 
 class App {
   private logger?: ILogger;

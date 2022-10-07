@@ -1,7 +1,7 @@
 import { IDatabaseQueries, Query } from '../db/types';
 
 export interface IInputConnection {
-  onOperation: (cb: (operation: IOperation) => Promise<IOperationResponce>) => this;
+  onOperation(cb: (operation: IOperation) => Promise<IOperationResponce>): this;
   start(): void;
 }
 
@@ -31,17 +31,14 @@ export interface IQueries {
   [key: string]: Query | IQueries;
 }
 
-export type LoggerObject = string | Record<string, unknown>;
-export type LoggerMethod = (object: LoggerObject, method?: string) => void;
-export type LoggerMethodError = (object: Error | LoggerObject, method?: string) => void;
-
-export interface ILogger {
-  debug: LoggerMethod;
-  info: LoggerMethod;
-  warn: LoggerMethod;
-  error: LoggerMethodError;
-  fatal: LoggerMethodError;
-}
+type LoggerMethod = <T>(object: T, method?: string) => void;
+type LoggerMethodName =
+  | 'debug'
+  | 'info'
+  | 'warn'
+  | 'error'
+  | 'fatal';
+export type ILogger = Record<LoggerMethodName, LoggerMethod>;
 
 declare global {
   const execQuery: IDatabaseQueries;
