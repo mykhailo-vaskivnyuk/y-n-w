@@ -1,34 +1,47 @@
 import fsp from 'node:fs/promises';
 import path from 'node:path';
-import { IRouter, IOperation, IOperationResponce } from '../app/types';
-import { Handler, IRoutes } from './types';
+import { IRouter, IOperation, TOperationResponse } from '../app/types';
+import { THandler, IRoutes, TModule } from './types';
 import { RouterError, RouterErrorEnum } from './errors';
+import getStream from './modules/getStream';
+import validate from './modules/validate';
 
 class Router implements IRouter {
   private routes?: IRoutes;
+  private modules: TModule[] = [];
 
   async init() {
     try {
-      return await this.createRoutes('./js/router/routes')
-        .then((routes) => { this.routes = routes });
+      this.routes = await this.createRoutes('./js/api');
     } catch (e: any) {
       logger.error(e);
       throw new RouterError(RouterErrorEnum.E_ROUTES);
     }
   }
 
-  async exec(operation: IOperation): Promise<IOperationResponce> {
+  setModule(module: TModule) {
+    this.modules.push(module);
+    return this;
+  }
+  
+  async exec(operation: IOperation): Promise<TOperationResponse> {
     if (!this.routes) throw new RouterError(RouterErrorEnum.E_ROUTES);
     const { names, data } = operation;
-    let handler: IRoutes | Handler = this.routes;
+    let handler: IRoutes | THandler = this.routes;
     for (const key of names) {
-      if (this.isHandler(handler)) throw new RouterError(RouterErrorEnum.E_NOT_FOUND);
-      if (!handler[key]) throw new RouterError(RouterErrorEnum.E_NOT_FOUND);
+      if (this.isHandler(handler)) throw new RouterError(RouterErrorEnum.E_NO_ROUTE);
+      if (!handler[key]) throw new RouterError(RouterErrorEnum.E_NO_ROUTE);
       handler = handler[key]!;
     }
-    if (!this.isHandler(handler)) throw new RouterError(RouterErrorEnum.E_NOT_FOUND);
+    if (!this.isHandler(handler)) throw new RouterError(RouterErrorEnum.E_NO_ROUTE);
+
+    let newData = data;
+    for (const module of this.modules) {
+      newData = await module(newData, handler);
+    }
+
     try {
-      return await handler(data);
+      return await handler(newData.params);
     } catch (e: any) {
       logger.error(e);
       throw new RouterError(RouterErrorEnum.E_HANDLER);
@@ -45,9 +58,9 @@ class Router implements IRouter {
       if (item.isFile()) {
         if (ext !== '.js') continue;
         const filePath = path.join(routePath, name);
-        const moduleExport = require(filePath);
+        const moduleExport = require(filePath) as THandler | IRoutes;
         if (name === 'index') Object.assign(route, moduleExport);
-        else route[name] = moduleExport;
+        else route[name] = (moduleExport);
       } else {
         const dirPath = path.join(routePath, name);
         route[name] = await this.createRoutes(dirPath);
@@ -56,9 +69,13 @@ class Router implements IRouter {
     return route;
   }
 
-  private isHandler(handler?: IRoutes | Handler): handler is Handler {
+  private isHandler(handler?: IRoutes | THandler): handler is THandler {
     return typeof handler === 'function';
   }
 }
 
-export = new Router();
+const router = new Router()
+  .setModule(getStream)
+  .setModule(validate);
+
+export = router;

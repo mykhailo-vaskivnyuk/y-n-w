@@ -1,5 +1,5 @@
-export type Query = <T extends []>(params: T) => Promise<any[]>;
+export type TQuery = <T extends any[] = any[]>(params: T) => Promise<any[]>;
 
 export interface IDatabaseQueries {
-  getUsers: Query;
+  getUsers: TQuery;
 }

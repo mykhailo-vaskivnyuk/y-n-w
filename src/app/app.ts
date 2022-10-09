@@ -1,8 +1,8 @@
 import { IInputConnection, IDatabase, IDatabaseConnection, ILogger, IRouter } from './types';
-import { AppError, AppErrorEnum } from './errors';
+import db from '../db/db';
 import { ServerError, ServerErrorEnum } from '../server/errors';
 import { RouterErrorEnum } from '../router/errors';
-import db from '../db/db';
+import { AppError, AppErrorEnum } from './errors';
 
 class App {
   private logger?: ILogger;
@@ -28,10 +28,12 @@ class App {
       try {
         return await this.router!.exec(operation);
       } catch (e: any) {
+        logger.error(e);
         switch (e?.code) {
-        case RouterErrorEnum.E_NOT_FOUND:
+        case RouterErrorEnum.E_NO_ROUTE:
           throw new ServerError(ServerErrorEnum.E_NOT_FOUND);
         case RouterErrorEnum.E_HANDLER:
+        case RouterErrorEnum.E_STREAM:
           throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
         default:
           throw e;
@@ -59,10 +61,10 @@ class App {
       logger.info('DATABASE IS READY');
 
       await this.router!.init();
-      logger.info('ROUTER is READY');
+      logger.info('ROUTER IS READY');
 
       await this.inConnection!.start();
-      logger.info('SERVER is READY');
+      logger.info('SERVER IS READY');
 
     } catch (e: any) {
       logger.error(e);
@@ -72,7 +74,7 @@ class App {
 
   private setErrorHandlers() {
     const uncaughtErrorHandler = (e: any) => {
-      logger ? logger.fatal(e) : console.error(e);
+      typeof logger !== 'undefined' ? logger.fatal(e) : console.error(e);
       process.nextTick(() => process.exit());
     }
 

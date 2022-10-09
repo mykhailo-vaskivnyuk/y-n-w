@@ -1,20 +1,31 @@
-import { IDatabaseQueries, Query } from '../db/types';
+import { Readable } from 'node:stream';
+import { IDatabaseQueries, TQuery } from '../db/types';
 
 export interface IInputConnection {
-  onOperation(cb: (operation: IOperation) => Promise<IOperationResponce>): this;
+  onOperation(cb: (operation: IOperation) => Promise<TOperationResponse>): this;
   start(): void;
 }
 
 export interface IOperation {
   names: string[];
-  data: Record<string, unknown>;
+  data: {
+    stream?: { type: string | undefined; content: Readable };
+    params: Record<string, unknown>;
+  }
 }
 
-export type IOperationResponce = string | boolean | unknown[] | Record<string, unknown>;
+type TResponse =
+  | string
+  | number
+  | boolean
+  | Record<string, unknown>
+  | null;
+
+export type TOperationResponse = TResponse | TResponse[] | Readable;
 
 export interface IRouter {
   init(): Promise<void>;
-  exec(operation: IOperation): Promise<IOperationResponce>;
+  exec(operation: IOperation): Promise<TOperationResponse>;
 }
 
 export interface IDatabase {
@@ -23,15 +34,15 @@ export interface IDatabase {
 }
 
 export interface IDatabaseConnection {
-  query<T extends []>(sql: string, params: T): Promise<any>;
+  query<T extends any[]>(sql: string, params: T): Promise<any>;
   connect: () => Promise<void>;
 }
 
 export interface IQueries {
-  [key: string]: Query | IQueries;
+  [key: string]: TQuery | IQueries;
 }
 
-type LoggerMethod = <T>(object: T, method?: string) => void;
+type LoggerMethod = <T>(object: T, ...message:string[]) => void;
 type LoggerMethodName =
   | 'debug'
   | 'info'

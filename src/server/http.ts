@@ -1,33 +1,30 @@
-import http = require('http');
-import { IInputConnection, IOperation, IOperationResponce } from '../app/types';
-import { promiseExecutor } from '../types';
+import { createServer } from 'node:http';
+import { Readable } from 'node:stream';
+import { CRUD, JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../constants';
+import { IInputConnection, IOperation, TOperationResponse } from '../app/types';
+import { TPromiseExecutor } from '../types';
+import { IRequest, IResponse, IServer } from './types';
 import { ServerError, ServerErrorEnum, ServerErrorMap } from './errors';
 
-const CRUD = {
-  get: 'read',
-  post: 'create',
-  put: 'update',
-  delete: 'delete',
-}
-
 class HttpConnection implements IInputConnection {
-  private server: http.Server;
-  private onOperationCb?: (operation: IOperation) => Promise<IOperationResponce>;
+  private server: IServer;
+  private callback?: (operation: IOperation) => Promise<TOperationResponse>;
 
   constructor() {
-    this.server = http.createServer(this.onRequest.bind(this));
+    this.server = createServer(this.onRequest.bind(this));
   }
 
-  onOperation(cb: (operation: IOperation) => Promise<IOperationResponce>) {
-    this.onOperationCb = cb;
+  onOperation(fn: (operation: IOperation) => Promise<TOperationResponse>) {
+    this.callback = fn;
     return this;
   }
 
   start() {
-    if (!this.onOperationCb) {
+    if (!this.callback) {
       throw new ServerError(ServerErrorEnum.E_NO_CALLBACK);
     }
-    const cb: promiseExecutor = (rv, rj) => {
+
+    const executor: TPromiseExecutor = (rv, rj) => {
       try {
         this.server.listen(8000, () => rv(null));
       } catch (e: any) {
@@ -35,33 +32,88 @@ class HttpConnection implements IInputConnection {
         rj(new ServerError(ServerErrorEnum.E_LISTEN));
       }
     }
-    return new Promise(cb);
+
+    return new Promise(executor);
   }
 
-  private async onRequest(req: http.IncomingMessage, res: http.ServerResponse) {
-    const { method = 'GET', url = '/', headers } = req;
-    const urlObj = new URL(url, `http://${headers.host}`);
-    const { pathname, searchParams } = urlObj;
-    const crudMethod = CRUD[method?.toLowerCase() as keyof typeof CRUD];
-    const names = pathname.slice(1).split('/');
-    crudMethod && names.push(crudMethod);
-
+  private async onRequest(req: IRequest, res: IResponse) {
     try {
-      const data = await this.getBody(req);
-      const queryParams = searchParams.entries();
-      for (const [key, value] of queryParams) data[key] = value;
-      const operation = { names, data };
-      logger.info(operation, 'OPERATION');
+      const operation = await this.getOperation(req);
 
-      await this.onOperationCb!(operation)
-        .then(JSON.stringify)
-        .then((data) => res.end(data));
+      const response = await this.callback!(operation);
+      if (response instanceof Readable) {
+        res.setHeader('content-type', 'application/octet-stream');
+        await new Promise((rv, rj) => {
+          response.on('error', rj);
+          response.on('end', rv);
+          response.pipe(res);
+        });
+        return;
+      }
+
+      res.setHeader('content-type', 'application/json');
+      const data = JSON.stringify(response);
+      res.end(data);
+
     } catch (e) {
       this.onError(e, res);
     }
   }
 
-  private onError(e: any, res: http.ServerResponse) {
+  private async getOperation(req: IRequest) {
+    const { names, params } = this.getRequestParams(req);
+    const data = { params };
+    const { headers } = req;
+    const contentType = headers['content-type'] as keyof typeof MIME_TYPES_MAP | undefined;
+    const length = +(headers['content-length'] || Infinity);
+
+    if (!contentType) return { names, data };
+
+    if (!MIME_TYPES_MAP[contentType]) {
+      throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
+    } else if (length > MIME_TYPES_MAP[contentType].maxLength) {
+      throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
+    }
+    
+    if (contentType === MIME_TYPES_ENUM['application/json'] && length < JSON_TRANSFORM_LENGTH) {
+      Object.assign(params, await this.getJson(req));
+    } else {
+      const content = Readable.from(req);
+      const stream = { type: contentType, content };
+      Object.assign(data, { stream });  
+    }
+    
+    return { names, data };
+  }
+
+  private getRequestParams(req: IRequest) {
+    const { method = 'GET', url = '/', headers } = req;
+    const host = headers.host;
+    const urlObj = new URL(url, `http://${host}`);
+    const { pathname, searchParams } = urlObj;
+    const names = pathname.slice(1).split('/');
+    const crudMethod = CRUD[method?.toLowerCase() as keyof typeof CRUD];
+    crudMethod && names.push(crudMethod);
+    const queryParams = searchParams.entries();
+    const params: IOperation['data']['params'] = {};
+    for (const [key, value] of queryParams) params[key] = value;
+    return { names, params };
+  }
+
+  private async getJson(req: IRequest) {
+    try {
+      const buffers: Uint8Array[] = [];
+      for await (const chunk of req) buffers.push(chunk as any);
+      const data = Buffer.concat(buffers).toString();
+      return JSON.parse(data);
+    } catch (e: any) {
+      logger.error(e);
+      throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
+    }
+  }
+
+  private onError(e: any, res: IResponse) {
+    logger.error(e);
     switch(e?.code) {
     case ServerErrorEnum.E_NOT_FOUND:
       res.statusCode = 404;
@@ -78,22 +130,10 @@ class HttpConnection implements IInputConnection {
     default:
       res.statusCode = 500;
       res.end(ServerErrorMap.E_SERVER_ERROR);
-      logger.error(e);
       throw e;
     }
   }
 
-  private async getBody(req: http.IncomingMessage) {
-    try {
-      const buffers: Uint8Array[] = [];
-      for await (const chunk of req) buffers.push(chunk as any);
-      const data = Buffer.concat(buffers).toString();
-      return JSON.parse(data);
-    } catch (e: any) {
-      logger.error(e);
-      throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
-    }
-  }
 }
 
 export = new HttpConnection();

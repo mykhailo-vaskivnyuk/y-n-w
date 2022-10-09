@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fsp from 'node:fs/promises';
 import { IDatabase, IDatabaseConnection, IQueries } from '../app/types';
-import { Query } from './types';
+import { TQuery } from './types';
 import { DatabaseError, DatabaseErrorEnum } from './errors';
 
 class Database implements IDatabase {
@@ -59,7 +59,7 @@ class Database implements IDatabase {
       }, {} as IQueries);
   }  
 
-  private sqlToQuery(sql: string): Query {
+  private sqlToQuery(sql: string): TQuery {
     return async (params) => {
       try {
         return await this.connection!.query(sql, params);

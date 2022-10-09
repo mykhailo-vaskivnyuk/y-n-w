@@ -1,1 +1,2 @@
-export type promiseExecutor = ConstructorParameters<typeof Promise>[0];
+export type TParameter<T extends any[]> = T[0];
+export type TPromiseExecutor = TParameter<ConstructorParameters<typeof Promise>>;
