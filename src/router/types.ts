@@ -1,10 +1,11 @@
+import { ObjectSchema } from 'joi';
 import { IOperation, TOperationResponse } from '../app/types';
 
 type IParams = Record<string, unknown>;
 
 export type THandler<T extends IParams = IParams> = {
   (params: T): Promise<TOperationResponse>;
-  schema?: T;
+  schema?: ObjectSchema<T>;
 };
 
 export interface IRoutes {

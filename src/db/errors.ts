@@ -13,8 +13,8 @@ type DatabaseErrorCode = keyof typeof DatabaseErrorMap;
 export class DatabaseError extends Error {
   public code: DatabaseErrorCode;
 
-  constructor(code: DatabaseErrorCode, message = '') {
-    super(message || DatabaseErrorMap[code]);
+  constructor(code: DatabaseErrorCode) {
+    super(DatabaseErrorMap[code]);
     this.name = this.constructor.name;
     this.code = code;
   }

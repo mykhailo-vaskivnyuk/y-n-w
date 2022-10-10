@@ -3,8 +3,8 @@ import path from 'node:path';
 import { IRouter, IOperation, TOperationResponse } from '../app/types';
 import { THandler, IRoutes, TModule } from './types';
 import { RouterError, RouterErrorEnum } from './errors';
-import getStream from './modules/getStream';
-import validate from './modules/validate';
+import { getStream, GetStreamError } from './modules/getStream';
+import { validate, ValidationError } from './modules/validate';
 
 class Router implements IRouter {
   private routes?: IRoutes;
@@ -36,15 +36,27 @@ class Router implements IRouter {
     if (!this.isHandler(handler)) throw new RouterError(RouterErrorEnum.E_NO_ROUTE);
 
     let newData = data;
-    for (const module of this.modules) {
-      newData = await module(newData, handler);
+    try {
+      for (const module of this.modules) {
+        newData = await module(newData, handler);
+      }
+    } catch (e: any) {
+      const { message, details } = e;
+      if (e instanceof ValidationError) {
+        throw new RouterError(RouterErrorEnum.E_MODULE, details);
+      }
+      if (e instanceof GetStreamError) {
+        throw new RouterError(RouterErrorEnum.E_MODULE, message);
+      }
+      logger.error(e);
+      throw new RouterError(RouterErrorEnum.E_ROUTER, details || message);
     }
 
     try {
       return await handler(newData.params);
     } catch (e: any) {
       logger.error(e);
-      throw new RouterError(RouterErrorEnum.E_HANDLER);
+      throw new RouterError(RouterErrorEnum.E_HANDLER, e.message);
     }
   }
 

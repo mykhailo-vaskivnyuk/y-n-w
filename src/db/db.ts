@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fsp from 'node:fs/promises';
 import { IDatabase, IDatabaseConnection, IQueries } from '../app/types';
-import { TQuery } from './types';
+import { TQueriesModule, TQuery } from './types';
 import { DatabaseError, DatabaseErrorEnum } from './errors';
 
 class Database implements IDatabase {
@@ -50,11 +50,11 @@ class Database implements IDatabase {
   }
 
   private createQueries(filePath: string): IQueries {
-    const moduleExport = require(filePath);
+    const moduleExport = require(filePath) as TQueriesModule;
     return Object
       .keys(moduleExport)
-      .reduce((queries: IQueries, key: string) => {
-        queries[key] = this.sqlToQuery(moduleExport[key]);
+      .reduce((queries, key) => {
+        queries[key] = this.sqlToQuery(moduleExport[key]!);
         return queries;
       }, {} as IQueries);
   }  

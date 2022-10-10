@@ -1,8 +1,14 @@
 import { MIME_TYPES_ENUM } from '../../constants';
 import { TModule } from '../types';
-import { RouterError, RouterErrorEnum } from '../errors';
 
-const getStream: TModule = async (data) => {
+export class GetStreamError extends Error {
+  constructor(message?: string) {
+    super(message || 'Validation error');
+    this.name = this.constructor.name;
+  }
+}
+
+export const getStream: TModule = async (data) => {
   const { params, stream } = data;
   if (!stream) return data;
   const { type,  content } = stream;
@@ -20,8 +26,6 @@ const getStream: TModule = async (data) => {
     return data;
   } catch (e: any) {
     logger.error(e);
-    throw new RouterError(RouterErrorEnum.E_STREAM);
+    throw new GetStreamError(e.message);
   }
 }
-
-export = getStream;

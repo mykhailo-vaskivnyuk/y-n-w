@@ -3,6 +3,7 @@ import { getEnumFromMap } from '../utils/utils';
 export const AppErrorMap = {
   E_START: 'CAN\'T START APP',
   E_SETUP: 'WRONG APP SETUP',
+  E_ROUTER: 'ROUTER ERROR',
 } as const;
 
 export const AppErrorEnum = getEnumFromMap(AppErrorMap);

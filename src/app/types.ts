@@ -42,14 +42,14 @@ export interface IQueries {
   [key: string]: TQuery | IQueries;
 }
 
-type LoggerMethod = <T>(object: T, ...message:string[]) => void;
-type LoggerMethodName =
+export type TLoggerMethod = <T>(object: T, ...message:string[]) => void;
+type TLoggerMethodName =
   | 'debug'
   | 'info'
   | 'warn'
   | 'error'
   | 'fatal';
-export type ILogger = Record<LoggerMethodName, LoggerMethod>;
+export type ILogger = Record<TLoggerMethodName, TLoggerMethod>;
 
 declare global {
   const execQuery: IDatabaseQueries;

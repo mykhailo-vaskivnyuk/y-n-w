@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
+import { format } from 'node:util';
 import { CRUD, JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../constants';
 import { IInputConnection, IOperation, TOperationResponse } from '../app/types';
 import { TPromiseExecutor } from '../types';
@@ -21,7 +22,9 @@ class HttpConnection implements IInputConnection {
 
   start() {
     if (!this.callback) {
-      throw new ServerError(ServerErrorEnum.E_NO_CALLBACK);
+      const e = new ServerError(ServerErrorEnum.E_NO_CALLBACK);
+      logger.error(e);
+      throw e;
     }
 
     const executor: TPromiseExecutor = (rv, rj) => {
@@ -37,9 +40,12 @@ class HttpConnection implements IInputConnection {
   }
 
   private async onRequest(req: IRequest, res: IResponse) {
+    const reqLog = format('%s %s', req.method, req.url);
     try {
       const operation = await this.getOperation(req);
       const response = await this.callback!(operation);
+
+      res.on('finish', () => logger.info({}, reqLog, '- OK'));
 
       if (response instanceof Readable) {
         res.setHeader('content-type', MIME_TYPES_ENUM['application/octet-stream']);
@@ -56,7 +62,7 @@ class HttpConnection implements IInputConnection {
       res.end(data);
 
     } catch (e) {
-      this.onError(e, res);
+      this.onError(e, res, reqLog);
     }
   }
 
@@ -114,26 +120,18 @@ class HttpConnection implements IInputConnection {
     }
   }
 
-  private onError(e: any, res: IResponse) {
-    logger.error(e);
-    switch(e?.code) {
-    case ServerErrorEnum.E_NOT_FOUND:
-      res.statusCode = 404;
-      res.end(ServerErrorMap.E_NOT_FOUND);
-      break;
-    case ServerErrorEnum.E_BED_REQUEST:
-      res.statusCode = 409;
-      res.end(ServerErrorMap.E_BED_REQUEST);
-      break;
-    case ServerErrorEnum.E_UNAVAILABLE:
-      res.statusCode = 503;
-      res.end(ServerErrorMap.E_UNAVAILABLE);
-      break;
-    default:
-      res.statusCode = 500;
-      res.end(ServerErrorMap.E_SERVER_ERROR);
-      throw e;
+  private onError(e: any, res: IResponse, reqLog: string) {
+    let error = e;
+    if (!(e instanceof ServerError)) {
+      error = new ServerError(ServerErrorEnum.E_SERVER_ERROR);
     }
+    const { code, statusCode, details } = error as ServerError;
+    res.statusCode = statusCode || 500;
+    details && res.setHeader('content-type', MIME_TYPES_ENUM['application/json']);
+    logger.error({}, reqLog, '-', ServerErrorMap[code])
+    res.end(e.getMessage());
+
+    if (code === ServerErrorEnum.E_SERVER_ERROR) throw e;
   }
 }
 

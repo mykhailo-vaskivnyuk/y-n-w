@@ -1,7 +1,8 @@
-import { IInputConnection, IDatabase, IDatabaseConnection, ILogger, IRouter } from './types';
 import db from '../db/db';
+import { IInputConnection, IDatabase, IDatabaseConnection, ILogger, IRouter } from './types';
+import { DatabaseError } from '../db/errors';
 import { ServerError, ServerErrorEnum } from '../server/errors';
-import { RouterErrorEnum } from '../router/errors';
+import { RouterError, RouterErrorEnum } from '../router/errors';
 import { AppError, AppErrorEnum } from './errors';
 
 class App {
@@ -28,16 +29,20 @@ class App {
       try {
         return await this.router!.exec(operation);
       } catch (e: any) {
-        logger.error(e);
-        switch (e?.code) {
-        case RouterErrorEnum.E_NO_ROUTE:
-          throw new ServerError(ServerErrorEnum.E_NOT_FOUND);
-        case RouterErrorEnum.E_HANDLER:
-        case RouterErrorEnum.E_STREAM:
-          throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
-        default:
-          throw e;
-        }
+        const { code, message, details } = e;
+        if (e instanceof RouterError) {
+          switch (code) {
+          case RouterErrorEnum.E_NO_ROUTE:
+            throw new ServerError(ServerErrorEnum.E_NOT_FOUND, details);
+          case RouterErrorEnum.E_HANDLER:
+            throw new ServerError(ServerErrorEnum.E_BED_REQUEST, details);
+          case RouterErrorEnum.E_MODULE:
+            throw new ServerError(ServerErrorEnum.E_BED_REQUEST, details);
+          default:
+            break;
+          }
+        } else logger.error(e);
+        throw new AppError(AppErrorEnum.E_OPERATION, message);
       }
     });
     return this;
@@ -66,8 +71,12 @@ class App {
       await this.inConnection!.start();
       logger.info('SERVER IS READY');
 
-    } catch (e: any) {
-      logger.error(e);
+    } catch (e) {
+      const isKnown =
+        e instanceof DatabaseError ||
+        e instanceof RouterError ||
+        e instanceof ServerError;
+      if (!isKnown) logger.error(e);
       throw new AppError(AppErrorEnum.E_START);
     }
   }

@@ -1,6 +1,6 @@
 import pino = require('pino');
 import { format } from 'util';
-import { ILogger } from '../app/types';
+import { ILogger, TLoggerMethod } from '../app/types';
 // const { LOG_LEVEL, LOG_TARGET } = require('./configService');
 // const { LOGGER_TARGET } = require('./configService');
 
@@ -23,12 +23,12 @@ const transport = toConsole; // LOG_TARGET === LOGGER_TARGET.STDOUT ? toStdOut :
 const options = { level, transport };
 
 const pinoLogger = pino.default(options);
-const logger: ILogger = {
-  info: (obj, ...message) => pinoLogger.info(obj, format(...message)),
-  debug: (obj, ...message) => pinoLogger.debug(obj, format(...message)),
-  warn: (obj, ...message) => pinoLogger.warn(obj, format(...message)),
-  error: (obj, ...message) => pinoLogger.error(obj, format(...message)),
-  fatal: (obj, ...message) => pinoLogger.debug(obj, format(...message)),
-}
+const TYPE: (keyof ILogger)[] = ['info', 'debug', 'warn', 'error', 'fatal'];
+
+const getMethod = (type: keyof ILogger): TLoggerMethod => 
+  (obj, ...message) => pinoLogger[type](obj, format(...message));
+
+const logger = TYPE.reduce((logger, type) =>
+  Object.assign(logger, { [type]: getMethod(type) }), {} as ILogger);
 
 export = logger;

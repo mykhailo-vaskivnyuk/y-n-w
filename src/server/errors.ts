@@ -1,3 +1,4 @@
+import { TOperationResponse } from '../app/types';
 import { getEnumFromMap } from '../utils/utils';
 
 export const ServerErrorMap = {
@@ -11,14 +12,29 @@ export const ServerErrorMap = {
 
 export const ServerErrorEnum = getEnumFromMap(ServerErrorMap);
 
+export const StatusCodeMap = {
+  [ServerErrorEnum.E_NOT_FOUND]: 404,
+  [ServerErrorEnum.E_BED_REQUEST]: 400,
+  [ServerErrorEnum.E_SERVER_ERROR]: 500,
+  [ServerErrorEnum.E_UNAVAILABLE]: 503,
+}
+
 export type ServerErrorCode = keyof typeof ServerErrorMap;
 
 export class ServerError extends Error {
   public code: ServerErrorCode;
-
-  constructor(code: ServerErrorCode, message = '') {
-    super(message || ServerErrorMap[code]);
+  public details: TOperationResponse | null;
+  public statusCode: number | undefined;
+ 
+  constructor(code: ServerErrorCode, details: TOperationResponse | null = null) {
+    super(ServerErrorMap[code]);
     this.name = this.constructor.name;
     this.code = code;
+    this.statusCode = StatusCodeMap[code];
+    this.details = details;
+  }
+
+  getMessage(): TOperationResponse {
+    return this.details ? JSON.stringify(this.details) : this.message;
   }
 }
