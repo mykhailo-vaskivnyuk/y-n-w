@@ -39,10 +39,10 @@ class HttpConnection implements IInputConnection {
   private async onRequest(req: IRequest, res: IResponse) {
     try {
       const operation = await this.getOperation(req);
-
       const response = await this.callback!(operation);
+
       if (response instanceof Readable) {
-        res.setHeader('content-type', 'application/octet-stream');
+        res.setHeader('content-type', MIME_TYPES_ENUM['application/octet-stream']);
         await new Promise((rv, rj) => {
           response.on('error', rj);
           response.on('end', rv);
@@ -51,7 +51,7 @@ class HttpConnection implements IInputConnection {
         return;
       }
 
-      res.setHeader('content-type', 'application/json');
+      res.setHeader('content-type', MIME_TYPES_ENUM['application/json']);
       const data = JSON.stringify(response);
       res.end(data);
 
@@ -71,24 +71,26 @@ class HttpConnection implements IInputConnection {
 
     if (!MIME_TYPES_MAP[contentType]) {
       throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
-    } else if (length > MIME_TYPES_MAP[contentType].maxLength) {
+    }
+    if (length > MIME_TYPES_MAP[contentType].maxLength) {
       throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
     }
     
     if (contentType === MIME_TYPES_ENUM['application/json'] && length < JSON_TRANSFORM_LENGTH) {
       Object.assign(params, await this.getJson(req));
-    } else {
-      const content = Readable.from(req);
-      const stream = { type: contentType, content };
-      Object.assign(data, { stream });  
+      return { names, data };
     }
+
+    const content = Readable.from(req);
+    const stream = { type: contentType, content };
+    Object.assign(data, { stream });
     
     return { names, data };
   }
 
   private getRequestParams(req: IRequest) {
     const { method = 'GET', url = '/', headers } = req;
-    const host = headers.host;
+    const { host = 'localhost' } = headers;
     const urlObj = new URL(url, `http://${host}`);
     const { pathname, searchParams } = urlObj;
     const names = pathname.slice(1).split('/');
@@ -133,7 +135,6 @@ class HttpConnection implements IInputConnection {
       throw e;
     }
   }
-
 }
 
 export = new HttpConnection();
