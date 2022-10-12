@@ -40,7 +40,7 @@ class HttpConnection implements IInputConnection {
   }
 
   private async onRequest(req: IRequest, res: IResponse) {
-    const reqLog = format('%s %s', req.method, req.url);
+    const reqLog = format('%s %s', req.method, this.getURL(req).pathname);
 
     try {
       const operation = await this.getOperation(req);
@@ -98,10 +98,8 @@ class HttpConnection implements IInputConnection {
   }
 
   private getRequestParams(req: IRequest) {
-    const { method = 'GET', url = '/', headers } = req;
-    const { host = 'localhost', cookie } = headers;
-    const urlObj = new URL(url, `http://${host}`);
-    const { pathname, searchParams } = urlObj;
+    const { method = 'GET', headers: { cookie } } = req;
+    const { pathname, searchParams } = this.getURL(req);
 
     const names = pathname.slice(1).split('/');
     const crudMethod = CRUD[method?.toLowerCase() as keyof typeof CRUD];
@@ -150,6 +148,11 @@ class HttpConnection implements IInputConnection {
     res.end(error.getMessage());
 
     if (code === ServerErrorEnum.E_SERVER_ERROR) throw e;
+  }
+
+  private getURL(req: IRequest) {
+    const { url = '/', headers: { host = 'somehost' } } = req;
+    return new URL(url, `http://${host}`);
   }
 }
 
