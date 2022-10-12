@@ -41,10 +41,12 @@ class HttpConnection implements IInputConnection {
 
   private async onRequest(req: IRequest, res: IResponse) {
     const reqLog = format('%s %s', req.method, req.url);
+
     try {
       const operation = await this.getOperation(req);
+      const sessionId = operation.data.params.sessionId;
+      res.setHeader('set-cookie', `sessionId=${sessionId || ''}`);
       const response = await this.callback!(operation);
-
       res.on('finish', () => logger.info({}, reqLog, '- OK'));
 
       if (response instanceof Readable) {
@@ -96,16 +98,31 @@ class HttpConnection implements IInputConnection {
 
   private getRequestParams(req: IRequest) {
     const { method = 'GET', url = '/', headers } = req;
-    const { host = 'localhost' } = headers;
+    const { host = 'localhost', cookie } = headers;
     const urlObj = new URL(url, `http://${host}`);
     const { pathname, searchParams } = urlObj;
+
     const names = pathname.slice(1).split('/');
     const crudMethod = CRUD[method?.toLowerCase() as keyof typeof CRUD];
     crudMethod && names.push(crudMethod);
-    const queryParams = searchParams.entries();
+    
     const params: IOperation['data']['params'] = {};
+    params.sessionId = this.getSessionId(cookie);
+    const queryParams = searchParams.entries();
     for (const [key, value] of queryParams) params[key] = value;
     return { names, params };
+  }
+
+  private getSessionId(cookie?: string) {
+    if (cookie) {
+      const regExp = /sessionId=([^\s]*)\s*;?/;
+      const result = cookie.match(regExp) || [];
+      if (result[1]) return result[1];
+    }
+    return Buffer
+      .from(Math.random().toString())
+      .toString('base64')
+      .slice(0, 15);
   }
 
   private async getJson(req: IRequest) {
@@ -129,7 +146,7 @@ class HttpConnection implements IInputConnection {
     res.statusCode = statusCode || 500;
     details && res.setHeader('content-type', MIME_TYPES_ENUM['application/json']);
     logger.error({}, reqLog, '-', ServerErrorMap[code])
-    res.end(e.getMessage());
+    res.end(error.getMessage());
 
     if (code === ServerErrorEnum.E_SERVER_ERROR) throw e;
   }

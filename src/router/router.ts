@@ -1,10 +1,11 @@
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { IRouter, IOperation, TOperationResponse } from '../app/types';
-import { THandler, IRoutes, TModule } from './types';
+import { THandler, IRoutes, TModule, IContext, ServicesEnum } from './types';
 import { RouterError, RouterErrorEnum } from './errors';
 import { getStream, GetStreamError } from './modules/getStream';
 import { validate, ValidationError } from './modules/validate';
+import { SessionError, setSession } from './modules/setSession';
 
 class Router implements IRouter {
   private routes?: IRoutes;
@@ -35,13 +36,17 @@ class Router implements IRouter {
     }
     if (!this.isHandler(handler)) throw new RouterError(RouterErrorEnum.E_NO_ROUTE);
 
+    let newContext = {} as IContext;
     let newData = data;
     try {
       for (const module of this.modules) {
-        newData = await module(newData, handler);
+        [newContext, newData] = await module(newContext, newData, handler);
       }
     } catch (e: any) {
       const { message, details } = e;
+      if (e instanceof SessionError) {
+        throw new RouterError(RouterErrorEnum.E_ROUTER, message);
+      }
       if (e instanceof ValidationError) {
         throw new RouterError(RouterErrorEnum.E_MODULE, details);
       }
@@ -53,7 +58,7 @@ class Router implements IRouter {
     }
 
     try {
-      return await handler(newData.params);
+      return await handler(newContext, newData.params);
     } catch (e: any) {
       logger.error(e);
       throw new RouterError(RouterErrorEnum.E_HANDLER, e.message);
@@ -87,6 +92,7 @@ class Router implements IRouter {
 }
 
 const router = new Router()
+  .setModule(setSession)
   .setModule(getStream)
   .setModule(validate);
 

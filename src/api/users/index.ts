@@ -2,7 +2,7 @@
 import Joi from 'joi';
 import { THandler } from '../../router/types';
 
-const create: THandler<{ name: string }> = async ({ name }) => {
+const create: THandler<{ name: string }> = async (context, { name }) => {
   return { name };
 };
 

@@ -1,3 +1,4 @@
+import { format } from 'node:util';
 import { Readable } from 'node:stream';
 import { IDatabaseQueries, TQuery } from '../db/types';
 
@@ -6,11 +7,15 @@ export interface IInputConnection {
   start(): void;
 }
 
+export type IParams = Record<string, unknown> & {
+  sessionId?: string;
+};
+
 export interface IOperation {
   names: string[];
   data: {
     stream?: { type: string | undefined; content: Readable };
-    params: Record<string, unknown>;
+    params: IParams;
   }
 }
 
@@ -42,7 +47,7 @@ export interface IQueries {
   [key: string]: TQuery | IQueries;
 }
 
-export type TLoggerMethod = <T>(object: T, ...message:string[]) => void;
+export type TLoggerMethod = <T>(object: T, ...message: Parameters<typeof format>) => void;
 type TLoggerMethodName =
   | 'debug'
   | 'info'

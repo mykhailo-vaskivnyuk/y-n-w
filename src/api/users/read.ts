@@ -1,7 +1,9 @@
 import { THandler } from '../../router/types';
 
-const handler: THandler = () => {
+const usersRead: THandler = (context) => {
+  const { session } = context;
+  session.write('userId', 1000);
   return execQuery.getUsers([]);
 };
 
-export = handler;
+export = usersRead;

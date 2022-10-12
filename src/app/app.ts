@@ -42,7 +42,7 @@ class App {
             break;
           }
         } else logger.error(e);
-        throw new AppError(AppErrorEnum.E_OPERATION, message);
+        throw new AppError(AppErrorEnum.E_ROUTER, message);
       }
     });
     return this;

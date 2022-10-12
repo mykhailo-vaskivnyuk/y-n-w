@@ -222,3 +222,20 @@ CREATE TABLE "users_notifications" (
 
 ALTER TABLE "users_notifications"
   ADD PRIMARY KEY ("notification_id");
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицi "sessions"
+--
+
+DROP TABLE IF EXISTS "sessions";
+CREATE TABLE "sessions" (
+  "session_id" bigint generated always as identity,
+  "session_key" varchar(255) NOT NULL,
+  "session_value" varchar(255) NOT NULL
+);
+
+ALTER TABLE "sessions"
+  ADD PRIMARY KEY ("session_id");
+CREATE UNIQUE INDEX akSessionKey ON "sessions" ("session_key");
