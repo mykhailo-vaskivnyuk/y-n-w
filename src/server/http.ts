@@ -107,6 +107,7 @@ class HttpConnection implements IInputConnection {
     
     const params: IOperation['data']['params'] = {};
     params.sessionKey = this.getSessionKey(cookie);
+
     const queryParams = searchParams.entries();
     for (const [key, value] of queryParams) params[key] = value;
     return { names, params };
@@ -119,7 +120,7 @@ class HttpConnection implements IInputConnection {
       if (result[1]) return result[1];
     }
     return Buffer
-      .from(Math.random().toString())
+      .from(Math.random().toString().slice(2))
       .toString('base64')
       .slice(0, 15);
   }

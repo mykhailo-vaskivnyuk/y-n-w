@@ -3,9 +3,9 @@ import path from 'node:path';
 import { IRouter, IOperation, TOperationResponse } from '../app/types';
 import { THandler, IRoutes, TModule, IContext } from './types';
 import { RouterError, RouterErrorEnum } from './errors';
-import { getStream, GetStreamError } from './modules/getStream';
+import { getStream, GetStreamError } from './modules/get.stream';
 import { validate, ValidationError } from './modules/validate';
-import { SessionError, setSession } from './modules/setSession';
+import { SessionError, setSession } from './modules/set.session';
 import { DatabaseError } from '../db/errors';
 
 class Router implements IRouter {
@@ -52,8 +52,11 @@ class Router implements IRouter {
         if (ext !== '.js') continue;
         const filePath = path.join(routePath, name);
         const moduleExport = require(filePath) as THandler | IRoutes;
-        if (name === 'index') Object.assign(route, moduleExport);
-        else route[name] = (moduleExport);
+        if (name === 'index') {
+          if (typeof moduleExport === 'function')
+            throw new Error(`Wrong api module: ${filePath}`);
+          Object.assign(route, moduleExport);
+        } else route[name] = moduleExport;
       } else {
         const dirPath = path.join(routePath, name);
         route[name] = await this.createRoutes(dirPath);
