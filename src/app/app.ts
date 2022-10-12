@@ -34,8 +34,6 @@ class App {
           switch (code) {
           case RouterErrorEnum.E_NO_ROUTE:
             throw new ServerError(ServerErrorEnum.E_NOT_FOUND, details);
-          case RouterErrorEnum.E_HANDLER:
-            throw new ServerError(ServerErrorEnum.E_BED_REQUEST, details);
           case RouterErrorEnum.E_MODULE:
             throw new ServerError(ServerErrorEnum.E_BED_REQUEST, details);
           default:

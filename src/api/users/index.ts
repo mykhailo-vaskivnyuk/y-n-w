@@ -11,7 +11,7 @@ create.schema = Joi.object({
 });
 
 const update: THandler = () => {
-  return execQuery.getUsers([]);
+  return execQuery.user.getUsers([]);
 }
 
 export = { create, update };

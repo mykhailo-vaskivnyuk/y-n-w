@@ -44,10 +44,11 @@ class HttpConnection implements IInputConnection {
 
     try {
       const operation = await this.getOperation(req);
-      const sessionId = operation.data.params.sessionId;
-      res.setHeader('set-cookie', `sessionId=${sessionId || ''}`);
+      const { params } = operation.data;
+      const { sessionKey } = params;
+      sessionKey && res.setHeader('set-cookie', `sessionKey=${sessionKey}; httpOnly`);
       const response = await this.callback!(operation);
-      res.on('finish', () => logger.info({}, reqLog, '- OK'));
+      res.on('finish', () => logger.info(params, reqLog, '- OK'));
 
       if (response instanceof Readable) {
         res.setHeader('content-type', MIME_TYPES_ENUM['application/octet-stream']);
@@ -72,7 +73,7 @@ class HttpConnection implements IInputConnection {
     const { names, params } = this.getRequestParams(req);
     const data = { params };
     const { headers } = req;
-    const contentType = headers['content-type'] as keyof typeof MIME_TYPES_MAP | undefined;
+    const contentType = headers['content-type'] as (keyof typeof MIME_TYPES_MAP) | undefined;
     const length = +(headers['content-length'] || Infinity);
 
     if (!contentType) return { names, data };
@@ -107,15 +108,15 @@ class HttpConnection implements IInputConnection {
     crudMethod && names.push(crudMethod);
     
     const params: IOperation['data']['params'] = {};
-    params.sessionId = this.getSessionId(cookie);
+    params.sessionKey = this.getSessionKey(cookie);
     const queryParams = searchParams.entries();
     for (const [key, value] of queryParams) params[key] = value;
     return { names, params };
   }
 
-  private getSessionId(cookie?: string) {
+  private getSessionKey(cookie?: string) {
     if (cookie) {
-      const regExp = /sessionId=([^\s]*)\s*;?/;
+      const regExp = /sessionKey=([^\s]*)\s*;?/;
       const result = cookie.match(regExp) || [];
       if (result[1]) return result[1];
     }
@@ -142,8 +143,8 @@ class HttpConnection implements IInputConnection {
     if (!(e instanceof ServerError)) {
       error = new ServerError(ServerErrorEnum.E_SERVER_ERROR);
     }
-    const { code, statusCode, details } = error as ServerError;
-    res.statusCode = statusCode || 500;
+    const { code, statusCode = 500, details } = error as ServerError;
+    res.statusCode = statusCode;
     details && res.setHeader('content-type', MIME_TYPES_ENUM['application/json']);
     logger.error({}, reqLog, '-', ServerErrorMap[code])
     res.end(error.getMessage());

@@ -11,11 +11,11 @@ export class SessionError extends Error {
 
 export const setSession: TModule = async (context, data) => {
   const { params } = data;
-  const { sessionId } = params;
-  if (!sessionId) return [context, data];
+  const { sessionKey } = params;
+  if (!sessionKey) return [context, data];
   try {
-    const session = await createSession<ISessionContent>(sessionId);
-    Object.assign(context, { session });
+    const session = await createSession<ISessionContent>(sessionKey);
+    context.session = session;
     return [context, data];
   } catch (e) {
     logger.error(e);

@@ -1,9 +1,9 @@
-import { TValue } from '../../types';
+import { IObject } from '../../types';
 
-export interface ISession<T extends Record<string, unknown>> {
-  write<Q extends TValue<T>>(key: keyof T, value: Q): Promise<Q>;
-  read(key: keyof T): TValue<T> | undefined;
-  delete(key: keyof T): Promise<TValue<T> | undefined>;
+export interface ISession<T extends IObject = IObject> {
+  write<K extends keyof T>(key: K, value: T[K]): Promise<T[K]>;
+  read<K extends keyof T>(key: K): T[K] | undefined;
+  delete<K extends keyof T>(key: K): Promise<T[K] | undefined>;
   clear(): Promise<void>;
   init(): Promise<this>;
 }

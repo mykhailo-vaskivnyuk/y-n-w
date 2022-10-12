@@ -1,14 +1,17 @@
 import { format } from 'node:util';
 import { Readable } from 'node:stream';
+import { IObject, TPrimitiv } from '../types';
 import { IDatabaseQueries, TQuery } from '../db/types';
 
 export interface IInputConnection {
-  onOperation(cb: (operation: IOperation) => Promise<TOperationResponse>): this;
+  onOperation(fn:
+    (operation: IOperation) => Promise<TOperationResponse>
+  ): this;
   start(): void;
 }
 
 export type IParams = Record<string, unknown> & {
-  sessionId?: string;
+  sessionKey?: string;
 };
 
 export interface IOperation {
@@ -19,14 +22,11 @@ export interface IOperation {
   }
 }
 
-type TResponse =
-  | string
-  | number
-  | boolean
-  | Record<string, unknown>
-  | null;
-
-export type TOperationResponse = TResponse | TResponse[] | Readable;
+export type TOperationResponse =
+  | TPrimitiv
+  | IObject
+  | (IObject | TPrimitiv)[]
+  | Readable;
 
 export interface IRouter {
   init(): Promise<void>;
@@ -47,7 +47,8 @@ export interface IQueries {
   [key: string]: TQuery | IQueries;
 }
 
-export type TLoggerMethod = <T>(object: T, ...message: Parameters<typeof format>) => void;
+export type TLoggerMethod =
+  <T>(object: T, ...message: Parameters<typeof format>) => void;
 type TLoggerMethodName =
   | 'debug'
   | 'info'

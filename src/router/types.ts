@@ -11,14 +11,16 @@ export interface IRoutes {
   [key: string]: THandler | IRoutes;
 }
 
-export interface IContext {
-  session: Session<ISessionContent>,
+export interface IServices {
+  session: Session<ISessionContent>;
 }
 
-export type ServicesEnum = keyof IContext;
+export type ServicesEnum = keyof IServices;
+
+export type IContext = IServices;
 
 export type TModule = (context: IContext, data: IOperation['data'], handler?: THandler) =>
-  Promise<[IContext, IOperation['data'] & Record<string, unknown>]>;
+  Promise<[IContext, IOperation['data'] & { params: IParams & Record<string, unknown> }]>;
 
 export type ISessionContent = Partial<{
   userId: number;

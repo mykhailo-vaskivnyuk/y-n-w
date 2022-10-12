@@ -1,57 +1,68 @@
-import { TValue } from '../../types';
+import { IObject } from '../../types';
 import { ISession } from './types';
 
-export class Session<T extends Record<string, unknown>> implements ISession<T> {
+export class Session<T extends IObject> implements ISession<T> {
   private session: T | null = null;
 
-  constructor(private id: string) {}
+  constructor(private sessionKey: string) {}
 
-  async write<Q extends TValue<T>>(key: keyof T, value: Q): Promise<Q> {
+  async write<K extends keyof T>(key: K, value: T[K]): Promise<T[K]> {
     if (this.session) {
       this.session[key] = value;
-      const strValue = JSON.stringify(this.session);
-      await execQuery.session.update([this.id, strValue]);
+      const sessionValue = this.serialize();
+      await execQuery.session.update([this.sessionKey, sessionValue]);
     } else {
-      this.session = { [key]: value } as T;
-      const strValue = JSON.stringify(this.session);
-      await execQuery.session.create([this.id, strValue]);
+      this.session = {} as T;
+      this.session[key] = value;
+      const sessionValue = this.serialize();
+      await execQuery.session.create([this.sessionKey, sessionValue]);
     }
     return value;
   }
 
-  read(key: keyof T) {
+  read<K extends keyof T>(key: K) {
     if (this.session) return this.session[key];
   }
 
-  async delete(key: keyof T) {
+  async delete<K extends keyof T>(key: K) {
     if (!this.session) return;
     const value = this.session[key];
     if (!value) return;
-    const success = delete this.session[key];
+    delete this.session[key];
     if (!Object.keys(this.session).length) {
       this.session = null;
-      await execQuery.session.del([this.id]);
+      await execQuery.session.del([this.sessionKey]);
     } else {
-      const strValue = JSON.stringify(this.session);
-      execQuery.session.update([this.id, strValue]);
+      const sessionValue = this.serialize();
+      await execQuery.session.update([this.sessionKey, sessionValue]);
     }
-    return success ? value : undefined;
+    return value;
   }
 
   async clear() {
-    if (this.session) execQuery.session.del([this.id]);
+    if (!this.session) return;
     this.session = null;
+    await execQuery.session.del([this.sessionKey]);
   }
 
   async init() {
-    const result = (await execQuery.session.read([this.id]))[0];
-    if (!result) return this;
-    this.session = JSON.parse(result.session_value);
+    const result = await execQuery.session.read([this.sessionKey]);
+    if (!result?.[0]) return this;
+    const { session_value } = result[0];
+    this.deserialize(session_value);
     return this;
+  }
+
+  private serialize(): string {
+    return JSON.stringify(this.session);
+  }
+
+  private deserialize(value: string) {
+    this.session = JSON.parse(value);
   }
 }
 
-export const createSession = async <T extends Record<string, unknown>>
-(sessionId: string): Promise<Session<T>> => {
-  return await new Session<T>(sessionId).init();
+export const createSession = async <T extends IObject>
+(sessionKey: string): Promise<Session<T>> => {
+  return await new Session<T>(sessionKey).init();
 };
