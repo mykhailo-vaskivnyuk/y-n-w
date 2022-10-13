@@ -1,34 +1,51 @@
-import pino = require('pino');
 import { format } from 'util';
-import { ILogger, TLoggerMethod } from '../app/types';
-// const { LOG_LEVEL, LOG_TARGET } = require('./configService');
-// const { LOGGER_TARGET } = require('./configService');
+import pino = require('pino');
+import { IConfig, ILogger, TLoggerParameters } from '../app/types';
 
-const LOGGER_LEVEL = {
+export const LOGGER_LEVEL = {
+  FATAL: 'fatal',
   ERROR: 'error',
   WARN: 'warn',
   INFO: 'info',
   DEBUG: 'debug',
 };
 
-const LOGGER_TARGET = {
+export const LOGGER_TARGET = {
   CONSOLE: 'console',
   STDOUT: 'stdout',
 };
 
-const level = LOGGER_LEVEL.DEBUG; // LOG_LEVEL;
-const toConsole = { target: 'pino-pretty', level, options: {} };
-const toStdOut = { target: 'pino/file', level, options: { destination: 1 } };
-const transport = toConsole; // LOG_TARGET === LOGGER_TARGET.STDOUT ? toStdOut : toConsole;
-const options = { level, transport };
+class Logger implements ILogger {
+  private logger;
 
-const pinoLogger = pino.default(options);
-const TYPE: (keyof ILogger)[] = ['info', 'debug', 'warn', 'error', 'fatal'];
+  constructor(config: IConfig['logger']) {
+    const { level, target } = config;
+    const toConsole = { target: 'pino-pretty', level, options: {} };
+    const toStdOut = { target: 'pino/file', level, options: { destination: 1 } };
+    const transport =  target === LOGGER_TARGET.STDOUT ? toStdOut : toConsole;
+    const options = { level, transport };
+    this.logger = pino.default(options);
+  }
 
-const getMethod = (type: keyof ILogger): TLoggerMethod => 
-  (obj, ...message) => pinoLogger[type](obj, format(...message));
+  fatal<T>(obj: T, ...message: TLoggerParameters) {
+    this.logger.fatal(obj, format(...message))
+  }
 
-const logger = TYPE.reduce((logger, type) =>
-  Object.assign(logger, { [type]: getMethod(type) }), {} as ILogger);
+  error<T>(obj: T, ...message: TLoggerParameters) {
+    this.logger.error(obj, format(...message))
+  }
 
-export = logger;
+  warn<T>(obj: T, ...message: TLoggerParameters) {
+    this.logger.warn(obj, format(...message))
+  }
+
+  info<T>(obj: T, ...message: TLoggerParameters) {
+    this.logger.info(obj, format(...message))
+  }
+
+  debug<T>(obj: T, ...message: TLoggerParameters) {
+    this.logger.debug(obj, format(...message))
+  }
+}
+
+export default Logger;

@@ -2,16 +2,18 @@ import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
 import { format } from 'node:util';
 import { CRUD, JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../constants';
-import { IInputConnection, IOperation, TOperationResponse } from '../app/types';
-import { TPromiseExecutor } from '../types';
 import { IRequest, IResponse, IServer } from './types';
+import { TPromiseExecutor } from '../types';
+import { IConfig, IInputConnection, IOperation, TOperationResponse } from '../app/types';
 import { ServerError, ServerErrorEnum, ServerErrorMap } from './errors';
 
 class HttpConnection implements IInputConnection {
+  private config: IConfig['inConnection'];
   private server: IServer;
   private callback?: (operation: IOperation) => Promise<TOperationResponse>;
 
-  constructor() {
+  constructor(config: IConfig['inConnection']) {
+    this.config = config;
     this.server = createServer(this.onRequest.bind(this));
   }
 
@@ -27,16 +29,17 @@ class HttpConnection implements IInputConnection {
       throw e;
     }
 
-    const executor: TPromiseExecutor = (rv, rj) => {
+    const executor: TPromiseExecutor<void> = (rv, rj) => {
+      const { port } = this.config.http;
       try {
-        this.server.listen(8000, () => rv(null));
+        this.server.listen(port, rv);
       } catch (e: any) {
         logger.error(e);
         rj(new ServerError(ServerErrorEnum.E_LISTEN));
       }
     }
 
-    return new Promise(executor);
+    return new Promise<void>(executor);
   }
 
   private async onRequest(req: IRequest, res: IResponse) {
@@ -71,7 +74,7 @@ class HttpConnection implements IInputConnection {
 
   private async getOperation(req: IRequest) {
     const { names, params } = this.getRequestParams(req);
-    const data = { params };
+    const data = { params } as IOperation['data'];
     const { headers } = req;
     const contentType = headers['content-type'] as (keyof typeof MIME_TYPES_MAP) | undefined;
     const length = +(headers['content-length'] || Infinity);
@@ -91,8 +94,7 @@ class HttpConnection implements IInputConnection {
     }
 
     const content = Readable.from(req);
-    const stream = { type: contentType, content };
-    Object.assign(data, { stream });
+    data.stream = { type: contentType, content };
     
     return { names, data };
   }
@@ -157,4 +159,4 @@ class HttpConnection implements IInputConnection {
   }
 }
 
-export = new HttpConnection();
+export = HttpConnection;

@@ -1,18 +1,22 @@
 import pg from 'pg';
-import { IDatabaseConnection } from '../../app/types';
+import { IConfig, IDatabaseConnection } from '../../app/types';
 
-const pool = new pg.Pool({
-  host: '127.0.0.1',
-  port: 5432,
-  database: 'merega',
-  user: 'merega',
-  password: 'merega',
-});
+class Connection implements IDatabaseConnection {
+  private pool;
 
-const query = <T extends []>(sql: string, params: T) =>
-  pool.query(sql, params)
-    .then((result) => result.rows);
+  constructor(config: IConfig['database']['connection']) {
+    this.pool = new pg.Pool(config);
+  }
 
-const connect = async () => { await pool.connect() };
+  async connect() {
+    await this.pool.connect();
+  }
 
-export = { query, connect } as IDatabaseConnection;
+  query<T extends any[]>(sql: string, params: T): Promise<any> {
+    return this.pool!
+      .query(sql, params)
+      .then((result) => result.rows);
+  }
+}
+
+export = Connection;

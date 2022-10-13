@@ -1,12 +1,13 @@
-import app = require('./app/app');
-import logger = require('./logger/logger');
-import inputConnection = require('./server/http');
-import router = require('./router/router');
-import dbConnection = require('./db/connection/pg');
+import config = require('./config');
+import App from './app/app';
+import Logger from './logger/logger';
+import DbConnection from './db/connection/pg';
+import Router from './router/router';
+import InputConnection from './server/http';
 
-app
-  .setLogger(logger)
-  .setInputConnection(inputConnection)
-  .setRouter(router)
-  .setDatabase(dbConnection)
+new App(config)
+  .setLogger(Logger)
+  .setDatabase(DbConnection)
+  .setRouter(Router)
+  .setInputConnection(InputConnection)
   .start();

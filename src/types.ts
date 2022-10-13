@@ -1,7 +1,7 @@
 export type TParameter<T extends any[]> = T[0];
 
-export type TPromiseExecutor =
-  TParameter<ConstructorParameters<typeof Promise>>;
+export type TPromiseExecutor<T> =
+  TParameter<ConstructorParameters<typeof Promise<T>>>;
 
 export type TPrimitiv =
   | string

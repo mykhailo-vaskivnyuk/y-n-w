@@ -1,29 +1,40 @@
 import fsp from 'node:fs/promises';
 import path from 'node:path';
-import { IRouter, IOperation, TOperationResponse } from '../app/types';
+import { getEnumFromMap } from '../utils/utils';
 import { THandler, IRoutes, TModule, IContext } from './types';
+import { IRouter, IOperation, TOperationResponse, IConfig } from '../app/types';
 import { RouterError, RouterErrorEnum } from './errors';
+import { DatabaseError } from '../db/errors';
 import { getStream, GetStreamError } from './modules/get.stream';
 import { validate, ValidationError } from './modules/validate';
 import { SessionError, setSession } from './modules/set.session';
-import { DatabaseError } from '../db/errors';
+
+const MODULES = {
+  getStream,
+  validate,
+  setSession,
+};
+
+export const MODULES_ENUM = getEnumFromMap(MODULES);
 
 class Router implements IRouter {
+  private config: IConfig['router'];
   private routes?: IRoutes;
   private modules: TModule[] = [];
 
+  constructor(config: IConfig['router']) {
+    this.config = config;
+    this.config.modules
+      .filter(([module, enable]) => enable && module in MODULES)
+      .map(([module]) => this.modules.push(MODULES[module]));
+  }
   async init() {
     try {
-      this.routes = await this.createRoutes('./js/api');
+      this.routes = await this.createRoutes(this.config.apiPath);
     } catch (e: any) {
       logger.error(e);
       throw new RouterError(RouterErrorEnum.E_ROUTES);
     }
-  }
-
-  setModule(module: TModule) {
-    this.modules.push(module);
-    return this;
   }
   
   async exec(operation: IOperation): Promise<TOperationResponse> {
@@ -106,9 +117,4 @@ class Router implements IRouter {
   }
 }
 
-const router = new Router()
-  .setModule(setSession)
-  .setModule(getStream)
-  .setModule(validate);
-
-export = router;
+export default Router;

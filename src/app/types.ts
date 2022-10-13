@@ -1,13 +1,42 @@
 import { format } from 'node:util';
 import { Readable } from 'node:stream';
+import config from '../config';
 import { IObject, TPrimitiv } from '../types';
 import { IDatabaseQueries, TQuery } from '../db/types';
 
-export interface IInputConnection {
-  onOperation(fn:
-    (operation: IOperation) => Promise<TOperationResponse>
-  ): this;
-  start(): void;
+export type IConfig = typeof config;
+
+export type TLoggerMethodName =
+  | 'debug'
+  | 'info'
+  | 'warn'
+  | 'error'
+  | 'fatal';
+
+export type TLoggerParameters = Parameters<typeof format>;
+
+export type TLoggerMethod =
+  <T>(object: T, ...message: TLoggerParameters) => void;
+
+export type ILogger = Record<TLoggerMethodName, TLoggerMethod>;
+
+export type LoggerClass = new(config: IConfig['logger']) => ILogger;
+
+export interface IDatabase {
+  init(): Promise<IQueries>;
+  setConnection(connection: IDatabaseConnection): this;
+}
+
+export interface IDatabaseConnection {
+  connect(): Promise<void>;
+  query<T extends any[]>(sql: string, params: T): Promise<any>;
+}
+
+export type DatabaseConnectionClass =
+  new(config: IConfig['database']['connection']) => IDatabaseConnection;
+
+export interface IQueries {
+  [key: string]: TQuery | IQueries;
 }
 
 export type IParams = Record<string, unknown> & {
@@ -33,29 +62,17 @@ export interface IRouter {
   exec(operation: IOperation): Promise<TOperationResponse>;
 }
 
-export interface IDatabase {
-  init(): Promise<IQueries>;
-  setConnection(connection: IDatabaseConnection): this;
+export type RouterClass = new(config: IConfig['router']) => IRouter;
+
+export interface IInputConnection {
+  onOperation(fn:
+    (operation: IOperation) => Promise<TOperationResponse>
+  ): this;
+  start(): Promise<void>;
 }
 
-export interface IDatabaseConnection {
-  query<T extends any[]>(sql: string, params: T): Promise<any>;
-  connect: () => Promise<void>;
-}
-
-export interface IQueries {
-  [key: string]: TQuery | IQueries;
-}
-
-export type TLoggerMethod =
-  <T>(object: T, ...message: Parameters<typeof format>) => void;
-type TLoggerMethodName =
-  | 'debug'
-  | 'info'
-  | 'warn'
-  | 'error'
-  | 'fatal';
-export type ILogger = Record<TLoggerMethodName, TLoggerMethod>;
+export type InputConnectionClass =
+  new(config: IConfig['inConnection']) => IInputConnection;
 
 declare global {
   const execQuery: IDatabaseQueries;

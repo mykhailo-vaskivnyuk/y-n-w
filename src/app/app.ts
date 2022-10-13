@@ -1,30 +1,47 @@
-import db from '../db/db';
-import { IInputConnection, IDatabase, IDatabaseConnection, ILogger, IRouter } from './types';
-import { DatabaseError } from '../db/errors';
-import { ServerError, ServerErrorEnum } from '../server/errors';
-import { RouterError, RouterErrorEnum } from '../router/errors';
+import Database from '../db/db';
+import {  
+  IConfig,
+  ILogger, LoggerClass,
+  IDatabase, DatabaseConnectionClass,
+  IRouter, RouterClass,
+  IInputConnection, InputConnectionClass,
+} from './types';
 import { AppError, AppErrorEnum } from './errors';
+import { DatabaseError } from '../db/errors';
+import { RouterError, RouterErrorEnum } from '../router/errors';
+import { ServerError, ServerErrorEnum } from '../server/errors';
 
 class App {
+  private config: IConfig;
   private logger?: ILogger;
-  private inConnection?: IInputConnection;
   private db?: IDatabase;
   private router?: IRouter;
+  private inConnection?: IInputConnection;
 
-  constructor() {
+  constructor(config: IConfig) {
+    this.config = config;
     this.setErrorHandlers();
   }
   
-  setLogger(logger: ILogger) {
-    this.logger = logger
+  setLogger(Logger: LoggerClass) {
+    this.logger = new Logger(this.config.logger);
     Object.assign(global, { logger: this.logger });
     logger.info('LOGGER IS READY');
     return this;
   }
   
-  setInputConnection(inConnection: IInputConnection) {
-    this.inConnection = inConnection;
+  setDatabase(Connection: DatabaseConnectionClass) {
+    this.db = new Database(this.config.database, Connection);
+    return this;
+  }
+  
+  setRouter(Router: RouterClass) {
+    this.router = new Router(this.config.router);
+    return this;
+  }
 
+  setInputConnection(InConnection: InputConnectionClass) {
+    this.inConnection = new InConnection(this.config.inConnection);
     this.inConnection.onOperation(async (operation) => {
       try {
         return await this.router!.exec(operation);
@@ -43,17 +60,6 @@ class App {
         throw new AppError(AppErrorEnum.E_ROUTER, message);
       }
     });
-    return this;
-  }
-  
-  setDatabase(connection: IDatabaseConnection) {
-    db.setConnection(connection);
-    this.db = db;
-    return this;
-  }
-  
-  setRouter(router: IRouter) {
-    this.router = router;
     return this;
   }
 
@@ -90,4 +96,4 @@ class App {
   }
 }
 
-export = new App();
+export = App;

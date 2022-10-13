@@ -14,7 +14,8 @@ export const getStream: TModule = async (context, data) => {
   const { type,  content } = stream;
   
   if (type === MIME_TYPES_ENUM['application/octet-stream']) {
-    Object.assign(params, { stream });
+    params.stream = stream;
+    delete data.stream;
     return [context, data];
   }
   
