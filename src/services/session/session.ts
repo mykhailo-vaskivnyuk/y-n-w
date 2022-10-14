@@ -7,16 +7,18 @@ export class Session<T extends IObject> implements ISession<T> {
   constructor(private sessionKey: string) {}
 
   async write<K extends keyof T>(key: K, value: T[K]): Promise<T[K]> {
-    if (this.session) {
-      this.session[key] = value;
-      const sessionValue = this.serialize();
-      await execQuery.session.update([this.sessionKey, sessionValue]);
-    } else {
+    let isUpdate = true;
+    if (!this.session) {
       this.session = {} as T;
-      this.session[key] = value;
-      const sessionValue = this.serialize();
-      await execQuery.session.create([this.sessionKey, sessionValue]);
+      isUpdate = false;
     }
+
+    this.session[key] = value;
+    const sessionValue = this.serialize();
+    if (isUpdate)
+      await execQuery.session.update([this.sessionKey, sessionValue]);
+    else await execQuery.session.create([this.sessionKey, sessionValue]);
+
     return value;
   }
 
@@ -29,13 +31,10 @@ export class Session<T extends IObject> implements ISession<T> {
     const value = this.session[key];
     if (!value) return;
     delete this.session[key];
-    if (!Object.keys(this.session).length) {
-      this.session = null;
-      await execQuery.session.del([this.sessionKey]);
-    } else {
+    if (Object.keys(this.session).length) {
       const sessionValue = this.serialize();
       await execQuery.session.update([this.sessionKey, sessionValue]);
-    }
+    } else await this.clear();
     return value;
   }
 

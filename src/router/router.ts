@@ -28,6 +28,7 @@ class Router implements IRouter {
       .filter(([module, enable]) => enable && module in MODULES)
       .map(([module]) => this.modules.push(MODULES[module]));
   }
+
   async init() {
     try {
       this.routes = await this.createRoutes(this.config.apiPath);
