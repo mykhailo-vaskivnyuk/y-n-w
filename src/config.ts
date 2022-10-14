@@ -1,4 +1,5 @@
-import { LOGGER_LEVEL, LOGGER_TARGET } from './logger/logger';
+
+import { LOGGER_LEVEL, LOGGER_TARGET } from './logger/types';
 import { MODULES_ENUM } from './router/router';
 
 const buildPath = './js';
@@ -22,10 +23,20 @@ export = {
   router: {
     apiPath: buildPath + '/api',
     modules: [
-      [MODULES_ENUM.setSession, true] as const,
-      [MODULES_ENUM.getStream, true] as const,
-      [MODULES_ENUM.validate, true] as const,
+      MODULES_ENUM.setSession,
+      MODULES_ENUM.getStream,
+      MODULES_ENUM.validate,
+      MODULES_ENUM.setMail,
     ],
+    modulesConfig: {
+      [MODULES_ENUM.setMail]: {
+        service: 'gmail',
+        auth: {
+          user: 'm.vaskivnyuk@gmail.com',
+          pass: 'jnvmldmwaiadoiwj',
+        },
+      },
+    },
   },
   inConnection: {
     http: {

@@ -9,7 +9,7 @@ export class SessionError extends Error {
   }
 }
 
-export const setSession: TModule = async (context, data) => {
+export const setSession: TModule = () => async (context, data) => {
   const { params } = data;
   const { sessionKey } = params;
   if (!sessionKey) return [context, data];

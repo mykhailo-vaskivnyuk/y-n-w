@@ -1,10 +1,16 @@
 import { format } from 'node:util';
 import { Readable } from 'node:stream';
-import config from '../config';
 import { IObject, TPrimitiv } from '../types';
 import { IDatabaseQueries, TQuery } from '../db/types';
+import { ILoggerConfig } from '../logger/types';
+import { MODULES } from '../router/router';
 
-export type IConfig = typeof config;
+export interface IConfig {
+  logger: ILoggerConfig;
+  database: IDatabaseConfig;
+  router: IRouterConfig;
+  inConnection: IInputConnectionConfig;
+}
 
 export type TLoggerMethodName =
   | 'debug'
@@ -20,7 +26,7 @@ export type TLoggerMethod =
 
 export type ILogger = Record<TLoggerMethodName, TLoggerMethod>;
 
-export type LoggerClass = new(config: IConfig['logger']) => ILogger;
+export type LoggerClass = new(config: ILoggerConfig) => ILogger;
 
 export interface IDatabase {
   init(): Promise<IQueries>;
@@ -32,8 +38,19 @@ export interface IDatabaseConnection {
   query<T extends any[]>(sql: string, params: T): Promise<any>;
 }
 
+export interface IDatabaseConfig {
+  queriesPath: string;
+  connection: {
+    host: string;
+    port: number;
+    database: string;
+    user: string;
+    password: string;
+  };
+}
+
 export type DatabaseConnectionClass =
-  new(config: IConfig['database']['connection']) => IDatabaseConnection;
+  new(config: IDatabaseConfig['connection']) => IDatabaseConnection;
 
 export interface IQueries {
   [key: string]: TQuery | IQueries;
@@ -62,7 +79,15 @@ export interface IRouter {
   exec(operation: IOperation): Promise<TOperationResponse>;
 }
 
-export type RouterClass = new(config: IConfig['router']) => IRouter;
+export interface IRouterConfig {
+  apiPath: string;
+  modules: (keyof typeof MODULES)[];
+  modulesConfig: {
+    [key in (keyof typeof MODULES)]?: Record<string, any>;
+  };
+}
+
+export type RouterClass = new(config: IRouterConfig) => IRouter;
 
 export interface IInputConnection {
   onOperation(fn:
@@ -71,8 +96,15 @@ export interface IInputConnection {
   start(): Promise<void>;
 }
 
+export interface IInputConnectionConfig {
+  http: {
+    host: string;
+    port: number;
+  };
+}
+
 export type InputConnectionClass =
-  new(config: IConfig['inConnection']) => IInputConnection;
+  new(config: IInputConnectionConfig) => IInputConnection;
 
 declare global {
   const execQuery: IDatabaseQueries;

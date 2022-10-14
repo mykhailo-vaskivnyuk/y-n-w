@@ -1,5 +1,6 @@
 import { ObjectSchema } from 'joi';
 import { IOperation, IParams, TOperationResponse } from '../app/types';
+import { TMail } from '../services/mail/mail';
 import { Session } from '../services/session/session';
 
 export type THandler<T extends IParams = IParams> = {
@@ -13,14 +14,16 @@ export interface IRoutes {
 
 export interface IServices {
   session: Session<ISessionContent>;
+  sendMail: TMail;
 }
 
 export type ServicesEnum = keyof IServices;
 
 export type IContext = IServices;
 
-export type TModule = (context: IContext, data: IOperation['data'], handler?: THandler) =>
-  Promise<[IContext, IOperation['data'] & { params: IParams & Record<string, unknown> }]>;
+export type TModule<T = any> = (config: T) =>
+  (context: IContext, data: IOperation['data'], handler?: THandler) =>
+    Promise<[IContext, IOperation['data'] & { params: IParams & Record<string, unknown> }]>;
 
 export type ISessionContent = Partial<{
   userId: number;

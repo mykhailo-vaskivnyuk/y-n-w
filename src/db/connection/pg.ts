@@ -1,10 +1,10 @@
 import pg from 'pg';
-import { IConfig, IDatabaseConnection } from '../../app/types';
+import { IDatabaseConfig, IDatabaseConnection } from '../../app/types';
 
 class Connection implements IDatabaseConnection {
   private pool;
 
-  constructor(config: IConfig['database']['connection']) {
+  constructor(config: IDatabaseConfig['connection']) {
     this.pool = new pg.Pool(config);
   }
 

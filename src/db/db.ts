@@ -1,14 +1,14 @@
 import path from 'node:path';
 import fsp from 'node:fs/promises';
 import { TQueriesModule, TQuery } from './types';
-import { DatabaseConnectionClass, IConfig, IDatabase, IDatabaseConnection, IQueries } from '../app/types';
+import { DatabaseConnectionClass, IDatabase, IDatabaseConfig, IDatabaseConnection, IQueries } from '../app/types';
 import { DatabaseError, DatabaseErrorEnum } from './errors';
 
 class Database implements IDatabase {
-  private config: IConfig['database'];
+  private config: IDatabaseConfig;
   private connection?: IDatabaseConnection;
 
-  constructor(config: IConfig['database'], Connection: DatabaseConnectionClass) {
+  constructor(config: IDatabaseConfig, Connection: DatabaseConnectionClass) {
     this.config = config;
     this.connection = new Connection(config.connection);
   }

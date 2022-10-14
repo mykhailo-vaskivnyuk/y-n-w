@@ -1,24 +1,12 @@
 import { format } from 'util';
 import pino = require('pino');
-import { IConfig, ILogger, TLoggerParameters } from '../app/types';
-
-export const LOGGER_LEVEL = {
-  FATAL: 'fatal',
-  ERROR: 'error',
-  WARN: 'warn',
-  INFO: 'info',
-  DEBUG: 'debug',
-};
-
-export const LOGGER_TARGET = {
-  CONSOLE: 'console',
-  STDOUT: 'stdout',
-};
+import { ILogger, TLoggerParameters } from '../app/types';
+import { ILoggerConfig, LOGGER_TARGET } from './types';
 
 class Logger implements ILogger {
   private logger;
 
-  constructor(config: IConfig['logger']) {
+  constructor(config: ILoggerConfig) {
     const { level, target } = config;
     const toConsole = { target: 'pino-pretty', level, options: {} };
     const toStdOut = { target: 'pino/file', level, options: { destination: 1 } };

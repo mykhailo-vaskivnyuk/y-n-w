@@ -16,7 +16,7 @@ const options = {
   errors: { render: false },
 };
 
-export const validate: TModule = async (context, data, handler) => {
+export const validate: TModule = () => async (context, data, handler) => {
   const { schema } = handler || {};
   if (!schema) return [context, data];
   const { error, value } = schema.validate(data.params, options);

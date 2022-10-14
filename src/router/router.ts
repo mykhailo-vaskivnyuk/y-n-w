@@ -2,34 +2,46 @@ import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { getEnumFromMap } from '../utils/utils';
 import { THandler, IRoutes, TModule, IContext } from './types';
-import { IRouter, IOperation, TOperationResponse, IConfig } from '../app/types';
+import { IRouter, IOperation, TOperationResponse, IRouterConfig } from '../app/types';
 import { RouterError, RouterErrorEnum } from './errors';
 import { DatabaseError } from '../db/errors';
 import { getStream, GetStreamError } from './modules/get.stream';
 import { validate, ValidationError } from './modules/validate';
 import { SessionError, setSession } from './modules/set.session';
+import { setMail } from './modules/send.mail';
 
-const MODULES = {
+export const MODULES = {
   getStream,
   validate,
   setSession,
+  setMail,
 };
 
 export const MODULES_ENUM = getEnumFromMap(MODULES);
 
 class Router implements IRouter {
-  private config: IConfig['router'];
+  private config: IRouterConfig;
   private routes?: IRoutes;
-  private modules: TModule[] = [];
+  private modules: ReturnType<TModule>[] = [];
 
-  constructor(config: IConfig['router']) {
+  constructor(config: IRouterConfig) {
     this.config = config;
-    this.config.modules
-      .filter(([module, enable]) => enable && module in MODULES)
-      .map(([module]) => this.modules.push(MODULES[module]));
+
   }
 
   async init() {
+    try {
+      const { modules, modulesConfig } = this.config;
+      modules.map(
+        (module) => {
+          const moduleConfig = modulesConfig[module] as any;
+          this.modules.push(MODULES[module](moduleConfig));
+        });
+    } catch (e: any) {
+      logger.error(e);
+      throw new RouterError(RouterErrorEnum.E_MODULE);
+    }
+
     try {
       this.routes = await this.createRoutes(this.config.apiPath);
     } catch (e: any) {
@@ -97,20 +109,16 @@ class Router implements IRouter {
     context: IContext, data: IOperation['data'], handler: THandler
   ): Promise<[IContext, IOperation['data']]> {
     try {
-      for (const module of this.modules) {
+      for (const module of this.modules)
         [context, data] = await module(context, data, handler);
-      }
     } catch (e: any) {
       const { message, details } = e;
-      if (e instanceof SessionError) {
+      if (e instanceof SessionError)
         throw new RouterError(RouterErrorEnum.E_ROUTER, message);
-      }
-      if (e instanceof ValidationError) {
+      if (e instanceof ValidationError)
         throw new RouterError(RouterErrorEnum.E_MODULE, details);
-      }
-      if (e instanceof GetStreamError) {
+      if (e instanceof GetStreamError)
         throw new RouterError(RouterErrorEnum.E_MODULE, message);
-      }
       logger.error(e);
       throw new RouterError(RouterErrorEnum.E_ROUTER, details || message);
     }

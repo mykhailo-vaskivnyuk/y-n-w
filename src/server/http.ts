@@ -4,15 +4,15 @@ import { format } from 'node:util';
 import { JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../constants';
 import { IRequest, IResponse, IServer } from './types';
 import { TPromiseExecutor } from '../types';
-import { IConfig, IInputConnection, IOperation, TOperationResponse } from '../app/types';
+import { IInputConnection, IInputConnectionConfig, IOperation, TOperationResponse } from '../app/types';
 import { ServerError, ServerErrorEnum, ServerErrorMap } from './errors';
 
 class HttpConnection implements IInputConnection {
-  private config: IConfig['inConnection'];
+  private config: IInputConnectionConfig;
   private server: IServer;
   private callback?: (operation: IOperation) => Promise<TOperationResponse>;
 
-  constructor(config: IConfig['inConnection']) {
+  constructor(config: IInputConnectionConfig) {
     this.config = config;
     this.server = createServer(this.onRequest.bind(this));
   }

@@ -1,5 +1,5 @@
 import Database from '../db/db';
-import {  
+import {
   IConfig,
   ILogger, LoggerClass,
   IDatabase, DatabaseConnectionClass,
