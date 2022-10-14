@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
 import { format } from 'node:util';
-import { CRUD, JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../constants';
+import { JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../constants';
 import { IRequest, IResponse, IServer } from './types';
 import { TPromiseExecutor } from '../types';
 import { IConfig, IInputConnection, IOperation, TOperationResponse } from '../app/types';
@@ -76,7 +76,7 @@ class HttpConnection implements IInputConnection {
     const { names, params } = this.getRequestParams(req);
     const data = { params } as IOperation['data'];
     const { headers } = req;
-    const contentType = headers['content-type'] as (keyof typeof MIME_TYPES_MAP) | undefined;
+    const contentType = headers['content-type']as (keyof typeof MIME_TYPES_MAP) | undefined;
     const length = +(headers['content-length'] || Infinity);
 
     if (!contentType) return { names, data };
@@ -100,12 +100,10 @@ class HttpConnection implements IInputConnection {
   }
 
   private getRequestParams(req: IRequest) {
-    const { method = 'GET', headers: { cookie } } = req;
+    const { headers: { cookie } } = req;
     const { pathname, searchParams } = this.getURL(req);
 
     const names = pathname.slice(1).split('/');
-    const crudMethod = CRUD[method?.toLowerCase() as keyof typeof CRUD];
-    crudMethod && names.push(crudMethod);
     
     const params: IOperation['data']['params'] = {};
     params.sessionKey = this.getSessionKey(cookie);

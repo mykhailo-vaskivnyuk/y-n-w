@@ -59,11 +59,11 @@ class Database implements IDatabase {
     const moduleExport = require(filePath) as TQueriesModule;
     return Object
       .keys(moduleExport)
-      .reduce((queries, key) => {
+      .reduce<IQueries>((queries, key) => {
         queries[key] = this.sqlToQuery(moduleExport[key]!);
         return queries;
-      }, {} as IQueries);
-  }  
+      }, {});
+  }
 
   private sqlToQuery(sql: string): TQuery {
     return async (params) => {

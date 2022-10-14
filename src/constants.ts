@@ -1,19 +1,5 @@
 import { getEnumFromMap } from './utils/utils'
 
-export const CRUD = {
-  get: 'read',
-  post: 'create',
-  put: 'update',
-  delete: 'delete',
-}
-
-export const REST = {
-  read: 'get',
-  create: 'post',
-  update: 'put',
-  delete: 'delete',
-}
-
 export const MIME_TYPES_MAP = {
   'application/json': { maxLength: 1_000 },
   'application/octet-stream': { maxLength: 1_000_000 },
