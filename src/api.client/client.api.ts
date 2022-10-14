@@ -1,9 +1,10 @@
 import path from 'node:path';
-import fsp from 'node:fs/promises';
+import fs from 'node:fs';
 import http from 'node:http'
-import { IRoutes, THandler, TModule } from '../router/types';
+import { IRoutes, THandler } from '../router/types';
 import { RouterError, RouterErrorEnum } from '../router/errors';
-import { MIME_TYPES_ENUM, REST } from '../constants';
+import { MIME_TYPES_ENUM } from '../constants';
+import { Writable } from 'node:stream';
 
 export type TApiMethod = (...args: any[]) => Promise<any>;
 
@@ -14,18 +15,24 @@ export interface IApi {
 class ClientApi {
   private routes?: IRoutes;
   private api?: IApi;
-  private modules: TModule[] = [];
+  // private modules: TModule[] = [];
 
   async init() {
     try {
       this.routes = await this.createRoutes('./js/api');
       this.api = this.createApi(this.routes, '');
-      fsp.writeFile('./src/file.js', JSON.stringify(this.api, (key, value) =>  {
-        if (typeof value === 'function') return value.toString();
-        return value;
-      }, '  '));
+      const stream = fs.createWriteStream('./src/api.client/api.ts');
+      stream.write('module.exports = (url: string, fetch: (url: string, options: Record<string, any>) => Promise<any>) => (');
+      this.createJs(this.api, stream);
+      stream.write(');\n');
+      stream.close();
+      // fsp.writeFile('./src/file.js', JSON.stringify(this.api, (key, value) =>  {
+      //   if (typeof value === 'function') return value.toString();
+      //   return value;
+      // }, '  '));
     } catch (e: any) {
-      logger.error(e);
+      // logger.error(e);
+      console.log(e);
       throw new RouterError(RouterErrorEnum.E_ROUTES);
     }
   }
@@ -35,10 +42,26 @@ class ClientApi {
     return this.api;
   }
 
+  private createJs(api: IApi, stream: Writable, pathname = '', indent = '') {
+    stream.write('{');
+    for (const key of Object.keys(api)) {
+      stream.write('\n' + indent + '  \'' + key + '\': ');
+      const method = api[key] as IApi | TApiMethod;
+      if (this.isMethod(method)) {
+        stream.write('(options: Record<string, any>) => fetch(url + \'' + pathname + '\', options),');
+      }
+      else {
+        this.createJs(method, stream, pathname + '/' + key, indent + '  ');
+        stream.write(',');
+      }
+    }
+    stream.write('\n' + indent + '}');
+  }
+
   private async createRoutes(dirPath: string): Promise<IRoutes> {
     const route: IRoutes = {};
     const routePath = path.resolve(dirPath);
-    const dir = await fsp.opendir(routePath);
+    const dir = await fs.promises.opendir(routePath);
     for await (const item of dir) {
       const ext = path.extname(item.name);
       const name = path.basename(item.name, ext);
@@ -63,14 +86,17 @@ class ClientApi {
     return typeof handler === 'function';
   }
 
+  private isMethod(method?: IApi | TApiMethod): method is TApiMethod {
+    return typeof method === 'function';
+  }
+
   private createApi(routes: IRoutes, url: string): IApi {
     const urls = {} as IApi;
     for (const path of Object.keys(routes)) {
       const nextUrl = url + '/' + path;
       const nextRoutes = routes[path];
       if (this.isHandler(nextRoutes)) {
-        const method = REST[path as keyof typeof REST];
-        urls[method] = (data: Record<string, any>) => this.fetch(url, { data, method });
+        urls[path] = (options: Record<string, any>) => this.fetch(url, options);
       } else {
         urls[path] = this.createApi(nextRoutes!, nextUrl);
       }
@@ -79,9 +105,9 @@ class ClientApi {
   }
 
   private fetch(url: string, options: Record<string, any>) {
-    const { data, method, ...rest } = options;
+    const { data, ...rest } = options;
     const body = JSON.stringify(data) || '';
-    const headers = method === 'get' ? {} : {
+    const headers = {
       'content-type': MIME_TYPES_ENUM['application/json'],
       'content-length': Buffer.byteLength(body),
     };
@@ -94,7 +120,7 @@ class ClientApi {
     return new Promise((rv, rj) => {
       const req = http.request(
         'http://localhost:8000' + url,
-        { ...rest, method, headers },
+        { ...rest, method: 'post', headers },
         (res) => rv(fn(res)),
       )
       req.on('error', rj)
