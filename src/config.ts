@@ -3,7 +3,7 @@ import { LOGGER_LEVEL, LOGGER_TARGET } from './logger/types';
 import { MODULES_ENUM } from './router/router';
 
 const buildPath = './js';
-const host = 'localhost';
+const host = 'https://peaceful-chamber-69318.herokuapp.com/'; // 'localhost';
 
 export = {
   logger: {
@@ -47,7 +47,7 @@ export = {
   inConnection: {
     http: {
       host,
-      port: 8000,
+      port: 80,
     },
   },
 };
