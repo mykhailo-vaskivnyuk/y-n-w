@@ -13,8 +13,7 @@ export = {
   database: {
     queriesPath: buildPath + '/db/queries',
     connection: {
-      connectionString: process.env.DATABASE_URL || ' ',
-      db: process.env.DATABASE_URL || ' ',
+      connectionString: process.env.HEROKU_POSTGRESQL_COBALT || '',
       ssl: {
         rejectUnauthorized: false,
       },
