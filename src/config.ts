@@ -13,7 +13,7 @@ export = {
   database: {
     queriesPath: buildPath + '/db/queries',
     connection: {
-      connectionString: process.env.DATABASE_URL || ' ',
+      db: process.env.DATABASE_URL || ' ',
       ssl: {
         rejectUnauthorized: false,
       },
