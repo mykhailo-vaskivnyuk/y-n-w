@@ -13,11 +13,17 @@ export = {
   database: {
     queriesPath: buildPath + '/db/queries',
     connection: {
-      host: '192.168.31.176',
-      port: 5432,
-      database: 'merega',
-      user: 'merega',
-      password: 'merega',
+      connectionString: process.env.DATABASE_URL,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+      // local: {
+      //   host: '192.168.31.176',
+      //   port: 5432,
+      //   database: 'merega',
+      //   user: 'merega',
+      //   password: 'merega',
+      // },
     },
   },
   router: {
