@@ -31,7 +31,8 @@ class App {
   }
   
   setDatabase(Connection: DatabaseConnectionClass) {
-    this.db = new Database(this.config.database, Connection);
+    this.db = new Database(this.config.database);
+    this.db.setConnection(Connection);
     return this;
   }
   

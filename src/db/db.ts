@@ -8,9 +8,8 @@ class Database implements IDatabase {
   private config: IDatabaseConfig;
   private connection?: IDatabaseConnection;
 
-  constructor(config: IDatabaseConfig, Connection: DatabaseConnectionClass) {
+  constructor(config: IDatabaseConfig) {
     this.config = config;
-    this.connection = new Connection(config.connection);
   }
 
   async init() {
@@ -29,8 +28,8 @@ class Database implements IDatabase {
     }
   }
 
-  setConnection(connection: IDatabaseConnection) {
-    this.connection = connection;
+  setConnection(Connection: DatabaseConnectionClass) {
+    this.connection = new Connection(this.config.connection);
     return this;
   }
 

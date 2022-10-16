@@ -28,3 +28,9 @@ export type TModule<T = any> = (config: T) =>
 export type ISessionContent = Partial<{
   userId: number;
 }>;
+
+export type TApiMethod = (...args: any[]) => Promise<any>;
+
+export interface IApi {
+  [key: string]: TApiMethod | IApi;
+}

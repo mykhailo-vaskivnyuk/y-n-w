@@ -13,7 +13,7 @@ export = {
   database: {
     queriesPath: buildPath + '/db/queries',
     connection: {
-      host,
+      host: '192.168.31.176',
       port: 5432,
       database: 'merega',
       user: 'merega',

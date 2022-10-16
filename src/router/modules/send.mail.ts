@@ -10,16 +10,19 @@ export class MailError extends Error {
   }
 }
 
-export const setMail: TModule<MailOptions> = (config) =>
-  async (context, data) => {
-    const sendMail = initMail(config);
-    context.sendMail = (options: Options) => {
-      try {
-        return sendMail(options);
-      } catch (e: any) {
-        logger.error(e);
-        throw new MailError();
-      }
-    };
+export const setMail: TModule<MailOptions> = (config) => {
+  const sendMail = initMail(config);
+  const fn = (options: Options) => {
+    try {
+      return sendMail(options);
+    } catch (e: any) {
+      logger.error(e);
+      throw new MailError();
+    }
+  };
+
+  return async (context, data) => {
+    context.sendMail = fn;
     return [context, data];
   };
+};

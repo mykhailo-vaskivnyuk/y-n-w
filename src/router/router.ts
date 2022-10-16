@@ -1,7 +1,8 @@
-import fsp from 'node:fs/promises';
+import fs from 'node:fs';
 import path from 'node:path';
+import { Writable } from 'node:stream';
 import { getEnumFromMap } from '../utils/utils';
-import { THandler, IRoutes, TModule, IContext } from './types';
+import { THandler, IRoutes, TModule, IContext, IApi } from './types';
 import { IRouter, IOperation, TOperationResponse, IRouterConfig } from '../app/types';
 import { RouterError, RouterErrorEnum } from './errors';
 import { DatabaseError } from '../db/errors';
@@ -26,7 +27,6 @@ class Router implements IRouter {
 
   constructor(config: IRouterConfig) {
     this.config = config;
-
   }
 
   async init() {
@@ -48,6 +48,8 @@ class Router implements IRouter {
       logger.error(e);
       throw new RouterError(RouterErrorEnum.E_ROUTES);
     }
+
+    this.createClientApi();
   }
   
   async exec(operation: IOperation): Promise<TOperationResponse> {
@@ -68,7 +70,7 @@ class Router implements IRouter {
   private async createRoutes(dirPath: string): Promise<IRoutes> {
     const route: IRoutes = {};
     const routePath = path.resolve(dirPath);
-    const dir = await fsp.opendir(routePath);
+    const dir = await fs.promises.opendir(routePath);
     for await (const item of dir) {
       const ext = path.extname(item.name);
       const name = path.basename(item.name, ext);
@@ -123,6 +125,51 @@ class Router implements IRouter {
       throw new RouterError(RouterErrorEnum.E_ROUTER, details || message);
     }
     return [context, data];
+  }
+
+  // private createClientApi(routes: IRoutes, url: string): IApi {
+  //   if (!this.routes) throw new RouterError(RouterErrorEnum.E_ROUTES);
+  //   const urls = {} as IApi;
+  //   for (const path of Object.keys(this.routes)) {
+  //     const nextUrl = url + '/' + path;
+  //     const nextRoutes = this.routes[path];
+  //     if (this.isHandler(nextRoutes)) {
+  //       urls[path] = (options: Record<string, any>) => Promise.resolve(options); // this.fetch(url, options);
+  //     } else {
+  //       urls[path] = this.createClientApi(nextRoutes!, nextUrl);
+  //     }
+  //   }
+  //   return urls;
+  // }
+
+  createClientApi() {
+    if (!this.routes) throw new RouterError(RouterErrorEnum.E_ROUTES);
+    const stream = fs.createWriteStream('./src/api.client/api.ts');
+    stream.write('module.exports = (url: string, fetch: (url: string, options: Record<string, any>) => Promise<any>) => (');
+    this.createJs(this.routes, stream);
+    stream.write(');\n');
+    stream.close();
+  } catch (e: any) {
+    // logger.error(e);
+    console.log(e);
+    throw new RouterError(RouterErrorEnum.E_ROUTES);
+  }
+
+
+  private createJs(routes: IRoutes, stream: Writable, pathname = '', indent = '') {
+    stream.write('{');
+    for (const key of Object.keys(routes)) {
+      stream.write('\n' + indent + '  \'' + key + '\': ');
+      const handler = routes[key] as THandler | IRoutes;
+      if (this.isHandler(handler)) {
+        stream.write('(options: Record<string, any>) => fetch(url + \'' + pathname + '\', options),');
+      }
+      else {
+        this.createJs(handler, stream, pathname + '/' + key, indent + '  ');
+        stream.write(',');
+      }
+    }
+    stream.write('\n' + indent + '}');
   }
 }
 

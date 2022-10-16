@@ -30,7 +30,7 @@ export type LoggerClass = new(config: ILoggerConfig) => ILogger;
 
 export interface IDatabase {
   init(): Promise<IQueries>;
-  setConnection(connection: IDatabaseConnection): this;
+  setConnection(Connection: DatabaseConnectionClass): this;
 }
 
 export interface IDatabaseConnection {
