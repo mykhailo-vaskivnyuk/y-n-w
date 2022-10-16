@@ -32,7 +32,7 @@ class HttpConnection implements IInputConnection {
     const executor: TPromiseExecutor<void> = (rv, rj) => {
       const { port } = this.config.http;
       try {
-        this.server.listen(port, rv);
+        this.server.listen(process.env.PORT, rv);
       } catch (e: any) {
         logger.error(e);
         rj(new ServerError(ServerErrorEnum.E_LISTEN));
