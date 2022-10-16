@@ -6,7 +6,7 @@ class Connection implements IDatabaseConnection {
 
   constructor(config: IDatabaseConfig['connection']) {
     logger.debug(config);
-    this.pool = new pg.Pool(config);
+    this.pool = new pg.Client(config);
   }
 
   async connect() {
