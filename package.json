@@ -4,7 +4,7 @@
   "description": "communication network for activity",
   "main": "index.js",
   "scripts": {
-    "start": "node js/index.js",
+    "start": "tsc && node js/index.js",
     "dev": "nodemon js/index.js",
     "debug": "nodemon --inspect js/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -36,8 +36,7 @@
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
     "eslint": "^8.24.0",
-    "nodemon": "^2.0.20",
-    "typescript": "^4.8.4"
+    "nodemon": "^2.0.20"
   },
   "dependencies": {
     "joi": "^17.6.2",
