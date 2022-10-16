@@ -30,15 +30,15 @@
   },
   "homepage": "https://github.com/mykhailo-vaskivnyuk/y-n-w#readme",
   "devDependencies": {
+    "eslint": "^8.24.0",
+    "nodemon": "^2.0.20"
+  },
+  "dependencies": {
     "@types/node": "^18.7.23",
     "@types/nodemailer": "^6.4.6",
     "@types/pg": "^8.6.5",
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
-    "eslint": "^8.24.0",
-    "nodemon": "^2.0.20"
-  },
-  "dependencies": {
     "joi": "^17.6.2",
     "nodemailer": "^6.8.0",
     "pg": "^8.8.0",
