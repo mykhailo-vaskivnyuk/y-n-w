@@ -42,9 +42,10 @@ export interface IDatabaseConfig {
   queriesPath: string;
   connection: {
     connectionString: string,
-    // ssl: {
-    //   rejectUnauthorized: boolean,
-    // },
+    db: string,
+    ssl: {
+      rejectUnauthorized: boolean,
+    },
     // host: string;
     // port: number;
     // database: string;
