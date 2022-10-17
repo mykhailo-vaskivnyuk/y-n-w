@@ -49,7 +49,7 @@ class App {
                     },
                 };
                 if (e instanceof errors_3.RouterError && code in errors)
-                    errors[code];
+                    errors[code]();
                 else
                     logger.error(e);
                 throw new errors_1.AppError(errors_1.AppErrorEnum.E_ROUTER, message);
