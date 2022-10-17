@@ -1,3 +1,3 @@
-export const index1 = async () => {
+export const index = async () => {
   return 'hello FROM merega';
 };

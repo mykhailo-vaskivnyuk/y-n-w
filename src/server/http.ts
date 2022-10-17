@@ -46,9 +46,10 @@ class HttpConnection implements IInputConnection {
   }
 
   private async onRequest(req: IRequest, res: IResponse) {
-    const { path } = this.config;
-    const isApi = req.url?.startsWith('/' + path.api);
-    if (!isApi) return this.staticServer(req, res);
+    const { api } = this.config.path;
+    const ifApi = new RegExp(`^/${api}(/.*)?$`);
+    if (!ifApi.test(req.url || ''))
+      return this.staticServer(req, res);
     
     try {
       const operation = await this.getOperation(req);
@@ -89,7 +90,7 @@ class HttpConnection implements IInputConnection {
     const { names, params } = this.getRequestParams(req);
     const data = { params } as IOperation['data'];
     const { headers } = req;
-    const contentType = headers['content-type']as (keyof typeof MIME_TYPES_MAP) | undefined;
+    const contentType = headers['content-type'] as (keyof typeof MIME_TYPES_MAP) | undefined;
     const length = +(headers['content-length'] || Infinity);
       
     if (!contentType) return { names, data };
@@ -119,8 +120,9 @@ class HttpConnection implements IInputConnection {
     const names = (pathname
       .replace('/' + this.config.path.api, '')
       .slice(1) || 'index')
-      .split('/');
-        
+      .split('/')
+      .filter((path) => Boolean(path));
+
     const params: IOperation['data']['params'] = {};
     params.sessionKey = this.getSessionKey(cookie);
         
