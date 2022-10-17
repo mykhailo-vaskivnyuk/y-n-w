@@ -41,9 +41,9 @@ class HttpConnection {
         return new Promise(executor);
     }
     async onRequest(req, res) {
-        const { path } = this.config;
-        const isApi = req.url?.startsWith('/' + path.api);
-        if (!isApi)
+        const { api } = this.config.path;
+        const ifApi = new RegExp(`^/${api}(/.*)?$`);
+        if (!ifApi.test(req.url || ''))
             return this.staticServer(req, res);
         try {
             const operation = await this.getOperation(req);
@@ -98,7 +98,8 @@ class HttpConnection {
         const names = (pathname
             .replace('/' + this.config.path.api, '')
             .slice(1) || 'index')
-            .split('/');
+            .split('/')
+            .filter((path) => Boolean(path));
         const params = {};
         params.sessionKey = this.getSessionKey(cookie);
         const queryParams = searchParams.entries();
