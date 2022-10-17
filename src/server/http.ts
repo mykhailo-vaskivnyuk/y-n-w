@@ -6,15 +6,18 @@ import { IRequest, IResponse, IServer } from './types';
 import { TPromiseExecutor } from '../types';
 import { IInputConnection, IInputConnectionConfig, IOperation, TOperationResponse } from '../app/types';
 import { ServerError, ServerErrorEnum, ServerErrorMap } from './errors';
+import createStaticServer, { TStaticServer } from './static';
 
 class HttpConnection implements IInputConnection {
   private config: IInputConnectionConfig;
   private server: IServer;
+  private staticServer: TStaticServer;
   private callback?: (operation: IOperation) => Promise<TOperationResponse>;
 
   constructor(config: IInputConnectionConfig) {
     this.config = config;
     this.server = createServer(this.onRequest.bind(this));
+    this.staticServer = createStaticServer(this.config.path.public);
   }
 
   onOperation(fn: (operation: IOperation) => Promise<TOperationResponse>) {
@@ -43,8 +46,10 @@ class HttpConnection implements IInputConnection {
   }
 
   private async onRequest(req: IRequest, res: IResponse) {
-    const reqLog = format('%s %s', req.method, this.getURL(req).pathname);
-
+    const { path } = this.config;
+    const isApi = req.url?.startsWith('/' + path.api);
+    if (!isApi) return this.staticServer(req, res);
+    
     try {
       const operation = await this.getOperation(req);
       const { params } = operation.data;
@@ -52,69 +57,78 @@ class HttpConnection implements IInputConnection {
       sessionKey && res.setHeader(
         'set-cookie', `sessionKey=${sessionKey}; httpOnly`
       );
+        
       const response = await this.callback!(operation);
-      res.on('finish', () => logger.info(params, reqLog, '- OK'));
-
+        
       if (response instanceof Readable) {
         res.setHeader('content-type', MIME_TYPES_ENUM['application/octet-stream']);
         await new Promise((rv, rj) => {
           response.on('error', rj);
           response.on('end', rv);
+          res.on('finish',
+            () => logger.info(params, this.getLog(req, 'OK'))
+          );
           response.pipe(res);
         });
         return;
       }
-
+        
       res.setHeader('content-type', MIME_TYPES_ENUM['application/json']);
       const data = JSON.stringify(response);
+      res.on('finish',
+        () => logger.info(params, this.getLog(req, '- OK'))
+      );
       res.end(data);
-
+        
     } catch (e) {
-      this.onError(e, res, reqLog);
+      this.onError(e, req, res);
     }
   }
-
+    
   private async getOperation(req: IRequest) {
     const { names, params } = this.getRequestParams(req);
     const data = { params } as IOperation['data'];
     const { headers } = req;
     const contentType = headers['content-type']as (keyof typeof MIME_TYPES_MAP) | undefined;
     const length = +(headers['content-length'] || Infinity);
-
+      
     if (!contentType) return { names, data };
-
+      
     if (!MIME_TYPES_MAP[contentType]) {
       throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
     }
     if (length > MIME_TYPES_MAP[contentType].maxLength) {
       throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
     }
-    
+      
     if (contentType === MIME_TYPES_ENUM['application/json'] && length < JSON_TRANSFORM_LENGTH) {
       Object.assign(params, await this.getJson(req));
       return { names, data };
     }
-
+      
     const content = Readable.from(req);
     data.stream = { type: contentType, content };
-    
+      
     return { names, data };
   }
-
+    
   private getRequestParams(req: IRequest) {
     const { headers: { cookie } } = req;
     const { pathname, searchParams } = this.getURL(req);
-
-    const names = pathname.slice(1).split('/');
-    
+      
+    const names = (pathname
+      .replace('/' + this.config.path.api, '')
+      .slice(1) || 'index')
+      .split('/');
+        
     const params: IOperation['data']['params'] = {};
     params.sessionKey = this.getSessionKey(cookie);
-
+        
     const queryParams = searchParams.entries();
     for (const [key, value] of queryParams) params[key] = value;
     return { names, params };
   }
-
+      
   private getSessionKey(cookie?: string) {
     if (cookie) {
       const regExp = /sessionKey=([^\s]*)\s*;?/;
@@ -126,7 +140,7 @@ class HttpConnection implements IInputConnection {
       .toString('base64')
       .slice(0, 15);
   }
-
+      
   private async getJson(req: IRequest) {
     try {
       const buffers: Uint8Array[] = [];
@@ -138,16 +152,22 @@ class HttpConnection implements IInputConnection {
       throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
     }
   }
-
-  private onError(e: any, res: IResponse, reqLog: string) {
+      
+  private getLog(req: IRequest, resLog = '') {
+    const pathname = this.getURL(req).pathname;
+    return format('%s %s', req.method, pathname, '-', resLog);
+  }
+      
+  private onError(e: any, req: IRequest, res: IResponse) {
     let error = e;
     if (!(e instanceof ServerError)) {
       error = new ServerError(ServerErrorEnum.E_SERVER_ERROR);
     }
     const { code, statusCode = 500, details } = error as ServerError;
+    
     res.statusCode = statusCode;
     details && res.setHeader('content-type', MIME_TYPES_ENUM['application/json']);
-    logger.error({}, reqLog, '-', ServerErrorMap[code])
+    logger.error({}, this.getLog(req, ServerErrorMap[code]));
     res.end(error.getMessage());
 
     if (code === ServerErrorEnum.E_SERVER_ERROR) throw e;
