@@ -43,7 +43,8 @@ class Router implements IRouter {
     }
 
     try {
-      this.routes = await this.createRoutes(this.config.apiPath);
+      const { apiPath } = this.config;
+      this.routes = await this.createRoutes(apiPath);
     } catch (e: any) {
       logger.error(e);
       throw new RouterError(RouterErrorEnum.E_ROUTES);
@@ -127,20 +128,6 @@ class Router implements IRouter {
     return [context, data];
   }
 
-  // private createClientApi(routes: IRoutes, url: string): IApi {
-  //   if (!this.routes) throw new RouterError(RouterErrorEnum.E_ROUTES);
-  //   const urls = {} as IApi;
-  //   for (const path of Object.keys(this.routes)) {
-  //     const nextUrl = url + '/' + path;
-  //     const nextRoutes = this.routes[path];
-  //     if (this.isHandler(nextRoutes)) {
-  //       urls[path] = (options: Record<string, any>) => Promise.resolve(options); // this.fetch(url, options);
-  //     } else {
-  //       urls[path] = this.createClientApi(nextRoutes!, nextUrl);
-  //     }
-  //   }
-  //   return urls;
-  // }
 
   createClientApi() {
     if (!this.routes) throw new RouterError(RouterErrorEnum.E_ROUTES);
@@ -150,8 +137,7 @@ class Router implements IRouter {
     stream.write(');\n');
     stream.close();
   } catch (e: any) {
-    // logger.error(e);
-    console.log(e);
+    logger.error(e);
     throw new RouterError(RouterErrorEnum.E_ROUTES);
   }
 

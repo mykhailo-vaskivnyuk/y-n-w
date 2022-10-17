@@ -1,5 +1,5 @@
 import fs from 'node:fs';
 
-export = async () => {
+export default async () => {
   return fs.createReadStream(module.filename);
 };

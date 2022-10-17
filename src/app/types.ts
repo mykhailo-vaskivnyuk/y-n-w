@@ -101,6 +101,10 @@ export interface IInputConnection {
 }
 
 export interface IInputConnectionConfig {
+  path: {
+    public: string;
+    api: string;
+  };
   http: {
     host: string;
     port: number;
