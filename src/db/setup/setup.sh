@@ -1,6 +1,14 @@
 echo 'start'
+
 export PGCLIENTENCODING=utf8
-PGPASSWORD=admin psql -f create.sql -U postgres
-PGPASSWORD=merega psql -d merega -f structure.sql -U merega
-PGPASSWORD=merega psql -d merega -f data.sql -U merega
+export DATABASE=merega
+export USER=merega
+
+export PGPASSWORD=admin
+psql -f create.sql -U postgres
+
+export PGPASSWORD=merega
+psql -d $DATABASE -f structure.sql -U $USER
+psql -d $DATABASE -f data.sql -U $USER
+
 echo 'end'

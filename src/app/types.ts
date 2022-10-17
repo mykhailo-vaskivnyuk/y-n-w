@@ -40,18 +40,17 @@ export interface IDatabaseConnection {
 
 export interface IDatabaseConfig {
   queriesPath: string;
-  connection: {
+  connection: Partial<{
     connectionString: string,
-    // db: string,
     ssl: {
       rejectUnauthorized: boolean,
     },
-    // host: string;
-    // port: number;
-    // database: string;
-    // user: string;
-    // password: string;
-  };
+    host: string;
+    port: number;
+    database: string;
+    user: string;
+    password: string;
+  }>;
 }
 
 export type DatabaseConnectionClass =

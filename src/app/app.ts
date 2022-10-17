@@ -48,16 +48,14 @@ class App {
         return await this.router!.exec(operation);
       } catch (e: any) {
         const { code, message, details } = e;
-        if (e instanceof RouterError) {
-          switch (code) {
-          case RouterErrorEnum.E_NO_ROUTE:
-            throw new ServerError(ServerErrorEnum.E_NOT_FOUND, details);
-          case RouterErrorEnum.E_MODULE:
-            throw new ServerError(ServerErrorEnum.E_BED_REQUEST, details);
-          default:
-            break;
-          }
-        } else logger.error(e);
+        const errors = {
+          [RouterErrorEnum.E_NO_ROUTE]: () => {
+            throw new ServerError(ServerErrorEnum.E_NOT_FOUND, details) },
+          [RouterErrorEnum.E_MODULE]: () => {
+            throw new ServerError(ServerErrorEnum.E_BED_REQUEST, details) },
+        }
+        if (e instanceof RouterError && code in errors) errors[code];
+        else logger.error(e);
         throw new AppError(AppErrorEnum.E_ROUTER, message);
       }
     });

@@ -32,7 +32,7 @@ class HttpConnection implements IInputConnection {
     const executor: TPromiseExecutor<void> = (rv, rj) => {
       const { port } = this.config.http;
       try {
-        this.server.listen(process.env.PORT, rv);
+        this.server.listen(port, rv);
       } catch (e: any) {
         logger.error(e);
         rj(new ServerError(ServerErrorEnum.E_LISTEN));
@@ -49,7 +49,9 @@ class HttpConnection implements IInputConnection {
       const operation = await this.getOperation(req);
       const { params } = operation.data;
       const { sessionKey } = params;
-      sessionKey && res.setHeader('set-cookie', `sessionKey=${sessionKey}; httpOnly`);
+      sessionKey && res.setHeader(
+        'set-cookie', `sessionKey=${sessionKey}; httpOnly`
+      );
       const response = await this.callback!(operation);
       res.on('finish', () => logger.info(params, reqLog, '- OK'));
 

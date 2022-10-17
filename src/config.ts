@@ -3,7 +3,22 @@ import { LOGGER_LEVEL, LOGGER_TARGET } from './logger/types';
 import { MODULES_ENUM } from './router/router';
 
 const buildPath = './js';
-const host = 'https://peaceful-chamber-69318.herokuapp.com/'; // 'localhost';
+const host = process.env.HOST || 'localhost';
+const databaseConnection = {
+  heroku: {
+    connectionString: process.env.DATABASE_URL || '',
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  },
+  local: {
+    host,
+    port: 5432,
+    database: 'merega',
+    user: 'merega',
+    password: 'merega',
+  },
+};
 
 export = {
   logger: {
@@ -12,19 +27,9 @@ export = {
   },
   database: {
     queriesPath: buildPath + '/db/queries',
-    connection: {
-      connectionString: "postgres://pykbieusyvmwul:ca77f2d4221fb9fffc8001e977d4a2cdebe27b8e69bb1666254def09573ddc54@ec2-54-147-36-107.compute-1.amazonaws.com:5432/dde08bsdd14bdp", // process.env.HEROKU_POSTGRESQL_COBALT || '',
-      ssl: {
-        rejectUnauthorized: false,
-      },
-      // local: {
-      //   host: '192.168.31.176',
-      //   port: 5432,
-      //   database: 'merega',
-      //   user: 'merega',
-      //   password: 'merega',
-      // },
-    },
+    connection: databaseConnection[
+      process.env.DATABASE_URL ? 'heroku' : 'local'
+    ],
   },
   router: {
     apiPath: buildPath + '/api',
@@ -47,7 +52,7 @@ export = {
   inConnection: {
     http: {
       host,
-      port: 80,
+      port: +(process.env.PORT || 80),
     },
   },
 };
