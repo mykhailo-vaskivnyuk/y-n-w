@@ -46,6 +46,10 @@ module.exports = {
         },
     },
     inConnection: {
+        path: {
+            public: 'public',
+            api: 'api',
+        },
         http: {
             host,
             port: +(process.env.PORT || 8000),

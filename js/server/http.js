@@ -1,16 +1,22 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 const node_http_1 = require("node:http");
 const node_stream_1 = require("node:stream");
 const node_util_1 = require("node:util");
 const constants_1 = require("../constants");
 const errors_1 = require("./errors");
+const static_1 = __importDefault(require("./static"));
 class HttpConnection {
     config;
     server;
+    staticServer;
     callback;
     constructor(config) {
         this.config = config;
         this.server = (0, node_http_1.createServer)(this.onRequest.bind(this));
+        this.staticServer = (0, static_1.default)(this.config.path.public);
     }
     onOperation(fn) {
         this.callback = fn;
@@ -35,29 +41,33 @@ class HttpConnection {
         return new Promise(executor);
     }
     async onRequest(req, res) {
-        const reqLog = (0, node_util_1.format)('%s %s', req.method, this.getURL(req).pathname);
+        const { path } = this.config;
+        const isApi = req.url?.startsWith('/' + path.api);
+        if (!isApi)
+            return this.staticServer(req, res);
         try {
             const operation = await this.getOperation(req);
             const { params } = operation.data;
             const { sessionKey } = params;
             sessionKey && res.setHeader('set-cookie', `sessionKey=${sessionKey}; httpOnly`);
             const response = await this.callback(operation);
-            res.on('finish', () => logger.info(params, reqLog, '- OK'));
             if (response instanceof node_stream_1.Readable) {
                 res.setHeader('content-type', constants_1.MIME_TYPES_ENUM['application/octet-stream']);
                 await new Promise((rv, rj) => {
                     response.on('error', rj);
                     response.on('end', rv);
+                    res.on('finish', () => logger.info(params, this.getLog(req, 'OK')));
                     response.pipe(res);
                 });
                 return;
             }
             res.setHeader('content-type', constants_1.MIME_TYPES_ENUM['application/json']);
             const data = JSON.stringify(response);
+            res.on('finish', () => logger.info(params, this.getLog(req, '- OK')));
             res.end(data);
         }
         catch (e) {
-            this.onError(e, res, reqLog);
+            this.onError(e, req, res);
         }
     }
     async getOperation(req) {
@@ -85,7 +95,10 @@ class HttpConnection {
     getRequestParams(req) {
         const { headers: { cookie } } = req;
         const { pathname, searchParams } = this.getURL(req);
-        const names = pathname.slice(1).split('/');
+        const names = (pathname
+            .replace('/' + this.config.path.api, '')
+            .slice(1) || 'index')
+            .split('/');
         const params = {};
         params.sessionKey = this.getSessionKey(cookie);
         const queryParams = searchParams.entries();
@@ -118,7 +131,11 @@ class HttpConnection {
             throw new errors_1.ServerError(errors_1.ServerErrorEnum.E_BED_REQUEST);
         }
     }
-    onError(e, res, reqLog) {
+    getLog(req, resLog = '') {
+        const pathname = this.getURL(req).pathname;
+        return (0, node_util_1.format)('%s %s', req.method, pathname, '-', resLog);
+    }
+    onError(e, req, res) {
         let error = e;
         if (!(e instanceof errors_1.ServerError)) {
             error = new errors_1.ServerError(errors_1.ServerErrorEnum.E_SERVER_ERROR);
@@ -126,7 +143,7 @@ class HttpConnection {
         const { code, statusCode = 500, details } = error;
         res.statusCode = statusCode;
         details && res.setHeader('content-type', constants_1.MIME_TYPES_ENUM['application/json']);
-        logger.error({}, reqLog, '-', errors_1.ServerErrorMap[code]);
+        logger.error({}, this.getLog(req, errors_1.ServerErrorMap[code]));
         res.end(error.getMessage());
         if (code === errors_1.ServerErrorEnum.E_SERVER_ERROR)
             throw e;

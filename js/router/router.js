@@ -40,7 +40,8 @@ class Router {
             throw new errors_1.RouterError(errors_1.RouterErrorEnum.E_MODULE);
         }
         try {
-            this.routes = await this.createRoutes(this.config.apiPath);
+            const { apiPath } = this.config;
+            this.routes = await this.createRoutes(apiPath);
         }
         catch (e) {
             logger.error(e);
@@ -125,20 +126,6 @@ class Router {
         }
         return [context, data];
     }
-    // private createClientApi(routes: IRoutes, url: string): IApi {
-    //   if (!this.routes) throw new RouterError(RouterErrorEnum.E_ROUTES);
-    //   const urls = {} as IApi;
-    //   for (const path of Object.keys(this.routes)) {
-    //     const nextUrl = url + '/' + path;
-    //     const nextRoutes = this.routes[path];
-    //     if (this.isHandler(nextRoutes)) {
-    //       urls[path] = (options: Record<string, any>) => Promise.resolve(options); // this.fetch(url, options);
-    //     } else {
-    //       urls[path] = this.createClientApi(nextRoutes!, nextUrl);
-    //     }
-    //   }
-    //   return urls;
-    // }
     createClientApi() {
         if (!this.routes)
             throw new errors_1.RouterError(errors_1.RouterErrorEnum.E_ROUTES);
@@ -149,8 +136,7 @@ class Router {
         stream.close();
     }
     catch(e) {
-        // logger.error(e);
-        console.log(e);
+        logger.error(e);
         throw new errors_1.RouterError(errors_1.RouterErrorEnum.E_ROUTES);
     }
     createJs(routes, stream, pathname = '', indent = '') {
