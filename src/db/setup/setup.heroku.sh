@@ -1,7 +1,7 @@
 echo 'start'
 
-export DATABASE=postgresql-defined-93367
-export APP=peaceful-chamber-69318
+export DATABASE=postgresql-regular-27985
+export APP=merega
 
 heroku pg:psql $DATABASE --app $APP -f structure.sql
 heroku pg:psql $DATABASE --app $APP -f data.sql
