@@ -1,5 +1,5 @@
 module.exports = (url: string, fetch: (url: string, options: Record<string, any>) => Promise<any>) => ({
-  'index1': (options: Record<string, any>) => fetch(url + '', options),
+  'index': (options: Record<string, any>) => fetch(url + '', options),
   'merega': {
     'read': (options: Record<string, any>) => fetch(url + '/merega', options),
   },
