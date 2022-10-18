@@ -132,7 +132,7 @@ class Router implements IRouter {
   createClientApi() {
     if (!this.routes) throw new RouterError(RouterErrorEnum.E_ROUTES);
     const stream = fs.createWriteStream('./src/api.client/api.ts');
-    stream.write('module.exports = (url: string, fetch: (url: string, options: Record<string, any>) => Promise<any>) => (');
+    stream.write('export const api = (url: string, fetch: (url: string, options: Record<string, any>) => Promise<any>) => (');
     this.createJs(this.routes, stream);
     stream.write(');\n');
     stream.close();
@@ -148,7 +148,7 @@ class Router implements IRouter {
       stream.write('\n' + indent + '  \'' + key + '\': ');
       const handler = routes[key] as THandler | IRoutes;
       if (this.isHandler(handler)) {
-        stream.write('(options: Record<string, any>) => fetch(url + \'' + pathname + '\', options),');
+        stream.write('(options: Record<string, any>) => fetch(url + \'' + pathname + '/' + key + '\', options),');
       }
       else {
         this.createJs(handler, stream, pathname + '/' + key, indent + '  ');
