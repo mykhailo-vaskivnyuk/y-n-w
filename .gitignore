@@ -1,5 +1,6 @@
 # compiled
-js/**/*.*
+js/**/*.*s
+js/**/*.map
 !js/**/*.js
 
 # IDE
