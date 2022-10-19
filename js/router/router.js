@@ -130,7 +130,7 @@ class Router {
         if (!this.routes)
             throw new errors_1.RouterError(errors_1.RouterErrorEnum.E_ROUTES);
         const stream = node_fs_1.default.createWriteStream('./src/api.client/api.ts');
-        stream.write('module.exports = (url: string, fetch: (url: string, options: Record<string, any>) => Promise<any>) => (');
+        stream.write('export const api = (url: string, fetch: (url: string, options: Record<string, any>) => Promise<any>) => (');
         this.createJs(this.routes, stream);
         stream.write(');\n');
         stream.close();
@@ -145,7 +145,7 @@ class Router {
             stream.write('\n' + indent + '  \'' + key + '\': ');
             const handler = routes[key];
             if (this.isHandler(handler)) {
-                stream.write('(options: Record<string, any>) => fetch(url + \'' + pathname + '\', options),');
+                stream.write('(options: Record<string, any>) => fetch(url + \'' + pathname + '/' + key + '\', options),');
             }
             else {
                 this.createJs(handler, stream, pathname + '/' + key, indent + '  ');
