@@ -129,7 +129,7 @@ class Router {
     createClientApi() {
         if (!this.routes)
             throw new errors_1.RouterError(errors_1.RouterErrorEnum.E_ROUTES);
-        const stream = node_fs_1.default.createWriteStream('./src/api.client/api.ts');
+        const stream = node_fs_1.default.createWriteStream('./src/client/client.api.ts');
         stream.write('export const api = (url: string, fetch: (url: string, options: Record<string, any>) => Promise<any>) => (');
         this.createJs(this.routes, stream);
         stream.write(');\n');

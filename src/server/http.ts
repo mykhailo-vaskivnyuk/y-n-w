@@ -77,7 +77,7 @@ class HttpConnection implements IInputConnection {
       res.setHeader('content-type', MIME_TYPES_ENUM['application/json']);
       const data = JSON.stringify(response);
       res.on('finish',
-        () => logger.info(params, this.getLog(req, '- OK'))
+        () => logger.info(params, this.getLog(req, 'OK'))
       );
       res.end(data);
         

@@ -63,7 +63,7 @@ class HttpConnection {
             }
             res.setHeader('content-type', constants_1.MIME_TYPES_ENUM['application/json']);
             const data = JSON.stringify(response);
-            res.on('finish', () => logger.info(params, this.getLog(req, '- OK')));
+            res.on('finish', () => logger.info(params, this.getLog(req, 'OK')));
             res.end(data);
         }
         catch (e) {

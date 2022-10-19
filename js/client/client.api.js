@@ -16,4 +16,4 @@ const api = (url, fetch) => ({
     },
 });
 exports.api = api;
-//# sourceMappingURL=api.js.map
+//# sourceMappingURL=client.api.js.map
