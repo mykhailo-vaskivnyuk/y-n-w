@@ -1,9 +1,9 @@
-import { api } from './api';
-import { connection } from './connection';
+import { api } from './client.api';
+import { connection } from './client.fetch';
 
 // const baseUrl = 'https://merega.herokuapp.com/api';
 
-class ClientApp {
+export class ClientApp {
   private clientApi;
   
   constructor(baseUrl: string) {

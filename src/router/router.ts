@@ -131,7 +131,7 @@ class Router implements IRouter {
 
   createClientApi() {
     if (!this.routes) throw new RouterError(RouterErrorEnum.E_ROUTES);
-    const stream = fs.createWriteStream('./src/api.client/api.ts');
+    const stream = fs.createWriteStream('./src/client/client.api.ts');
     stream.write('export const api = (url: string, fetch: (url: string, options: Record<string, any>) => Promise<any>) => (');
     this.createJs(this.routes, stream);
     stream.write(');\n');
