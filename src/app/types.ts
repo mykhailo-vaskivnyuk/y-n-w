@@ -85,6 +85,7 @@ export interface IRouter {
 
 export interface IRouterConfig {
   apiPath: string;
+  clientApiPath: string;
   modules: (keyof typeof MODULES)[];
   modulesConfig: {
     [key in (keyof typeof MODULES)]?: Record<string, any>;

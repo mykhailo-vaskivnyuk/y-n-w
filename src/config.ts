@@ -1,8 +1,9 @@
 
+import path from 'node:path';
 import { LOGGER_LEVEL, LOGGER_TARGET } from './logger/types';
 import { MODULES_ENUM } from './router/router';
 
-const buildPath = './js';
+const buildPath = 'js';
 const host = process.env.HOST || 'localhost';
 const databaseConnection = {
   heroku: {
@@ -26,13 +27,14 @@ export = {
     target: LOGGER_TARGET.CONSOLE,
   },
   database: {
-    queriesPath: buildPath + '/db/queries',
+    queriesPath: path.join(buildPath, 'db/queries'),
     connection: databaseConnection[
       process.env.DATABASE_URL ? 'heroku' : 'local'
     ],
   },
   router: {
-    apiPath: buildPath + '/api',
+    apiPath: path.join(buildPath, 'api'),
+    clientApiPath: 'src/client/client.api.ts',
     modules: [
       MODULES_ENUM.setSession,
       MODULES_ENUM.getStream,
