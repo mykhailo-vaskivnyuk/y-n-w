@@ -2,11 +2,12 @@ import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
 import { format } from 'node:util';
 import { JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../constants';
-import { IRequest, IResponse, IServer } from './types';
+import { HEADERS, IRequest, IResponse, IServer } from './types';
 import { TPromiseExecutor } from '../types';
 import { IInputConnection, IInputConnectionConfig, IOperation, TOperationResponse } from '../app/types';
 import { ServerError, ServerErrorEnum, ServerErrorMap } from './errors';
 import createStaticServer, { TStaticServer } from './static';
+import { getUrlInstance } from './utils';
 
 class HttpConnection implements IInputConnection {
   private config: IInputConnectionConfig;
@@ -63,6 +64,7 @@ class HttpConnection implements IInputConnection {
         
       if (response instanceof Readable) {
         res.setHeader('content-type', MIME_TYPES_ENUM['application/octet-stream']);
+        res.writeHead(200, HEADERS);
         await new Promise((rv, rj) => {
           response.on('error', rj);
           response.on('end', rv);
@@ -75,9 +77,10 @@ class HttpConnection implements IInputConnection {
       }
         
       res.setHeader('content-type', MIME_TYPES_ENUM['application/json']);
+      res.writeHead(200, HEADERS);
       const data = JSON.stringify(response);
       res.on('finish',
-        () => logger.info(params, this.getLog(req, '- OK'))
+        () => logger.info(params, this.getLog(req, 'OK'))
       );
       res.end(data);
         
@@ -114,8 +117,8 @@ class HttpConnection implements IInputConnection {
   }
     
   private getRequestParams(req: IRequest) {
-    const { headers: { cookie } } = req;
-    const { pathname, searchParams } = this.getURL(req);
+    const { host, cookie } = req.headers;
+    const { pathname, searchParams } = getUrlInstance(req.url, host);
       
     const names = (pathname
       .replace('/' + this.config.path.api, '')
@@ -156,7 +159,7 @@ class HttpConnection implements IInputConnection {
   }
       
   private getLog(req: IRequest, resLog = '') {
-    const pathname = this.getURL(req).pathname;
+    const { pathname } = getUrlInstance(req.url, req.headers.host);
     return format('%s %s', req.method, pathname, '-', resLog);
   }
       
@@ -173,11 +176,6 @@ class HttpConnection implements IInputConnection {
     res.end(error.getMessage());
 
     if (code === ServerErrorEnum.E_SERVER_ERROR) throw e;
-  }
-
-  private getURL(req: IRequest) {
-    const { url = '/', headers: { host = 'somehost' } } = req;
-    return new URL(url, `http://${host}`);
   }
 }
 
