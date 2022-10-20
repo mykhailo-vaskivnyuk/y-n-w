@@ -1,12 +1,11 @@
-const connection = async (url: string, options: RequestInit) => {
+export const getConnection = (baseUrl: string) => async (url: string, options: RequestInit) => {
   try {
-    const response = await fetch(url, options);
-    if (response.ok) return response.json();
-    throw new Error('http response error');
+    const response = await fetch(baseUrl + url, options);
+    const { ok, status, statusText } = response;
+    if (ok) return response.json();
+    throw new Error(`HTTP response error: ${status} / ${statusText}`);
   } catch (e: any) {
     console.log(e);
     throw e;
   }
 }
-
-export { connection };

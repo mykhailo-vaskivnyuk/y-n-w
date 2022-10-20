@@ -1,14 +1,17 @@
-export const api = (url: string, fetch: (url: string, options: Record<string, any>) => Promise<any>) => ({
-  'index': (options: Record<string, any>) => fetch(url + '/index', options),
+
+export const api = (
+  fetch: (pathname: string, options: Record<string, any>) => Promise<any>
+) => ({
+  'index': (options: Record<string, any>) => fetch('/index', options),
   'merega': {
-    'read': (options: Record<string, any>) => fetch(url + '/merega/read', options),
+    'read': (options: Record<string, any>) => fetch('/merega/read', options),
   },
   'scripts': {
-    'script.js': (options: Record<string, any>) => fetch(url + '/scripts/script.js', options),
+    'script.js': (options: Record<string, any>) => fetch('/scripts/script.js', options),
   },
   'users': {
-    'create': (options: Record<string, any>) => fetch(url + '/users/create', options),
-    'update': (options: Record<string, any>) => fetch(url + '/users/update', options),
-    'read': (options: Record<string, any>) => fetch(url + '/users/read', options),
+    'create': (options: Record<string, any>) => fetch('/users/create', options),
+    'update': (options: Record<string, any>) => fetch('/users/update', options),
+    'read': (options: Record<string, any>) => fetch('/users/read', options),
   },
 });

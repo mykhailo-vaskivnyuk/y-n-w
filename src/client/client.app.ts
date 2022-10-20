@@ -1,13 +1,12 @@
 import { api } from './client.api';
-import { connection } from './client.fetch';
-
-// const baseUrl = 'https://merega.herokuapp.com/api';
+import { getConnection } from './client.fetch';
 
 export class ClientApp {
   private clientApi;
   
   constructor(baseUrl: string) {
-    this.clientApi = api(baseUrl, connection);
+    const connection = getConnection(baseUrl);
+    this.clientApi = api(connection);
   }
 
   async testRequest() {
