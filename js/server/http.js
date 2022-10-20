@@ -6,8 +6,10 @@ const node_http_1 = require("node:http");
 const node_stream_1 = require("node:stream");
 const node_util_1 = require("node:util");
 const constants_1 = require("../constants");
+const types_1 = require("./types");
 const errors_1 = require("./errors");
 const static_1 = __importDefault(require("./static"));
+const utils_1 = require("./utils");
 class HttpConnection {
     config;
     server;
@@ -53,6 +55,7 @@ class HttpConnection {
             const response = await this.callback(operation);
             if (response instanceof node_stream_1.Readable) {
                 res.setHeader('content-type', constants_1.MIME_TYPES_ENUM['application/octet-stream']);
+                res.writeHead(200, types_1.HEADERS);
                 await new Promise((rv, rj) => {
                     response.on('error', rj);
                     response.on('end', rv);
@@ -62,6 +65,7 @@ class HttpConnection {
                 return;
             }
             res.setHeader('content-type', constants_1.MIME_TYPES_ENUM['application/json']);
+            res.writeHead(200, types_1.HEADERS);
             const data = JSON.stringify(response);
             res.on('finish', () => logger.info(params, this.getLog(req, 'OK')));
             res.end(data);
@@ -93,8 +97,8 @@ class HttpConnection {
         return { names, data };
     }
     getRequestParams(req) {
-        const { headers: { cookie } } = req;
-        const { pathname, searchParams } = this.getURL(req);
+        const { host, cookie } = req.headers;
+        const { pathname, searchParams } = (0, utils_1.getUrlInstance)(req.url, host);
         const names = (pathname
             .replace('/' + this.config.path.api, '')
             .slice(1) || 'index')
@@ -133,7 +137,7 @@ class HttpConnection {
         }
     }
     getLog(req, resLog = '') {
-        const pathname = this.getURL(req).pathname;
+        const { pathname } = (0, utils_1.getUrlInstance)(req.url, req.headers.host);
         return (0, node_util_1.format)('%s %s', req.method, pathname, '-', resLog);
     }
     onError(e, req, res) {
@@ -148,10 +152,6 @@ class HttpConnection {
         res.end(error.getMessage());
         if (code === errors_1.ServerErrorEnum.E_SERVER_ERROR)
             throw e;
-    }
-    getURL(req) {
-        const { url = '/', headers: { host = 'somehost' } } = req;
-        return new URL(url, `http://${host}`);
     }
 }
 module.exports = HttpConnection;
