@@ -14,5 +14,9 @@ const getConnection = (baseUrl) => async (url, options) => {
         throw e;
     }
 };
+<<<<<<< HEAD
 exports.getConnection = getConnection;
+=======
+exports.connection = connection;
+>>>>>>> 09d5a9ae85dd9f39aedc1e938d1a93a34c65f28b
 //# sourceMappingURL=client.fetch.js.map
