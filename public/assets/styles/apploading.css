@@ -1,14 +1,30 @@
 html, body, #root, .apploading {
   width: 100%;
   height: 100%;
+  margin: 0;
 }
 
 .apploading {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
-  background: black;
-  font-family: 'Alumni Sans', Arial, sans-serif;
-  font-size: 50px;
+}
+
+.apploading svg {
+  fill: green;
+  width: 100px;
+  animation-name: loading;
+  animation-duration: 2s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.apploading svg g:first-child {
+  fill: red;
+}
+
+@keyframes loading {
+  to {
+    transform: rotate(360deg);
+  }
 }
