@@ -1,7 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const node_path_1 = __importDefault(require("node:path"));
 const types_1 = require("./logger/types");
 const router_1 = require("./router/router");
-const buildPath = './js';
+const buildPath = 'js';
 const host = process.env.HOST || 'localhost';
 const databaseConnection = {
     heroku: {
@@ -24,11 +28,12 @@ module.exports = {
         target: types_1.LOGGER_TARGET.CONSOLE,
     },
     database: {
-        queriesPath: buildPath + '/db/queries',
+        queriesPath: node_path_1.default.join(buildPath, 'db/queries'),
         connection: databaseConnection[process.env.DATABASE_URL ? 'heroku' : 'local'],
     },
     router: {
-        apiPath: buildPath + '/api',
+        apiPath: node_path_1.default.join(buildPath, 'api'),
+        clientApiPath: 'src/client/client.api.ts',
         modules: [
             router_1.MODULES_ENUM.setSession,
             router_1.MODULES_ENUM.getStream,

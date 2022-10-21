@@ -42,12 +42,12 @@ class Router {
         try {
             const { apiPath } = this.config;
             this.routes = await this.createRoutes(apiPath);
+            await this.createClientApi();
         }
         catch (e) {
             logger.error(e);
             throw new errors_1.RouterError(errors_1.RouterErrorEnum.E_ROUTES);
         }
-        this.createClientApi();
     }
     async exec(operation) {
         const { names, data: inputData } = operation;
@@ -129,30 +129,48 @@ class Router {
     createClientApi() {
         if (!this.routes)
             throw new errors_1.RouterError(errors_1.RouterErrorEnum.E_ROUTES);
-        const stream = node_fs_1.default.createWriteStream('./src/api.client/api.ts');
-        stream.write('export const api = (url: string, fetch: (url: string, options: Record<string, any>) => Promise<any>) => (');
-        this.createJs(this.routes, stream);
-        stream.write(');\n');
-        stream.close();
-    }
-    catch(e) {
-        logger.error(e);
-        throw new errors_1.RouterError(errors_1.RouterErrorEnum.E_ROUTES);
+        const executor = (rv, rj) => {
+            const stream = node_fs_1.default.createWriteStream(this.config.clientApiPath);
+            stream.on('error', rj);
+            stream.on('finish', rv);
+            stream.write(`
+export const api = (
+  fetch: (pathname: string, options: Record<string, any>) => Promise<any>
+) => (`);
+            this.createJs(this.routes, stream);
+            stream.write(');\n');
+            stream.close();
+        };
+        return new Promise(executor);
     }
     createJs(routes, stream, pathname = '', indent = '') {
         stream.write('{');
-        for (const key of Object.keys(routes)) {
-            stream.write('\n' + indent + '  \'' + key + '\': ');
+        const nextIndent = indent + '  ';
+        const routesKeys = Object.keys(routes);
+        for (const key of routesKeys) {
+            stream.write(`\n${nextIndent}'${key}': `);
             const handler = routes[key];
+            const nextPathname = pathname + '/' + key;
             if (this.isHandler(handler)) {
-                stream.write('(options: Record<string, any>) => fetch(url + \'' + pathname + '/' + key + '\', options),');
+                const types = this.getTypes(handler.params, nextIndent);
+                stream.write(`(options: ${types}) => fetch('${nextPathname}', options),`);
             }
             else {
-                this.createJs(handler, stream, pathname + '/' + key, indent + '  ');
+                this.createJs(handler, stream, nextPathname, nextIndent);
                 stream.write(',');
             }
         }
         stream.write('\n' + indent + '}');
+    }
+    getTypes(params, indent = '') {
+        if (!params)
+            return 'Record<string, any>';
+        const result = [];
+        const paramsEntries = Object.entries(params);
+        for (const [key, { type }] of paramsEntries) {
+            result.push(`\n${indent}  ${key}: ${type},`);
+        }
+        return `{${result.join('')}\n${indent}}`;
     }
 }
 exports.default = Router;
