@@ -10,7 +10,10 @@ export const api = (
     'script.js': (options: Record<string, any>) => fetch('/scripts/script.js', options),
   },
   'users': {
-    'create': (options: Record<string, any>) => fetch('/users/create', options),
+    'create': (options: {
+      name: string,
+      field: number,
+    }) => fetch('/users/create', options),
     'update': (options: Record<string, any>) => fetch('/users/update', options),
     'read': (options: Record<string, any>) => fetch('/users/read', options),
   },

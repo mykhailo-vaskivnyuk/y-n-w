@@ -1,10 +1,11 @@
-import { ObjectSchema } from 'joi';
+import Joi, { ObjectSchema } from 'joi';
 import { IOperation, IParams, TOperationResponse } from '../app/types';
 import { TMail } from '../services/mail/mail';
 import { Session } from '../services/session/session';
 
-export type THandler<T extends IParams = IParams> = {
-  (context: IContext, params: T): Promise<TOperationResponse>;
+export type THandler<T extends IParams = IParams, Q extends TOperationResponse = TOperationResponse> = {
+  (context: IContext, params: T): Promise<Q>;
+  params?: Record<keyof T, Joi.Schema>;
   schema?: ObjectSchema<T>;
 };
 
@@ -28,9 +29,3 @@ export type TModule<T = any> = (config: T) =>
 export type ISessionContent = Partial<{
   userId: number;
 }>;
-
-export type TApiMethod = (...args: any[]) => Promise<any>;
-
-export interface IApi {
-  [key: string]: TApiMethod | IApi;
-}

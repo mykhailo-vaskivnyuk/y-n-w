@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { Writable } from 'node:stream';
+import Joi from 'joi';
 import { getEnumFromMap } from '../utils/utils';
 import { THandler, IRoutes, TModule, IContext } from './types';
 import { TPromiseExecutor } from '../types';
@@ -148,14 +149,16 @@ export const api = (
 
   private createJs(routes: IRoutes, stream: Writable, pathname = '', indent = '') {
     stream.write('{');
-    for (const key of Object.keys(routes)) {
-      stream.write('\n' + indent + '  \'' + key + '\': ');
+    const nextIndent = indent + '  ';
+    const routesKeys = Object.keys(routes);
+    for (const key of routesKeys) {
+      stream.write(`\n${nextIndent}'${key}': `);
       const handler = routes[key] as THandler | IRoutes;
       const nextPathname = pathname + '/' + key;
-      const nextIndent = indent + '  ';
       if (this.isHandler(handler)) {
+        const types = this.getTypes(handler.params, nextIndent);
         stream.write(
-          '(options: Record<string, any>) => fetch(\'' + nextPathname + '\', options),'
+          `(options: ${types}) => fetch('${nextPathname}', options),`
         );
       }
       else {
@@ -164,6 +167,16 @@ export const api = (
       }
     }
     stream.write('\n' + indent + '}');
+  }
+
+  private getTypes(params?: Record<string, Joi.Schema>, indent = '') {
+    if (!params) return 'Record<string, any>';
+    const result = [];
+    const paramsEntries = Object.entries(params)
+    for (const [key, { type }] of paramsEntries) {
+      result.push(`\n${indent}  ${key}: ${type},`);
+    }
+    return `{${result.join('')}\n${indent}}`;
   }
 }
 
