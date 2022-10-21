@@ -12,4 +12,5 @@ html, body, #root, .apploading {
   background: black;
   font-family: 'Alumni Sans', Arial, sans-serif;
   font-size: 50px;
+  border: 3px solid white;
 }
