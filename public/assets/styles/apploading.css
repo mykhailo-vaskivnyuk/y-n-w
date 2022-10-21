@@ -9,9 +9,23 @@ html, body, #root, .apploading {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
-  background: black;
-  font-family: 'Alumni Sans', Arial, sans-serif;
-  font-size: 50px;
-  border: 3px solid white;
+}
+
+.apploading svg {
+  fill: green;
+  width: 100px;
+  animation-name: loading;
+  animation-duration: 2s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.apploading svg g:first-child {
+  fill: red;
+}
+
+@keyframes loading {
+  to {
+    transform: rotate(360deg);
+  }
 }
