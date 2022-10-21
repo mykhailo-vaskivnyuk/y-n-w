@@ -1,8 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { Writable } from 'node:stream';
+import Joi from 'joi';
 import { getEnumFromMap } from '../utils/utils';
-import { THandler, IRoutes, TModule, IContext, IApi } from './types';
+import { THandler, IRoutes, TModule, IContext } from './types';
+import { TPromiseExecutor } from '../types';
 import { IRouter, IOperation, TOperationResponse, IRouterConfig } from '../app/types';
 import { RouterError, RouterErrorEnum } from './errors';
 import { DatabaseError } from '../db/errors';
@@ -45,12 +47,11 @@ class Router implements IRouter {
     try {
       const { apiPath } = this.config;
       this.routes = await this.createRoutes(apiPath);
+      await this.createClientApi();
     } catch (e: any) {
       logger.error(e);
       throw new RouterError(RouterErrorEnum.E_ROUTES);
     }
-
-    this.createClientApi();
   }
   
   async exec(operation: IOperation): Promise<TOperationResponse> {
@@ -128,34 +129,54 @@ class Router implements IRouter {
     return [context, data];
   }
 
-
-  createClientApi() {
+  private createClientApi() {
     if (!this.routes) throw new RouterError(RouterErrorEnum.E_ROUTES);
-    const stream = fs.createWriteStream('./src/api.client/api.ts');
-    stream.write('export const api = (url: string, fetch: (url: string, options: Record<string, any>) => Promise<any>) => (');
-    this.createJs(this.routes, stream);
-    stream.write(');\n');
-    stream.close();
-  } catch (e: any) {
-    logger.error(e);
-    throw new RouterError(RouterErrorEnum.E_ROUTES);
-  }
+    const executor: TPromiseExecutor<void> = (rv, rj) => {
+      const stream = fs.createWriteStream(this.config.clientApiPath);
+      stream.on('error', rj);
+      stream.on('finish', rv);
+      stream.write(`
+export const api = (
+  fetch: (pathname: string, options: Record<string, any>) => Promise<any>
+) => (`);
+      this.createJs(this.routes!, stream);
+      stream.write(');\n');
+      stream.close();
+    };
 
+    return new Promise(executor);
+  }
 
   private createJs(routes: IRoutes, stream: Writable, pathname = '', indent = '') {
     stream.write('{');
-    for (const key of Object.keys(routes)) {
-      stream.write('\n' + indent + '  \'' + key + '\': ');
+    const nextIndent = indent + '  ';
+    const routesKeys = Object.keys(routes);
+    for (const key of routesKeys) {
+      stream.write(`\n${nextIndent}'${key}': `);
       const handler = routes[key] as THandler | IRoutes;
+      const nextPathname = pathname + '/' + key;
       if (this.isHandler(handler)) {
-        stream.write('(options: Record<string, any>) => fetch(url + \'' + pathname + '/' + key + '\', options),');
+        const types = this.getTypes(handler.params, nextIndent);
+        stream.write(
+          `(options: ${types}) => fetch('${nextPathname}', options),`
+        );
       }
       else {
-        this.createJs(handler, stream, pathname + '/' + key, indent + '  ');
+        this.createJs(handler, stream, nextPathname, nextIndent);
         stream.write(',');
       }
     }
     stream.write('\n' + indent + '}');
+  }
+
+  private getTypes(params?: Record<string, Joi.Schema>, indent = '') {
+    if (!params) return 'Record<string, any>';
+    const result = [];
+    const paramsEntries = Object.entries(params)
+    for (const [key, { type }] of paramsEntries) {
+      result.push(`\n${indent}  ${key}: ${type},`);
+    }
+    return `{${result.join('')}\n${indent}}`;
   }
 }
 
