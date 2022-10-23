@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.api = void 0;
 const api = (fetch) => ({
+    'auth': {
+        'login': (options) => fetch('/auth/login', options),
+    },
     'index': (options) => fetch('/index', options),
     'merega': {
         'read': (options) => fetch('/merega/read', options),

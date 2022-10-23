@@ -1,22 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getConnection = void 0;
-const getConnection = (baseUrl) => async (url, options) => {
-    try {
-        const response = await fetch(baseUrl + url, options);
-        const { ok, status, statusText } = response;
-        if (ok)
-            return response.json();
-        throw new Error(`HTTP response error: ${status} / ${statusText}`);
-    }
-    catch (e) {
-        console.log(e);
-        throw e;
-    }
+const getConnection = (baseUrl) => async (url, data) => {
+    const options = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+    };
+    const response = await fetch(baseUrl + url, options);
+    const { ok, status, statusText } = response;
+    if (ok)
+        return response.json();
+    throw new Error(`HTTP response error: ${status} / ${statusText}`);
 };
-<<<<<<< HEAD
 exports.getConnection = getConnection;
-=======
-exports.connection = connection;
->>>>>>> 09d5a9ae85dd9f39aedc1e938d1a93a34c65f28b
 //# sourceMappingURL=client.fetch.js.map

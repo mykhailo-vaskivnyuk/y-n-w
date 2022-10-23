@@ -2,19 +2,27 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.HTTP_MODULES_ENUM = exports.HTTP_MODULES = void 0;
 const node_http_1 = require("node:http");
 const node_stream_1 = require("node:stream");
 const node_util_1 = require("node:util");
 const constants_1 = require("../constants");
-const types_1 = require("./types");
 const errors_1 = require("./errors");
 const static_1 = __importDefault(require("./static"));
 const utils_1 = require("./utils");
+const utils_2 = require("../utils/utils");
+const allowCors_1 = require("./modules/allowCors");
+exports.HTTP_MODULES = {
+    allowCors: allowCors_1.allowCors,
+};
+exports.HTTP_MODULES_ENUM = (0, utils_2.getEnumFromMap)(exports.HTTP_MODULES);
 class HttpConnection {
     config;
     server;
     staticServer;
     callback;
+    modules = [];
     constructor(config) {
         this.config = config;
         this.server = (0, node_http_1.createServer)(this.onRequest.bind(this));
@@ -30,6 +38,14 @@ class HttpConnection {
             logger.error(e);
             throw e;
         }
+        try {
+            const { modules } = this.config.http;
+            modules.map((module) => this.modules.push(exports.HTTP_MODULES[module]()));
+        }
+        catch (e) {
+            logger.error(e);
+            throw new errors_1.ServerError(errors_1.ServerErrorEnum.E_SERVER_ERROR);
+        }
         const executor = (rv, rj) => {
             const { port } = this.config.http;
             try {
@@ -43,6 +59,8 @@ class HttpConnection {
         return new Promise(executor);
     }
     async onRequest(req, res) {
+        if (this.runModules(req, res))
+            return;
         const { api } = this.config.path;
         const ifApi = new RegExp(`^/${api}(/.*)?$`);
         if (!ifApi.test(req.url || ''))
@@ -53,9 +71,9 @@ class HttpConnection {
             const { sessionKey } = params;
             sessionKey && res.setHeader('set-cookie', `sessionKey=${sessionKey}; httpOnly`);
             const response = await this.callback(operation);
+            res.statusCode = 200;
             if (response instanceof node_stream_1.Readable) {
                 res.setHeader('content-type', constants_1.MIME_TYPES_ENUM['application/octet-stream']);
-                res.writeHead(200, types_1.HEADERS);
                 await new Promise((rv, rj) => {
                     response.on('error', rj);
                     response.on('end', rv);
@@ -64,15 +82,22 @@ class HttpConnection {
                 });
                 return;
             }
-            res.setHeader('content-type', constants_1.MIME_TYPES_ENUM['application/json']);
-            res.writeHead(200, types_1.HEADERS);
             const data = JSON.stringify(response);
+            res.setHeader('content-type', constants_1.MIME_TYPES_ENUM['application/json']);
             res.on('finish', () => logger.info(params, this.getLog(req, 'OK')));
             res.end(data);
         }
         catch (e) {
             this.onError(e, req, res);
         }
+    }
+    runModules(req, res) {
+        for (const module of this.modules) {
+            const next = module(req, res);
+            if (!next)
+                return false;
+        }
+        return true;
     }
     async getOperation(req) {
         const { names, params } = this.getRequestParams(req);
@@ -154,5 +179,5 @@ class HttpConnection {
             throw e;
     }
 }
-module.exports = HttpConnection;
+exports.default = HttpConnection;
 //# sourceMappingURL=http.js.map

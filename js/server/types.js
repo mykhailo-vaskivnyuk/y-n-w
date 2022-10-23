@@ -6,8 +6,8 @@ exports.HEADERS = {
     // 'X-Content-Type-Options': 'nosniff',
     // 'Strict-Transport-Security': 'max-age=31536000; includeSubdomains; preload',
     'Access-Control-Allow-Origin': '*',
-    // 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-    // 'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
     // 'Content-Type': 'application/json; charset=UTF-8',
 };
 exports.MIME_TYPES = {

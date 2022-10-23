@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 const node_path_1 = __importDefault(require("node:path"));
 const types_1 = require("./logger/types");
 const router_1 = require("./router/router");
+const http_1 = require("./server/http");
 const buildPath = 'js';
 const host = process.env.HOST || 'localhost';
 const databaseConnection = {
@@ -56,6 +57,9 @@ module.exports = {
             api: 'api',
         },
         http: {
+            modules: [
+                http_1.HTTP_MODULES_ENUM.allowCors,
+            ],
             host,
             port: +(process.env.PORT || 8000),
         },
