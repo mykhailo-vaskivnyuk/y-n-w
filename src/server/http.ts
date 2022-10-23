@@ -66,7 +66,7 @@ class HttpConnection implements IInputConnection {
   }
 
   private async onRequest(req: IRequest, res: IResponse) {
-    if (this.runModules(req, res)) return;
+    if (!this.runModules(req, res)) return;
 
     const { api } = this.config.path;
     const ifApi = new RegExp(`^/${api}(/.*)?$`);
