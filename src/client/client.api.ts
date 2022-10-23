@@ -2,6 +2,12 @@
 export const api = (
   fetch: (pathname: string, options: Record<string, any>) => Promise<any>
 ) => ({
+  'auth': {
+    'login': (options: {
+      email: string,
+      password: string,
+    }) => fetch('/auth/login', options),
+  },
   'index': (options: Record<string, any>) => fetch('/index', options),
   'merega': {
     'read': (options: Record<string, any>) => fetch('/merega/read', options),

@@ -4,6 +4,7 @@ import { IObject, TPrimitiv } from '../types';
 import { IDatabaseQueries, TQuery } from '../db/types';
 import { ILoggerConfig } from '../logger/types';
 import { MODULES } from '../router/router';
+import { HTTP_MODULES } from '../server/http';
 
 export interface IConfig {
   logger: ILoggerConfig;
@@ -107,6 +108,7 @@ export interface IInputConnectionConfig {
     api: string;
   };
   http: {
+    modules: (keyof typeof HTTP_MODULES)[];
     host: string;
     port: number;
   };

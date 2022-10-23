@@ -1,4 +1,4 @@
-import { ValidationErrorItem } from 'joi';
+import Joi, { ValidationErrorItem } from 'joi';
 import { TModule } from '../types';
 
 export class ValidationError extends Error {
@@ -17,13 +17,14 @@ const options = {
 };
 
 export const validate: TModule = () => async (context, data, handler) => {
-  const { schema } = handler || {};
-  if (!schema) return [context, data];
-  const { error, value } = schema.validate(data.params, options);
-  if (!error) {
-    Object.assign(data.params, { ...value });
-    return [context, data];
+  const { schema, params } = handler || {};
+  if (!params) return [context, data];
+  if (!schema) handler!.schema = Joi.object(params);
+  const { error, value } = handler!.schema!.validate(data.params, options);
+  if (error) {
+    logger.error(error);
+    throw new ValidationError(error.details);
   }
-  logger.error(error);
-  throw new ValidationError(error.details);
+  Object.assign(data.params, { ...value });
+  return [context, data];
 }

@@ -1,5 +1,6 @@
 import { IQueriesUser } from './queries/user';
 import { IQueriesSession } from './queries/session';
+import { IQueriesAuth } from './queries/auth';
 
 type GetParamsTypes<T extends [string, any][]> =
   { [key in keyof T]: T[key][1] };
@@ -14,4 +15,5 @@ export type TQueriesModule = Record<string, string>;
 export interface IDatabaseQueries {
   user: IQueriesUser;
   session: IQueriesSession;
+  auth: IQueriesAuth;
 }
