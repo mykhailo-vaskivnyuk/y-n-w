@@ -59,7 +59,7 @@ class HttpConnection {
         return new Promise(executor);
     }
     async onRequest(req, res) {
-        if (this.runModules(req, res))
+        if (!this.runModules(req, res))
             return;
         const { api } = this.config.path;
         const ifApi = new RegExp(`^/${api}(/.*)?$`);
