@@ -9,8 +9,8 @@ export const HEADERS = {
   // 'X-Content-Type-Options': 'nosniff',
   // 'Strict-Transport-Security': 'max-age=31536000; includeSubdomains; preload',
   'Access-Control-Allow-Origin': '*',
-  // 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-  // 'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
   // 'Content-Type': 'application/json; charset=UTF-8',
 };
 
@@ -28,3 +28,6 @@ export const MIME_TYPES = {
 
 export const INDEX = 'index.html';
 export const NOT_FOUND = '404.html';
+
+export type THttpModule<T = any> = (config?: T) =>
+  (req: IRequest, res: IResponse) => boolean;

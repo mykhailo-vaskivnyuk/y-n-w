@@ -2,18 +2,27 @@ import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
 import { format } from 'node:util';
 import { JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../constants';
-import { HEADERS, IRequest, IResponse, IServer } from './types';
+import { IRequest, IResponse, IServer, THttpModule } from './types';
 import { TPromiseExecutor } from '../types';
 import { IInputConnection, IInputConnectionConfig, IOperation, TOperationResponse } from '../app/types';
 import { ServerError, ServerErrorEnum, ServerErrorMap } from './errors';
 import createStaticServer, { TStaticServer } from './static';
 import { getUrlInstance } from './utils';
+import { getEnumFromMap } from '../utils/utils';
+import { allowCors } from './modules/allowCors';
+
+export const HTTP_MODULES = {
+  allowCors,
+};
+
+export const HTTP_MODULES_ENUM = getEnumFromMap(HTTP_MODULES);
 
 class HttpConnection implements IInputConnection {
   private config: IInputConnectionConfig;
   private server: IServer;
   private staticServer: TStaticServer;
   private callback?: (operation: IOperation) => Promise<TOperationResponse>;
+  private modules: ReturnType<THttpModule>[] = [];
 
   constructor(config: IInputConnectionConfig) {
     this.config = config;
@@ -33,6 +42,16 @@ class HttpConnection implements IInputConnection {
       throw e;
     }
 
+    try {
+      const { modules } = this.config.http;
+      modules.map(
+        (module) => this.modules.push(HTTP_MODULES[module]())
+      );
+    } catch (e: any) {
+      logger.error(e);
+      throw new ServerError(ServerErrorEnum.E_SERVER_ERROR);
+    }
+
     const executor: TPromiseExecutor<void> = (rv, rj) => {
       const { port } = this.config.http;
       try {
@@ -47,6 +66,8 @@ class HttpConnection implements IInputConnection {
   }
 
   private async onRequest(req: IRequest, res: IResponse) {
+    if (this.runModules(req, res)) return;
+
     const { api } = this.config.path;
     const ifApi = new RegExp(`^/${api}(/.*)?$`);
     if (!ifApi.test(req.url || ''))
@@ -61,10 +82,11 @@ class HttpConnection implements IInputConnection {
       );
         
       const response = await this.callback!(operation);
-        
+      
+      res.statusCode = 200;
+
       if (response instanceof Readable) {
         res.setHeader('content-type', MIME_TYPES_ENUM['application/octet-stream']);
-        res.writeHead(200, HEADERS);
         await new Promise((rv, rj) => {
           response.on('error', rj);
           response.on('end', rv);
@@ -75,10 +97,9 @@ class HttpConnection implements IInputConnection {
         });
         return;
       }
-        
-      res.setHeader('content-type', MIME_TYPES_ENUM['application/json']);
-      res.writeHead(200, HEADERS);
+
       const data = JSON.stringify(response);
+      res.setHeader('content-type', MIME_TYPES_ENUM['application/json']);
       res.on('finish',
         () => logger.info(params, this.getLog(req, 'OK'))
       );
@@ -88,16 +109,24 @@ class HttpConnection implements IInputConnection {
       this.onError(e, req, res);
     }
   }
-    
+  
+  private runModules(req: IRequest, res: IResponse) {
+    for (const module of this.modules) {
+      const next = module(req, res);
+      if (!next) return false;
+    }
+    return true;
+  }
+
   private async getOperation(req: IRequest) {
     const { names, params } = this.getRequestParams(req);
     const data = { params } as IOperation['data'];
     const { headers } = req;
     const contentType = headers['content-type'] as (keyof typeof MIME_TYPES_MAP) | undefined;
     const length = +(headers['content-length'] || Infinity);
-      
+
     if (!contentType) return { names, data };
-      
+
     if (!MIME_TYPES_MAP[contentType]) {
       throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
     }
@@ -179,4 +208,4 @@ class HttpConnection implements IInputConnection {
   }
 }
 
-export = HttpConnection;
+export default HttpConnection;

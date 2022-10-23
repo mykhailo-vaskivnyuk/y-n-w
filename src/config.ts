@@ -2,6 +2,7 @@
 import path from 'node:path';
 import { LOGGER_LEVEL, LOGGER_TARGET } from './logger/types';
 import { MODULES_ENUM } from './router/router';
+import { HTTP_MODULES_ENUM } from './server/http';
 
 const buildPath = 'js';
 const host = process.env.HOST || 'localhost';
@@ -57,6 +58,9 @@ export = {
       api: 'api',
     },
     http: {
+      modules: [
+        HTTP_MODULES_ENUM.allowCors,
+      ],
       host,
       port: +(process.env.PORT || 8000),
     },
