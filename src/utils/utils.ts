@@ -10,3 +10,10 @@ export const getEnumFromMap =
         Object.assign(obj, { [key]: value });
         return obj;
       }, {} as Q);
+
+export const createUnicCode = (length: number) => {
+  return Buffer
+    .from(Math.random().toString().slice(2))
+    .toString('base64')
+    .slice(0, length);
+};

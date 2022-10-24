@@ -15,6 +15,7 @@ export const setSession: TModule = () => async (context, data) => {
   if (!sessionKey) return [context, data];
   try {
     const session = await createSession<ISessionContent>(sessionKey);
+    await session.init();
     context.session = session;
     return [context, data];
   } catch (e) {

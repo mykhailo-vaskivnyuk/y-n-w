@@ -7,11 +7,12 @@ export const initMail = (config: Options) => {
   const transporter = nodemailer.createTransport(config);
 
   const sendMail = (mailOptions: MailOptions) =>
-    new Promise<SentMessageInfo>((rv, rj) =>
-      transporter.sendMail(mailOptions, (error, info) => {
+    new Promise<SentMessageInfo>((rv, rj) => {
+      const options = { ...mailOptions, from: 'm.vaskivnyuk@gmail.com' };
+      transporter.sendMail(options, (error, info) => {
         error ? rj(error) : rv(info);
-      }),
-    );
+      });
+    });
 
   return sendMail;
 };

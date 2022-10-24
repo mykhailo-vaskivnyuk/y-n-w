@@ -1,5 +1,6 @@
 import Joi, { ObjectSchema } from 'joi';
 import { IOperation, IParams, TOperationResponse } from '../app/types';
+import { IUser } from '../client/types';
 import { TMail } from '../services/mail/mail';
 import { Session } from '../services/session/session';
 
@@ -27,5 +28,5 @@ export type TModule<T = any> = (config: T) =>
     Promise<[IContext, IOperation['data'] & { params: IParams & Record<string, unknown> }]>;
 
 export type ISessionContent = Partial<{
-  userId: number;
+  user_id: IUser['user_id'];
 }>;

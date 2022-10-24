@@ -6,7 +6,7 @@ import { getEnumFromMap } from '../utils/utils';
 import { THandler, IRoutes, TModule, IContext } from './types';
 import { TPromiseExecutor } from '../types';
 import { IRouter, IOperation, TOperationResponse, IRouterConfig } from '../app/types';
-import { RouterError, RouterErrorEnum } from './errors';
+import { HandlerError, HandlerErrorEnum, RouterError, RouterErrorEnum } from './errors';
 import { DatabaseError } from '../db/errors';
 import { getStream, GetStreamError } from './modules/get.stream';
 import { validate, ValidationError } from './modules/validate';
@@ -65,6 +65,12 @@ class Router implements IRouter {
       return await handler(context, data.params);
     } catch (e: any) {
       if (!(e instanceof DatabaseError)) logger.error(e);
+      if (e instanceof HandlerError) {
+        const { code, details } = e;
+        if (code === HandlerErrorEnum.E_REDIRECT) {
+          throw new RouterError(RouterErrorEnum.E_REDIRECT, e.details);
+        }
+      }
       throw new RouterError(RouterErrorEnum.E_HANDLER, e.message);
     }
   }
@@ -81,8 +87,9 @@ class Router implements IRouter {
         const filePath = path.join(routePath, name);
         const moduleExport = require(filePath) as THandler | IRoutes;
         if (name === 'index') {
-          if (typeof moduleExport === 'function')
+          if (typeof moduleExport === 'function') {
             throw new Error(`Wrong api module: ${filePath}`);
+          }
           Object.assign(route, moduleExport);
         } else route[name] = moduleExport;
       } else {

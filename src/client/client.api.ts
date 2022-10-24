@@ -3,10 +3,24 @@ export const api = (
   fetch: (pathname: string, options: Record<string, any>) => Promise<any>
 ) => ({
   'auth': {
+    'confirm': (options: {
+      link: string,
+      redirect: string,
+    }) => fetch('/auth/confirm', options),
+    'delete': (options: Record<string, any>) => fetch('/auth/delete', options),
+    'login copy': (options: {
+      email: string,
+      password: string,
+    }) => fetch('/auth/login copy', options),
     'login': (options: {
       email: string,
       password: string,
     }) => fetch('/auth/login', options),
+    'logout': (options: Record<string, any>) => fetch('/auth/logout', options),
+    'remove': (options: Record<string, any>) => fetch('/auth/remove', options),
+    'signup': (options: {
+      email: string,
+    }) => fetch('/auth/signup', options),
   },
   'index': (options: Record<string, any>) => fetch('/index', options),
   'merega': {

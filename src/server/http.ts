@@ -8,7 +8,7 @@ import { IInputConnection, IInputConnectionConfig, IOperation, TOperationRespons
 import { ServerError, ServerErrorEnum, ServerErrorMap } from './errors';
 import createStaticServer, { TStaticServer } from './static';
 import { getUrlInstance } from './utils';
-import { getEnumFromMap } from '../utils/utils';
+import { createUnicCode, getEnumFromMap } from '../utils/utils';
 import { allowCors } from './modules/allowCors';
 
 export const HTTP_MODULES = {
@@ -66,6 +66,7 @@ class HttpConnection implements IInputConnection {
   }
 
   private async onRequest(req: IRequest, res: IResponse) {
+    console.log(req.headers)
     if (!this.runModules(req, res)) return;
 
     const { api } = this.config.path;
@@ -164,15 +165,13 @@ class HttpConnection implements IInputConnection {
   }
       
   private getSessionKey(cookie?: string) {
+    console.log('session', cookie);
     if (cookie) {
       const regExp = /sessionKey=([^\s]*)\s*;?/;
-      const result = cookie.match(regExp) || [];
-      if (result[1]) return result[1];
+      const [, result] = cookie.match(regExp) || [];
+      if (result) return result;
     }
-    return Buffer
-      .from(Math.random().toString().slice(2))
-      .toString('base64')
-      .slice(0, 15);
+    return createUnicCode(15);
   }
       
   private async getJson(req: IRequest) {
@@ -200,6 +199,7 @@ class HttpConnection implements IInputConnection {
     const { code, statusCode = 500, details } = error as ServerError;
     
     res.statusCode = statusCode;
+    if (code === ServerErrorEnum.E_REDIRECT) res.setHeader('location', details?.location || '/');
     details && res.setHeader('content-type', MIME_TYPES_ENUM['application/json']);
     logger.error({}, this.getLog(req, ServerErrorMap[code]));
     res.end(error.getMessage());

@@ -47,6 +47,32 @@ class ClientApp extends EventEmmiter {
     this.setState(AppState.READY);
     return Boolean(user);
   }
+
+  async logout(...args: Parameters<typeof this.clientApi.auth.logout>) {
+    this.setState(AppState.LOADING);
+    let result = false;
+    try {
+      result = await this.clientApi.auth.logout(...args);
+    } catch (e) {
+      console.log(e);
+    }
+    this.user = null;
+    this.setState(AppState.READY);
+    return result;
+  }
+
+  async signup(...args: Parameters<typeof this.clientApi.auth.signup>) {
+    this.setState(AppState.LOADING);
+    let user = null;
+    try {
+      user = await this.clientApi.auth.signup(...args);
+    } catch (e) {
+      console.log(e);
+    }
+    this.user = user;
+    this.setState(AppState.READY);
+    return user;
+  }
 }
 
 let baseUrl = process.env.API;

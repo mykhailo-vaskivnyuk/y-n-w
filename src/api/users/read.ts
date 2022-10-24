@@ -9,7 +9,7 @@ const usersRead: THandler = async (context) => {
   //   text: 'Hello, Mykhailo!',
   // };
   // await sendMail(options);
-  session.write('userId', 1000);
+  session.write('user_id', 1000);
   return execQuery.user.getUsers([]);
 };
 

@@ -23,7 +23,7 @@ export class Session<T extends IObject> implements ISession<T> {
   }
 
   read<K extends keyof T>(key: K) {
-    if (this.session) return this.session[key];
+    return this.session?.[key];
   }
 
   async delete<K extends keyof T>(key: K) {
@@ -45,10 +45,8 @@ export class Session<T extends IObject> implements ISession<T> {
   }
 
   async init() {
-    const result = await execQuery.session.read([this.sessionKey]);
-    if (!result?.[0]) return this;
-    const { session_value } = result[0];
-    this.deserialize(session_value);
+    const [result] = await execQuery.session.read([this.sessionKey]);
+    this.deserialize(result?.session_value);
     return this;
   }
 
@@ -56,8 +54,8 @@ export class Session<T extends IObject> implements ISession<T> {
     return JSON.stringify(this.session);
   }
 
-  private deserialize(value: string) {
-    this.session = JSON.parse(value);
+  private deserialize(value: string | undefined) {
+    this.session = value ? JSON.parse(value) : null;
   }
 }
 

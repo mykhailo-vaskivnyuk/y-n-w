@@ -53,6 +53,8 @@ class App {
             throw new ServerError(ServerErrorEnum.E_NOT_FOUND, details) },
           [RouterErrorEnum.E_MODULE]: () => {
             throw new ServerError(ServerErrorEnum.E_BED_REQUEST, details) },
+          [RouterErrorEnum.E_REDIRECT]: () => {
+            throw new ServerError(ServerErrorEnum.E_REDIRECT, details) },
         };
         if (e instanceof RouterError && code in errors) errors[code]!();
         else logger.error(e);
