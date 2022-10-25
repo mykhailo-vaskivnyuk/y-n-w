@@ -61,6 +61,8 @@ class Router implements IRouter {
     const handler = this.findRoute(names);
     const [context, data] = await this.runModules(inputContext, inputData, handler);
 
+    context.origin = data.params.origin || '';
+  
     try {
       return await handler(context, data.params);
     } catch (e: any) {
@@ -68,7 +70,7 @@ class Router implements IRouter {
       if (e instanceof HandlerError) {
         const { code, details } = e;
         if (code === HandlerErrorEnum.E_REDIRECT) {
-          throw new RouterError(RouterErrorEnum.E_REDIRECT, e.details);
+          throw new RouterError(RouterErrorEnum.E_REDIRECT, details);
         }
       }
       throw new RouterError(RouterErrorEnum.E_HANDLER, e.message);

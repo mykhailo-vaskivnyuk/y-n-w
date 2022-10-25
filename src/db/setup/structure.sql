@@ -35,8 +35,8 @@ CREATE TABLE "nets" (
   "count_of_nets" int DEFAULT NULL
 );
 
-ALTER TABLE "nets"
-  ADD PRIMARY KEY ("net_id");
+-- ALTER TABLE "nets"
+--   ADD PRIMARY KEY ("net_id");
 
 -- --------------------------------------------------------
 
@@ -61,8 +61,8 @@ CREATE TABLE "nets_data" (
 
 CREATE UNIQUE INDEX akUniqNet ON "nets_data" ("net_id");
 
-ALTER TABLE "nets_data"
-  ADD PRIMARY KEY ("net_id");
+-- ALTER TABLE "nets_data"
+--   ADD PRIMARY KEY ("net_id");
 
 -- --------------------------------------------------------
 
@@ -83,8 +83,8 @@ CREATE TABLE "nets_events" (
   "shown" bit(1) DEFAULT b'0'
 );
 
-ALTER TABLE "nets_events"
-  ADD PRIMARY KEY ("event_id");
+-- ALTER TABLE "nets_events"
+--   ADD PRIMARY KEY ("event_id");
 
 -- --------------------------------------------------------
 
@@ -123,8 +123,8 @@ CREATE TABLE "nodes" (
   "changes" bit(1) DEFAULT NULL
 );
 
-ALTER TABLE "nodes"
-  ADD PRIMARY KEY ("node_id");
+-- ALTER TABLE "nodes"
+--   ADD PRIMARY KEY ("node_id");
 
 -- --------------------------------------------------------
 
@@ -157,8 +157,8 @@ CREATE TABLE "nodes_users" (
   "old_list_note" varchar(255) DEFAULT NULL
 );
 
-ALTER TABLE "nodes_users"
-  ADD PRIMARY KEY ("node_id");
+-- ALTER TABLE "nodes_users"
+--   ADD PRIMARY KEY ("node_id");
 
 -- --------------------------------------------------------
 
@@ -176,8 +176,8 @@ CREATE TABLE "notifications_tpl" (
   "notification_close" bit(1) DEFAULT b'0'
 );
 
-ALTER TABLE "notifications_tpl"
-  ADD PRIMARY KEY ("notification_tpl_id");
+-- ALTER TABLE "notifications_tpl"
+--   ADD PRIMARY KEY ("notification_tpl_id");
 
 -- --------------------------------------------------------
 
@@ -187,7 +187,7 @@ ALTER TABLE "notifications_tpl"
 
 DROP TABLE IF EXISTS "users";
 CREATE TABLE "users" (
-  "user_id" bigint generated always as identity,
+  "user_id" bigint generated always as identity ( INCREMENT 1 START 100 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 100 ),
   "email" varchar(50) DEFAULT NULL,
   "name" varchar(50) DEFAULT NULL,
   "mobile" varchar(255) DEFAULT NULL,
@@ -200,8 +200,8 @@ CREATE TABLE "users" (
 
 CREATE UNIQUE INDEX akEmail ON "users" ("email");
 
-ALTER TABLE "users"
-  ADD PRIMARY KEY ("user_id");
+-- ALTER TABLE "users"
+--   ADD PRIMARY KEY ("user_id");
 
 -- --------------------------------------------------------
 
@@ -220,8 +220,8 @@ CREATE TABLE "users_notifications" (
   "close" bit(1) DEFAULT b'0'
 );
 
-ALTER TABLE "users_notifications"
-  ADD PRIMARY KEY ("notification_id");
+-- ALTER TABLE "users_notifications"
+--   ADD PRIMARY KEY ("notification_id");
 
 -- --------------------------------------------------------
 
@@ -236,6 +236,6 @@ CREATE TABLE "sessions" (
   "session_value" varchar(255) NOT NULL
 );
 
-ALTER TABLE "sessions"
-  ADD PRIMARY KEY ("session_id");
+-- ALTER TABLE "sessions"
+--   ADD PRIMARY KEY ("session_id");
 CREATE UNIQUE INDEX akSessionKey ON "sessions" ("session_key");

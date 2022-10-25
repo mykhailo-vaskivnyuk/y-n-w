@@ -5,8 +5,6 @@ export const api = (
   'auth': {
     'confirm': (options: {
       link: string,
-      restore: string,
-      redirect: string,
     }) => fetch('/auth/confirm', options),
     'login': (options: {
       email: string,

@@ -4,7 +4,7 @@ import { format } from 'node:util';
 import { JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../constants';
 import { IRequest, IResponse, IServer, THttpModule } from './types';
 import { TPromiseExecutor } from '../types';
-import { IInputConnection, IInputConnectionConfig, IOperation, TOperationResponse } from '../app/types';
+import { IInputConnection, IInputConnectionConfig, IOperation, IParams, TOperationResponse } from '../app/types';
 import { ServerError, ServerErrorEnum, ServerErrorMap } from './errors';
 import createStaticServer, { TStaticServer } from './static';
 import { getUrlInstance } from './utils';
@@ -66,7 +66,7 @@ class HttpConnection implements IInputConnection {
   }
 
   private async onRequest(req: IRequest, res: IResponse) {
-    console.log(req.headers)
+    // console.log(req.headers)
     if (!this.runModules(req, res)) return;
 
     const { api } = this.config.path;
@@ -147,8 +147,8 @@ class HttpConnection implements IInputConnection {
   }
     
   private getRequestParams(req: IRequest) {
-    const { host, cookie } = req.headers;
-    const { pathname, searchParams } = getUrlInstance(req.url, host);
+    const { origin, cookie } = req.headers;
+    const { pathname, searchParams } = getUrlInstance(req.url, origin);
       
     const names = (pathname
       .replace('/' + this.config.path.api, '')
@@ -156,11 +156,13 @@ class HttpConnection implements IInputConnection {
       .split('/')
       .filter((path) => Boolean(path));
 
-    const params: IOperation['data']['params'] = {};
+    const params: IOperation['data']['params'] = {} as IParams;
     params.sessionKey = this.getSessionKey(cookie);
         
     const queryParams = searchParams.entries();
     for (const [key, value] of queryParams) params[key] = value;
+
+    params.origin = origin;
     return { names, params };
   }
       

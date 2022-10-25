@@ -62,7 +62,8 @@ export interface IQueries {
 }
 
 export type IParams = Record<string, unknown> & {
-  sessionKey?: string;
+  sessionKey: string;
+  origin?: string;
 };
 
 export interface IOperation {
