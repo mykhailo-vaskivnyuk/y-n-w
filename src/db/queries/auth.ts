@@ -7,15 +7,6 @@ export interface IQueriesAuth {
     ['password', string],
   ], ITableUsers>;
   
-  createUserIfNotExists: TQuery<[
-    ['email', string],
-    ['link', string],
-  ]>;
-  
-  getUserByEmail: TQuery<[
-    ['email', string],
-  ], ITableUsers>;
-  
   unsetUserLink: TQuery<[
     ['user_id', number],
   ]>;
@@ -43,8 +34,6 @@ export interface IQueriesAuth {
 }
 
 export const getUserIfExists = 'SELECT * FROM users WHERE email=$1 AND password=$2';
-export const createUserIfNotExists = 'INSERT INTO users (email, link) VALUES($1, $2)';
-export const getUserByEmail = 'SELECT * FROM users WHERE email=$1';
 export const unsetUserLink = 'UPDATE users SET link=NULL, restore=NULL WHERE user_id=$1';
 export const deleteAccount = 'DELETE FROM users WHERE user_id=$1';
 export const setUserRestoreLink = 'UPDATE users SET restore=$2 WHERE user_id=$1';

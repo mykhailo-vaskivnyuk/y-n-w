@@ -21,8 +21,8 @@ export const setMail: TModule<MailOptions> = (config) => {
     }
   };
 
-  return async (context, data) => {
+  return async (context, operation) => {
     context.sendMail = fn;
-    return [context, data];
+    return [context, operation];
   };
 };

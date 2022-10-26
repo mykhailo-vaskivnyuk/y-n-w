@@ -99,7 +99,7 @@ VALUES
 (54, 'brigadiroleg77@gmail.com', 'Олег', '', '15sent1977', '', NULL, NULL, NULL),
 (56, 'konvert22300@gmail.com', 'Олександр', '', 'qazwsx', '', NULL, NULL, NULL),
 (57, 'viktor163@ukr.net', 'Віктор', '', 'sourip1532', '', NULL, NULL, NULL),
-(63, 'm.vaskivnyuk@gmail.com', 'Міша gmail', '', 'pass', NULL, NULL, NULL, NULL),
+-- (63, 'm.vaskivnyuk@gmail.com', 'Міша gmail', '', 'pass', NULL, NULL, NULL, NULL),
 (64, 'olexandr.kots@gmail.com', 'Oleksandr', '0971600126', 'sovsek82', NULL, NULL, NULL, NULL),
 (65, 'alex@grey.kiev.ua', 'Grey', '0633445966', 'gfhjkm', NULL, NULL, NULL, NULL),
 (66, 'ju.klymenko@donnu.edu.ua', 'Юрій', '0975390892', 'YuNiK9591', NULL, NULL, NULL, NULL),

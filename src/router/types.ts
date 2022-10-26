@@ -24,8 +24,8 @@ export type ServicesEnum = keyof IServices;
 export type IContext = IServices & { origin: string };
 
 export type TModule<T = any> = (config: T) =>
-  (context: IContext, data: IOperation['data'], handler?: THandler) =>
-    Promise<[IContext, IOperation['data'] & { params: IParams & Record<string, unknown> }]>;
+  (context: IContext, operation: IOperation, handler?: THandler) =>
+    Promise<[IContext, IOperation]>;
 
 export type ISessionContent = Partial<{
   user_id: IUser['user_id'];

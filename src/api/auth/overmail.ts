@@ -1,13 +1,13 @@
 import Joi from 'joi';
 import { THandler } from '../../router/types';
-import { createUnicCode } from '../../utils/utils';
+import { createUnicCode } from '../../utils/crypto';
 
 type IOvermailParams = {
   email: string,
 }
 
 const overmail: THandler<IOvermailParams, boolean> = async (context, { email }) => {
-  const [user = null] = await execQuery.auth.getUserByEmail([email]);
+  const [user = null] = await execQuery.user.findUserByEmail([email]);
   if (!user) return null;
   const restoreLink = createUnicCode(15);
   await execQuery.auth.setUserRestoreLink([user.user_id, restoreLink]);

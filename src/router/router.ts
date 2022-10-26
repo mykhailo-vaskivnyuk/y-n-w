@@ -54,14 +54,15 @@ class Router implements IRouter {
     }
   }
   
-  async exec(operation: IOperation): Promise<TOperationResponse> {
-    const { names, data: inputData } = operation;
-    const inputContext = {} as IContext;
+  async exec({ ...operation }: IOperation): Promise<TOperationResponse> {
+    const { options, names, data } = operation;
+    // console.log(operation);
+    let context = {} as IContext;
 
     const handler = this.findRoute(names);
-    const [context, data] = await this.runModules(inputContext, inputData, handler);
-
-    context.origin = data.params.origin || '';
+    [context, operation] = await this.runModules(context, operation, handler);
+    
+    context.origin = options.origin;
   
     try {
       return await handler(context, data.params);
@@ -119,11 +120,11 @@ class Router implements IRouter {
   }
 
   private async runModules(
-    context: IContext, data: IOperation['data'], handler: THandler
-  ): Promise<[IContext, IOperation['data']]> {
+    context: IContext, operation: IOperation, handler: THandler
+  ): Promise<[IContext, IOperation]> {
     try {
       for (const module of this.modules)
-        [context, data] = await module(context, data, handler);
+        [context, operation] = await module(context, operation, handler);
     } catch (e: any) {
       const { message, details } = e;
       if (e instanceof SessionError)
@@ -135,7 +136,7 @@ class Router implements IRouter {
       logger.error(e);
       throw new RouterError(RouterErrorEnum.E_ROUTER, details || message);
     }
-    return [context, data];
+    return [context, operation];
   }
 
   private createClientApi() {

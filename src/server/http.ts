@@ -8,8 +8,9 @@ import { IInputConnection, IInputConnectionConfig, IOperation, IParams, TOperati
 import { ServerError, ServerErrorEnum, ServerErrorMap } from './errors';
 import createStaticServer, { TStaticServer } from './static';
 import { getUrlInstance } from './utils';
-import { createUnicCode, getEnumFromMap } from '../utils/utils';
+import { getEnumFromMap } from '../utils/utils';
 import { allowCors } from './modules/allowCors';
+import { createUnicCode } from '../utils/crypto';
 
 export const HTTP_MODULES = {
   allowCors,
@@ -76,10 +77,10 @@ class HttpConnection implements IInputConnection {
     
     try {
       const operation = await this.getOperation(req);
-      const { params } = operation.data;
-      const { sessionKey } = params;
+      const { options, data: { params } } = operation;
+      const { sessionKey } = options;
       sessionKey && res.setHeader(
-        'set-cookie', `sessionKey=${sessionKey}; httpOnly`
+        'set-cookie', `sessionKey=${sessionKey}; Path=/; httpOnly`
       );
         
       const response = await this.callback!(operation);
@@ -120,13 +121,13 @@ class HttpConnection implements IInputConnection {
   }
 
   private async getOperation(req: IRequest) {
-    const { names, params } = this.getRequestParams(req);
+    const { options, names, params } = this.getRequestParams(req);
     const data = { params } as IOperation['data'];
     const { headers } = req;
     const contentType = headers['content-type'] as (keyof typeof MIME_TYPES_MAP) | undefined;
     const length = +(headers['content-length'] || Infinity);
 
-    if (!contentType) return { names, data };
+    if (!contentType) return { options, names, data };
 
     if (!MIME_TYPES_MAP[contentType]) {
       throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
@@ -137,13 +138,13 @@ class HttpConnection implements IInputConnection {
       
     if (contentType === MIME_TYPES_ENUM['application/json'] && length < JSON_TRANSFORM_LENGTH) {
       Object.assign(params, await this.getJson(req));
-      return { names, data };
+      return { options, names, data };
     }
       
     const content = Readable.from(req);
     data.stream = { type: contentType, content };
       
-    return { names, data };
+    return { options, names, data };
   }
     
   private getRequestParams(req: IRequest) {
@@ -156,14 +157,15 @@ class HttpConnection implements IInputConnection {
       .split('/')
       .filter((path) => Boolean(path));
 
-    const params: IOperation['data']['params'] = {} as IParams;
-    params.sessionKey = this.getSessionKey(cookie);
-        
+    const params = {} as IParams;
     const queryParams = searchParams.entries();
     for (const [key, value] of queryParams) params[key] = value;
 
-    params.origin = origin;
-    return { names, params };
+    const options: IOperation['options'] = {} as IOperation['options'];
+    options.sessionKey = this.getSessionKey(cookie);
+    options.origin = origin || '';
+
+    return { options, names, params };
   }
       
   private getSessionKey(cookie?: string) {

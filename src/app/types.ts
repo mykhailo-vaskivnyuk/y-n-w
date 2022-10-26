@@ -61,17 +61,18 @@ export interface IQueries {
   [key: string]: TQuery | IQueries;
 }
 
-export type IParams = Record<string, unknown> & {
-  sessionKey: string;
-  origin?: string;
-};
+export type IParams = Record<string, unknown>;
 
 export interface IOperation {
+  options: {
+    sessionKey: string;
+    origin: string;
+  };
   names: string[];
   data: {
     stream?: { type: string | undefined; content: Readable };
     params: IParams;
-  }
+  };
 }
 
 export type TOperationResponse =

@@ -13,8 +13,8 @@ create.params = {
 };
 create.schema = Joi.object(create.params);
 
-const update: THandler = () => {
-  return execQuery.user.getUsers([]);
+const update: THandler = async () => {
+  return ''; // execQuery.user.getUsers([]);
 }
 
 export = { create, update };

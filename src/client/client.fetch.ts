@@ -8,7 +8,7 @@ export const getConnection =
     };
     const response = await fetch(baseUrl + url, options);
     const { ok, status, statusText, headers } = response;
-    console.log(headers);
+    // console.log(headers);
     if (ok) return response.json();
     throw new Error(`HTTP response error: ${status} / ${statusText}`);
   };

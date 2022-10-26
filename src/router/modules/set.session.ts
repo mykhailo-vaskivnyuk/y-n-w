@@ -9,15 +9,15 @@ export class SessionError extends Error {
   }
 }
 
-export const setSession: TModule = () => async (context, data) => {
-  const { params } = data;
-  const { sessionKey } = params;
-  if (!sessionKey) return [context, data];
+export const setSession: TModule = () => async (context, operation) => {
+  const { options } = operation;
+  const { sessionKey } = options;
+  if (!sessionKey) return [context, operation];
   try {
     const session = await createSession<ISessionContent>(sessionKey);
     await session.init();
     context.session = session;
-    return [context, data];
+    return [context, operation];
   } catch (e) {
     logger.error(e);
     throw new SessionError();
