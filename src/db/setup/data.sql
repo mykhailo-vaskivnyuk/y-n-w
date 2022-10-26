@@ -2,7 +2,9 @@
 -- Дамп даних таблиці "nets"
 --
 
-INSERT INTO "nets" ("net_id", "net_level", "net_address", "parent_net_id", "first_net_id", "full_net_address", "count_of_nets") VALUES
+INSERT INTO "nets" ("net_id", "net_level", "net_address", "parent_net_id", "first_net_id", "full_net_address", "count_of_nets")
+OVERRIDING SYSTEM VALUE
+VALUES
 (1, 1, 1, NULL, 1, 10000, 1),
 (224, 1, 1, NULL, 224, 10000, 1),
 (237, 1, 1, NULL, 237, 10000, 1);
@@ -155,82 +157,3 @@ VALUES
 (55, 37, 4, 'Учасника [name] від"єднано від спільноти за рішенням його дерева!', NULL, b'1'),
 (56, 37, 5, 'Вашого координатора [name] від"єднано від спільноти за рішенням учасників вашого кола!', NULL, b'1'),
 (57, 16, 0, 'Спільноту успішно створено!', NULL, b'1');
-
--- --------------------------------------------------------
-
---
--- Структура таблицi "nets"
---
-
-ALTER TABLE "nets"
-  ADD PRIMARY KEY ("net_id");
--- --------------------------------------------------------
-
---
--- Структура таблицi "nets_data"
---
-
-ALTER TABLE "nets_data"
-  ADD PRIMARY KEY ("net_id");
-
--- --------------------------------------------------------
-
---
--- Структура таблицi "nets_events"
---
-
-ALTER TABLE "nets_events"
-  ADD PRIMARY KEY ("event_id");
-
--- --------------------------------------------------------
-
---
--- Структура таблицi "nodes"
---
-
-ALTER TABLE "nodes"
-  ADD PRIMARY KEY ("node_id");
-
--- --------------------------------------------------------
-
---
--- Структура таблицi "nodes_users"
---
-
-ALTER TABLE "nodes_users"
-  ADD PRIMARY KEY ("node_id");
-
--- --------------------------------------------------------
-
---
--- Структура таблицi "notifications_tpl"
---
-
-ALTER TABLE "notifications_tpl"
-  ADD PRIMARY KEY ("notification_tpl_id");
-
--- --------------------------------------------------------
-
---
--- Структура таблицi "users"
---
-
-ALTER TABLE "users"
-  ADD PRIMARY KEY ("user_id");
--- --------------------------------------------------------
-
---
--- Структура таблицi "users_notifications"
---
-
-ALTER TABLE "users_notifications"
-  ADD PRIMARY KEY ("notification_id");
-
--- --------------------------------------------------------
-
---
--- Структура таблицi "sessions"
---
-
-ALTER TABLE "sessions"
-  ADD PRIMARY KEY ("session_id");
