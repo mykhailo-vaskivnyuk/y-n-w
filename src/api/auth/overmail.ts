@@ -8,10 +8,13 @@ type IOvermailParams = {
 
 const overmail: THandler<IOvermailParams, boolean> = async (context, { email }) => {
   const [user = null] = await execQuery.user.findUserByEmail([email]);
-  if (!user) return null;
-  const restoreLink = createUnicCode(15);
-  await execQuery.auth.setUserRestoreLink([user.user_id, restoreLink]);
-  const html = `link <a href='http://localhost:8000/api/auth/confirm?restore=${user!.restore}&redirect=http://localhost:3000?'>LINK</a>`;
+  if (!user) return false;
+  const restore = createUnicCode(15);
+  const { link } = user;
+  link
+    ? await execQuery.user.setLink([user.user_id, restore]) 
+    : await execQuery.user.setRestoreLink([user.user_id, restore]);
+  const html = `link <a href='${context.origin}/#/${link ? 'confirm' : 'restore'}/${user!.link}>LINK TO CONFIRM EMAIL</a>`;
   await context.sendMail({ to: email, subject: 'Restore account', html });
   return true;
 };

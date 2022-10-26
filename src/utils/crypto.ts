@@ -3,7 +3,7 @@ import { TPromiseExecutor } from '../types';
 const crypto = require('node:crypto');
 
 export const createUnicCode = (length: number) => {
-  return crypto.randomBytes(length).toString('base64');
+  return crypto.randomBytes(length).toString('hex');
 };
 
 export const createHash = (password: string) => {
@@ -11,7 +11,7 @@ export const createHash = (password: string) => {
     const salt = createUnicCode(16);
     crypto.scrypt(password, salt, 64, (err: Error | null, result: Buffer) => {
       err && rj(err);
-      const hash = result.toString('base64');
+      const hash = result.toString('hex');
       rv(salt + ':' + hash);
     });
   }
@@ -23,8 +23,8 @@ export const verifyHash = (password: string, hashedPasword: string) => {
   const executor: TPromiseExecutor<boolean> = (rv, rj) => {
     crypto.scrypt(password, salt, 64, (err: Error | null, result: Buffer) => {
       err && rj(err);
-      const hashToVerify = result.toString('base64');
-      // console.log(hashToVerify, hash);
+      const hashToVerify = result.toString('hex');
+      console.log(hashToVerify);
       rv(hashToVerify === hash);
     });
   }

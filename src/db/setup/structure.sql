@@ -188,7 +188,7 @@ ALTER TABLE "notifications_tpl"
 DROP TABLE IF EXISTS "users";
 CREATE TABLE "users" (
   "user_id" bigint generated always as identity (START 73),
-  "email" varchar(50) DEFAULT NULL,
+  "email" varchar(50) NOT NULL,
   "name" varchar(50) DEFAULT NULL,
   "mobile" varchar(255) DEFAULT NULL,
   "password" varchar(255) DEFAULT NULL,

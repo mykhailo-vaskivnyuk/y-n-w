@@ -3,6 +3,9 @@ export const api = (
   fetch: (pathname: string, options: Record<string, any>) => Promise<any>
 ) => ({
   'auth': {
+    'confirm copy': (options: {
+      link: string,
+    }) => fetch('/auth/confirm copy', options),
     'confirm': (options: {
       link: string,
     }) => fetch('/auth/confirm', options),
@@ -15,6 +18,9 @@ export const api = (
       email: string,
     }) => fetch('/auth/overmail', options),
     'remove': (options: Record<string, any>) => fetch('/auth/remove', options),
+    'restore': (options: {
+      link: string,
+    }) => fetch('/auth/restore', options),
     'signup': (options: {
       email: string,
     }) => fetch('/auth/signup', options),
