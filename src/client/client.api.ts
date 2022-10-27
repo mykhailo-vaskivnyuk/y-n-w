@@ -1,11 +1,8 @@
 
 export const api = (
-  fetch: (pathname: string, options: Record<string, any>) => Promise<any>
+  fetch: (pathname: string, options?: Record<string, any>) => Promise<any>
 ) => ({
   'auth': {
-    'confirm copy': (options: {
-      link: string,
-    }) => fetch('/auth/confirm copy', options),
     'confirm': (options: {
       link: string,
     }) => fetch('/auth/confirm', options),
@@ -13,11 +10,11 @@ export const api = (
       email: string,
       password: string,
     }) => fetch('/auth/login', options),
-    'logout': (options: Record<string, any>) => fetch('/auth/logout', options),
+    'logout': () => fetch('/auth/logout'),
     'overmail': (options: {
       email: string,
     }) => fetch('/auth/overmail', options),
-    'remove': (options: Record<string, any>) => fetch('/auth/remove', options),
+    'remove': () => fetch('/auth/remove'),
     'restore': (options: {
       link: string,
     }) => fetch('/auth/restore', options),
@@ -25,19 +22,19 @@ export const api = (
       email: string,
     }) => fetch('/auth/signup', options),
   },
-  'index': (options: Record<string, any>) => fetch('/index', options),
+  'index': () => fetch('/index'),
   'merega': {
-    'read': (options: Record<string, any>) => fetch('/merega/read', options),
+    'read': () => fetch('/merega/read'),
   },
   'scripts': {
-    'script.js': (options: Record<string, any>) => fetch('/scripts/script.js', options),
+    'script.js': () => fetch('/scripts/script.js'),
   },
   'user': {
     'create': (options: {
       name: string,
       field: number,
     }) => fetch('/user/create', options),
-    'update': (options: Record<string, any>) => fetch('/user/update', options),
-    'read': (options: Record<string, any>) => fetch('/user/read', options),
+    'update': () => fetch('/user/update'),
+    'read': () => fetch('/user/read'),
   },
 });

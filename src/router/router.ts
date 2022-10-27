@@ -147,7 +147,7 @@ class Router implements IRouter {
       stream.on('finish', rv);
       stream.write(`
 export const api = (
-  fetch: (pathname: string, options: Record<string, any>) => Promise<any>
+  fetch: (pathname: string, options?: Record<string, any>) => Promise<any>
 ) => (`);
       this.createJs(this.routes!, stream);
       stream.write(');\n');
@@ -168,7 +168,7 @@ export const api = (
       if (this.isHandler(handler)) {
         const types = this.getTypes(handler.params, nextIndent);
         stream.write(
-          `(options: ${types}) => fetch('${nextPathname}', options),`
+          `(${types ? `options: ${types}` : ''}) => fetch('${nextPathname}'${types ? ', options' : ''}),`
         );
       }
       else {
@@ -180,7 +180,7 @@ export const api = (
   }
 
   private getTypes(params?: Record<string, Joi.Schema>, indent = '') {
-    if (!params) return 'Record<string, any>';
+    if (!params) return null;
     const result = [];
     const paramsEntries = Object.entries(params)
     for (const [key, { type }] of paramsEntries) {

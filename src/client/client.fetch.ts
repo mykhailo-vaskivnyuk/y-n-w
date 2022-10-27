@@ -1,5 +1,5 @@
 export const getConnection =
-  (baseUrl: string) => async (url: string, data: Record<string, any>) => {
+  (baseUrl: string) => async (url: string, data?: Record<string, any>) => {
     const options: RequestInit = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
