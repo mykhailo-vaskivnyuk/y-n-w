@@ -12,9 +12,9 @@ const overmail: THandler<IOvermailParams, boolean> = async (context, { email }) 
   const restore = createUnicCode(15);
   const { link } = user;
   link
-    ? await execQuery.user.setLink([user.user_id, restore]) 
+    ? await execQuery.user.setLink([user.user_id, restore])
     : await execQuery.user.setRestoreLink([user.user_id, restore]);
-  const html = `link <a href='${context.origin}/#/${link ? 'confirm' : 'restore'}/${user!.link}>LINK TO CONFIRM EMAIL</a>`;
+  const html = `link <a href='${context.origin}/#/${link ? 'confirm' : 'restore'}/${restore}>LINK TO CONFIRM EMAIL</a>`;
   await context.sendMail({ to: email, subject: 'Restore account', html });
   return true;
 };
