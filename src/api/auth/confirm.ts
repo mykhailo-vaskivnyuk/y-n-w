@@ -7,7 +7,7 @@ type IConfirmParams = {
 }
 
 const confirm: THandler<IConfirmParams, ITableUsers> = async (context, { link }) => {
-  const [user = null] = await execQuery.user.findUserByLink([link]);
+  const [user = null] = await execQuery.user.findByLink([link]);
   if (!user) return null;
   await execQuery.user.unsetUserLinks([user.user_id]);
   await context.session.write('user_id', user.user_id);

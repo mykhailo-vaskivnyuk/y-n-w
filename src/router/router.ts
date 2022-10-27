@@ -65,7 +65,8 @@ class Router implements IRouter {
     context.origin = options.origin;
   
     try {
-      return await handler(context, data.params);
+      const operationResponse = await handler(context, data.params);
+      return operationResponse;
     } catch (e: any) {
       if (!(e instanceof DatabaseError)) logger.error(e);
       if (e instanceof HandlerError) {
@@ -75,6 +76,8 @@ class Router implements IRouter {
         }
       }
       throw new RouterError(RouterErrorEnum.E_HANDLER, e.message);
+    } finally {
+      context.session.finalize();
     }
   }
 

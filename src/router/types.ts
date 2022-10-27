@@ -21,7 +21,8 @@ export interface IServices {
 
 export type ServicesEnum = keyof IServices;
 
-export type IContext = IServices & { origin: string };
+export type IContext = IServices & { 
+   origin: string };
 
 export type TModule<T = any> = (config: T) =>
   (context: IContext, operation: IOperation, handler?: THandler) =>

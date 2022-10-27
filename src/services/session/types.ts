@@ -6,4 +6,5 @@ export interface ISession<T extends IObject = IObject> {
   delete<K extends keyof T>(key: K): Promise<T[K] | undefined>;
   clear(): Promise<void>;
   init(): Promise<this>;
+  finalize: () => void;
 }

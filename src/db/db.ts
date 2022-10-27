@@ -44,7 +44,7 @@ class Database implements IDatabase {
         if (ext !== '.js') continue;
         const filePath = path.join(queryPath, name);
         const queries = this.createQueries(filePath);
-        if (name === 'index') Object.assign(query, queries)
+        if (name === 'index') Object.assign(query, queries);
         else query[name] = queries;
       } else {
         const dirPath = path.join(queryPath, name);
@@ -54,8 +54,11 @@ class Database implements IDatabase {
     return query;
   }
 
-  private createQueries(filePath: string): IQueries {
+  private createQueries(filePath: string): IQueries | TQuery {
     const moduleExport = require(filePath) as TQueriesModule;
+    if (typeof moduleExport === 'string') {
+      return this.sqlToQuery(moduleExport);
+    }
     return Object
       .keys(moduleExport)
       .reduce<IQueries>((queries, key) => {
