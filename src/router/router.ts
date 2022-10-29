@@ -26,6 +26,7 @@ class Router implements IRouter {
   private config: IRouterConfig;
   private routes?: IRoutes;
   private modules: ReturnType<TModule>[] = [];
+  private responseModules: ReturnType<TModule>[] = [];
 
   constructor(config: IRouterConfig) {
     this.config = config;
@@ -33,11 +34,16 @@ class Router implements IRouter {
 
   async init() {
     try {
-      const { modules, modulesConfig } = this.config;
+      const { modules, responseModules, modulesConfig } = this.config;
       modules.map(
         (module) => {
           const moduleConfig = modulesConfig[module] as any;
           this.modules.push(MODULES[module](moduleConfig));
+        });
+      responseModules.map(
+        (module) => {
+          const moduleConfig = modulesConfig[module] as any;
+          this.responseModules.push(MODULES[module](moduleConfig));
         });
     } catch (e: any) {
       logger.error(e);
@@ -66,6 +72,7 @@ class Router implements IRouter {
   
     try {
       const operationResponse = await handler(context, data.params);
+      [context, operation] = await this.runModules(context, operationResponse, handler);
       return operationResponse;
     } catch (e: any) {
       if (!(e instanceof DatabaseError)) logger.error(e);
@@ -123,8 +130,8 @@ class Router implements IRouter {
   }
 
   private async runModules(
-    context: IContext, operation: IOperation, handler: THandler
-  ): Promise<[IContext, IOperation]> {
+    context: IContext, operation: IOperation | TOperationResponse, handler: THandler
+  ): Promise<[IContext, IOperation | TOperationResponse]> {
     try {
       for (const module of this.modules)
         [context, operation] = await module(context, operation, handler);

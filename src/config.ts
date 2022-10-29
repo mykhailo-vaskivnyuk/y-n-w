@@ -42,6 +42,9 @@ export = {
       MODULES_ENUM.validate,
       MODULES_ENUM.setMail,
     ],
+    responseModules: [
+      MODULES_ENUM.validate,
+    ],
     modulesConfig: {
       [MODULES_ENUM.setMail]: {
         service: 'gmail',

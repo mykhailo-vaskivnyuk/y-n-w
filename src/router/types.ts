@@ -8,6 +8,7 @@ export type THandler<T extends Partial<IParams> = IParams, Q extends TOperationR
   (context: IContext, params: T): Promise<Q | null>;
   params?: Record<keyof T, Joi.Schema>;
   schema?: ObjectSchema<T>;
+  response: Record<keyof Q, Joi.Schema>;
 };
 
 export interface IRoutes {
@@ -25,7 +26,7 @@ export type IContext = IServices & {
    origin: string };
 
 export type TModule<T = any> = (config: T) =>
-  (context: IContext, operation: IOperation, handler?: THandler) =>
+  (context: IContext, operation: IOperation | TOperationResponse, handler?: THandler) =>
     Promise<[IContext, IOperation]>;
 
 export type ISessionContent = Partial<{

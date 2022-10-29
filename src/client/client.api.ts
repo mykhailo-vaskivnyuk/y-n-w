@@ -2,25 +2,25 @@
 export const api = (
   fetch: (pathname: string, options?: Record<string, any>) => Promise<any>
 ) => ({
-  'auth': {
+  'account': {
     'confirm': (options: {
       link: string,
-    }) => fetch('/auth/confirm', options),
+    }) => fetch('/account/confirm', options),
     'login': (options: {
       email: string,
       password: string,
-    }) => fetch('/auth/login', options),
-    'logout': () => fetch('/auth/logout'),
+    }) => fetch('/account/login', options),
+    'logout': () => fetch('/account/logout'),
     'overmail': (options: {
       email: string,
-    }) => fetch('/auth/overmail', options),
-    'remove': () => fetch('/auth/remove'),
+    }) => fetch('/account/overmail', options),
+    'remove': () => fetch('/account/remove'),
     'restore': (options: {
       link: string,
-    }) => fetch('/auth/restore', options),
+    }) => fetch('/account/restore', options),
     'signup': (options: {
       email: string,
-    }) => fetch('/auth/signup', options),
+    }) => fetch('/account/signup', options),
   },
   'index': () => fetch('/index'),
   'merega': {

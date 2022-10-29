@@ -48,11 +48,11 @@ class ClientApp extends EventEmmiter {
     }
   }
 
-  async login(...args: Parameters<typeof this.clientApi.auth.login>) {
+  async login(...args: Parameters<typeof this.clientApi.account.login>) {
     this.setState(AppState.LOADING);
     let user = null;
     try {
-      user = await this.clientApi.auth.login(...args);
+      user = await this.clientApi.account.login(...args);
       this.setState(AppState.READY);
       if (!user) return false;
       this.setUser(user);
@@ -63,10 +63,10 @@ class ClientApp extends EventEmmiter {
     }
   }
 
-  async logout(...args: Parameters<typeof this.clientApi.auth.logout>) {
+  async logout(...args: Parameters<typeof this.clientApi.account.logout>) {
     this.setState(AppState.LOADING);
     try {
-      await this.clientApi.auth.logout(...args);
+      await this.clientApi.account.logout(...args);
       this.setUser(null);
       this.setState(AppState.READY);
       return true;
@@ -75,10 +75,10 @@ class ClientApp extends EventEmmiter {
     }
   }
 
-  async signup(...args: Parameters<typeof this.clientApi.auth.signup>) {
+  async signup(...args: Parameters<typeof this.clientApi.account.signup>) {
     this.setState(AppState.LOADING);
     try {
-      const user = await this.clientApi.auth.signup(...args);
+      const user = await this.clientApi.account.signup(...args);
       user && this.setUser(user);
       this.setState(AppState.READY);
       return Boolean(user);
@@ -88,10 +88,10 @@ class ClientApp extends EventEmmiter {
     }
   }
 
-  async overmail(...args: Parameters<typeof this.clientApi.auth.signup>) {
+  async overmail(...args: Parameters<typeof this.clientApi.account.signup>) {
     this.setState(AppState.LOADING);
     try {
-      const success = await this.clientApi.auth.overmail(...args);
+      const success = await this.clientApi.account.overmail(...args);
       if (!success) return false;
       this.setState(AppState.READY);
       return true;
@@ -100,10 +100,10 @@ class ClientApp extends EventEmmiter {
     }
   }
 
-  async confirm(...args: Parameters<typeof this.clientApi.auth.confirm>) {
+  async confirm(...args: Parameters<typeof this.clientApi.account.confirm>) {
     this.setState(AppState.LOADING);
     try {
-      const user = await this.clientApi.auth.confirm(...args);
+      const user = await this.clientApi.account.confirm(...args);
       user && this.setUser(user);
       this.setState(AppState.READY);
       return Boolean(user);
@@ -113,10 +113,10 @@ class ClientApp extends EventEmmiter {
     }
   }
 
-  async restore(...args: Parameters<typeof this.clientApi.auth.restore>) {
+  async restore(...args: Parameters<typeof this.clientApi.account.restore>) {
     this.setState(AppState.LOADING);
     try {
-      const user = await this.clientApi.auth.restore(...args);
+      const user = await this.clientApi.account.restore(...args);
       user && this.setUser(user);
       this.setState(AppState.READY);
       return Boolean(user);
@@ -129,7 +129,7 @@ class ClientApp extends EventEmmiter {
   async removeUser() {
     this.setState(AppState.LOADING);
     try {
-      const success = await this.clientApi.auth.remove();
+      const success = await this.clientApi.account.remove();
       if (success) {
         this.setUser(null);
         this.setState(AppState.READY);
