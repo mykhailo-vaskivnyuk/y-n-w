@@ -1,3 +1,4 @@
+import Joi from 'joi';
 import { THandler } from '../../router/types';
 
 const remove: THandler = async (context) => {
@@ -7,5 +8,6 @@ const remove: THandler = async (context) => {
   await execQuery.user.remove([user_id]);
   return true;
 };
+remove.responseSchema = Joi.boolean();
 
 export = remove;

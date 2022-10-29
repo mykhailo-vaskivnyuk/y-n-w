@@ -1,7 +1,7 @@
 
 import path from 'node:path';
 import { LOGGER_LEVEL, LOGGER_TARGET } from './logger/types';
-import { MODULES_ENUM } from './router/router';
+import { MODULES_ENUM, MODULES_RESPONSE_ENUM } from './router/router';
 import { HTTP_MODULES_ENUM } from './server/http';
 
 const buildPath = 'js';
@@ -43,7 +43,7 @@ export = {
       MODULES_ENUM.setMail,
     ],
     responseModules: [
-      MODULES_ENUM.validate,
+      MODULES_RESPONSE_ENUM.validateResponse,
     ],
     modulesConfig: {
       [MODULES_ENUM.setMail]: {

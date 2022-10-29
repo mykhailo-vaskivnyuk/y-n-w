@@ -3,13 +3,14 @@ import path from 'node:path';
 import { Writable } from 'node:stream';
 import Joi from 'joi';
 import { getEnumFromMap } from '../utils/utils';
-import { THandler, IRoutes, TModule, IContext } from './types';
+import { THandler, IRoutes, TModule, IContext, TResponseModule } from './types';
 import { TPromiseExecutor } from '../types';
 import { IRouter, IOperation, TOperationResponse, IRouterConfig } from '../app/types';
 import { HandlerError, HandlerErrorEnum, RouterError, RouterErrorEnum } from './errors';
 import { DatabaseError } from '../db/errors';
 import { getStream, GetStreamError } from './modules/get.stream';
 import { validate, ValidationError } from './modules/validate';
+import { isJoiSchema, validateResponse, ValidationResponseError } from './modules.response/validateResponse';
 import { SessionError, setSession } from './modules/set.session';
 import { setMail } from './modules/send.mail';
 
@@ -22,11 +23,17 @@ export const MODULES = {
 
 export const MODULES_ENUM = getEnumFromMap(MODULES);
 
+export const MODULES_RESPONSE = {
+  validateResponse,
+};
+
+export const MODULES_RESPONSE_ENUM = getEnumFromMap(MODULES_RESPONSE);
+
 class Router implements IRouter {
   private config: IRouterConfig;
   private routes?: IRoutes;
   private modules: ReturnType<TModule>[] = [];
-  private responseModules: ReturnType<TModule>[] = [];
+  private responseModules: ReturnType<TResponseModule>[] = [];
 
   constructor(config: IRouterConfig) {
     this.config = config;
@@ -37,13 +44,13 @@ class Router implements IRouter {
       const { modules, responseModules, modulesConfig } = this.config;
       modules.map(
         (module) => {
-          const moduleConfig = modulesConfig[module] as any;
-          this.modules.push(MODULES[module](moduleConfig));
+          const moduleConfig = modulesConfig[module];
+          this.modules.push(MODULES[module](moduleConfig || {}));
         });
       responseModules.map(
         (module) => {
-          const moduleConfig = modulesConfig[module] as any;
-          this.responseModules.push(MODULES[module](moduleConfig));
+          const moduleConfig = modulesConfig[module];
+          this.responseModules.push(MODULES_RESPONSE[module](moduleConfig));
         });
     } catch (e: any) {
       logger.error(e);
@@ -61,28 +68,16 @@ class Router implements IRouter {
   }
   
   async exec({ ...operation }: IOperation): Promise<TOperationResponse> {
-    const { options, names, data } = operation;
-    // console.log(operation);
-    let context = {} as IContext;
-
+    const { options: { origin }, names, data: { params } } = operation;
+    let context = { origin } as IContext;
     const handler = this.findRoute(names);
-    [context, operation] = await this.runModules(context, operation, handler);
-    
-    context.origin = options.origin;
-  
     try {
-      const operationResponse = await handler(context, data.params);
-      [context, operation] = await this.runModules(context, operationResponse, handler);
-      return operationResponse;
+      [context, operation] = await this.runModules(context, operation, handler);
+      let response = await handler(context, params);
+      [context, response] = await this.runResponseModules(context, response, handler);
+      return response;
     } catch (e: any) {
-      if (!(e instanceof DatabaseError)) logger.error(e);
-      if (e instanceof HandlerError) {
-        const { code, details } = e;
-        if (code === HandlerErrorEnum.E_REDIRECT) {
-          throw new RouterError(RouterErrorEnum.E_REDIRECT, details);
-        }
-      }
-      throw new RouterError(RouterErrorEnum.E_HANDLER, e.message);
+      this.onError(e);
     } finally {
       context.session.finalize();
     }
@@ -96,7 +91,7 @@ class Router implements IRouter {
       const ext = path.extname(item.name);
       const name = path.basename(item.name, ext);
       if (item.isFile()) {
-        if (ext !== '.js') continue;
+        if (ext !== '.js' || name === 'types') continue;
         const filePath = path.join(routePath, name);
         const moduleExport = require(filePath) as THandler | IRoutes;
         if (name === 'index') {
@@ -130,23 +125,19 @@ class Router implements IRouter {
   }
 
   private async runModules(
-    context: IContext, operation: IOperation | TOperationResponse, handler: THandler
-  ): Promise<[IContext, IOperation | TOperationResponse]> {
-    try {
-      for (const module of this.modules)
-        [context, operation] = await module(context, operation, handler);
-    } catch (e: any) {
-      const { message, details } = e;
-      if (e instanceof SessionError)
-        throw new RouterError(RouterErrorEnum.E_ROUTER, message);
-      if (e instanceof ValidationError)
-        throw new RouterError(RouterErrorEnum.E_MODULE, details);
-      if (e instanceof GetStreamError)
-        throw new RouterError(RouterErrorEnum.E_MODULE, message);
-      logger.error(e);
-      throw new RouterError(RouterErrorEnum.E_ROUTER, details || message);
-    }
+    context: IContext, operation: IOperation, handler: THandler
+  ): Promise<[IContext, IOperation]> {
+    for (const module of this.modules)
+      [context, operation] = await module(context, operation, handler);
     return [context, operation];
+  }
+
+  private async runResponseModules(
+    context: IContext, response: TOperationResponse, handler: THandler
+  ): Promise<[IContext, TOperationResponse]> {
+    for (const module of this.responseModules)
+      [context, response] = await module(context, response, handler);
+    return [context, response];
   }
 
   private createClientApi() {
@@ -157,7 +148,7 @@ class Router implements IRouter {
       stream.on('finish', rv);
       stream.write(`
 export const api = (
-  fetch: (pathname: string, options?: Record<string, any>) => Promise<any>
+  fetch: <T>(pathname: string, options?: Record<string, any>) => Promise<T>
 ) => (`);
       this.createJs(this.routes!, stream);
       stream.write(');\n');
@@ -177,8 +168,9 @@ export const api = (
       const nextPathname = pathname + '/' + key;
       if (this.isHandler(handler)) {
         const types = this.getTypes(handler.params, nextIndent);
+        const responseTypes = this.getTypes(handler.responseSchema, nextIndent);
         stream.write(
-          `(${types ? `options: ${types}` : ''}) => fetch('${nextPathname}'${types ? ', options' : ''}),`
+          `(${types ? `options: ${types}` : ''}) => fetch<${responseTypes}>('${nextPathname}'${types ? ', options' : ''}),`
         );
       }
       else {
@@ -189,14 +181,49 @@ export const api = (
     stream.write('\n' + indent + '}');
   }
 
-  private getTypes(params?: Record<string, Joi.Schema>, indent = '') {
-    if (!params) return null;
+  private getTypes(params?: THandler['params'] | THandler['responseSchema'], indent = ''): string {
+    if (!params) return '';
     const result = [];
-    const paramsEntries = Object.entries(params)
-    for (const [key, { type }] of paramsEntries) {
-      result.push(`\n${indent}  ${key}: ${type},`);
+    if (isJoiSchema(params)) {
+      let type = params.type || '';
+      type = type === 'object' ? 'Record<string, any>' : type;
+      type === 'any' ? `${[...(params as any)._valids._values.values()][0]}` : type;
+      return type;
+    }
+    if (Array.isArray(params)) {
+      return params.map((item) => this.getTypes(item, indent)).join(' | ');
+    }
+    const paramsEntries = Object.entries(params);
+    for (const [key, param] of paramsEntries) {
+      result.push(`\n${indent}  ${key}: ${this.getTypes(param, indent)};`);
     }
     return `{${result.join('')}\n${indent}}`;
+  }
+
+  private onError(e: any): never {
+    const { message, code, details } = e;
+    if (e instanceof DatabaseError) {
+      throw new RouterError(RouterErrorEnum.E_HANDLER, message);
+    }
+
+    if (e instanceof HandlerError) {
+      if (code === HandlerErrorEnum.E_REDIRECT) {
+        throw new RouterError(RouterErrorEnum.E_REDIRECT, details);
+      }
+      throw new RouterError(RouterErrorEnum.E_HANDLER, message);
+    }
+    
+    if (e instanceof SessionError)
+      throw new RouterError(RouterErrorEnum.E_ROUTER, message);
+    if (e instanceof ValidationError)
+      throw new RouterError(RouterErrorEnum.E_MODULE, details);
+    if (e instanceof GetStreamError)
+      throw new RouterError(RouterErrorEnum.E_MODULE, message);
+    if (e instanceof ValidationResponseError)
+      throw new RouterError(RouterErrorEnum.E_MODULE, message);
+
+    logger.error(e);
+    throw new RouterError(RouterErrorEnum.E_ROUTER, details || message);
   }
 }
 

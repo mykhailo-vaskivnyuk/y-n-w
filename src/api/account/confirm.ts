@@ -1,20 +1,21 @@
 import Joi from 'joi';
 import { THandler } from '../../router/types';
-import { ITableUsers } from '../../db/db.types';
+import { IUserResponse, UserResponseSchema } from '../types';
 
 type IConfirmParams = {
   link: string,
 }
 
-const confirm: THandler<IConfirmParams, ITableUsers> = async (context, { link }) => {
-  const [user = null] = await execQuery.user.findByLink([link]);
+const confirm: THandler<IConfirmParams, IUserResponse | null> = async (context, { link }) => {
+  const [user] = await execQuery.user.findByLink([link]);
   if (!user) return null;
   await execQuery.user.unsetUserLinks([user.user_id]);
   await context.session.write('user_id', user.user_id);
-  return user;
+  return { ...user, confirmed: !user.link};
 };
 confirm.params = {
   link: Joi.string(),
 };
+confirm.responseSchema = UserResponseSchema;
 
 export = confirm;

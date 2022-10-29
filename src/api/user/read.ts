@@ -1,13 +1,14 @@
 import { THandler } from '../../router/types';
+import { IUserResponse, UserResponseSchema } from '../types';
 
-const usersRead: THandler = async (context) => {
+const usersRead: THandler<any, IUserResponse> = async (context) => {
   const { session } = context;
   const user_id = session.read('user_id');
   if (!user_id) return null;
   const [user] = await execQuery.user.getUserById([user_id]);
   if (!user) return null;
-  const { email, name, mobile, net_name } = user;
-  return { email, name, mobile, net_name };
+  return { ...user, confirmed: !user.link};
 };
+usersRead.responseSchema = UserResponseSchema;
 
 export = usersRead;

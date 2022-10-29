@@ -7,7 +7,7 @@ type IOvermailParams = {
 }
 
 const overmail: THandler<IOvermailParams, boolean> = async (context, { email }) => {
-  const [user = null] = await execQuery.user.findUserByEmail([email]);
+  const [user] = await execQuery.user.findUserByEmail([email]);
   if (!user) return false;
   const restore = createUnicCode(15);
   const { link } = user;
@@ -21,5 +21,6 @@ const overmail: THandler<IOvermailParams, boolean> = async (context, { email }) 
 overmail.params = {
   email: Joi.string().required(), //.email(),
 };
+overmail.responseSchema = Joi.boolean();
 
 export = overmail;

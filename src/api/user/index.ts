@@ -11,10 +11,13 @@ create.params = {
   name: Joi.string().required(),
   field: Joi.number(),
 };
-create.schema = Joi.object(create.params);
+create.responseSchema = {
+  name: Joi.string(),
+};
 
 const update: THandler = async () => {
-  return ''; // execQuery.user.getUsers([]);
+  return '';
 }
+update.responseSchema = Joi.string();
 
 export = { create, update };

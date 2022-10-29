@@ -3,7 +3,7 @@ import { Readable } from 'node:stream';
 import { IObject, TPrimitiv } from '../types';
 import { IDatabaseQueries, TQuery } from '../db/types';
 import { ILoggerConfig } from '../logger/types';
-import { MODULES } from '../router/router';
+import { MODULES, MODULES_RESPONSE } from '../router/router';
 import { HTTP_MODULES } from '../server/http';
 
 export interface IConfig {
@@ -90,9 +90,9 @@ export interface IRouterConfig {
   apiPath: string;
   clientApiPath: string;
   modules: (keyof typeof MODULES)[];
-  responseModules: (keyof typeof MODULES)[];
+  responseModules: (keyof typeof MODULES_RESPONSE)[];
   modulesConfig: {
-    [key in (keyof typeof MODULES)]?: Record<string, any>;
+    [key in (keyof typeof MODULES | keyof typeof MODULES_RESPONSE)]?: Record<string, any>;
   };
 }
 
