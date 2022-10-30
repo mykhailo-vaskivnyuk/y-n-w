@@ -1,7 +1,8 @@
 import Joi, { ObjectSchema } from 'joi';
+import { SentMessageInfo } from 'nodemailer';
 import { IOperation, IParams, TOperationResponse } from '../app/types';
 import { IUser } from '../client/types';
-import { TMail } from '../services/mail/mail';
+
 import { Session } from '../services/session/session';
 import { IObject } from '../types';
 
@@ -22,7 +23,7 @@ export interface IRoutes {
 
 export interface IServices {
   session: Session<ISessionContent>;
-  sendMail: TMail;
+  sendMail: IMailService;
 }
 
 export type ServicesEnum = keyof IServices;
@@ -30,7 +31,7 @@ export type ServicesEnum = keyof IServices;
 export type IContext = IServices & { 
    origin: string };
 
-export type TModule<T = any> = (config?: T) =>
+export type TModule<T = any> = (config: T) =>
   (context: IContext, operation: IOperation, handler?: THandler) =>
     Promise<[IContext, IOperation]>;
 
@@ -41,3 +42,10 @@ export type TResponseModule<T = any> = (config?: T) =>
 export type ISessionContent = Partial<{
   user_id: IUser['user_id'];
 }>;
+
+export interface IMailService {
+  confirm: (to: string, token: string) => Promise<SentMessageInfo>;
+  restore: (to: string, token: string) => Promise<SentMessageInfo>;
+}
+
+export type TMailType = 'confirm' | 'restore';

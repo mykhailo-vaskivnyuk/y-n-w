@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { Writable } from 'node:stream';
-import Joi from 'joi';
 import { getEnumFromMap } from '../utils/utils';
 import { THandler, IRoutes, TModule, IContext, TResponseModule } from './types';
 import { TPromiseExecutor } from '../types';
@@ -12,13 +11,13 @@ import { getStream, GetStreamError } from './modules/get.stream';
 import { validate, ValidationError } from './modules/validate';
 import { isJoiSchema, validateResponse, ValidationResponseError } from './modules.response/validateResponse';
 import { SessionError, setSession } from './modules/set.session';
-import { setMail } from './modules/send.mail';
+import { setMailService } from './modules/send.mail';
 
 export const MODULES = {
   getStream,
   validate,
   setSession,
-  setMail,
+  setMailService,
 };
 
 export const MODULES_ENUM = getEnumFromMap(MODULES);

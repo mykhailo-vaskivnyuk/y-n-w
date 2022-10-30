@@ -40,13 +40,13 @@ export = {
       MODULES_ENUM.setSession,
       MODULES_ENUM.getStream,
       MODULES_ENUM.validate,
-      MODULES_ENUM.setMail,
+      MODULES_ENUM.setMailService,
     ],
     responseModules: [
       MODULES_RESPONSE_ENUM.validateResponse,
     ],
     modulesConfig: {
-      [MODULES_ENUM.setMail]: {
+      [MODULES_ENUM.setMailService]: {
         service: 'gmail',
         auth: {
           user: 'm.vaskivnyuk@gmail.com',

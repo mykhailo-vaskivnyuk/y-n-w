@@ -2,7 +2,7 @@ import { TPromiseExecutor } from '../types';
 
 const crypto = require('node:crypto');
 
-export const createUnicCode = (length: number) => {
+export const createUnicCode = (length: number): string => {
   return crypto.randomBytes(length).toString('hex');
 };
 

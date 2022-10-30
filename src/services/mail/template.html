@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      * { 
+        margin: 0;
+        padding: 0;
+        text-decoration: none;
+        box-sizing: border-box;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+      a:focus, a:active, a:hover {
+        outline: none;
+      }
+      a:link, a:visited {
+        color: currentColor;
+      }
+      a:hover {
+        cursor: pointer;
+      }
+      :focus {
+        outline: none;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+      }
+      body {
+        font-size: 20px;
+        font-family: Arial, sans-serif;
+        font-weight: 400;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+    </style>
+
+    <style>
+      .Mail-content {
+        width: 100%;
+        border: 1px solid #ef6c1a;
+        max-width: 480px;
+        min-width: 320px;
+        background: #ef6c1a;
+        font-family: Arial;
+      }
+      .Mail-header {
+        color: #ffffff;
+        font-size: 32px;
+        font-weight: 600;
+        padding: 16px;
+      }
+      .Mail-body {
+        padding: 16px;
+        font-size: 24px;
+        background: #f1f4f0;
+        border-radius: 6px;
+        color: #F52E2E;
+      }
+      .Mail-body a {
+        color: #ffffff;
+        width: 100%;
+        display: block;
+        padding: 8px;
+        background: #068408;
+        margin-top: 24px;
+        text-align: center;
+        border-radius: 4px;
+      }
+      .Mail-footer {
+        height: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="Mail-content">
+      <div class="Mail-header">YOU &amp; WORLD</div>
+      <div class="Mail-body">
+        <p>%s</p>
+        <a href="%s">ПЕРЕЙТИ</a></div><div class="Mail-footer">
+      </div>
+    </div>
+  </body>
+</html>
