@@ -19,5 +19,3 @@ export const UserResponseSchema = [
     confirmed: Joi.boolean(),
   },
 ];
-
-console.log(Joi.object())

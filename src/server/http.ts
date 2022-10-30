@@ -67,7 +67,6 @@ class HttpConnection implements IInputConnection {
   }
 
   private async onRequest(req: IRequest, res: IResponse) {
-    // console.log(req.headers)
     if (!this.runModules(req, res)) return;
 
     const { api } = this.config.path;
@@ -169,7 +168,6 @@ class HttpConnection implements IInputConnection {
   }
       
   private getSessionKey(cookie?: string) {
-    console.log('session', cookie);
     if (cookie) {
       const regExp = /sessionKey=([^\s]*)\s*;?/;
       const [, result] = cookie.match(regExp) || [];

@@ -24,7 +24,6 @@ export const verifyHash = (password: string, hashedPasword: string) => {
     crypto.scrypt(password, salt, 64, (err: Error | null, result: Buffer) => {
       err && rj(err);
       const hashToVerify = result.toString('hex');
-      console.log(hashToVerify);
       rv(hashToVerify === hash);
     });
   }
