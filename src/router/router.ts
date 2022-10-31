@@ -28,6 +28,12 @@ export const MODULES_RESPONSE = {
 
 export const MODULES_RESPONSE_ENUM = getEnumFromMap(MODULES_RESPONSE);
 
+const getTypeNameFromPathname = (pathname: string) => {
+  const parts = pathname.replace('/', '').split('/');
+  const name = parts.map((part) => part[0]?.toUpperCase() + part.slice(1)).join('');
+  return 'T' + name.replace(/\./g, '_');
+}
+
 class Router implements IRouter {
   private config: IRouterConfig;
   private routes?: IRoutes;
@@ -142,22 +148,39 @@ class Router implements IRouter {
   private createClientApi() {
     if (!this.routes) throw new RouterError(RouterErrorEnum.E_ROUTES);
     const executor: TPromiseExecutor<void> = (rv, rj) => {
-      const stream = fs.createWriteStream(this.config.clientApiPath);
-      stream.on('error', rj);
-      stream.on('finish', rv);
-      stream.write(`
+      const apiPath = this.config.clientApiPath;
+      const apiFileNameBase = path.basename(apiPath, path.extname(apiPath));
+      const typesFileNameBase = apiFileNameBase + '.types';
+      const typesFileName = typesFileNameBase + '.ts';
+      const typesPath = path.join(path.dirname(apiPath), typesFileName);
+      const stream = fs.createWriteStream(apiPath);
+      const typesStream = fs.createWriteStream(typesPath);
+      let isFinish = false;
+      const handleFinish = () => isFinish ? rv() : isFinish = true;
+      stream.on('error', (e) => (typesStream.close(), rj(e)));
+      stream.on('finish', handleFinish);
+      typesStream.on('error', (e) => (stream.close(), rj(e)));
+      typesStream.on('finish', handleFinish);
+      const apiTypesPath = path.resolve(this.config.apiPath, 'types.js');
+      const apiTypes = require(apiTypesPath);
+      Object.keys(apiTypes).forEach((typeName) => stream.write(`import { I${typeName.replace('Schema', '')} } from './types';\n`));
+      stream.write(
+        `import * as Types from './${typesFileNameBase}';
+
 export const api = (
   fetch: <T>(pathname: string, options?: Record<string, any>) => Promise<T>
 ) => (`);
-      this.createJs(this.routes!, stream);
+
+      this.createJs(this.routes!, stream, typesStream);
       stream.write(');\n');
       stream.close();
+      typesStream.close();
     };
 
     return new Promise(executor);
   }
 
-  private createJs(routes: IRoutes, stream: Writable, pathname = '', indent = '') {
+  private createJs(routes: IRoutes, stream: Writable, typesStream: Writable, pathname = '', indent = '') {
     stream.write('{');
     const nextIndent = indent + '  ';
     const routesKeys = Object.keys(routes);
@@ -167,13 +190,22 @@ export const api = (
       const nextPathname = pathname + '/' + key;
       if (this.isHandler(handler)) {
         const types = this.getTypes(handler.params, nextIndent);
+        const typeName = getTypeNameFromPathname(nextPathname);
+        types && typesStream.write(`export type ${typeName} = ${types};\n`);
+        const apiTypes = require(path.resolve(this.config.apiPath, 'types.js'));
+        let [responseTypeName] = Object.entries(apiTypes).find(([, type]) => type === handler.responseSchema) || [];
+        const typeNotFound = !responseTypeName;
+        responseTypeName = responseTypeName && 'I' + responseTypeName.replace('Schema', '');
         const responseTypes = this.getTypes(handler.responseSchema, nextIndent);
+        responseTypeName = responseTypeName || `${typeName}Response`;
+        typeNotFound && responseTypes && typesStream.write(`export type ${responseTypeName} = ${responseTypes};\n`);
+        typeNotFound && (responseTypeName = `Types.${responseTypeName}`);
         stream.write(
-          `(${types ? `options: ${types}` : ''}) => fetch<${responseTypes}>('${nextPathname}'${types ? ', options' : ''}),`
+          `(${types ? `options: Types.${typeName}` : ''}) => fetch${responseTypes ? `<${responseTypeName}>` : ''}('${nextPathname}'${types ? ', options' : ''}),`
         );
       }
       else {
-        this.createJs(handler, stream, nextPathname, nextIndent);
+        this.createJs(handler, stream, typesStream, nextPathname, nextIndent);
         stream.write(',');
       }
     }

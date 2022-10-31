@@ -1,7 +1,7 @@
 import Joi, { ObjectSchema } from 'joi';
 import { SentMessageInfo } from 'nodemailer';
 import { IOperation, IParams, TOperationResponse } from '../app/types';
-import { IUser } from '../client/types';
+import { ITableUsers } from '../db/db.types';
 
 import { Session } from '../services/session/session';
 import { IObject } from '../types';
@@ -40,7 +40,7 @@ export type TResponseModule<T = any> = (config?: T) =>
   Promise<[IContext, TOperationResponse]>;
 
 export type ISessionContent = Partial<{
-  user_id: IUser['user_id'];
+  user_id: ITableUsers['user_id'];
 }>;
 
 export interface IMailService {

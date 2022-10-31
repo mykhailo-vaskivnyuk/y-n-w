@@ -1,8 +1,9 @@
-export default class EventEmmiter {
+export default class EventEmitter {
   private events: Record<string, ((args: any) => void)[]> = {};
 
   on(event: string, cb: (args: any) => void) {
-    this.events[event]?.push(cb) || (this.events[event] = [cb]);
+    const events = this.events[event];
+    events ? events.push(cb) : (this.events[event] = [cb]);
   }
 
   emit(event: string, data: any) {
@@ -13,6 +14,6 @@ export default class EventEmmiter {
   remove(event: string, cb: (args: any) => void) {
     const handlers = this.events[event];
     if (!handlers) return;
-    this.events[event] = handlers.filter((handler) => handler === cb);
+    this.events[event] = handlers.filter((handler) => handler !== cb);
   }
 }

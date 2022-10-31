@@ -1,7 +1,8 @@
 import Joi from 'joi';
+import { IUserResponse } from '../../client/common/api/types';
 import { THandler } from '../../router/types';
 import { verifyHash } from '../../utils/crypto';
-import { IUserResponse, UserResponseSchema } from '../types';
+import { UserResponseSchema } from '../types';
 
 type ILoginParams = {
   email: string,

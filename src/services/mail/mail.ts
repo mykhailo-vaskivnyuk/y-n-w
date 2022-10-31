@@ -29,7 +29,7 @@ export const initMail = (config: MailOptions) => {
 
   const sendMail = (type: TMailType, origin: string, to: string, token: string) => {
     const { text, subject } = OptionsMap[type];
-    const link = `${origin}/#/${type}/${token}`;
+    const link = `${origin}/#/account/${type}/${token}`;
     const html = util.format(template, text, link);
     const options = {
       ...generalOptions,

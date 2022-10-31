@@ -1,4 +1,4 @@
-import { getEnumFromMap } from '../utils/utils';
+import { getEnumFromMap } from '../../utils/utils';
 
 export const HttpResponseErrorMap = {
   400: 'Bad request',

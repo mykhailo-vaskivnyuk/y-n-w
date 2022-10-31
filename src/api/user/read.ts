@@ -1,5 +1,6 @@
+import { IUserResponse } from '../../client/common/api/types';
 import { THandler } from '../../router/types';
-import { IUserResponse, UserResponseSchema } from '../types';
+import { UserResponseSchema } from '../types';
 
 const usersRead: THandler<any, IUserResponse> = async (context) => {
   const { session } = context;

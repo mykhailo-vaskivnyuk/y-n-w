@@ -1,6 +1,7 @@
 import Joi from 'joi';
+import { IUserResponse } from '../../client/common/api/types';
 import { THandler } from '../../router/types';
-import { IUserResponse, UserResponseSchema } from '../types';
+import { UserResponseSchema } from '../types';
 
 type IConfirmParams = {
   link: string,

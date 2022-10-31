@@ -35,7 +35,7 @@ export = {
   },
   router: {
     apiPath: path.join(buildPath, 'api'),
-    clientApiPath: 'src/client/client.api.ts',
+    clientApiPath: 'src/client/common/api/client.api.ts',
     modules: [
       MODULES_ENUM.setSession,
       MODULES_ENUM.getStream,
