@@ -11,7 +11,7 @@ export class SessionError extends Error {
 
 const createSession = createService<ISessionContent>();
 
-export const setSession: TModule = () => async (context, operation) => {
+const setSession: TModule = () => async (context, operation) => {
   const { options } = operation;
   const { sessionKey } = options;
   if (!sessionKey) return [context, operation];
@@ -23,4 +23,5 @@ export const setSession: TModule = () => async (context, operation) => {
     logger.error(e);
     throw new SessionError();
   }
-}
+};
+export default setSession;

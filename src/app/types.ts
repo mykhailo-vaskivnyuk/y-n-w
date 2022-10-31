@@ -3,8 +3,8 @@ import { Readable } from 'node:stream';
 import { IObject, TPrimitiv } from '../types';
 import { IDatabaseQueries, TQuery } from '../db/types';
 import { ILoggerConfig } from '../logger/types';
-import { MODULES, MODULES_RESPONSE } from '../router/router';
 import { HTTP_MODULES } from '../server/http';
+import { MODULES, MODULES_RESPONSE } from '../router/constants';
 
 export interface IConfig {
   logger: ILoggerConfig;

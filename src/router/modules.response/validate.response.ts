@@ -27,7 +27,7 @@ const responseSchemaToSchema = (schema: THandler['responseSchema']): JoiSchema =
   return isJoiSchema(schema) ? schema : Joi.object(schema);
 };
 
-export const validateResponse: TResponseModule = () => async (context, response, handler) => {
+const validateResponse: TResponseModule = () => async (context, response, handler) => {
   const { responseSchema } = handler || {};
   if (!responseSchema) throw new Error('Handler is not put');
   const schema = responseSchemaToSchema(responseSchema);
@@ -43,3 +43,5 @@ export const validateResponse: TResponseModule = () => async (context, response,
   }
   return [context, value];
 };
+
+export default validateResponse;

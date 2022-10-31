@@ -10,7 +10,7 @@ export class MailError extends Error {
   }
 }
 
-export const setMailService: TModule = (config: MailOptions) => {
+const setMailService: TModule = (config: MailOptions) => {
   const { sendMail } = initMail(config);
 
   const create = (origin: string, type: TMailType) => async (to: string, token: string) => {
@@ -31,3 +31,5 @@ export const setMailService: TModule = (config: MailOptions) => {
     return [context, operation];
   };
 };
+
+export default setMailService;

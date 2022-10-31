@@ -8,7 +8,7 @@ export class GetStreamError extends Error {
   }
 }
 
-export const getStream: TModule = () => async (context, operation) => {
+const getStream: TModule = () => async (context, operation) => {
   const { params, stream } = operation.data;
   if (!stream) return [context, operation];
   const { type,  content } = stream;
@@ -29,4 +29,6 @@ export const getStream: TModule = () => async (context, operation) => {
     logger.error(e);
     throw new GetStreamError(e.message);
   }
-}
+};
+
+export default getStream;
