@@ -1,4 +1,4 @@
-import { MIME_TYPES_ENUM } from '../../constants';
+import { MIME_TYPES_ENUM } from '../../constants/constants';
 import { TModule } from '../types';
 
 export class GetStreamError extends Error {

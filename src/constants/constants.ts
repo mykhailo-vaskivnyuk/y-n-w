@@ -1,4 +1,4 @@
-import { getEnumFromMap } from './utils/utils'
+import { getEnumFromMap } from '../utils/utils'
 
 export const MIME_TYPES_MAP = {
   'application/json': { maxLength: 1_000 },

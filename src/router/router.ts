@@ -186,7 +186,7 @@ export const api = (
     if (isJoiSchema(params)) {
       let type = params.type || '';
       type = type === 'object' ? 'Record<string, any>' : type;
-      type === 'any' ? `${[...(params as any)._valids._values.values()][0]}` : type;
+      type = type === 'any' ? `${[...(params as any)._valids._values.values()][0]}` : type;
       return type;
     }
     if (Array.isArray(params)) {

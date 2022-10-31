@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
 import { format } from 'node:util';
-import { JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../constants';
+import { JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../constants/constants';
 import { IRequest, IResponse, IServer, THttpModule } from './types';
 import { TPromiseExecutor } from '../types';
 import { IInputConnection, IInputConnectionConfig, IOperation, IParams, TOperationResponse } from '../app/types';

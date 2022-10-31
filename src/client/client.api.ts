@@ -5,21 +5,21 @@ export const api = (
   'account': {
     'confirm': (options: {
       link: string;
-    }) => fetch<any | {
+    }) => fetch<null | {
       email: string;
-      name: string | any;
-      mobile: string | any;
-      net_name: string | any;
+      name: string | null;
+      mobile: string | null;
+      net_name: string | null;
       confirmed: boolean;
     }>('/account/confirm', options),
     'login': (options: {
       email: string;
       password: string;
-    }) => fetch<any | {
+    }) => fetch<null | {
       email: string;
-      name: string | any;
-      mobile: string | any;
-      net_name: string | any;
+      name: string | null;
+      mobile: string | null;
+      net_name: string | null;
       confirmed: boolean;
     }>('/account/login', options),
     'logout': () => fetch<boolean>('/account/logout'),
@@ -29,20 +29,20 @@ export const api = (
     'remove': () => fetch<boolean>('/account/remove'),
     'restore': (options: {
       link: string;
-    }) => fetch<any | {
+    }) => fetch<null | {
       email: string;
-      name: string | any;
-      mobile: string | any;
-      net_name: string | any;
+      name: string | null;
+      mobile: string | null;
+      net_name: string | null;
       confirmed: boolean;
     }>('/account/restore', options),
     'signup': (options: {
       email: string;
-    }) => fetch<any | {
+    }) => fetch<null | {
       email: string;
-      name: string | any;
-      mobile: string | any;
-      net_name: string | any;
+      name: string | null;
+      mobile: string | null;
+      net_name: string | null;
       confirmed: boolean;
     }>('/account/signup', options),
   },
@@ -61,11 +61,11 @@ export const api = (
       name: string;
     }>('/user/create', options),
     'update': () => fetch<string>('/user/update'),
-    'read': () => fetch<any | {
+    'read': () => fetch<null | {
       email: string;
-      name: string | any;
-      mobile: string | any;
-      net_name: string | any;
+      name: string | null;
+      mobile: string | null;
+      net_name: string | null;
       confirmed: boolean;
     }>('/user/read'),
   },
