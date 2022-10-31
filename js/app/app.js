@@ -47,6 +47,9 @@ class App {
                     [errors_3.RouterErrorEnum.E_MODULE]: () => {
                         throw new errors_4.ServerError(errors_4.ServerErrorEnum.E_BED_REQUEST, details);
                     },
+                    [errors_3.RouterErrorEnum.E_REDIRECT]: () => {
+                        throw new errors_4.ServerError(errors_4.ServerErrorEnum.E_REDIRECT, details);
+                    },
                 };
                 if (e instanceof errors_3.RouterError && code in errors)
                     errors[code]();

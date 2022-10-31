@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setSession = exports.SessionError = void 0;
+exports.SessionError = void 0;
 const session_1 = require("../../services/session/session");
 class SessionError extends Error {
     constructor() {
@@ -9,20 +9,21 @@ class SessionError extends Error {
     }
 }
 exports.SessionError = SessionError;
-const setSession = () => async (context, data) => {
-    const { params } = data;
-    const { sessionKey } = params;
+const createSession = (0, session_1.createService)();
+const setSession = () => async (context, operation) => {
+    const { options } = operation;
+    const { sessionKey } = options;
     if (!sessionKey)
-        return [context, data];
+        return [context, operation];
     try {
-        const session = await (0, session_1.createSession)(sessionKey);
+        const session = await createSession(sessionKey);
         context.session = session;
-        return [context, data];
+        return [context, operation];
     }
     catch (e) {
         logger.error(e);
         throw new SessionError();
     }
 };
-exports.setSession = setSession;
+exports.default = setSession;
 //# sourceMappingURL=set.session.js.map

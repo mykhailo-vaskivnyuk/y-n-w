@@ -1,7 +1,7 @@
 
-import { TModule } from '../types';
+import { TMailType, TModule } from '../types';
 import { initMail } from '../../services/mail/mail';
-import { Options, MailOptions } from 'nodemailer/lib/smtp-transport';
+import { MailOptions } from 'nodemailer/lib/smtp-transport';
 
 export class MailError extends Error {
   constructor() {
@@ -10,19 +10,26 @@ export class MailError extends Error {
   }
 }
 
-export const setMail: TModule<MailOptions> = (config) => {
-  const sendMail = initMail(config);
-  const fn = (options: Options) => {
+const setMailService: TModule = (config: MailOptions) => {
+  const { sendMail } = initMail(config);
+
+  const create = (origin: string, type: TMailType) => async (to: string, token: string) => {
     try {
-      return sendMail(options);
+      return await sendMail(type, origin, to, token);
     } catch (e: any) {
       logger.error(e);
       throw new MailError();
     }
   };
 
-  return async (context, data) => {
-    context.sendMail = fn;
-    return [context, data];
+  return async (context, operation) => {
+    const { origin } = context;
+    context.sendMail = {
+      confirm: create(origin, 'confirm'),
+      restore: create(origin, 'restore'),
+    };
+    return [context, operation];
   };
 };
+
+export default setMailService;

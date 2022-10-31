@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStream = exports.GetStreamError = void 0;
-const constants_1 = require("../../constants");
+exports.GetStreamError = void 0;
+const constants_1 = require("../../constants/constants");
 class GetStreamError extends Error {
     constructor(message) {
         super(message || 'Validation error');
@@ -9,15 +9,15 @@ class GetStreamError extends Error {
     }
 }
 exports.GetStreamError = GetStreamError;
-const getStream = () => async (context, data) => {
-    const { params, stream } = data;
+const getStream = () => async (context, operation) => {
+    const { params, stream } = operation.data;
     if (!stream)
-        return [context, data];
+        return [context, operation];
     const { type, content } = stream;
     if (type === constants_1.MIME_TYPES_ENUM['application/octet-stream']) {
         params.stream = stream;
-        delete data.stream;
-        return [context, data];
+        delete operation.data.stream;
+        return [context, operation];
     }
     try {
         const buffers = [];
@@ -25,12 +25,12 @@ const getStream = () => async (context, data) => {
             buffers.push(chunk);
         const string = Buffer.concat(buffers).toString() || '{}';
         Object.assign(params, JSON.parse(string));
-        return [context, data];
+        return [context, operation];
     }
     catch (e) {
         logger.error(e);
         throw new GetStreamError(e.message);
     }
 };
-exports.getStream = getStream;
+exports.default = getStream;
 //# sourceMappingURL=get.stream.js.map

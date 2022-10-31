@@ -1,10 +1,17 @@
 import { IObject } from '../../types';
 import { ISession } from './types';
 
-export class Session<T extends IObject> implements ISession<T> {
+export class Session<T extends IObject = IObject> implements ISession<T> {
+  private sessionKey: string;
+
   private session: T | null = null;
 
-  constructor(private sessionKey: string) {}
+  private finalCallback: () => void;
+
+  constructor(sessionKey: string, finalCallback: () => void) {
+    this.sessionKey = sessionKey;
+    this.finalCallback = finalCallback;
+  }
 
   async write<K extends keyof T>(key: K, value: T[K]): Promise<T[K]> {
     let isUpdate = true;
@@ -23,7 +30,7 @@ export class Session<T extends IObject> implements ISession<T> {
   }
 
   read<K extends keyof T>(key: K) {
-    if (this.session) return this.session[key];
+    return this.session?.[key];
   }
 
   async delete<K extends keyof T>(key: K) {
@@ -45,23 +52,41 @@ export class Session<T extends IObject> implements ISession<T> {
   }
 
   async init() {
-    const result = await execQuery.session.read([this.sessionKey]);
-    if (!result?.[0]) return this;
-    const { session_value } = result[0];
-    this.deserialize(session_value);
+    const [result] = await execQuery.session.read([this.sessionKey]);
+    this.deserialize(result?.session_value);
     return this;
+  }
+
+  finalize() {
+    this.finalCallback();
   }
 
   private serialize(): string {
     return JSON.stringify(this.session);
   }
 
-  private deserialize(value: string) {
-    this.session = JSON.parse(value);
+  private deserialize(value: string | undefined) {
+    this.session = value ? JSON.parse(value) : null;
   }
 }
 
-export const createSession = async <T extends IObject>
-(sessionKey: string): Promise<Session<T>> => {
-  return await new Session<T>(sessionKey).init();
+export const createService = <T extends IObject = IObject>() => {
+  const activeSessions = new Map<string, [Promise<Session<T>>, number]>();
+
+  const clearSession = (sessionKey: string) => {
+    const [session, count = 0] = activeSessions.get(sessionKey) || [];
+    if (!session) return;
+    if (count <= 1) activeSessions.delete(sessionKey);
+    else activeSessions.set(sessionKey, [session, count - 1]);
+  }
+  
+  const createSession = async (sessionKey: string): Promise<Session<T>> => {
+    let [session, count = 0] = activeSessions.get(sessionKey) || [];
+    if (!session) session = new Session<T>(sessionKey, () => clearSession(sessionKey)).init();
+    activeSessions.set(sessionKey,  [session, ++count]);
+    const s = (await activeSessions.get(sessionKey)!)[0]
+    return s;
+  }
+
+  return createSession;
 };

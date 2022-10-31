@@ -26,7 +26,7 @@ CREATE UNIQUE INDEX akMembersUsers ON "members_users" ("net_id","user_id","membe
 
 DROP TABLE IF EXISTS "nets";
 CREATE TABLE "nets" (
-  "net_id" int NOT NULL,
+  "net_id" bigint generated always as identity (START 238),
   "net_level" int DEFAULT NULL,
   "net_address" int DEFAULT NULL,
   "parent_net_id" int DEFAULT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE "nets" (
 );
 
 ALTER TABLE "nets"
-  ADD PRIMARY KEY ("net_id");
+   ADD PRIMARY KEY ("net_id");
 
 -- --------------------------------------------------------
 
@@ -62,7 +62,7 @@ CREATE TABLE "nets_data" (
 CREATE UNIQUE INDEX akUniqNet ON "nets_data" ("net_id");
 
 ALTER TABLE "nets_data"
-  ADD PRIMARY KEY ("net_id");
+   ADD PRIMARY KEY ("net_id");
 
 -- --------------------------------------------------------
 
@@ -84,7 +84,7 @@ CREATE TABLE "nets_events" (
 );
 
 ALTER TABLE "nets_events"
-  ADD PRIMARY KEY ("event_id");
+   ADD PRIMARY KEY ("event_id");
 
 -- --------------------------------------------------------
 
@@ -111,7 +111,7 @@ CREATE UNIQUE INDEX akUniqNetUser ON "nets_users_data" ("net_id","user_id");
 
 DROP TABLE IF EXISTS "nodes";
 CREATE TABLE "nodes" (
-  "node_id" bigint generated always as identity,
+  "node_id" bigint generated always as identity (START 244),
   "node_level" int DEFAULT NULL,
   "node_address" int DEFAULT NULL,
   "parent_node_id" int DEFAULT NULL,
@@ -124,7 +124,7 @@ CREATE TABLE "nodes" (
 );
 
 ALTER TABLE "nodes"
-  ADD PRIMARY KEY ("node_id");
+   ADD PRIMARY KEY ("node_id");
 
 -- --------------------------------------------------------
 
@@ -158,7 +158,7 @@ CREATE TABLE "nodes_users" (
 );
 
 ALTER TABLE "nodes_users"
-  ADD PRIMARY KEY ("node_id");
+   ADD PRIMARY KEY ("node_id");
 
 -- --------------------------------------------------------
 
@@ -168,7 +168,7 @@ ALTER TABLE "nodes_users"
 
 DROP TABLE IF EXISTS "notifications_tpl";
 CREATE TABLE "notifications_tpl" (
-  "notification_tpl_id" bigint generated always as identity,
+  "notification_tpl_id" bigint generated always as identity (START 58),
   "event_code" int DEFAULT NULL,
   "notification_code" int DEFAULT NULL,
   "notification_text" varchar(255) DEFAULT NULL,
@@ -177,7 +177,7 @@ CREATE TABLE "notifications_tpl" (
 );
 
 ALTER TABLE "notifications_tpl"
-  ADD PRIMARY KEY ("notification_tpl_id");
+   ADD PRIMARY KEY ("notification_tpl_id");
 
 -- --------------------------------------------------------
 
@@ -187,8 +187,8 @@ ALTER TABLE "notifications_tpl"
 
 DROP TABLE IF EXISTS "users";
 CREATE TABLE "users" (
-  "user_id" bigint generated always as identity,
-  "email" varchar(50) DEFAULT NULL,
+  "user_id" bigint generated always as identity (START 73),
+  "email" varchar(50) NOT NULL,
   "name" varchar(50) DEFAULT NULL,
   "mobile" varchar(255) DEFAULT NULL,
   "password" varchar(255) DEFAULT NULL,
@@ -201,7 +201,7 @@ CREATE TABLE "users" (
 CREATE UNIQUE INDEX akEmail ON "users" ("email");
 
 ALTER TABLE "users"
-  ADD PRIMARY KEY ("user_id");
+   ADD PRIMARY KEY ("user_id");
 
 -- --------------------------------------------------------
 
@@ -221,7 +221,7 @@ CREATE TABLE "users_notifications" (
 );
 
 ALTER TABLE "users_notifications"
-  ADD PRIMARY KEY ("notification_id");
+   ADD PRIMARY KEY ("notification_id");
 
 -- --------------------------------------------------------
 
@@ -237,5 +237,5 @@ CREATE TABLE "sessions" (
 );
 
 ALTER TABLE "sessions"
-  ADD PRIMARY KEY ("session_id");
+   ADD PRIMARY KEY ("session_id");
 CREATE UNIQUE INDEX akSessionKey ON "sessions" ("session_key");

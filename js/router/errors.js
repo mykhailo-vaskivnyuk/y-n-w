@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RouterError = exports.RouterErrorEnum = exports.RouterErrorMap = void 0;
+exports.HandlerError = exports.HandlerErrorEnum = exports.HandlerErrorMap = exports.RouterError = exports.RouterErrorEnum = exports.RouterErrorMap = void 0;
 const utils_1 = require("../utils/utils");
 exports.RouterErrorMap = {
     E_ROUTER: 'ROUTER ERROR',
@@ -8,6 +8,7 @@ exports.RouterErrorMap = {
     E_NO_ROUTE: 'CAN\'T FIND ROUTE',
     E_MODULE: 'MODULE ERROR',
     E_HANDLER: 'CAN\'T HANDLE OPERATION',
+    E_REDIRECT: 'REDIRECT',
 };
 exports.RouterErrorEnum = (0, utils_1.getEnumFromMap)(exports.RouterErrorMap);
 class RouterError extends Error {
@@ -21,4 +22,19 @@ class RouterError extends Error {
     }
 }
 exports.RouterError = RouterError;
+exports.HandlerErrorMap = {
+    E_REDIRECT: 'REDIRECT',
+};
+exports.HandlerErrorEnum = (0, utils_1.getEnumFromMap)(exports.HandlerErrorMap);
+class HandlerError extends Error {
+    code;
+    details;
+    constructor(code, details = null) {
+        super(exports.HandlerErrorMap[code]);
+        this.name = this.constructor.name;
+        this.code = code;
+        this.details = details;
+    }
+}
+exports.HandlerError = HandlerError;
 //# sourceMappingURL=errors.js.map

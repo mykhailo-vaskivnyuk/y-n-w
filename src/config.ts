@@ -1,7 +1,7 @@
 
 import path from 'node:path';
 import { LOGGER_LEVEL, LOGGER_TARGET } from './logger/types';
-import { MODULES_ENUM } from './router/router';
+import { MODULES_ENUM, MODULES_RESPONSE_ENUM } from './router/constants';
 import { HTTP_MODULES_ENUM } from './server/http';
 
 const buildPath = 'js';
@@ -35,15 +35,18 @@ export = {
   },
   router: {
     apiPath: path.join(buildPath, 'api'),
-    clientApiPath: 'src/client/client.api.ts',
+    clientApiPath: 'src/client/common/api/client.api.ts',
     modules: [
       MODULES_ENUM.setSession,
       MODULES_ENUM.getStream,
       MODULES_ENUM.validate,
-      MODULES_ENUM.setMail,
+      MODULES_ENUM.setMailService,
+    ],
+    responseModules: [
+      MODULES_RESPONSE_ENUM.validateResponse,
     ],
     modulesConfig: {
-      [MODULES_ENUM.setMail]: {
+      [MODULES_ENUM.setMailService]: {
         service: 'gmail',
         auth: {
           user: 'm.vaskivnyuk@gmail.com',

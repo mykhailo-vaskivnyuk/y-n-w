@@ -1,4 +1,4 @@
-import { MIME_TYPES_ENUM } from '../../constants';
+import { MIME_TYPES_ENUM } from '../../constants/constants';
 import { TModule } from '../types';
 
 export class GetStreamError extends Error {
@@ -8,15 +8,15 @@ export class GetStreamError extends Error {
   }
 }
 
-export const getStream: TModule = () => async (context, data) => {
-  const { params, stream } = data;
-  if (!stream) return [context, data];
+const getStream: TModule = () => async (context, operation) => {
+  const { params, stream } = operation.data;
+  if (!stream) return [context, operation];
   const { type,  content } = stream;
   
   if (type === MIME_TYPES_ENUM['application/octet-stream']) {
     params.stream = stream;
-    delete data.stream;
-    return [context, data];
+    delete operation.data.stream;
+    return [context, operation];
   }
   
   try {
@@ -24,9 +24,11 @@ export const getStream: TModule = () => async (context, data) => {
     for await (const chunk of content) buffers.push(chunk as any);
     const string = Buffer.concat(buffers).toString() || '{}';
     Object.assign(params, JSON.parse(string));
-    return [context, data];
+    return [context, operation];
   } catch (e: any) {
     logger.error(e);
     throw new GetStreamError(e.message);
   }
-}
+};
+
+export default getStream;

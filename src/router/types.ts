@@ -1,12 +1,20 @@
 import Joi, { ObjectSchema } from 'joi';
+import { SentMessageInfo } from 'nodemailer';
 import { IOperation, IParams, TOperationResponse } from '../app/types';
-import { TMail } from '../services/mail/mail';
-import { Session } from '../services/session/session';
+import { ITableUsers } from '../db/db.types';
 
-export type THandler<T extends IParams = IParams, Q extends TOperationResponse = TOperationResponse> = {
-  (context: IContext, params: T): Promise<Q | null>;
+import { Session } from '../services/session/session';
+import { IObject } from '../types';
+
+export type JoiSchema = Joi.Schema | Joi.Schema[];
+
+export type THandler<T extends Partial<IParams> = IParams, Q extends TOperationResponse = TOperationResponse> = {
+  (context: IContext, params: T): Promise<Q>;
   params?: Record<keyof T, Joi.Schema>;
   schema?: ObjectSchema<T>;
+  responseSchema: Q extends IObject
+    ? Record<keyof Q, JoiSchema> | (Record<keyof Q, JoiSchema> | Joi.Schema)[]
+    : JoiSchema;
 };
 
 export interface IRoutes {
@@ -15,17 +23,29 @@ export interface IRoutes {
 
 export interface IServices {
   session: Session<ISessionContent>;
-  sendMail: TMail;
+  sendMail: IMailService;
 }
 
 export type ServicesEnum = keyof IServices;
 
-export type IContext = IServices;
+export type IContext = IServices & { 
+   origin: string };
 
 export type TModule<T = any> = (config: T) =>
-  (context: IContext, data: IOperation['data'], handler?: THandler) =>
-    Promise<[IContext, IOperation['data'] & { params: IParams & Record<string, unknown> }]>;
+  (context: IContext, operation: IOperation, handler?: THandler) =>
+    Promise<[IContext, IOperation]>;
+
+export type TResponseModule<T = any> = (config?: T) =>
+(context: IContext, response: TOperationResponse, handler?: THandler) =>
+  Promise<[IContext, TOperationResponse]>;
 
 export type ISessionContent = Partial<{
-  userId: number;
+  user_id: ITableUsers['user_id'];
 }>;
+
+export interface IMailService {
+  confirm: (to: string, token: string) => Promise<SentMessageInfo>;
+  restore: (to: string, token: string) => Promise<SentMessageInfo>;
+}
+
+export type TMailType = 'confirm' | 'restore';

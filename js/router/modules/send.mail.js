@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setMail = exports.MailError = void 0;
+exports.MailError = void 0;
 const mail_1 = require("../../services/mail/mail");
 class MailError extends Error {
     constructor() {
@@ -9,21 +9,25 @@ class MailError extends Error {
     }
 }
 exports.MailError = MailError;
-const setMail = (config) => {
-    const sendMail = (0, mail_1.initMail)(config);
-    const fn = (options) => {
+const setMailService = (config) => {
+    const { sendMail } = (0, mail_1.initMail)(config);
+    const create = (origin, type) => async (to, token) => {
         try {
-            return sendMail(options);
+            return await sendMail(type, origin, to, token);
         }
         catch (e) {
             logger.error(e);
             throw new MailError();
         }
     };
-    return async (context, data) => {
-        context.sendMail = fn;
-        return [context, data];
+    return async (context, operation) => {
+        const { origin } = context;
+        context.sendMail = {
+            confirm: create(origin, 'confirm'),
+            restore: create(origin, 'restore'),
+        };
+        return [context, operation];
     };
 };
-exports.setMail = setMail;
+exports.default = setMailService;
 //# sourceMappingURL=send.mail.js.map

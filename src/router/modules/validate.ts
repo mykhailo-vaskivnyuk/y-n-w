@@ -16,15 +16,18 @@ const options = {
   errors: { render: false },
 };
 
-export const validate: TModule = () => async (context, data, handler) => {
+const validate: TModule = () => async (context, operation, handler) => {
   const { schema, params } = handler || {};
-  if (!params) return [context, data];
+  if (!params) return [context, operation];
   if (!schema) handler!.schema = Joi.object(params);
+  const { data } = operation;
   const { error, value } = handler!.schema!.validate(data.params, options);
   if (error) {
     logger.error(error);
     throw new ValidationError(error.details);
   }
   Object.assign(data.params, { ...value });
-  return [context, data];
-}
+  return [context, operation];
+};
+
+export default validate;

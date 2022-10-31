@@ -1,8 +1,11 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.index = void 0;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const joi_1 = __importDefault(require("joi"));
 const index = async () => {
     return 'hello FROM merega';
 };
-exports.index = index;
+index.responseSchema = joi_1.default.string();
+module.exports = { index };
 //# sourceMappingURL=index.js.map

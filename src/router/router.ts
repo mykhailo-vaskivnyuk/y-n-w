@@ -1,31 +1,18 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { Writable } from 'node:stream';
-import Joi from 'joi';
-import { getEnumFromMap } from '../utils/utils';
-import { THandler, IRoutes, TModule, IContext } from './types';
-import { TPromiseExecutor } from '../types';
+import { THandler, IRoutes, TModule, IContext, TResponseModule } from './types';
 import { IRouter, IOperation, TOperationResponse, IRouterConfig } from '../app/types';
 import { RouterError, RouterErrorEnum } from './errors';
-import { DatabaseError } from '../db/errors';
-import { getStream, GetStreamError } from './modules/get.stream';
-import { validate, ValidationError } from './modules/validate';
-import { SessionError, setSession } from './modules/set.session';
-import { setMail } from './modules/send.mail';
-
-export const MODULES = {
-  getStream,
-  validate,
-  setSession,
-  setMail,
-};
-
-export const MODULES_ENUM = getEnumFromMap(MODULES);
+import { isHandler } from './methods';
+import { createClientApi } from './methods/create.client.api';
+import { errorHandler } from './methods/error.handler';
+import { applyModules, applyResponseModules } from './methods/modules';
 
 class Router implements IRouter {
   private config: IRouterConfig;
   private routes?: IRoutes;
   private modules: ReturnType<TModule>[] = [];
+  private responseModules: ReturnType<TResponseModule>[] = [];
 
   constructor(config: IRouterConfig) {
     this.config = config;
@@ -33,12 +20,8 @@ class Router implements IRouter {
 
   async init() {
     try {
-      const { modules, modulesConfig } = this.config;
-      modules.map(
-        (module) => {
-          const moduleConfig = modulesConfig[module] as any;
-          this.modules.push(MODULES[module](moduleConfig));
-        });
+      this.modules = applyModules(this.config);
+      this.responseModules = applyResponseModules(this.config);
     } catch (e: any) {
       logger.error(e);
       throw new RouterError(RouterErrorEnum.E_MODULE);
@@ -47,25 +30,26 @@ class Router implements IRouter {
     try {
       const { apiPath } = this.config;
       this.routes = await this.createRoutes(apiPath);
-      await this.createClientApi();
+      await createClientApi(this.config, this.routes);
     } catch (e: any) {
       logger.error(e);
       throw new RouterError(RouterErrorEnum.E_ROUTES);
     }
   }
   
-  async exec(operation: IOperation): Promise<TOperationResponse> {
-    const { names, data: inputData } = operation;
-    const inputContext = {} as IContext;
-
+  async exec({ ...operation }: IOperation): Promise<TOperationResponse> {
+    const { options: { origin }, names, data: { params } } = operation;
+    let context = { origin } as IContext;
     const handler = this.findRoute(names);
-    const [context, data] = await this.runModules(inputContext, inputData, handler);
-
     try {
-      return await handler(context, data.params);
+      [context, operation] = await this.runModules(context, operation, handler);
+      let response = await handler(context, params);
+      [context, response] = await this.runResponseModules(context, response, handler);
+      return response;
     } catch (e: any) {
-      if (!(e instanceof DatabaseError)) logger.error(e);
-      throw new RouterError(RouterErrorEnum.E_HANDLER, e.message);
+      return errorHandler(e);
+    } finally {
+      context.session.finalize();
     }
   }
 
@@ -77,12 +61,13 @@ class Router implements IRouter {
       const ext = path.extname(item.name);
       const name = path.basename(item.name, ext);
       if (item.isFile()) {
-        if (ext !== '.js') continue;
+        if (ext !== '.js' || name === 'types') continue;
         const filePath = path.join(routePath, name);
         const moduleExport = require(filePath) as THandler | IRoutes;
         if (name === 'index') {
-          if (typeof moduleExport === 'function')
+          if (typeof moduleExport === 'function') {
             throw new Error(`Wrong api module: ${filePath}`);
+          }
           Object.assign(route, moduleExport);
         } else route[name] = moduleExport;
       } else {
@@ -97,86 +82,28 @@ class Router implements IRouter {
     if (!this.routes) throw new RouterError(RouterErrorEnum.E_ROUTES);
     let handler: IRoutes | THandler = this.routes;
     for (const key of names) {
-      if (this.isHandler(handler)) throw new RouterError(RouterErrorEnum.E_NO_ROUTE);
+      if (isHandler(handler)) throw new RouterError(RouterErrorEnum.E_NO_ROUTE);
       if (!handler[key]) throw new RouterError(RouterErrorEnum.E_NO_ROUTE);
       handler = handler[key]!;
     }
-    if (!this.isHandler(handler)) throw new RouterError(RouterErrorEnum.E_NO_ROUTE);
+    if (!isHandler(handler)) throw new RouterError(RouterErrorEnum.E_NO_ROUTE);
     return handler;
   }
 
-  private isHandler(handler?: IRoutes | THandler): handler is THandler {
-    return typeof handler === 'function';
-  }
-
   private async runModules(
-    context: IContext, data: IOperation['data'], handler: THandler
-  ): Promise<[IContext, IOperation['data']]> {
-    try {
-      for (const module of this.modules)
-        [context, data] = await module(context, data, handler);
-    } catch (e: any) {
-      const { message, details } = e;
-      if (e instanceof SessionError)
-        throw new RouterError(RouterErrorEnum.E_ROUTER, message);
-      if (e instanceof ValidationError)
-        throw new RouterError(RouterErrorEnum.E_MODULE, details);
-      if (e instanceof GetStreamError)
-        throw new RouterError(RouterErrorEnum.E_MODULE, message);
-      logger.error(e);
-      throw new RouterError(RouterErrorEnum.E_ROUTER, details || message);
-    }
-    return [context, data];
+    context: IContext, operation: IOperation, handler: THandler
+  ): Promise<[IContext, IOperation]> {
+    for (const module of this.modules)
+      [context, operation] = await module(context, operation, handler);
+    return [context, operation];
   }
 
-  private createClientApi() {
-    if (!this.routes) throw new RouterError(RouterErrorEnum.E_ROUTES);
-    const executor: TPromiseExecutor<void> = (rv, rj) => {
-      const stream = fs.createWriteStream(this.config.clientApiPath);
-      stream.on('error', rj);
-      stream.on('finish', rv);
-      stream.write(`
-export const api = (
-  fetch: (pathname: string, options: Record<string, any>) => Promise<any>
-) => (`);
-      this.createJs(this.routes!, stream);
-      stream.write(');\n');
-      stream.close();
-    };
-
-    return new Promise(executor);
-  }
-
-  private createJs(routes: IRoutes, stream: Writable, pathname = '', indent = '') {
-    stream.write('{');
-    const nextIndent = indent + '  ';
-    const routesKeys = Object.keys(routes);
-    for (const key of routesKeys) {
-      stream.write(`\n${nextIndent}'${key}': `);
-      const handler = routes[key] as THandler | IRoutes;
-      const nextPathname = pathname + '/' + key;
-      if (this.isHandler(handler)) {
-        const types = this.getTypes(handler.params, nextIndent);
-        stream.write(
-          `(options: ${types}) => fetch('${nextPathname}', options),`
-        );
-      }
-      else {
-        this.createJs(handler, stream, nextPathname, nextIndent);
-        stream.write(',');
-      }
-    }
-    stream.write('\n' + indent + '}');
-  }
-
-  private getTypes(params?: Record<string, Joi.Schema>, indent = '') {
-    if (!params) return 'Record<string, any>';
-    const result = [];
-    const paramsEntries = Object.entries(params)
-    for (const [key, { type }] of paramsEntries) {
-      result.push(`\n${indent}  ${key}: ${type},`);
-    }
-    return `{${result.join('')}\n${indent}}`;
+  private async runResponseModules(
+    context: IContext, response: TOperationResponse, handler: THandler
+  ): Promise<[IContext, TOperationResponse]> {
+    for (const module of this.responseModules)
+      [context, response] = await module(context, response, handler);
+    return [context, response];
   }
 }
 

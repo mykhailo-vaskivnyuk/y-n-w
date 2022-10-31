@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 const node_path_1 = __importDefault(require("node:path"));
 const types_1 = require("./logger/types");
-const router_1 = require("./router/router");
+const constants_1 = require("./router/constants");
 const http_1 = require("./server/http");
 const buildPath = 'js';
 const host = process.env.HOST || 'localhost';
@@ -34,15 +34,18 @@ module.exports = {
     },
     router: {
         apiPath: node_path_1.default.join(buildPath, 'api'),
-        clientApiPath: 'src/client/client.api.ts',
+        clientApiPath: 'src/client/common/api/client.api.ts',
         modules: [
-            router_1.MODULES_ENUM.setSession,
-            router_1.MODULES_ENUM.getStream,
-            router_1.MODULES_ENUM.validate,
-            router_1.MODULES_ENUM.setMail,
+            constants_1.MODULES_ENUM.setSession,
+            constants_1.MODULES_ENUM.getStream,
+            constants_1.MODULES_ENUM.validate,
+            constants_1.MODULES_ENUM.setMailService,
+        ],
+        responseModules: [
+            constants_1.MODULES_RESPONSE_ENUM.validateResponse,
         ],
         modulesConfig: {
-            [router_1.MODULES_ENUM.setMail]: {
+            [constants_1.MODULES_ENUM.setMailService]: {
                 service: 'gmail',
                 auth: {
                     user: 'm.vaskivnyuk@gmail.com',

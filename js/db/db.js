@@ -57,6 +57,9 @@ class Database {
     }
     createQueries(filePath) {
         const moduleExport = require(filePath);
+        if (typeof moduleExport === 'string') {
+            return this.sqlToQuery(moduleExport);
+        }
         return Object
             .keys(moduleExport)
             .reduce((queries, key) => {

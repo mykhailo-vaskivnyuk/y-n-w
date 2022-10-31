@@ -15,6 +15,7 @@ module.exports = {
     'ecmaVersion': 'latest'
   },
   'plugins': [
+    'import',
     '@typescript-eslint'
   ],
   root: true,

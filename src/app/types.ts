@@ -3,8 +3,8 @@ import { Readable } from 'node:stream';
 import { IObject, TPrimitiv } from '../types';
 import { IDatabaseQueries, TQuery } from '../db/types';
 import { ILoggerConfig } from '../logger/types';
-import { MODULES } from '../router/router';
 import { HTTP_MODULES } from '../server/http';
+import { MODULES, MODULES_RESPONSE } from '../router/constants';
 
 export interface IConfig {
   logger: ILoggerConfig;
@@ -61,16 +61,18 @@ export interface IQueries {
   [key: string]: TQuery | IQueries;
 }
 
-export type IParams = Record<string, unknown> & {
-  sessionKey?: string;
-};
+export type IParams = Record<string, unknown>;
 
 export interface IOperation {
+  options: {
+    sessionKey: string;
+    origin: string;
+  };
   names: string[];
   data: {
     stream?: { type: string | undefined; content: Readable };
     params: IParams;
-  }
+  };
 }
 
 export type TOperationResponse =
@@ -88,8 +90,9 @@ export interface IRouterConfig {
   apiPath: string;
   clientApiPath: string;
   modules: (keyof typeof MODULES)[];
+  responseModules: (keyof typeof MODULES_RESPONSE)[];
   modulesConfig: {
-    [key in (keyof typeof MODULES)]?: Record<string, any>;
+    [key in (keyof typeof MODULES | keyof typeof MODULES_RESPONSE)]?: Record<string, any>;
   };
 }
 

@@ -1,11 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSession = exports.Session = void 0;
+exports.createService = exports.Session = void 0;
 class Session {
     sessionKey;
     session = null;
-    constructor(sessionKey) {
+    finalCallback;
+    constructor(sessionKey, finalCallback) {
         this.sessionKey = sessionKey;
+        this.finalCallback = finalCallback;
     }
     async write(key, value) {
         let isUpdate = true;
@@ -22,8 +24,7 @@ class Session {
         return value;
     }
     read(key) {
-        if (this.session)
-            return this.session[key];
+        return this.session?.[key];
     }
     async delete(key) {
         if (!this.session)
@@ -47,23 +48,41 @@ class Session {
         await execQuery.session.del([this.sessionKey]);
     }
     async init() {
-        const result = await execQuery.session.read([this.sessionKey]);
-        if (!result?.[0])
-            return this;
-        const { session_value } = result[0];
-        this.deserialize(session_value);
+        const [result] = await execQuery.session.read([this.sessionKey]);
+        this.deserialize(result?.session_value);
         return this;
+    }
+    finalize() {
+        this.finalCallback();
     }
     serialize() {
         return JSON.stringify(this.session);
     }
     deserialize(value) {
-        this.session = JSON.parse(value);
+        this.session = value ? JSON.parse(value) : null;
     }
 }
 exports.Session = Session;
-const createSession = async (sessionKey) => {
-    return await new Session(sessionKey).init();
+const createService = () => {
+    const activeSessions = new Map();
+    const clearSession = (sessionKey) => {
+        const [session, count = 0] = activeSessions.get(sessionKey) || [];
+        if (!session)
+            return;
+        if (count <= 1)
+            activeSessions.delete(sessionKey);
+        else
+            activeSessions.set(sessionKey, [session, count - 1]);
+    };
+    const createSession = async (sessionKey) => {
+        let [session, count = 0] = activeSessions.get(sessionKey) || [];
+        if (!session)
+            session = new Session(sessionKey, () => clearSession(sessionKey)).init();
+        activeSessions.set(sessionKey, [session, ++count]);
+        const s = (await activeSessions.get(sessionKey))[0];
+        return s;
+    };
+    return createSession;
 };
-exports.createSession = createSession;
+exports.createService = createService;
 //# sourceMappingURL=session.js.map

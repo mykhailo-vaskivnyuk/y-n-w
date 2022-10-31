@@ -9,9 +9,11 @@ exports.ServerErrorMap = {
     E_UNAVAILABLE: 'Service unavailable',
     E_NO_CALLBACK: 'onOperation callback is not set',
     E_LISTEN: 'CAN\'T start server',
+    E_REDIRECT: 'REDIRECT',
 };
 exports.ServerErrorEnum = (0, utils_1.getEnumFromMap)(exports.ServerErrorMap);
 exports.StatusCodeMap = {
+    [exports.ServerErrorEnum.E_REDIRECT]: 301,
     [exports.ServerErrorEnum.E_NOT_FOUND]: 404,
     [exports.ServerErrorEnum.E_BED_REQUEST]: 400,
     [exports.ServerErrorEnum.E_SERVER_ERROR]: 500,

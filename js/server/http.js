@@ -7,12 +7,13 @@ exports.HTTP_MODULES_ENUM = exports.HTTP_MODULES = void 0;
 const node_http_1 = require("node:http");
 const node_stream_1 = require("node:stream");
 const node_util_1 = require("node:util");
-const constants_1 = require("../constants");
+const constants_1 = require("../constants/constants");
 const errors_1 = require("./errors");
 const static_1 = __importDefault(require("./static"));
 const utils_1 = require("./utils");
 const utils_2 = require("../utils/utils");
 const allowCors_1 = require("./modules/allowCors");
+const crypto_1 = require("../utils/crypto");
 exports.HTTP_MODULES = {
     allowCors: allowCors_1.allowCors,
 };
@@ -67,9 +68,9 @@ class HttpConnection {
             return this.staticServer(req, res);
         try {
             const operation = await this.getOperation(req);
-            const { params } = operation.data;
-            const { sessionKey } = params;
-            sessionKey && res.setHeader('set-cookie', `sessionKey=${sessionKey}; httpOnly`);
+            const { options, data: { params } } = operation;
+            const { sessionKey } = options;
+            sessionKey && res.setHeader('set-cookie', `sessionKey=${sessionKey}; Path=/; httpOnly`);
             const response = await this.callback(operation);
             res.statusCode = 200;
             if (response instanceof node_stream_1.Readable) {
@@ -100,13 +101,13 @@ class HttpConnection {
         return true;
     }
     async getOperation(req) {
-        const { names, params } = this.getRequestParams(req);
+        const { options, names, params } = this.getRequestParams(req);
         const data = { params };
         const { headers } = req;
         const contentType = headers['content-type'];
         const length = +(headers['content-length'] || Infinity);
         if (!contentType)
-            return { names, data };
+            return { options, names, data };
         if (!constants_1.MIME_TYPES_MAP[contentType]) {
             throw new errors_1.ServerError(errors_1.ServerErrorEnum.E_BED_REQUEST);
         }
@@ -115,38 +116,37 @@ class HttpConnection {
         }
         if (contentType === constants_1.MIME_TYPES_ENUM['application/json'] && length < constants_1.JSON_TRANSFORM_LENGTH) {
             Object.assign(params, await this.getJson(req));
-            return { names, data };
+            return { options, names, data };
         }
         const content = node_stream_1.Readable.from(req);
         data.stream = { type: contentType, content };
-        return { names, data };
+        return { options, names, data };
     }
     getRequestParams(req) {
-        const { host, cookie } = req.headers;
-        const { pathname, searchParams } = (0, utils_1.getUrlInstance)(req.url, host);
+        const { origin, cookie } = req.headers;
+        const { pathname, searchParams } = (0, utils_1.getUrlInstance)(req.url, origin);
         const names = (pathname
             .replace('/' + this.config.path.api, '')
             .slice(1) || 'index')
             .split('/')
             .filter((path) => Boolean(path));
         const params = {};
-        params.sessionKey = this.getSessionKey(cookie);
         const queryParams = searchParams.entries();
         for (const [key, value] of queryParams)
             params[key] = value;
-        return { names, params };
+        const options = {};
+        options.sessionKey = this.getSessionKey(cookie);
+        options.origin = origin || '';
+        return { options, names, params };
     }
     getSessionKey(cookie) {
         if (cookie) {
             const regExp = /sessionKey=([^\s]*)\s*;?/;
-            const result = cookie.match(regExp) || [];
-            if (result[1])
-                return result[1];
+            const [, result] = cookie.match(regExp) || [];
+            if (result)
+                return result;
         }
-        return Buffer
-            .from(Math.random().toString().slice(2))
-            .toString('base64')
-            .slice(0, 15);
+        return (0, crypto_1.createUnicCode)(15);
     }
     async getJson(req) {
         try {
@@ -172,6 +172,8 @@ class HttpConnection {
         }
         const { code, statusCode = 500, details } = error;
         res.statusCode = statusCode;
+        if (code === errors_1.ServerErrorEnum.E_REDIRECT)
+            res.setHeader('location', details?.location || '/');
         details && res.setHeader('content-type', constants_1.MIME_TYPES_ENUM['application/json']);
         logger.error({}, this.getLog(req, errors_1.ServerErrorMap[code]));
         res.end(error.getMessage());

@@ -19,7 +19,7 @@ export const TABLES_ENUM = getEnumFromMap(TABLES_MAP);
 
 export type ITableUsers = {
   user_id: number;
-  email: string | null;
+  email: string;
   name: string | null;
   mobile: string | null;
   password: string | null;
