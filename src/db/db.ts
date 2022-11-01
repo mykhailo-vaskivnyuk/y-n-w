@@ -40,22 +40,26 @@ class Database implements IDatabase {
     for await (const item of dir) {
       const ext = path.extname(item.name);
       const name = path.basename(item.name, ext);
-      if (item.isFile()) {
-        if (ext !== '.js') continue;
-        const filePath = path.join(queryPath, name);
-        const queries = this.createQueries(filePath);
-        if (name === 'index') Object.assign(query, queries);
-        else query[name] = queries;
-      } else {
+      if (item.isDirectory()) {
         const dirPath = path.join(queryPath, name);
         query[name] = await this.getQueries(dirPath);
+        continue;
       }
+
+      if (ext !== '.js') continue;
+
+      const filePath = path.join(queryPath, name);
+      const queries = this.createQueries(filePath);
+      if (name === 'index') Object.assign(query, queries);
+      else query[name] = queries;
+
     }
     return query;
   }
 
   private createQueries(filePath: string): IQueries | TQuery {
-    const moduleExport = require(filePath) as TQueriesModule;
+    const { default: defaultExport, ...restExport } = require(filePath);
+    const moduleExport = (defaultExport || restExport) as TQueriesModule; 
     if (typeof moduleExport === 'string') {
       return this.sqlToQuery(moduleExport);
     }

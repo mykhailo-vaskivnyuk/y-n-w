@@ -10,7 +10,7 @@ export type JoiSchema = Joi.Schema | Joi.Schema[];
 
 export type THandler<T extends Partial<IParams> = IParams, Q extends TOperationResponse = TOperationResponse> = {
   (context: IContext, params: T): Promise<Q>;
-  params?: Record<keyof T, Joi.Schema>;
+  paramsSchema?: Record<keyof T, Joi.Schema>;
   schema?: ObjectSchema<T>;
   responseSchema: Q extends IObject
     ? Record<keyof Q, JoiSchema> | (Record<keyof Q, JoiSchema> | Joi.Schema)[]
@@ -32,12 +32,12 @@ export type IContext = IServices & {
    origin: string };
 
 export type TModule<T = any> = (config: T) =>
-  (context: IContext, operation: IOperation, handler?: THandler) =>
-    Promise<[IContext, IOperation]>;
+  (operation: IOperation, context: IContext, handler?: THandler) =>
+    Promise<[IOperation, IContext]>;
 
 export type TResponseModule<T = any> = (config?: T) =>
-(context: IContext, response: TOperationResponse, handler?: THandler) =>
-  Promise<[IContext, TOperationResponse]>;
+(response: TOperationResponse, context: IContext, handler?: THandler) =>
+  Promise<[TOperationResponse, IContext]>;
 
 export type ISessionContent = Partial<{
   user_id: ITableUsers['user_id'];

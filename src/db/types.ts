@@ -1,5 +1,5 @@
 import { IQueriesSession } from './queries/session';
-import { IQueriesUser } from './queries/user';
+import { IQueriesUser } from './queries/user/types';
 
 type GetParamsTypes<T extends [string, any][]> =
   { [key in keyof T]: T[key][1] };

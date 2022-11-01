@@ -27,21 +27,20 @@ const responseSchemaToSchema = (schema: THandler['responseSchema']): JoiSchema =
   return isJoiSchema(schema) ? schema : Joi.object(schema);
 };
 
-const validateResponse: TResponseModule = () => async (context, response, handler) => {
+const validateResponse: TResponseModule = () => async (response, context, handler) => {
   const { responseSchema } = handler || {};
   if (!responseSchema) throw new Error('Handler is not put');
   const schema = responseSchemaToSchema(responseSchema);
   let result;
   if (Array.isArray(schema)) {
     result = Joi.alternatives().match('any').try(...schema).validate(response, options);
-  }
-  else result = schema.validate(response, options);
+  } else result = schema.validate(response, options);
   const { error, value } = result;
   if (error) {
     logger.error(error);
     throw new ValidationResponseError(error.details);
   }
-  return [context, value];
+  return [value, context];
 };
 
 export default validateResponse;

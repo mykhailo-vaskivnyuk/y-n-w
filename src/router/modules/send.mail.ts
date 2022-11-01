@@ -22,13 +22,13 @@ const setMailService: TModule = (config: MailOptions) => {
     }
   };
 
-  return async (context, operation) => {
+  return async (operation, context) => {
     const { origin } = context;
     context.sendMail = {
       confirm: create(origin, 'confirm'),
       restore: create(origin, 'restore'),
     };
-    return [context, operation];
+    return [operation, context];
   };
 };
 

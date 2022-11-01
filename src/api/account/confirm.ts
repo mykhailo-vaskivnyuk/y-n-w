@@ -14,7 +14,7 @@ const confirm: THandler<IConfirmParams, IUserResponse | null> = async (context, 
   await context.session.write('user_id', user.user_id);
   return { ...user, confirmed: !user.link};
 };
-confirm.params = {
+confirm.paramsSchema = {
   link: Joi.string(),
 };
 confirm.responseSchema = UserResponseSchema;
