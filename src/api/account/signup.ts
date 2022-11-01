@@ -20,7 +20,7 @@ const signup: THandler<ISignupParams, IUserResponse> = async (context, { email }
   await context.sendMail.confirm(email, link);
   return { ...user, confirmed: !user!.link};
 };
-signup.params = {
+signup.paramsSchema = {
   email: Joi.string().required(), //.email(),
 };
 signup.responseSchema = UserResponseSchema;

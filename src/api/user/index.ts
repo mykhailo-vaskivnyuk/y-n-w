@@ -7,7 +7,7 @@ const create: THandler<
 > = async (context, { name }) => {
   return { name };
 };
-create.params = {
+create.paramsSchema = {
   name: Joi.string().required(),
   field: Joi.number(),
 };

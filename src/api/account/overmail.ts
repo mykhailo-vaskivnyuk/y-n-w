@@ -19,7 +19,7 @@ const overmail: THandler<IOvermailParams, boolean> = async (context, { email }) 
   await context.sendMail[type](email, token);
   return true;
 };
-overmail.params = {
+overmail.paramsSchema = {
   email: Joi.string().required(), //.email(),
 };
 overmail.responseSchema = Joi.boolean();
