@@ -5,14 +5,11 @@ import DbConnection from './db/connection/pg';
 import Router from './router/router';
 import InputConnection from './server/http';
 
-// import path from'node:path';
-// import custoRequire from './utils/custom.require';
-// import customRequire = require('./utils/custom.require');
-
-// const moduleExport = customRequire(path.resolve(__dirname, './utils/test.module.js'));
-// console.log('export', moduleExport)
-// const arr = new Array(1)
-// arr.myMethod()
+// import loader from './loader/loader';
+// const moduleExport = loader('./loader/test.module.js');
+// console.log('export', moduleExport);
+// const arr = new Array(1);
+// console.log('myMethod' in arr);
 
 new App(config)
   .setLogger(Logger)

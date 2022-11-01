@@ -7,6 +7,7 @@ import { isHandler } from './utils';
 import { createClientApi } from './methods/create.client.api';
 import { errorHandler } from './methods/error.handler';
 import { applyModules, applyResponseModules } from './methods/modules';
+import loader from '../loader/loader';
 
 class Router implements IRouter {
   private config: IRouterConfig;
@@ -74,7 +75,7 @@ class Router implements IRouter {
       if (ext !== '.js' || name === 'types') continue;
 
       const filePath = path.join(routePath, name);
-      const moduleExport = require(filePath) as THandler | IRoutes;
+      const moduleExport = loader(filePath) as THandler | IRoutes;
 
       if (name !== 'index') {
         route[name] = moduleExport;
