@@ -10,18 +10,6 @@
         text-decoration: none;
         box-sizing: border-box;
         user-select: none;
-        -webkit-user-drag: none;
-      }
-      a:focus, a:active, a:hover {
-        outline: none;
-      }
-      a:link, a:visited {
-        color: currentColor;
-      }
-      a:hover {
-        cursor: pointer;
-      }
-      :focus {
         outline: none;
       }
       html, body {
@@ -32,54 +20,50 @@
         font-size: 20px;
         font-family: Arial, sans-serif;
         font-weight: 400;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
       }
     </style>
-
-    <style>
-      .Mail-content {
+    <style data-jss="" data-meta="Mail, Themed">
+      .content {
         width: 100%;
-        border: 1px solid #ef6c1a;
+        border: 1px solid #119636;
         max-width: 480px;
         min-width: 320px;
-        background: #ef6c1a;
-        font-family: Arial;
-      }
-      .Mail-header {
-        color: #ffffff;
-        font-size: 32px;
-        font-weight: 600;
-        padding: 16px;
-      }
-      .Mail-body {
-        padding: 16px;
-        font-size: 24px;
-        background: #f1f4f0;
+        background: #119636;
         border-radius: 6px;
-        color: #F52E2E;
       }
-      .Mail-body a {
+      .header {
+        color: #ffffff;
+        padding: 12px;
+        font-size: 28px;
+        font-weight: 600;
+      }
+      .body {
+        color: #3f4141;
+        padding: 16px;
+        font-size: 20px;
+        background: #f1f4f0;
+      }
+      a {
         color: #ffffff;
         width: 100%;
         display: block;
         padding: 8px;
-        background: #068408;
+        background: #2e7bb3;
         margin-top: 24px;
         text-align: center;
         border-radius: 4px;
       }
-      .Mail-footer {
+      .footer {
         height: 20px;
       }
     </style>
   </head>
   <body>
-    <div class="Mail-content">
-      <div class="Mail-header">YOU &amp; WORLD</div>
-      <div class="Mail-body">
+    <div class="content">
+      <div class="header">YOU &amp; WORLD</div>
+      <div class="body">
         <p>%s</p>
-        <a href="%s">ПЕРЕЙТИ</a></div><div class="Mail-footer">
+        <a href="%s">ПЕРЕЙТИ</a></div><div class="footer">
       </div>
     </div>
   </body>
