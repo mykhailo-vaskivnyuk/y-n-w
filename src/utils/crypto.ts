@@ -1,4 +1,4 @@
-import { TPromiseExecutor } from '../types';
+import { TPromiseExecutor } from '../types/types';
 
 const crypto = require('node:crypto');
 

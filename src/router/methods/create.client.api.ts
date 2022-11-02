@@ -5,7 +5,7 @@ import { Writable } from 'node:stream';
 import Joi from 'joi';
 import { isHandler } from '../utils';
 import { IRouterConfig } from '../../app/types';
-import { TPromiseExecutor } from '../../types';
+import { TPromiseExecutor } from '../../types/types';
 import { isJoiSchema } from '../modules.response/validate.response';
 import { IRoutes, JoiSchema, THandler } from '../types';
 import { getApi, getExport, getImport, getMethod } from './templates';
@@ -131,5 +131,5 @@ const getTypes = (
 const getSchemaType = (schema: Joi.Schema) => {
   const schemaValuesSet = (schema as any)._valids._values;
   const [type] = [...schemaValuesSet.values()];
-  return type;
+  return `${type}`;
 };

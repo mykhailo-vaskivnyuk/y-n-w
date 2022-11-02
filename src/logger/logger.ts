@@ -1,16 +1,17 @@
 import { format } from 'util';
 import pino = require('pino');
 import { ILogger, TLoggerParameters } from '../app/types';
-import { ILoggerConfig, LOGGER_TARGET } from './types';
+import { ILoggerConfig, LOGGER_LEVEL } from './types';
 
 class Logger implements ILogger {
   private logger;
 
   constructor(config: ILoggerConfig) {
-    const { level, target } = config;
+    const { level: levelKey, target } = config;
+    const level = LOGGER_LEVEL[levelKey];
     const toConsole = { target: 'pino-pretty', level, options: {} };
     const toStdOut = { target: 'pino/file', level, options: { destination: 1 } };
-    const transport =  target === LOGGER_TARGET.STDOUT ? toStdOut : toConsole;
+    const transport =  target === 'stdout' ? toStdOut : toConsole;
     const options = { level, transport };
     this.logger = pino.default(options);
   }
@@ -36,4 +37,4 @@ class Logger implements ILogger {
   }
 }
 
-export default Logger;
+export = Logger;

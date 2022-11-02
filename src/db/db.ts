@@ -84,4 +84,4 @@ class Database implements IDatabase {
   }
 }
 
-export = Database;
+export default Database;

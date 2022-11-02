@@ -1,4 +1,4 @@
-import { IObject } from '../../types';
+import { IObject } from '../../types/types';
 
 export interface ISession<T extends IObject = IObject> {
   write<K extends keyof T>(key: K, value: T[K]): Promise<T[K]>;

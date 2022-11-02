@@ -4,7 +4,7 @@ import { IOperation, IParams, TOperationResponse } from '../app/types';
 import { ITableUsers } from '../db/db.types';
 
 import { Session } from '../services/session/session';
-import { IObject } from '../types';
+import { IObject } from '../types/types';
 
 export type JoiSchema = Joi.Schema | Joi.Schema[];
 

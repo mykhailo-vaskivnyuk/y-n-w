@@ -1,5 +1,5 @@
 import { IModulesContext, IRouterConfig } from '../../app/types';
-import load from '../../loader/loader';
+import { loadModule } from '../../loader/loader';
 import { MODULES, MODULES_RESPONSE } from '../constants';
 
 export function applyModules(config: IRouterConfig, modulesContext: IModulesContext) {
@@ -7,7 +7,7 @@ export function applyModules(config: IRouterConfig, modulesContext: IModulesCont
   return modules.map(
     (module) => {
       const moduleConfig = modulesConfig[module];
-      const moduleExport = load(MODULES[module], modulesContext).default;
+      const moduleExport = loadModule(MODULES[module], modulesContext).default;
       return moduleExport(moduleConfig);
     });
 }
@@ -17,7 +17,7 @@ export const applyResponseModules = (config: IRouterConfig, modulesContext: IMod
   return responseModules.map(
     (module) => {
       const moduleConfig = modulesConfig[module];
-      const moduleExport = load(MODULES_RESPONSE[module], modulesContext).default;
+      const moduleExport = loadModule(MODULES_RESPONSE[module], modulesContext).default;
       return moduleExport(moduleConfig);
     });
 };

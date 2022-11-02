@@ -7,23 +7,24 @@ import { isHandler } from './utils';
 import { createClientApi } from './methods/create.client.api';
 import { errorHandler } from './methods/error.handler';
 import { applyModules, applyResponseModules } from './methods/modules';
-import load from '../loader/loader';
+import { loadModule } from '../loader/loader';
 
 class Router implements IRouter {
   private config: IRouterConfig;
   private routes?: IRoutes;
   private modules: ReturnType<TModule>[] = [];
   private responseModules: ReturnType<TResponseModule>[] = [];
-  private context: IModulesContext | null = null;
-  constructor(config: IRouterConfig) {
+  private modulesContext: IModulesContext;
+
+  constructor(config: IRouterConfig, modulesContext: IModulesContext) {
     this.config = config;
+    this.modulesContext = modulesContext;
   }
 
-  async init(context: IModulesContext) {
-    this.context = context;
+  async init() {
     try {
-      this.modules = applyModules(this.config, this.context);
-      this.responseModules = applyResponseModules(this.config, this.context);
+      this.modules = applyModules(this.config, this.modulesContext);
+      this.responseModules = applyResponseModules(this.config, this.modulesContext);
     } catch (e: any) {
       logger.error(e);
       throw new RouterError(RouterErrorEnum.E_MODULE);
@@ -49,7 +50,7 @@ class Router implements IRouter {
       [operation, context] = await this.runModules(operation, context, handler);
       const { params } = operation.data; 
       let response = await handler(context, params);
-      [response] = await this.runResponseModules(response, context, handler);
+      [response, context] = await this.runResponseModules(response, context, handler);
       return response;
     } catch (e: any) {
       return errorHandler(e);
@@ -76,7 +77,7 @@ class Router implements IRouter {
       if (ext !== '.js' || name === 'types') continue;
 
       const filePath = path.join(routePath, item.name);
-      const moduleExport = load(filePath, this.context!) as THandler | IRoutes;
+      const moduleExport = loadModule(filePath, this.modulesContext) as THandler | IRoutes;
 
       if (name !== 'index') {
         route[name] = moduleExport;

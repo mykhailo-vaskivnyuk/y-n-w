@@ -19,4 +19,4 @@ class Connection implements IDatabaseConnection {
   }
 }
 
-export = Connection;
+export default Connection;

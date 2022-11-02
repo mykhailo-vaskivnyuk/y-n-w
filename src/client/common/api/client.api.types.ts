@@ -1,22 +1,22 @@
 export type TAccountConfirm = {
       link: string;
     };
-export type TAccountConfirmResponse =  | {
+export type TAccountConfirmResponse = null | {
       email: string;
-      name: string | ;
-      mobile: string | ;
-      net_name: string | ;
+      name: string | null;
+      mobile: string | null;
+      net_name: string | null;
       confirmed: boolean;
     };
 export type TAccountLogin = {
       email: string;
       password: string;
     };
-export type TAccountLoginResponse =  | {
+export type TAccountLoginResponse = null | {
       email: string;
-      name: string | ;
-      mobile: string | ;
-      net_name: string | ;
+      name: string | null;
+      mobile: string | null;
+      net_name: string | null;
       confirmed: boolean;
     };
 export type TAccountLogoutResponse = boolean;
@@ -28,21 +28,21 @@ export type TAccountRemoveResponse = boolean;
 export type TAccountRestore = {
       link: string;
     };
-export type TAccountRestoreResponse =  | {
+export type TAccountRestoreResponse = null | {
       email: string;
-      name: string | ;
-      mobile: string | ;
-      net_name: string | ;
+      name: string | null;
+      mobile: string | null;
+      net_name: string | null;
       confirmed: boolean;
     };
 export type TAccountSignup = {
       email: string;
     };
-export type TAccountSignupResponse =  | {
+export type TAccountSignupResponse = null | {
       email: string;
-      name: string | ;
-      mobile: string | ;
-      net_name: string | ;
+      name: string | null;
+      mobile: string | null;
+      net_name: string | null;
       confirmed: boolean;
     };
 export type TIndexResponse = string;
@@ -56,10 +56,10 @@ export type TUserCreateResponse = {
       name: string;
     };
 export type TUserUpdateResponse = string;
-export type TUserReadResponse =  | {
+export type TUserReadResponse = null | {
       email: string;
-      name: string | ;
-      mobile: string | ;
-      net_name: string | ;
+      name: string | null;
+      mobile: string | null;
+      net_name: string | null;
       confirmed: boolean;
     };

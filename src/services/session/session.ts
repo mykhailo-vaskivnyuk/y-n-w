@@ -1,4 +1,4 @@
-import { IObject } from '../../types';
+import { IObject } from '../../types/types';
 import { ISession } from './types';
 
 export class Session<T extends IObject = IObject> implements ISession<T> {

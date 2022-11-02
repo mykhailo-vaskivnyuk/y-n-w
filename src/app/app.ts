@@ -1,18 +1,15 @@
-import Database from '../db/db';
 import {
-  IConfig,
-  ILogger, LoggerClass,
-  IDatabase, DatabaseConnectionClass,
-  IRouter, RouterClass,
-  IInputConnection, InputConnectionClass,
+  IConfig, ILogger, IDatabase, IRouter,
+  IInputConnection, IModulesContext, IOperation,
 } from './types';
-import { AppError, AppErrorEnum } from './errors';
+import { AppError, AppErrorEnum, handleOperationError } from './errors';
 import { DatabaseError } from '../db/errors';
-import { RouterError, RouterErrorEnum } from '../router/errors';
-import { ServerError, ServerErrorEnum } from '../server/errors';
+import { RouterError } from '../router/errors';
+import { ServerError } from '../server/http/errors';
 import { IDatabaseQueries } from '../db/types';
+import { loadModule } from '../loader/loader';
 
-class App {
+export default class App {
   private config: IConfig;
   private logger?: ILogger;
   private db?: IDatabase;
@@ -24,57 +21,64 @@ class App {
     this.setErrorHandlers();
   }
   
-  setLogger(Logger: LoggerClass) {
-    this.logger = new Logger(this.config.logger);
+  setLogger() {
+    const { logger } = this.config;
+    const Logger = require(logger.path);
+    this.logger = new Logger(logger);
     return this;
   }
   
-  setDatabase(Connection: DatabaseConnectionClass) {
-    this.db = new Database(this.config.database);
+  setDatabase() {
+    const { database } = this.config;
+    const { connection } = database;
+    const { default: Connection } = require(connection.path); 
+    const { default: Database } = require(database.path);
+    this.db = new Database(database) as IDatabase;
     this.db.setConnection(Connection);
     return this;
   }
   
-  setRouter(Router: RouterClass) {
-    this.router = new Router(this.config.router);
+  setRouter(modulesContext: IModulesContext) {
+    const { router } = this.config;
+    const { default: Router } = loadModule(router.path, modulesContext);
+    this.router = new Router(router, modulesContext);
     return this;
   }
 
-  setInputConnection(InConnection: InputConnectionClass) {
-    this.inConnection = new InConnection(this.config.inConnection);
-    this.inConnection.onOperation(async (operation) => {
+  setInputConnection() {
+    const { inConnection } = this.config;
+    const { transport } = inConnection;
+    const server = inConnection[transport];
+    const { default: InConnection } = require(server.path);
+    
+    const handleOperation = async (operation: IOperation) => {
       try {
         return await this.router!.exec(operation);
       } catch (e: any) {
-        const { code, message, details } = e;
-        const errors = {
-          [RouterErrorEnum.E_NO_ROUTE]: () => {
-            throw new ServerError(ServerErrorEnum.E_NOT_FOUND, details) },
-          [RouterErrorEnum.E_MODULE]: () => {
-            throw new ServerError(ServerErrorEnum.E_BED_REQUEST, details) },
-          [RouterErrorEnum.E_REDIRECT]: () => {
-            throw new ServerError(ServerErrorEnum.E_REDIRECT, details) },
-        };
-        if (e instanceof RouterError && code in errors) errors[code]!();
-        else logger.error(e);
-        throw new AppError(AppErrorEnum.E_ROUTER, message);
+        return handleOperationError(e);
       }
-    });
+    };
+  
+    this.inConnection = new InConnection(server) as IInputConnection;
+    this.inConnection.onOperation(handleOperation);
     return this;
   }
 
   async start() {
     try {
+      this.setLogger();
       Object.assign(global, { logger: this.logger });
       logger.info('LOGGER IS READY');
 
+      this.setDatabase();
       const execQuery = await this.db!.init() as IDatabaseQueries;
-      // Object.assign(global, { execQuery });
       logger.info('DATABASE IS READY');
 
-      await this.router!.init({ execQuery });
+      this.setRouter({ execQuery });
+      await this.router!.init();
       logger.info('ROUTER IS READY');
 
+      this.setInputConnection();
       await this.inConnection!.start();
       logger.info('SERVER IS READY');
 
@@ -93,10 +97,7 @@ class App {
       typeof logger !== 'undefined' ? logger.fatal(e) : console.error(e);
       process.nextTick(() => process.exit());
     }
-
     process.on('unhandledRejection', uncaughtErrorHandler);
     process.on('uncaughtException', uncaughtErrorHandler);
   }
 }
-
-export = App;

@@ -1,9 +1,9 @@
 import { format } from 'node:util';
 import { Readable } from 'node:stream';
-import { IObject, TPrimitiv } from '../types';
+import { IObject, TPrimitiv } from '../types/types';
 import { IDatabaseQueries, TQuery } from '../db/types';
 import { ILoggerConfig } from '../logger/types';
-import { HTTP_MODULES } from '../server/http';
+import { HTTP_MODULES } from '../server/http/http';
 import { MODULES, MODULES_RESPONSE } from '../router/constants';
 
 export interface IConfig {
@@ -40,8 +40,9 @@ export interface IDatabaseConnection {
 }
 
 export interface IDatabaseConfig {
+  path: string;
   queriesPath: string;
-  connection: Partial<{
+  connection: { path: string} & Partial<{
     connectionString: string,
     ssl: {
       rejectUnauthorized: boolean,
@@ -82,11 +83,12 @@ export type TOperationResponse =
   | Readable;
 
 export interface IRouter {
-  init(context: IModulesContext): Promise<void>;
+  init(): Promise<void>;
   exec(operation: IOperation): Promise<TOperationResponse>;
 }
 
 export interface IRouterConfig {
+  path: string;
   apiPath: string;
   clientApiPath: string;
   modules: (keyof typeof MODULES)[];
@@ -106,12 +108,19 @@ export interface IInputConnection {
 }
 
 export interface IInputConnectionConfig {
-  path: {
-    public: string;
-    api: string;
-  };
+  transport: 'http' | 'ws';
   http: {
+    path: string;
+    paths: {
+      public: string;
+      api: string;
+    };
     modules: (keyof typeof HTTP_MODULES)[];
+    host: string;
+    port: number;
+  };
+  ws: {
+    path: string;
     host: string;
     port: number;
   };

@@ -6,12 +6,8 @@ export const LOGGER_LEVEL = {
   DEBUG: 'debug',
 };
 
-export const LOGGER_TARGET = {
-  CONSOLE: 'console',
-  STDOUT: 'stdout',
-};
-
 export interface ILoggerConfig {
-  level: typeof LOGGER_LEVEL[keyof typeof LOGGER_LEVEL],
-  target: typeof LOGGER_TARGET[keyof typeof LOGGER_TARGET],
+  path: string;
+  level: keyof typeof LOGGER_LEVEL,
+  target: 'console' | 'stdout',
 }

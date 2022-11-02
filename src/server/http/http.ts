@@ -1,34 +1,32 @@
 import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
 import { format } from 'node:util';
-import { JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../constants/constants';
+import { JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../../constants/constants';
 import { IRequest, IResponse, IServer, THttpModule } from './types';
-import { TPromiseExecutor } from '../types';
-import { IInputConnection, IInputConnectionConfig, IOperation, IParams, TOperationResponse } from '../app/types';
+import { TPromiseExecutor } from '../../types/types';
+import { IInputConnection, IInputConnectionConfig, IOperation, IParams, TOperationResponse } from '../../app/types';
 import { ServerError, ServerErrorEnum, ServerErrorMap } from './errors';
 import createStaticServer, { TStaticServer } from './static';
 import { getUrlInstance } from './utils';
-import { getEnumFromMap } from '../utils/utils';
+import { getEnumFromMap } from '../../utils/utils';
 import { allowCors } from './modules/allowCors';
-import { createUnicCode } from '../utils/crypto';
+import { createUnicCode } from '../../utils/crypto';
 
 export const HTTP_MODULES = {
   allowCors,
 };
 
-export const HTTP_MODULES_ENUM = getEnumFromMap(HTTP_MODULES);
-
 class HttpConnection implements IInputConnection {
-  private config: IInputConnectionConfig;
+  private config: IInputConnectionConfig['http'];
   private server: IServer;
   private staticServer: TStaticServer;
   private callback?: (operation: IOperation) => Promise<TOperationResponse>;
   private modules: ReturnType<THttpModule>[] = [];
 
-  constructor(config: IInputConnectionConfig) {
+  constructor(config: IInputConnectionConfig['http']) {
     this.config = config;
     this.server = createServer(this.onRequest.bind(this));
-    this.staticServer = createStaticServer(this.config.path.public);
+    this.staticServer = createStaticServer(this.config.paths.public);
   }
 
   onOperation(fn: (operation: IOperation) => Promise<TOperationResponse>) {
@@ -44,7 +42,7 @@ class HttpConnection implements IInputConnection {
     }
 
     try {
-      const { modules } = this.config.http;
+      const { modules } = this.config;
       modules.map(
         (module) => this.modules.push(HTTP_MODULES[module]())
       );
@@ -54,7 +52,7 @@ class HttpConnection implements IInputConnection {
     }
 
     const executor: TPromiseExecutor<void> = (rv, rj) => {
-      const { port } = this.config.http;
+      const { port } = this.config;
       try {
         this.server.listen(port, rv);
       } catch (e: any) {
@@ -69,7 +67,7 @@ class HttpConnection implements IInputConnection {
   private async onRequest(req: IRequest, res: IResponse) {
     if (!this.runModules(req, res)) return;
 
-    const { api } = this.config.path;
+    const { api } = this.config.paths;
     const ifApi = new RegExp(`^/${api}(/.*)?$`);
     if (!ifApi.test(req.url || ''))
       return this.staticServer(req, res);
@@ -151,7 +149,7 @@ class HttpConnection implements IInputConnection {
     const { pathname, searchParams } = getUrlInstance(req.url, origin);
       
     const names = (pathname
-      .replace('/' + this.config.path.api, '')
+      .replace('/' + this.config.paths.api, '')
       .slice(1) || 'index')
       .split('/')
       .filter((path) => Boolean(path));
