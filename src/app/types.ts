@@ -30,7 +30,7 @@ export type ILogger = Record<TLoggerMethodName, TLoggerMethod>;
 export type LoggerClass = new(config: ILoggerConfig) => ILogger;
 
 export interface IDatabase {
-  init(): Promise<IQueries>;
+  init(): Promise<IDatabaseQueries>;
   setConnection(Connection: DatabaseConnectionClass): this;
 }
 
@@ -82,7 +82,7 @@ export type TOperationResponse =
   | Readable;
 
 export interface IRouter {
-  init(): Promise<void>;
+  init(context: IModulesContext): Promise<void>;
   exec(operation: IOperation): Promise<TOperationResponse>;
 }
 
@@ -123,4 +123,8 @@ export type InputConnectionClass =
 declare global {
   const execQuery: IDatabaseQueries;
   const logger: ILogger;
+}
+
+export interface IModulesContext {
+  execQuery: IDatabaseQueries;
 }

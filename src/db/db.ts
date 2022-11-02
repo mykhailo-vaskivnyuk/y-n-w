@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fsp from 'node:fs/promises';
-import { TQueriesModule, TQuery } from './types';
+import { IDatabaseQueries, TQueriesModule, TQuery } from './types';
 import { DatabaseConnectionClass, IDatabase, IDatabaseConfig, IDatabaseConnection, IQueries } from '../app/types';
 import { DatabaseError, DatabaseErrorEnum } from './errors';
 
@@ -21,7 +21,8 @@ class Database implements IDatabase {
     }
 
     try {
-      return await this.getQueries(this.config.queriesPath);
+      const queries = await this.getQueries(this.config.queriesPath);
+      return  queries as unknown as IDatabaseQueries;
     } catch (e: any) {
       logger.error(e);
       throw new DatabaseError(DatabaseErrorEnum.E_DB_INIT);
@@ -48,7 +49,7 @@ class Database implements IDatabase {
 
       if (ext !== '.js') continue;
 
-      const filePath = path.join(queryPath, name);
+      const filePath = path.join(queryPath, item.name);
       const queries = this.createQueries(filePath);
       if (name === 'index') Object.assign(query, queries);
       else query[name] = queries;
@@ -58,9 +59,9 @@ class Database implements IDatabase {
   }
 
   private createQueries(filePath: string): IQueries | TQuery {
-    const { default: defaultExport, ...restExport } = require(filePath);
-    const moduleExport = (defaultExport || restExport) as TQueriesModule; 
-    if (typeof moduleExport === 'string') {
+    let moduleExport = require(filePath);
+    moduleExport = moduleExport.default || moduleExport as TQueriesModule;
+    if (typeof moduleExport === 'string' ) {
       return this.sqlToQuery(moduleExport);
     }
     return Object

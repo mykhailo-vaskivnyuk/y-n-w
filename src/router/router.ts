@@ -1,28 +1,29 @@
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { THandler, IRoutes, TModule, IContext, TResponseModule } from './types';
-import { IRouter, IOperation, TOperationResponse, IRouterConfig } from '../app/types';
+import { IRouter, IOperation, TOperationResponse, IRouterConfig, IModulesContext } from '../app/types';
 import { RouterError, RouterErrorEnum } from './errors';
 import { isHandler } from './utils';
 import { createClientApi } from './methods/create.client.api';
 import { errorHandler } from './methods/error.handler';
 import { applyModules, applyResponseModules } from './methods/modules';
-import loader from '../loader/loader';
+import load from '../loader/loader';
 
 class Router implements IRouter {
   private config: IRouterConfig;
   private routes?: IRoutes;
   private modules: ReturnType<TModule>[] = [];
   private responseModules: ReturnType<TResponseModule>[] = [];
-
+  private context: IModulesContext | null = null;
   constructor(config: IRouterConfig) {
     this.config = config;
   }
 
-  async init() {
+  async init(context: IModulesContext) {
+    this.context = context;
     try {
-      this.modules = applyModules(this.config);
-      this.responseModules = applyResponseModules(this.config);
+      this.modules = applyModules(this.config, this.context);
+      this.responseModules = applyResponseModules(this.config, this.context);
     } catch (e: any) {
       logger.error(e);
       throw new RouterError(RouterErrorEnum.E_MODULE);
@@ -74,8 +75,8 @@ class Router implements IRouter {
 
       if (ext !== '.js' || name === 'types') continue;
 
-      const filePath = path.join(routePath, name);
-      const moduleExport = loader(filePath) as THandler | IRoutes;
+      const filePath = path.join(routePath, item.name);
+      const moduleExport = load(filePath, this.context!) as THandler | IRoutes;
 
       if (name !== 'index') {
         route[name] = moduleExport;

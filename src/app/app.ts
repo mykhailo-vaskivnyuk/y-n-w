@@ -10,6 +10,7 @@ import { AppError, AppErrorEnum } from './errors';
 import { DatabaseError } from '../db/errors';
 import { RouterError, RouterErrorEnum } from '../router/errors';
 import { ServerError, ServerErrorEnum } from '../server/errors';
+import { IDatabaseQueries } from '../db/types';
 
 class App {
   private config: IConfig;
@@ -25,8 +26,6 @@ class App {
   
   setLogger(Logger: LoggerClass) {
     this.logger = new Logger(this.config.logger);
-    Object.assign(global, { logger: this.logger });
-    logger.info('LOGGER IS READY');
     return this;
   }
   
@@ -66,11 +65,14 @@ class App {
 
   async start() {
     try {
-      const execQuery = await this.db!.init();
-      Object.assign(global, { execQuery });
+      Object.assign(global, { logger: this.logger });
+      logger.info('LOGGER IS READY');
+
+      const execQuery = await this.db!.init() as IDatabaseQueries;
+      // Object.assign(global, { execQuery });
       logger.info('DATABASE IS READY');
 
-      await this.router!.init();
+      await this.router!.init({ execQuery });
       logger.info('ROUTER IS READY');
 
       await this.inConnection!.start();
