@@ -4,10 +4,9 @@ import fs from 'node:fs';
 import { Writable } from 'node:stream';
 import Joi from 'joi';
 import { isHandler } from '../utils';
-import { IRouterConfig } from '../../app/types';
 import { TPromiseExecutor } from '../../types/types';
 import { isJoiSchema } from '../modules.response/validate.response';
-import { IRoutes, JoiSchema, THandler } from '../types';
+import { IRouterConfig, IRoutes, JoiSchema, THandler } from '../types';
 import { getApi, getExport, getImport, getMethod } from './templates';
 
 export const createClientApi = (config: IRouterConfig, routes?: IRoutes) => {

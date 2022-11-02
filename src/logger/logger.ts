@@ -1,7 +1,6 @@
 import { format } from 'util';
 import pino = require('pino');
-import { ILogger, TLoggerParameters } from '../app/types';
-import { ILoggerConfig, LOGGER_LEVEL } from './types';
+import { ILogger, ILoggerConfig, LOGGER_LEVEL, TLoggerParameters } from './types';
 
 class Logger implements ILogger {
   private logger;

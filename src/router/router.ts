@@ -1,30 +1,27 @@
 import fsp from 'node:fs/promises';
 import path from 'node:path';
-import { THandler, IRoutes, TModule, IContext, TResponseModule } from './types';
-import { IRouter, IOperation, TOperationResponse, IRouterConfig, IModulesContext } from '../app/types';
+import { THandler, IRoutes, TModule, IContext, TResponseModule, IRouter, IRouterConfig } from './types';
+import { IOperation, TOperationResponse } from '../app/types';
 import { RouterError, RouterErrorEnum } from './errors';
 import { isHandler } from './utils';
 import { createClientApi } from './methods/create.client.api';
 import { errorHandler } from './methods/error.handler';
 import { applyModules, applyResponseModules } from './methods/modules';
-import { loadModule } from '../loader/loader';
 
 class Router implements IRouter {
   private config: IRouterConfig;
   private routes?: IRoutes;
   private modules: ReturnType<TModule>[] = [];
   private responseModules: ReturnType<TResponseModule>[] = [];
-  private modulesContext: IModulesContext;
 
-  constructor(config: IRouterConfig, modulesContext: IModulesContext) {
+  constructor(config: IRouterConfig) {
     this.config = config;
-    this.modulesContext = modulesContext;
   }
 
   async init() {
     try {
-      this.modules = applyModules(this.config, this.modulesContext);
-      this.responseModules = applyResponseModules(this.config, this.modulesContext);
+      this.modules = applyModules(this.config);
+      this.responseModules = applyResponseModules(this.config);
     } catch (e: any) {
       logger.error(e);
       throw new RouterError(RouterErrorEnum.E_MODULE);
@@ -77,7 +74,7 @@ class Router implements IRouter {
       if (ext !== '.js' || name === 'types') continue;
 
       const filePath = path.join(routePath, item.name);
-      const moduleExport = loadModule(filePath, this.modulesContext) as THandler | IRoutes;
+      const moduleExport = require(filePath) as THandler | IRoutes;
 
       if (name !== 'index') {
         route[name] = moduleExport;
@@ -119,4 +116,4 @@ class Router implements IRouter {
   }
 }
 
-export default Router;
+export = Router;

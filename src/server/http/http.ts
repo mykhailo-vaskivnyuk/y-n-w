@@ -2,19 +2,14 @@ import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
 import { format } from 'node:util';
 import { JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../../constants/constants';
-import { IRequest, IResponse, IServer, THttpModule } from './types';
+import { IInputConnection, IInputConnectionConfig, IRequest, IResponse, IServer, THttpModule } from './types';
 import { TPromiseExecutor } from '../../types/types';
-import { IInputConnection, IInputConnectionConfig, IOperation, IParams, TOperationResponse } from '../../app/types';
+import { IOperation, IParams, TOperationResponse } from '../../app/types';
 import { ServerError, ServerErrorEnum, ServerErrorMap } from './errors';
 import createStaticServer, { TStaticServer } from './static';
 import { getUrlInstance } from './utils';
-import { getEnumFromMap } from '../../utils/utils';
-import { allowCors } from './modules/allowCors';
 import { createUnicCode } from '../../utils/crypto';
-
-export const HTTP_MODULES = {
-  allowCors,
-};
+import { HTTP_MODULES } from './constants';
 
 class HttpConnection implements IInputConnection {
   private config: IInputConnectionConfig['http'];
@@ -43,8 +38,8 @@ class HttpConnection implements IInputConnection {
 
     try {
       const { modules } = this.config;
-      modules.map(
-        (module) => this.modules.push(HTTP_MODULES[module]())
+      this.modules = modules.map(
+        (module) => require(HTTP_MODULES[module])[module](),
       );
     } catch (e: any) {
       logger.error(e);
@@ -208,4 +203,4 @@ class HttpConnection implements IInputConnection {
   }
 }
 
-export default HttpConnection;
+export = HttpConnection;

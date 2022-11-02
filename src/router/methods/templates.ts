@@ -1,4 +1,4 @@
-import util from 'node:util';
+import { format } from 'node:util';
 
 const importTpl = 'import { %s } from \'./types\';\n';
 const apiTpl = 
@@ -11,8 +11,8 @@ const methodTpl = '(options: %s) => fetch<%s>(\'%s\', options),';
 const methodTplNoTypes = '() => fetch<%s>(\'%s\'),'
 const exportTpl = 'export type %s = %s;\n';
 
-export const getApi = (fileName: string) => util.format(apiTpl, fileName);
-export const getImport = (typeName: string) => util.format(importTpl, typeName);
+export const getApi = (fileName: string) => format(apiTpl, fileName);
+export const getImport = (typeName: string) => format(importTpl, typeName);
 
 export const getMethod = (
   typeName: string | undefined,
@@ -20,8 +20,8 @@ export const getMethod = (
   nextPathname: string
 ) => {
   return typeName
-    ? util.format(methodTpl, typeName, responseTypeName, nextPathname)
-    : util.format(methodTplNoTypes, responseTypeName, nextPathname);
+    ? format(methodTpl, typeName, responseTypeName, nextPathname)
+    : format(methodTplNoTypes, responseTypeName, nextPathname);
 };
 export const getExport = (paramsTypeName: string, paramsTypes: string) =>
-  util.format(exportTpl, paramsTypeName, paramsTypes);
+  format(exportTpl, paramsTypeName, paramsTypes);

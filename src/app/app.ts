@@ -1,13 +1,13 @@
-import {
-  IConfig, ILogger, IDatabase, IRouter,
-  IInputConnection, IModulesContext, IOperation,
-} from './types';
+import { IConfig, IModulesContext, IOperation } from './types';
 import { AppError, AppErrorEnum, handleOperationError } from './errors';
 import { DatabaseError } from '../db/errors';
 import { RouterError } from '../router/errors';
 import { ServerError } from '../server/http/errors';
-import { IDatabaseQueries } from '../db/types';
+import { IDatabase, IDatabaseQueries } from '../db/types';
 import { loadModule } from '../loader/loader';
+import { ILogger } from '../logger/types';
+import { IRouter } from '../router/types';
+import { IInputConnection } from '../server/http/types';
 
 export default class App {
   private config: IConfig;
@@ -18,7 +18,7 @@ export default class App {
 
   constructor(config: IConfig) {
     this.config = config;
-    this.setErrorHandlers();
+    this.setUncaughtErrorHandlers();
   }
   
   setLogger() {
@@ -30,17 +30,14 @@ export default class App {
   
   setDatabase() {
     const { database } = this.config;
-    const { connection } = database;
-    const { default: Connection } = require(connection.path); 
-    const { default: Database } = require(database.path);
+    const Database = require(database.path);
     this.db = new Database(database) as IDatabase;
-    this.db.setConnection(Connection);
     return this;
   }
   
   setRouter(modulesContext: IModulesContext) {
     const { router } = this.config;
-    const { default: Router } = loadModule(router.path, modulesContext);
+    const Router = loadModule(router.path, modulesContext);
     this.router = new Router(router, modulesContext);
     return this;
   }
@@ -49,7 +46,7 @@ export default class App {
     const { inConnection } = this.config;
     const { transport } = inConnection;
     const server = inConnection[transport];
-    const { default: InConnection } = require(server.path);
+    const InConnection = require(server.path);
     
     const handleOperation = async (operation: IOperation) => {
       try {
@@ -74,7 +71,7 @@ export default class App {
       const execQuery = await this.db!.init() as IDatabaseQueries;
       logger.info('DATABASE IS READY');
 
-      this.setRouter({ execQuery });
+      this.setRouter({ execQuery, logger: this.logger! });
       await this.router!.init();
       logger.info('ROUTER IS READY');
 
@@ -92,7 +89,7 @@ export default class App {
     }
   }
 
-  private setErrorHandlers() {
+  private setUncaughtErrorHandlers() {
     const uncaughtErrorHandler = (e: any) => {
       typeof logger !== 'undefined' ? logger.fatal(e) : console.error(e);
       process.nextTick(() => process.exit());

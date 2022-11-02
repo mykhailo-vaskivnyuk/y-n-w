@@ -1,7 +1,9 @@
 import path from 'node:path';
 import fsp from 'node:fs/promises';
-import { IDatabaseQueries, TQueriesModule, TQuery } from './types';
-import { DatabaseConnectionClass, IDatabase, IDatabaseConfig, IDatabaseConnection, IQueries } from '../app/types';
+import {
+  IDatabase, IDatabaseConfig, IDatabaseConnection,
+  IDatabaseQueries, IQueries, TQueriesModule, TQuery,
+} from './types';
 import { DatabaseError, DatabaseErrorEnum } from './errors';
 
 class Database implements IDatabase {
@@ -13,6 +15,9 @@ class Database implements IDatabase {
   }
 
   async init() {
+    const { connection } = this.config;
+    const Connection = require(connection.path);
+    this.connection = new Connection(connection);
     try {
       await this.connection!.connect();
     } catch (e: any) {
@@ -27,11 +32,6 @@ class Database implements IDatabase {
       logger.error(e);
       throw new DatabaseError(DatabaseErrorEnum.E_DB_INIT);
     }
-  }
-
-  setConnection(Connection: DatabaseConnectionClass) {
-    this.connection = new Connection(this.config.connection);
-    return this;
   }
 
   private async getQueries(dirPath: string): Promise<IQueries> {
@@ -84,4 +84,4 @@ class Database implements IDatabase {
   }
 }
 
-export default Database;
+export = Database;
