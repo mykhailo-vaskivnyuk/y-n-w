@@ -131,5 +131,5 @@ const getTypes = (
 const getSchemaType = (schema: Joi.Schema) => {
   const schemaValuesSet = (schema as any)._valids._values;
   const [type] = [...schemaValuesSet.values()];
-  return type;
+  return `${type}`;
 };
