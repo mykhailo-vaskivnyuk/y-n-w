@@ -10,15 +10,15 @@ class SessionError extends Error {
 }
 exports.SessionError = SessionError;
 const createSession = (0, session_1.createService)();
-const setSession = () => async (context, operation) => {
+const setSession = () => async (operation, context) => {
     const { options } = operation;
     const { sessionKey } = options;
     if (!sessionKey)
-        return [context, operation];
+        return [operation, context];
     try {
         const session = await createSession(sessionKey);
         context.session = session;
-        return [context, operation];
+        return [operation, context];
     }
     catch (e) {
         logger.error(e);

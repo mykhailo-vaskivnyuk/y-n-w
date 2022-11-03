@@ -9,15 +9,15 @@ class GetStreamError extends Error {
     }
 }
 exports.GetStreamError = GetStreamError;
-const getStream = () => async (context, operation) => {
+const getStream = () => async (operation, context) => {
     const { params, stream } = operation.data;
     if (!stream)
-        return [context, operation];
+        return [operation, context];
     const { type, content } = stream;
     if (type === constants_1.MIME_TYPES_ENUM['application/octet-stream']) {
         params.stream = stream;
         delete operation.data.stream;
-        return [context, operation];
+        return [operation, context];
     }
     try {
         const buffers = [];
@@ -25,7 +25,7 @@ const getStream = () => async (context, operation) => {
             buffers.push(chunk);
         const string = Buffer.concat(buffers).toString() || '{}';
         Object.assign(params, JSON.parse(string));
-        return [context, operation];
+        return [operation, context];
     }
     catch (e) {
         logger.error(e);

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServerError = exports.StatusCodeMap = exports.ServerErrorEnum = exports.ServerErrorMap = void 0;
-const utils_1 = require("../utils/utils");
+const utils_1 = require("../../utils/utils");
 exports.ServerErrorMap = {
     E_NOT_FOUND: 'Not found',
     E_BED_REQUEST: 'Bad request',

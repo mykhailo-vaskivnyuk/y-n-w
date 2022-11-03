@@ -17,7 +17,7 @@ const login = async (context, { email, password }) => {
     await context.session.write('user_id', user.user_id);
     return { ...user, confirmed: !user.link };
 };
-login.params = {
+login.paramsSchema = {
     email: joi_1.default.string().required(),
     password: joi_1.default.string().required(),
 };

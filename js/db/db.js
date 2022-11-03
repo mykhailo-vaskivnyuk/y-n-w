@@ -12,6 +12,9 @@ class Database {
         this.config = config;
     }
     async init() {
+        const { connection } = this.config;
+        const Connection = require(connection.path);
+        this.connection = new Connection(connection);
         try {
             await this.connection.connect();
         }
@@ -20,16 +23,13 @@ class Database {
             throw new errors_1.DatabaseError(errors_1.DatabaseErrorEnum.E_DB_CONNECTION);
         }
         try {
-            return await this.getQueries(this.config.queriesPath);
+            const queries = await this.getQueries(this.config.queriesPath);
+            return queries;
         }
         catch (e) {
             logger.error(e);
             throw new errors_1.DatabaseError(errors_1.DatabaseErrorEnum.E_DB_INIT);
         }
-    }
-    setConnection(Connection) {
-        this.connection = new Connection(this.config.connection);
-        return this;
     }
     async getQueries(dirPath) {
         const query = {};
@@ -38,25 +38,25 @@ class Database {
         for await (const item of dir) {
             const ext = node_path_1.default.extname(item.name);
             const name = node_path_1.default.basename(item.name, ext);
-            if (item.isFile()) {
-                if (ext !== '.js')
-                    continue;
-                const filePath = node_path_1.default.join(queryPath, name);
-                const queries = this.createQueries(filePath);
-                if (name === 'index')
-                    Object.assign(query, queries);
-                else
-                    query[name] = queries;
-            }
-            else {
+            if (item.isDirectory()) {
                 const dirPath = node_path_1.default.join(queryPath, name);
                 query[name] = await this.getQueries(dirPath);
+                continue;
             }
+            if (ext !== '.js')
+                continue;
+            const filePath = node_path_1.default.join(queryPath, item.name);
+            const queries = this.createQueries(filePath);
+            if (name === 'index')
+                Object.assign(query, queries);
+            else
+                query[name] = queries;
         }
         return query;
     }
     createQueries(filePath) {
-        const moduleExport = require(filePath);
+        let moduleExport = require(filePath);
+        moduleExport = moduleExport.default || moduleExport;
         if (typeof moduleExport === 'string') {
             return this.sqlToQuery(moduleExport);
         }

@@ -2,22 +2,15 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.HTTP_MODULES_ENUM = exports.HTTP_MODULES = void 0;
 const node_http_1 = require("node:http");
 const node_stream_1 = require("node:stream");
 const node_util_1 = require("node:util");
-const constants_1 = require("../constants/constants");
+const constants_1 = require("../../constants/constants");
 const errors_1 = require("./errors");
 const static_1 = __importDefault(require("./static"));
 const utils_1 = require("./utils");
-const utils_2 = require("../utils/utils");
-const allowCors_1 = require("./modules/allowCors");
-const crypto_1 = require("../utils/crypto");
-exports.HTTP_MODULES = {
-    allowCors: allowCors_1.allowCors,
-};
-exports.HTTP_MODULES_ENUM = (0, utils_2.getEnumFromMap)(exports.HTTP_MODULES);
+const crypto_1 = require("../../utils/crypto");
+const constants_2 = require("./constants");
 class HttpConnection {
     config;
     server;
@@ -27,7 +20,7 @@ class HttpConnection {
     constructor(config) {
         this.config = config;
         this.server = (0, node_http_1.createServer)(this.onRequest.bind(this));
-        this.staticServer = (0, static_1.default)(this.config.path.public);
+        this.staticServer = (0, static_1.default)(this.config.paths.public);
     }
     onOperation(fn) {
         this.callback = fn;
@@ -40,15 +33,15 @@ class HttpConnection {
             throw e;
         }
         try {
-            const { modules } = this.config.http;
-            modules.map((module) => this.modules.push(exports.HTTP_MODULES[module]()));
+            const { modules } = this.config;
+            this.modules = modules.map((module) => require(constants_2.HTTP_MODULES[module])[module]());
         }
         catch (e) {
             logger.error(e);
             throw new errors_1.ServerError(errors_1.ServerErrorEnum.E_SERVER_ERROR);
         }
         const executor = (rv, rj) => {
-            const { port } = this.config.http;
+            const { port } = this.config;
             try {
                 this.server.listen(port, rv);
             }
@@ -62,7 +55,7 @@ class HttpConnection {
     async onRequest(req, res) {
         if (!this.runModules(req, res))
             return;
-        const { api } = this.config.path;
+        const { api } = this.config.paths;
         const ifApi = new RegExp(`^/${api}(/.*)?$`);
         if (!ifApi.test(req.url || ''))
             return this.staticServer(req, res);
@@ -126,7 +119,7 @@ class HttpConnection {
         const { origin, cookie } = req.headers;
         const { pathname, searchParams } = (0, utils_1.getUrlInstance)(req.url, origin);
         const names = (pathname
-            .replace('/' + this.config.path.api, '')
+            .replace('/' + this.config.paths.api, '')
             .slice(1) || 'index')
             .split('/')
             .filter((path) => Boolean(path));
@@ -181,5 +174,5 @@ class HttpConnection {
             throw e;
     }
 }
-exports.default = HttpConnection;
+module.exports = HttpConnection;
 //# sourceMappingURL=http.js.map

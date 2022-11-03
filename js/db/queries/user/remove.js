@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const remove = 'DELETE FROM users WHERE user_id=$1';
-module.exports = remove;
+exports.default = remove;
 //# sourceMappingURL=remove.js.map

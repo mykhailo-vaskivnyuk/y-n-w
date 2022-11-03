@@ -12,7 +12,7 @@ const confirm = async (context, { link }) => {
     await context.session.write('user_id', user.user_id);
     return { ...user, confirmed: !user.link };
 };
-confirm.params = {
+confirm.paramsSchema = {
     link: joi_1.default.string(),
 };
 confirm.responseSchema = types_1.UserResponseSchema;

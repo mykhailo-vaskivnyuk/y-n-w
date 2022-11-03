@@ -18,7 +18,7 @@ const overmail = async (context, { email }) => {
     await context.sendMail[type](email, token);
     return true;
 };
-overmail.params = {
+overmail.paramsSchema = {
     email: joi_1.default.string().required(), //.email(),
 };
 overmail.responseSchema = joi_1.default.boolean();

@@ -5,4 +5,4 @@ const isHandler = (handler) => {
     return typeof handler === 'function';
 };
 exports.isHandler = isHandler;
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=utils.js.map

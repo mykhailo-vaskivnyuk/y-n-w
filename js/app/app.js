@@ -1,73 +1,62 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-const db_1 = __importDefault(require("../db/db"));
+Object.defineProperty(exports, "__esModule", { value: true });
 const errors_1 = require("./errors");
 const errors_2 = require("../db/errors");
 const errors_3 = require("../router/errors");
-const errors_4 = require("../server/errors");
+const errors_4 = require("../server/http/errors");
+const loader_1 = require("../loader/loader");
 class App {
     config;
-    logger;
-    db;
     router;
-    inConnection;
     constructor(config) {
         this.config = config;
-        this.setErrorHandlers();
+        this.setUncaughtErrorHandlers();
     }
-    setLogger(Logger) {
-        this.logger = new Logger(this.config.logger);
-        Object.assign(global, { logger: this.logger });
-        logger.info('LOGGER IS READY');
+    getLogger() {
+        const { logger } = this.config;
+        const Logger = require(logger.path);
+        return new Logger(logger);
+    }
+    getDatabase() {
+        const { database } = this.config;
+        const Database = require(database.path);
+        return new Database(database);
+    }
+    setRouter(modulesContext) {
+        const { router } = this.config;
+        const Router = (0, loader_1.loadModule)(module)(router.path, modulesContext);
+        this.router = new Router(router, modulesContext);
         return this;
     }
-    setDatabase(Connection) {
-        this.db = new db_1.default(this.config.database);
-        this.db.setConnection(Connection);
-        return this;
-    }
-    setRouter(Router) {
-        this.router = new Router(this.config.router);
-        return this;
-    }
-    setInputConnection(InConnection) {
-        this.inConnection = new InConnection(this.config.inConnection);
-        this.inConnection.onOperation(async (operation) => {
+    getInputConnection() {
+        const { inConnection } = this.config;
+        const { transport } = inConnection;
+        const server = inConnection[transport];
+        const InConnection = require(server.path);
+        const handleOperation = async (operation) => {
             try {
                 return await this.router.exec(operation);
             }
             catch (e) {
-                const { code, message, details } = e;
-                const errors = {
-                    [errors_3.RouterErrorEnum.E_NO_ROUTE]: () => {
-                        throw new errors_4.ServerError(errors_4.ServerErrorEnum.E_NOT_FOUND, details);
-                    },
-                    [errors_3.RouterErrorEnum.E_MODULE]: () => {
-                        throw new errors_4.ServerError(errors_4.ServerErrorEnum.E_BED_REQUEST, details);
-                    },
-                    [errors_3.RouterErrorEnum.E_REDIRECT]: () => {
-                        throw new errors_4.ServerError(errors_4.ServerErrorEnum.E_REDIRECT, details);
-                    },
-                };
-                if (e instanceof errors_3.RouterError && code in errors)
-                    errors[code]();
-                else
-                    logger.error(e);
-                throw new errors_1.AppError(errors_1.AppErrorEnum.E_ROUTER, message);
+                return (0, errors_1.handleOperationError)(e);
             }
-        });
-        return this;
+        };
+        const newServer = new InConnection(server);
+        newServer.onOperation(handleOperation);
+        return newServer;
     }
     async start() {
         try {
-            const execQuery = await this.db.init();
-            Object.assign(global, { execQuery });
+            const logger = this.getLogger();
+            Object.assign(global, { logger });
+            logger.info('LOGGER IS READY');
+            const db = this.getDatabase();
+            const execQuery = await db.init();
             logger.info('DATABASE IS READY');
+            this.setRouter({ execQuery, logger });
             await this.router.init();
             logger.info('ROUTER IS READY');
-            await this.inConnection.start();
+            await this.getInputConnection().start();
             logger.info('SERVER IS READY');
         }
         catch (e) {
@@ -79,14 +68,16 @@ class App {
             throw new errors_1.AppError(errors_1.AppErrorEnum.E_START);
         }
     }
-    setErrorHandlers() {
+    setUncaughtErrorHandlers() {
         const uncaughtErrorHandler = (e) => {
-            typeof logger !== 'undefined' ? logger.fatal(e) : console.error(e);
+            typeof logger !== 'undefined'
+                ? logger.fatal(e)
+                : console.error(e);
             process.nextTick(() => process.exit());
         };
         process.on('unhandledRejection', uncaughtErrorHandler);
         process.on('uncaughtException', uncaughtErrorHandler);
     }
 }
-module.exports = App;
+exports.default = App;
 //# sourceMappingURL=app.js.map

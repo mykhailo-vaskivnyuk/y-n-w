@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.initMail = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const node_fs_1 = __importDefault(require("node:fs"));
-const node_util_1 = __importDefault(require("node:util"));
+const node_util_1 = require("node:util");
 const template = node_fs_1.default.readFileSync('src/services/mail/template.html').toString();
 const generalOptions = { from: 'm.vaskivnyuk@gmail.com', sender: 'You & World' };
 const OptionsMap = {
@@ -30,7 +30,7 @@ const initMail = (config) => {
     const sendMail = (type, origin, to, token) => {
         const { text, subject } = OptionsMap[type];
         const link = `${origin}/#/account/${type}/${token}`;
-        const html = node_util_1.default.format(template, text, link);
+        const html = (0, node_util_1.format)(template, text, link);
         const options = {
             ...generalOptions,
             to,

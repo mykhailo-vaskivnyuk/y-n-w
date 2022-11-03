@@ -6,7 +6,7 @@ const joi_1 = __importDefault(require("joi"));
 const create = async (context, { name }) => {
     return { name };
 };
-create.params = {
+create.paramsSchema = {
     name: joi_1.default.string().required(),
     field: joi_1.default.number(),
 };

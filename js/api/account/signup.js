@@ -19,7 +19,7 @@ const signup = async (context, { email }) => {
     await context.sendMail.confirm(email, link);
     return { ...user, confirmed: !user.link };
 };
-signup.params = {
+signup.paramsSchema = {
     email: joi_1.default.string().required(), //.email(),
 };
 signup.responseSchema = types_1.UserResponseSchema;

@@ -1,15 +1,15 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const util_1 = require("util");
 const pino = require("pino");
 const types_1 = require("./types");
 class Logger {
     logger;
     constructor(config) {
-        const { level, target } = config;
+        const { level: levelKey, target } = config;
+        const level = types_1.LOGGER_LEVEL[levelKey];
         const toConsole = { target: 'pino-pretty', level, options: {} };
         const toStdOut = { target: 'pino/file', level, options: { destination: 1 } };
-        const transport = target === types_1.LOGGER_TARGET.STDOUT ? toStdOut : toConsole;
+        const transport = target === 'stdout' ? toStdOut : toConsole;
         const options = { level, transport };
         this.logger = pino.default(options);
     }
@@ -29,5 +29,5 @@ class Logger {
         this.logger.debug(obj, (0, util_1.format)(...message));
     }
 }
-exports.default = Logger;
+module.exports = Logger;
 //# sourceMappingURL=logger.js.map

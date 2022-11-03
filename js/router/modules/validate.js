@@ -19,12 +19,12 @@ const options = {
     stripUnknown: true,
     errors: { render: false },
 };
-const validate = () => async (context, operation, handler) => {
-    const { schema, params } = handler || {};
-    if (!params)
-        return [context, operation];
+const validate = () => async (operation, context, handler) => {
+    const { schema, paramsSchema } = handler || {};
+    if (!paramsSchema)
+        return [operation, context];
     if (!schema)
-        handler.schema = joi_1.default.object(params);
+        handler.schema = joi_1.default.object(paramsSchema);
     const { data } = operation;
     const { error, value } = handler.schema.validate(data.params, options);
     if (error) {
@@ -32,7 +32,7 @@ const validate = () => async (context, operation, handler) => {
         throw new ValidationError(error.details);
     }
     Object.assign(data.params, { ...value });
-    return [context, operation];
+    return [operation, context];
 };
 exports.default = validate;
 //# sourceMappingURL=validate.js.map

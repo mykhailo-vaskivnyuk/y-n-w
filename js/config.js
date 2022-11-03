@@ -3,12 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 const node_path_1 = __importDefault(require("node:path"));
-const types_1 = require("./logger/types");
-const constants_1 = require("./router/constants");
-const http_1 = require("./server/http");
 const buildPath = 'js';
 const host = process.env.HOST || 'localhost';
-const databaseConnection = {
+const port = +(process.env.PORT || 8000);
+const dbConectionType = process.env.DATABASE_URL ? 'heroku' : 'local';
+const dbConnection = {
     heroku: {
         connectionString: process.env.DATABASE_URL || '',
         ssl: {
@@ -22,30 +21,34 @@ const databaseConnection = {
         user: 'merega',
         password: 'merega',
     },
-};
-module.exports = {
+}[dbConectionType];
+const config = {
     logger: {
-        level: types_1.LOGGER_LEVEL.DEBUG,
-        target: types_1.LOGGER_TARGET.CONSOLE,
+        path: node_path_1.default.resolve(buildPath, 'logger/logger'),
+        level: 'DEBUG',
+        target: 'console',
     },
     database: {
-        queriesPath: node_path_1.default.join(buildPath, 'db/queries'),
-        connection: databaseConnection[process.env.DATABASE_URL ? 'heroku' : 'local'],
+        path: node_path_1.default.resolve(buildPath, 'db/db'),
+        queriesPath: node_path_1.default.resolve(buildPath, 'db/queries'),
+        connection: {
+            path: node_path_1.default.resolve(buildPath, 'db/connection/pg'),
+            ...dbConnection,
+        },
     },
     router: {
+        path: node_path_1.default.resolve(buildPath, 'router/router'),
         apiPath: node_path_1.default.join(buildPath, 'api'),
         clientApiPath: 'src/client/common/api/client.api.ts',
         modules: [
-            constants_1.MODULES_ENUM.setSession,
-            constants_1.MODULES_ENUM.getStream,
-            constants_1.MODULES_ENUM.validate,
-            constants_1.MODULES_ENUM.setMailService,
+            'setSession',
+            'getStream',
+            'validate',
+            'setMailService',
         ],
-        responseModules: [
-            constants_1.MODULES_RESPONSE_ENUM.validateResponse,
-        ],
+        responseModules: ['validateResponse'],
         modulesConfig: {
-            [constants_1.MODULES_ENUM.setMailService]: {
+            setMailService: {
                 service: 'gmail',
                 auth: {
                     user: 'm.vaskivnyuk@gmail.com',
@@ -55,17 +58,23 @@ module.exports = {
         },
     },
     inConnection: {
-        path: {
-            public: 'public',
-            api: 'api',
-        },
+        transport: 'http',
         http: {
-            modules: [
-                http_1.HTTP_MODULES_ENUM.allowCors,
-            ],
+            path: node_path_1.default.resolve(buildPath, 'server/http/http'),
+            paths: {
+                public: 'public',
+                api: 'api',
+            },
+            modules: ['allowCors'],
             host,
-            port: +(process.env.PORT || 8000),
+            port,
+        },
+        ws: {
+            path: node_path_1.default.resolve(buildPath, 'server/ws'),
+            host,
+            port,
         },
     },
 };
+module.exports = config;
 //# sourceMappingURL=config.js.map

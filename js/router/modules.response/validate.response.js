@@ -29,7 +29,7 @@ const responseSchemaToSchema = (schema) => {
     }
     return (0, exports.isJoiSchema)(schema) ? schema : joi_1.default.object(schema);
 };
-const validateResponse = () => async (context, response, handler) => {
+const validateResponse = () => async (response, context, handler) => {
     const { responseSchema } = handler || {};
     if (!responseSchema)
         throw new Error('Handler is not put');
@@ -45,7 +45,7 @@ const validateResponse = () => async (context, response, handler) => {
         logger.error(error);
         throw new ValidationResponseError(error.details);
     }
-    return [context, value];
+    return [value, context];
 };
 exports.default = validateResponse;
 //# sourceMappingURL=validate.response.js.map

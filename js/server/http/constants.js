@@ -1,6 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NOT_FOUND = exports.INDEX = exports.MIME_TYPES = exports.HEADERS = void 0;
+exports.MIME_TYPES = exports.HEADERS = exports.NOT_FOUND = exports.INDEX = exports.HTTP_MODULES = void 0;
+const path_1 = require("path");
+const basePathModules = 'js/server/http/modules';
+exports.HTTP_MODULES = {
+    allowCors: (0, path_1.resolve)(basePathModules, 'allowCors'),
+};
+exports.INDEX = 'index.html';
+exports.NOT_FOUND = '404.html';
 exports.HEADERS = {
     // 'X-XSS-Protection': '1; mode=block',
     // 'X-Content-Type-Options': 'nosniff',
@@ -22,6 +29,4 @@ exports.MIME_TYPES = {
     ico: 'image/x-icon',
     svg: 'image/svg+xml',
 };
-exports.INDEX = 'index.html';
-exports.NOT_FOUND = '404.html';
-//# sourceMappingURL=types.js.map
+//# sourceMappingURL=constants.js.map

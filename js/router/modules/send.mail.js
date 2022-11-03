@@ -20,13 +20,13 @@ const setMailService = (config) => {
             throw new MailError();
         }
     };
-    return async (context, operation) => {
+    return async (operation, context) => {
         const { origin } = context;
         context.sendMail = {
             confirm: create(origin, 'confirm'),
             restore: create(origin, 'restore'),
         };
-        return [context, operation];
+        return [operation, context];
     };
 };
 exports.default = setMailService;
