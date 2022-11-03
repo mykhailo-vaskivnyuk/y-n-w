@@ -1,5 +1,5 @@
 import pg from 'pg';
-import { IDatabaseConfig, IDatabaseConnection } from '../../app/types';
+import { IDatabaseConfig, IDatabaseConnection } from '../types';
 
 class Connection implements IDatabaseConnection {
   private pool;

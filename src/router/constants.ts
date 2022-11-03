@@ -1,5 +1,4 @@
 import { resolve } from 'path';
-import { getEnumFromMap } from '../utils/utils';
 
 const basePathModules = 'js/router/modules';
 const basePathResponseModules = 'js/router/modules.response';
@@ -11,10 +10,6 @@ export const MODULES = {
   setMailService: resolve(basePathModules, 'send.mail'),
 };
 
-export const MODULES_ENUM = getEnumFromMap(MODULES);
-
 export const MODULES_RESPONSE = {
   validateResponse: resolve(basePathResponseModules, 'validate.response'),
 };
-
-export const MODULES_RESPONSE_ENUM = getEnumFromMap(MODULES_RESPONSE);

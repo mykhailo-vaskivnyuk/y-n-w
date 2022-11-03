@@ -1,5 +1,5 @@
-import { TOperationResponse } from '../app/types';
-import { getEnumFromMap } from '../utils/utils';
+import { TOperationResponse } from '../../app/types';
+import { getEnumFromMap } from '../../utils/utils';
 
 export const ServerErrorMap = {
   E_NOT_FOUND: 'Not found',

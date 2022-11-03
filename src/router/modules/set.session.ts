@@ -24,4 +24,5 @@ const setSession: TModule = () => async (operation, context) => {
     throw new SessionError();
   }
 };
+
 export default setSession;

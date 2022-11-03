@@ -1,7 +1,7 @@
 import fsp from 'node:fs/promises';
 import path from 'node:path';
-import { THandler, IRoutes, TModule, IContext, TResponseModule } from './types';
-import { IRouter, IOperation, TOperationResponse, IRouterConfig } from '../app/types';
+import { THandler, IRoutes, TModule, IContext, TResponseModule, IRouter, IRouterConfig } from './types';
+import { IOperation, TOperationResponse } from '../app/types';
 import { RouterError, RouterErrorEnum } from './errors';
 import { isHandler } from './utils';
 import { createClientApi } from './methods/create.client.api';
@@ -47,7 +47,7 @@ class Router implements IRouter {
       [operation, context] = await this.runModules(operation, context, handler);
       const { params } = operation.data; 
       let response = await handler(context, params);
-      [response] = await this.runResponseModules(response, context, handler);
+      [response, context] = await this.runResponseModules(response, context, handler);
       return response;
     } catch (e: any) {
       return errorHandler(e);
@@ -73,7 +73,7 @@ class Router implements IRouter {
 
       if (ext !== '.js' || name === 'types') continue;
 
-      const filePath = path.join(routePath, name);
+      const filePath = path.join(routePath, item.name);
       const moduleExport = require(filePath) as THandler | IRoutes;
 
       if (name !== 'index') {
@@ -116,4 +116,4 @@ class Router implements IRouter {
   }
 }
 
-export default Router;
+export = Router;
