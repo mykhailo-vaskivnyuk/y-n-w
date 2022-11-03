@@ -3,46 +3,40 @@ import { AppError, AppErrorEnum, handleOperationError } from './errors';
 import { DatabaseError } from '../db/errors';
 import { RouterError } from '../router/errors';
 import { ServerError } from '../server/http/errors';
-import { IDatabase, IDatabaseQueries } from '../db/types';
-import { loadModule } from '../loader/loader';
-import { ILogger } from '../logger/types';
+import { IDatabase } from '../db/types';
 import { IRouter } from '../router/types';
 import { IInputConnection } from '../server/http/types';
+import { loadModule } from '../loader/loader';
 
 export default class App {
   private config: IConfig;
-  private logger?: ILogger;
-  private db?: IDatabase;
   private router?: IRouter;
-  private inConnection?: IInputConnection;
 
   constructor(config: IConfig) {
     this.config = config;
     this.setUncaughtErrorHandlers();
   }
   
-  setLogger() {
+  getLogger() {
     const { logger } = this.config;
     const Logger = require(logger.path);
-    this.logger = new Logger(logger);
-    return this;
+    return new Logger(logger);
   }
   
-  setDatabase() {
+  getDatabase() {
     const { database } = this.config;
     const Database = require(database.path);
-    this.db = new Database(database) as IDatabase;
-    return this;
+    return new Database(database) as IDatabase;
   }
   
   setRouter(modulesContext: IModulesContext) {
     const { router } = this.config;
-    const Router = loadModule(router.path, modulesContext);
+    const Router = loadModule(module)(router.path, modulesContext);
     this.router = new Router(router, modulesContext);
     return this;
   }
 
-  setInputConnection() {
+  getInputConnection() {
     const { inConnection } = this.config;
     const { transport } = inConnection;
     const server = inConnection[transport];
@@ -56,27 +50,26 @@ export default class App {
       }
     };
   
-    this.inConnection = new InConnection(server) as IInputConnection;
-    this.inConnection.onOperation(handleOperation);
-    return this;
+    const newServer = new InConnection(server) as IInputConnection;
+    newServer.onOperation(handleOperation);
+    return newServer;
   }
 
   async start() {
     try {
-      this.setLogger();
-      Object.assign(global, { logger: this.logger });
+      const logger = this.getLogger();
+      Object.assign(global, { logger });
       logger.info('LOGGER IS READY');
 
-      this.setDatabase();
-      const execQuery = await this.db!.init() as IDatabaseQueries;
+      const db = this.getDatabase();
+      const execQuery = await db.init();
       logger.info('DATABASE IS READY');
 
-      this.setRouter({ execQuery, logger: this.logger! });
+      this.setRouter({ execQuery, logger });
       await this.router!.init();
       logger.info('ROUTER IS READY');
 
-      this.setInputConnection();
-      await this.inConnection!.start();
+      await this.getInputConnection().start();
       logger.info('SERVER IS READY');
 
     } catch (e) {
@@ -91,7 +84,9 @@ export default class App {
 
   private setUncaughtErrorHandlers() {
     const uncaughtErrorHandler = (e: any) => {
-      typeof logger !== 'undefined' ? logger.fatal(e) : console.error(e);
+      typeof logger !== 'undefined'
+        ? logger.fatal(e)
+        : console.error(e);
       process.nextTick(() => process.exit());
     }
     process.on('unhandledRejection', uncaughtErrorHandler);

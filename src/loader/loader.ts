@@ -6,16 +6,16 @@ import { customRequire } from './custom.require';
 import { TMode, TRequire } from './types';
 import { log, resolve } from './utils';
 
-export const loadModule = (
+export const loadModule = (parentModule: NodeJS.Module) => (
   modulePath: string,
   modulesContext?: IModulesContext,
   mode: TMode = false
 ) => {
-  const parentModuleDir = require.main!.path;
+  const parentModuleDir = path.dirname(parentModule.filename);
   return loader(modulePath, parentModuleDir, modulesContext, mode);
 }
 
-const loader = (
+export const loader = (
   modulePath: string,
   parentModuleDir: string,
   modulesContext?: IModulesContext,
@@ -35,7 +35,6 @@ const loader = (
     exports: module.exports,
     __filename: moduleFullPath,
     __dirname: moduleFullDir,
-    logger,
     ...modulesContext,
   };
   if (mode === 'isolate_all') {
