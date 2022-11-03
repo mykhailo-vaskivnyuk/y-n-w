@@ -2,7 +2,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { Readable } from 'node:stream';
-import { INDEX, IRequest, IResponse, MIME_TYPES, NOT_FOUND } from './types';
+import { INDEX, MIME_TYPES, NOT_FOUND } from './constants';
+import { IRequest, IResponse } from './types';
 import { getUrlInstance } from './utils';
 
 interface IPreparedFile {

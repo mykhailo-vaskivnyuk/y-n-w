@@ -1,5 +1,5 @@
-import { IRouterConfig } from '../../app/types';
 import { MODULES, MODULES_RESPONSE } from '../constants';
+import { IRouterConfig } from '../types';
 
 export function applyModules(config: IRouterConfig) {
   const { modules, modulesConfig } = config;

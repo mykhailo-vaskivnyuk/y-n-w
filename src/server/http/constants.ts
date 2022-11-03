@@ -1,8 +1,12 @@
-import http from 'node:http';
+import { resolve } from 'path';
+const basePathModules = 'js/server/http/modules';
 
-export type IRequest = http.IncomingMessage;
-export type IResponse = http.ServerResponse;
-export type IServer = http.Server;
+export const HTTP_MODULES = {
+  allowCors: resolve(basePathModules, 'allowCors'),
+};
+
+export const INDEX = 'index.html';
+export const NOT_FOUND = '404.html';
 
 export const HEADERS = {
   // 'X-XSS-Protection': '1; mode=block',
@@ -26,9 +30,3 @@ export const MIME_TYPES = {
   ico: 'image/x-icon',
   svg: 'image/svg+xml',
 };
-
-export const INDEX = 'index.html';
-export const NOT_FOUND = '404.html';
-
-export type THttpModule<T = any> = (config?: T) =>
-  (req: IRequest, res: IResponse) => boolean;

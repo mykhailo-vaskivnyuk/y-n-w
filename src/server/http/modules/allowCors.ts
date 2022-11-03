@@ -1,4 +1,5 @@
-import { HEADERS, THttpModule } from '../types';
+import { HEADERS } from '../constants';
+import { THttpModule } from '../types';
 
 export const allowCors: THttpModule = () => (req, res) => {
   const { method } = req;
@@ -13,4 +14,4 @@ export const allowCors: THttpModule = () => (req, res) => {
       res.setHeader(key, HEADERS[key as keyof typeof HEADERS])
     );
   return true;
-}
+} 

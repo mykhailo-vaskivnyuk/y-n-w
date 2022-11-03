@@ -16,10 +16,10 @@ const options = {
   errors: { render: false },
 };
 
-const validate: TModule = () => async (context, operation, handler) => {
-  const { schema, params } = handler || {};
-  if (!params) return [context, operation];
-  if (!schema) handler!.schema = Joi.object(params);
+const validate: TModule = () => async (operation, context, handler) => {
+  const { schema, paramsSchema } = handler || {};
+  if (!paramsSchema) return [operation, context];
+  if (!schema) handler!.schema = Joi.object(paramsSchema);
   const { data } = operation;
   const { error, value } = handler!.schema!.validate(data.params, options);
   if (error) {
@@ -27,7 +27,7 @@ const validate: TModule = () => async (context, operation, handler) => {
     throw new ValidationError(error.details);
   }
   Object.assign(data.params, { ...value });
-  return [context, operation];
+  return [operation, context];
 };
 
 export default validate;

@@ -1,8 +1,7 @@
 import Joi from 'joi';
 import { IUserResponse } from '../client/common/api/types';
 import { JoiSchema } from '../router/types';
-
-type OmitNull<T extends IUserResponse> = T extends null ? never : T;
+import { OmitNull } from '../types/types';
 
 export const UserResponseSchema = [
   Joi.any().equal(null),  

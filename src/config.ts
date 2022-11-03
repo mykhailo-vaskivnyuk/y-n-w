@@ -1,12 +1,12 @@
 
 import path from 'node:path';
-import { LOGGER_LEVEL, LOGGER_TARGET } from './logger/types';
-import { MODULES_ENUM, MODULES_RESPONSE_ENUM } from './router/constants';
-import { HTTP_MODULES_ENUM } from './server/http';
+import { IConfig } from './app/types';
 
 const buildPath = 'js';
 const host = process.env.HOST || 'localhost';
-const databaseConnection = {
+const port = +(process.env.PORT || 8000);
+const dbConectionType = process.env.DATABASE_URL ? 'heroku' : 'local'
+const dbConnection = {
   heroku: {
     connectionString: process.env.DATABASE_URL || '',
     ssl: {
@@ -20,33 +20,36 @@ const databaseConnection = {
     user: 'merega',
     password: 'merega',
   },
-};
+}[dbConectionType];
 
-export = {
+
+const config: IConfig = {
   logger: {
-    level: LOGGER_LEVEL.DEBUG,
-    target: LOGGER_TARGET.CONSOLE,
+    path: path.resolve(buildPath, 'logger/logger'),
+    level: 'DEBUG',
+    target: 'console',
   },
   database: {
-    queriesPath: path.join(buildPath, 'db/queries'),
-    connection: databaseConnection[
-      process.env.DATABASE_URL ? 'heroku' : 'local'
-    ],
+    path: path.resolve(buildPath, 'db/db'),
+    queriesPath: path.resolve(buildPath, 'db/queries'),
+    connection: {
+      path: path.resolve(buildPath, 'db/connection/pg'),
+      ...dbConnection,
+    },
   },
   router: {
+    path: path.resolve(buildPath, 'router/router'),
     apiPath: path.join(buildPath, 'api'),
     clientApiPath: 'src/client/common/api/client.api.ts',
     modules: [
-      MODULES_ENUM.setSession,
-      MODULES_ENUM.getStream,
-      MODULES_ENUM.validate,
-      MODULES_ENUM.setMailService,
+      'setSession',
+      'getStream',
+      'validate',
+      'setMailService',
     ],
-    responseModules: [
-      MODULES_RESPONSE_ENUM.validateResponse,
-    ],
+    responseModules: ['validateResponse'],
     modulesConfig: {
-      [MODULES_ENUM.setMailService]: {
+      setMailService: {
         service: 'gmail',
         auth: {
           user: 'm.vaskivnyuk@gmail.com',
@@ -56,16 +59,23 @@ export = {
     },
   },
   inConnection: {
-    path: {
-      public: 'public',
-      api: 'api',
-    },
+    transport: 'http',
     http: {
-      modules: [
-        HTTP_MODULES_ENUM.allowCors,
-      ],
+      path: path.resolve(buildPath, 'server/http/http'),
+      paths: {
+        public: 'public',
+        api: 'api',
+      },
+      modules: ['allowCors'],
       host,
-      port: +(process.env.PORT || 8000),
+      port,
+    },
+    ws: {
+      path: path.resolve(buildPath, 'server/ws'),
+      host,
+      port,
     },
   },
 };
+
+export = config;

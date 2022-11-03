@@ -8,15 +8,15 @@ export class GetStreamError extends Error {
   }
 }
 
-const getStream: TModule = () => async (context, operation) => {
+const getStream: TModule = () => async (operation, context) => {
   const { params, stream } = operation.data;
-  if (!stream) return [context, operation];
+  if (!stream) return [operation, context];
   const { type,  content } = stream;
   
   if (type === MIME_TYPES_ENUM['application/octet-stream']) {
     params.stream = stream;
     delete operation.data.stream;
-    return [context, operation];
+    return [operation, context];
   }
   
   try {
@@ -24,7 +24,7 @@ const getStream: TModule = () => async (context, operation) => {
     for await (const chunk of content) buffers.push(chunk as any);
     const string = Buffer.concat(buffers).toString() || '{}';
     Object.assign(params, JSON.parse(string));
-    return [context, operation];
+    return [operation, context];
   } catch (e: any) {
     logger.error(e);
     throw new GetStreamError(e.message);

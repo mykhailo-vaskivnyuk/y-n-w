@@ -1,3 +1,11 @@
+import { format } from 'node:util';
+
+export interface ILoggerConfig {
+  path: string;
+  level: keyof typeof LOGGER_LEVEL,
+  target: 'console' | 'stdout',
+}
+
 export const LOGGER_LEVEL = {
   FATAL: 'fatal',
   ERROR: 'error',
@@ -6,12 +14,16 @@ export const LOGGER_LEVEL = {
   DEBUG: 'debug',
 };
 
-export const LOGGER_TARGET = {
-  CONSOLE: 'console',
-  STDOUT: 'stdout',
-};
+export type TLoggerMethodName =
+  | 'debug'
+  | 'info'
+  | 'warn'
+  | 'error'
+  | 'fatal';
 
-export interface ILoggerConfig {
-  level: typeof LOGGER_LEVEL[keyof typeof LOGGER_LEVEL],
-  target: typeof LOGGER_TARGET[keyof typeof LOGGER_TARGET],
-}
+export type TLoggerParameters = Parameters<typeof format>;
+
+export type TLoggerMethod =
+  <T>(object: T, ...message: TLoggerParameters) => void;
+
+export type ILogger = Record<TLoggerMethodName, TLoggerMethod>;

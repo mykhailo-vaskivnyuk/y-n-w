@@ -1,7 +1,9 @@
 import path from 'node:path';
 import fsp from 'node:fs/promises';
-import { TQueriesModule, TQuery } from './types';
-import { DatabaseConnectionClass, IDatabase, IDatabaseConfig, IDatabaseConnection, IQueries } from '../app/types';
+import {
+  IDatabase, IDatabaseConfig, IDatabaseConnection,
+  IDatabaseQueries, IQueries, TQueriesModule, TQuery,
+} from './types';
 import { DatabaseError, DatabaseErrorEnum } from './errors';
 
 class Database implements IDatabase {
@@ -13,6 +15,9 @@ class Database implements IDatabase {
   }
 
   async init() {
+    const { connection } = this.config;
+    const Connection = require(connection.path);
+    this.connection = new Connection(connection);
     try {
       await this.connection!.connect();
     } catch (e: any) {
@@ -21,16 +26,12 @@ class Database implements IDatabase {
     }
 
     try {
-      return await this.getQueries(this.config.queriesPath);
+      const queries = await this.getQueries(this.config.queriesPath);
+      return  queries as unknown as IDatabaseQueries;
     } catch (e: any) {
       logger.error(e);
       throw new DatabaseError(DatabaseErrorEnum.E_DB_INIT);
     }
-  }
-
-  setConnection(Connection: DatabaseConnectionClass) {
-    this.connection = new Connection(this.config.connection);
-    return this;
   }
 
   private async getQueries(dirPath: string): Promise<IQueries> {
@@ -40,23 +41,27 @@ class Database implements IDatabase {
     for await (const item of dir) {
       const ext = path.extname(item.name);
       const name = path.basename(item.name, ext);
-      if (item.isFile()) {
-        if (ext !== '.js') continue;
-        const filePath = path.join(queryPath, name);
-        const queries = this.createQueries(filePath);
-        if (name === 'index') Object.assign(query, queries);
-        else query[name] = queries;
-      } else {
+      if (item.isDirectory()) {
         const dirPath = path.join(queryPath, name);
         query[name] = await this.getQueries(dirPath);
+        continue;
       }
+
+      if (ext !== '.js') continue;
+
+      const filePath = path.join(queryPath, item.name);
+      const queries = this.createQueries(filePath);
+      if (name === 'index') Object.assign(query, queries);
+      else query[name] = queries;
+
     }
     return query;
   }
 
   private createQueries(filePath: string): IQueries | TQuery {
-    const moduleExport = require(filePath) as TQueriesModule;
-    if (typeof moduleExport === 'string') {
+    let moduleExport = require(filePath);
+    moduleExport = moduleExport.default || moduleExport as TQueriesModule;
+    if (typeof moduleExport === 'string' ) {
       return this.sqlToQuery(moduleExport);
     }
     return Object

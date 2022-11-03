@@ -18,7 +18,7 @@ const login: THandler<ILoginParams, IUserResponse | null> = async (context, { em
   await context.session.write('user_id', user.user_id);
   return { ...user, confirmed: !user.link};
 };
-login.params = {
+login.paramsSchema = {
   email: Joi.string().required(), //.email(),
   password: Joi.string().required(),
 };
