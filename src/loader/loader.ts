@@ -3,13 +3,13 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { IModulesContext } from '../app/types';
 import { customRequire } from './custom.require';
-import { TMode, TRequire } from './types';
 import { log, resolve } from './utils';
 
+type TMode = 'isolate_all' | false;
 export const loadModule = (parentModule: NodeJS.Module) => (
   modulePath: string,
   modulesContext?: IModulesContext,
-  mode: TMode = false
+  mode: TMode = false,
 ) => {
   const parentModuleDir = path.dirname(parentModule.filename);
   return loader(modulePath, parentModuleDir, modulesContext, mode);
@@ -29,7 +29,7 @@ export const loader = (
   const module = { exports: {} };
   let newRequire;
   const context = {
-    require: null as unknown as TRequire,
+    require: null as any,
     console,
     module,
     exports: module.exports,
@@ -39,11 +39,9 @@ export const loader = (
   };
   if (mode === 'isolate_all') {
     newRequire = ((modulePath: string) =>
-      loader(modulePath, moduleFullDir, modulesContext, mode)) as TRequire;
-    newRequire.main = { path: moduleFullDir, type: 'loader' };
+      loader(modulePath, moduleFullDir, modulesContext, mode));
   } else {
-    newRequire = customRequire(moduleFullDir, context) as TRequire;
-    newRequire.main = { path: moduleFullDir, type: 'require' };
+    newRequire = customRequire(moduleFullDir, context);
   }
   context.require = newRequire;
   vm.createContext(context);

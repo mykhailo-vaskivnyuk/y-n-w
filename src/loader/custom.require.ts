@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import { log, resolve, use_strict } from './utils';
-import { TRequire } from './types';
+// import { TRequire } from './types';
 
 export const customRequire = (
   moduleDir: string,
@@ -17,8 +17,7 @@ export const customRequire = (
     .toString()
     .replace(use_strict, '');
   const module = { exports: {} };
-  const newRequire = customRequire(moduleFullDir, context) as TRequire;
-  newRequire.main = { path: moduleDir, type: 'require' };
+  const newRequire = customRequire(moduleFullDir, context);
   const scriptParams = {
     require: newRequire,
     module,
