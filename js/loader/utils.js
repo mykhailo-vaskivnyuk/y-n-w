@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolve = exports.log = exports.cwd = exports.use_strict = void 0;
+exports.getScriptInContext = exports.resolve = exports.log = exports.cwd = exports.use_strict = void 0;
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 exports.use_strict = /("|')use strict("|');?/;
@@ -51,4 +51,16 @@ const addExt = (moduleFullPath) => {
         return moduleFullPath + '.js';
     }
 };
+const getScriptInContext = (__filename) => {
+    const script = node_fs_1.default
+        .readFileSync(__filename)
+        .toString()
+        .replace(exports.use_strict, '');
+    return `
+  'use strict';
+  ({ require, module, exports, __filename, __dirname }) => {
+  ${script}
+  };`;
+};
+exports.getScriptInContext = getScriptInContext;
 //# sourceMappingURL=utils.js.map

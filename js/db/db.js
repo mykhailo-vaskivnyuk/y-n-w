@@ -8,6 +8,7 @@ const errors_1 = require("./errors");
 class Database {
     config;
     connection;
+    queries;
     constructor(config) {
         this.config = config;
     }
@@ -19,19 +20,24 @@ class Database {
             await this.connection.connect();
         }
         catch (e) {
-            logger.error(e);
-            throw new errors_1.DatabaseError(errors_1.DatabaseErrorEnum.E_DB_CONNECTION);
+            logger.error(e, e.message);
+            throw new errors_1.DatabaseError('E_DB_CONNECTION');
         }
         try {
-            const queries = await this.getQueries(this.config.queriesPath);
-            return queries;
+            const queries = await this.readQueries(this.config.queriesPath);
+            this.queries = queries;
         }
         catch (e) {
-            logger.error(e);
-            throw new errors_1.DatabaseError(errors_1.DatabaseErrorEnum.E_DB_INIT);
+            logger.error(e, e.message);
+            throw new errors_1.DatabaseError('E_DB_INIT');
         }
     }
-    async getQueries(dirPath) {
+    getQueries() {
+        if (!this.queries)
+            throw new errors_1.DatabaseError('E_DB_INIT');
+        return this.queries;
+    }
+    async readQueries(dirPath) {
         const query = {};
         const queryPath = node_path_1.default.resolve(dirPath);
         const dir = await promises_1.default.opendir(queryPath);
@@ -40,7 +46,7 @@ class Database {
             const name = node_path_1.default.basename(item.name, ext);
             if (item.isDirectory()) {
                 const dirPath = node_path_1.default.join(queryPath, name);
-                query[name] = await this.getQueries(dirPath);
+                query[name] = await this.readQueries(dirPath);
                 continue;
             }
             if (ext !== '.js')
@@ -73,8 +79,8 @@ class Database {
                 return await this.connection.query(sql, params);
             }
             catch (e) {
-                logger.error(e);
-                throw new errors_1.DatabaseError(errors_1.DatabaseErrorEnum.E_DB_QUERY);
+                logger.error(e, e.message);
+                throw new errors_1.DatabaseError('E_DB_QUERY');
             }
         };
     }

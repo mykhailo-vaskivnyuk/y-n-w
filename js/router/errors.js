@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HandlerError = exports.HandlerErrorEnum = exports.HandlerErrorMap = exports.RouterError = exports.RouterErrorEnum = exports.RouterErrorMap = void 0;
-const utils_1 = require("../utils/utils");
+exports.HandlerError = exports.HandlerErrorMap = exports.RouterError = exports.RouterErrorMap = void 0;
 exports.RouterErrorMap = {
     E_ROUTER: 'ROUTER ERROR',
     E_ROUTES: 'CAN\'T CREATE ROUTES',
@@ -10,7 +9,6 @@ exports.RouterErrorMap = {
     E_HANDLER: 'CAN\'T HANDLE OPERATION',
     E_REDIRECT: 'REDIRECT',
 };
-exports.RouterErrorEnum = (0, utils_1.getEnumFromMap)(exports.RouterErrorMap);
 class RouterError extends Error {
     code;
     details;
@@ -25,7 +23,6 @@ exports.RouterError = RouterError;
 exports.HandlerErrorMap = {
     E_REDIRECT: 'REDIRECT',
 };
-exports.HandlerErrorEnum = (0, utils_1.getEnumFromMap)(exports.HandlerErrorMap);
 class HandlerError extends Error {
     code;
     details;

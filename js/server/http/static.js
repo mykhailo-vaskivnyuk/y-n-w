@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const constants_1 = require("./constants");
+const errors_1 = require("./errors");
 const utils_1 = require("./utils");
 const createStaticServer = (staticPath) => {
     const prepareFile = async (url) => {
@@ -33,11 +34,17 @@ const createStaticServer = (staticPath) => {
         const path = pathname.replace(/\/$/, '');
         const { found, mimeType, stream } = await prepareFile(path);
         if (!found && !mimeType) {
-            res.writeHead(301, { location: '/' });
+            const statusCode = errors_1.ErrorStatusCodeMap['E_REDIRECT'];
+            const resLog = statusCode + ' ' + errors_1.ServerErrorMap['E_REDIRECT'];
+            logger.error((0, utils_1.getLog)(req, resLog));
+            res.writeHead(statusCode || 301, { location: '/' });
             res.end();
             return;
         }
-        const statusCode = found ? 200 : 404;
+        const statusCode = found ? 200 : errors_1.ErrorStatusCodeMap['E_NOT_FOUND'] || 404;
+        const resLog = found ? 'OK' : statusCode + ' ' + errors_1.ServerErrorMap['E_NOT_FOUND'];
+        const log = (0, utils_1.getLog)(req, resLog);
+        found ? logger.info(log) : logger.error(log);
         res.writeHead(statusCode, { 'Content-Type': mimeType });
         stream?.pipe(res);
     };

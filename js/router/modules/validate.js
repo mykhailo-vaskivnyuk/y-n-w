@@ -28,7 +28,7 @@ const validate = () => async (operation, context, handler) => {
     const { data } = operation;
     const { error, value } = handler.schema.validate(data.params, options);
     if (error) {
-        logger.error(error);
+        logger.error(error, error.message);
         throw new ValidationError(error.details);
     }
     Object.assign(data.params, { ...value });

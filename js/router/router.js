@@ -23,8 +23,8 @@ class Router {
             this.responseModules = (0, modules_1.applyResponseModules)(this.config);
         }
         catch (e) {
-            logger.error(e);
-            throw new errors_1.RouterError(errors_1.RouterErrorEnum.E_MODULE);
+            logger.error(e, e.message);
+            throw new errors_1.RouterError('E_MODULE');
         }
         try {
             const { apiPath } = this.config;
@@ -32,13 +32,13 @@ class Router {
             await (0, create_client_api_1.createClientApi)(this.config, this.routes);
         }
         catch (e) {
-            logger.error(e);
-            throw new errors_1.RouterError(errors_1.RouterErrorEnum.E_ROUTES);
+            logger.error(e, e.message);
+            throw new errors_1.RouterError('E_ROUTES');
         }
     }
     async exec({ ...operation }) {
         if (!this.routes)
-            throw new errors_1.RouterError(errors_1.RouterErrorEnum.E_ROUTES);
+            throw new errors_1.RouterError('E_ROUTES');
         const { options: { origin }, names } = operation;
         let context = { origin };
         const handler = this.findRoute(names);
@@ -53,7 +53,7 @@ class Router {
             return (0, error_handler_1.errorHandler)(e);
         }
         finally {
-            context.session.finalize();
+            await context.session.finalize();
         }
     }
     async createRoutes(dirPath) {
@@ -89,11 +89,11 @@ class Router {
             if (!(0, utils_1.isHandler)(handler) && key in handler)
                 handler = handler[key];
             else
-                throw new errors_1.RouterError(errors_1.RouterErrorEnum.E_NO_ROUTE);
+                throw new errors_1.RouterError('E_NO_ROUTE');
         }
         if ((0, utils_1.isHandler)(handler))
             return handler;
-        throw new errors_1.RouterError(errors_1.RouterErrorEnum.E_NO_ROUTE);
+        throw new errors_1.RouterError('E_NO_ROUTE');
     }
     async runModules(operation, context, handler) {
         for (const module of this.modules)

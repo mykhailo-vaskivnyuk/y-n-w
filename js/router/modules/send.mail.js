@@ -16,7 +16,7 @@ const setMailService = (config) => {
             return await sendMail(type, origin, to, token);
         }
         catch (e) {
-            logger.error(e);
+            logger.error(e, e.message);
             throw new MailError();
         }
     };

@@ -9,7 +9,7 @@ class SessionError extends Error {
     }
 }
 exports.SessionError = SessionError;
-const createSession = (0, session_1.createService)();
+const { createSession } = (0, session_1.getService)();
 const setSession = () => async (operation, context) => {
     const { options } = operation;
     const { sessionKey } = options;
@@ -21,7 +21,7 @@ const setSession = () => async (operation, context) => {
         return [operation, context];
     }
     catch (e) {
-        logger.error(e);
+        logger.error(e, e.message);
         throw new SessionError();
     }
 };

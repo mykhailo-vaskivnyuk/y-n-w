@@ -28,7 +28,7 @@ const getStream = () => async (operation, context) => {
         return [operation, context];
     }
     catch (e) {
-        logger.error(e);
+        logger.error(e, e.message);
         throw new GetStreamError(e.message);
     }
 };

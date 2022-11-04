@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 const node_http_1 = require("node:http");
 const node_stream_1 = require("node:stream");
-const node_util_1 = require("node:util");
 const constants_1 = require("../../constants/constants");
 const errors_1 = require("./errors");
 const static_1 = __importDefault(require("./static"));
@@ -28,8 +27,8 @@ class HttpConnection {
     }
     start() {
         if (!this.callback) {
-            const e = new errors_1.ServerError(errors_1.ServerErrorEnum.E_NO_CALLBACK);
-            logger.error(e);
+            const e = new errors_1.ServerError('E_NO_CALLBACK');
+            logger.error(e, e.message);
             throw e;
         }
         try {
@@ -37,8 +36,8 @@ class HttpConnection {
             this.modules = modules.map((module) => require(constants_2.HTTP_MODULES[module])[module]());
         }
         catch (e) {
-            logger.error(e);
-            throw new errors_1.ServerError(errors_1.ServerErrorEnum.E_SERVER_ERROR);
+            logger.error(e, e.message);
+            throw new errors_1.ServerError('E_SERVER_ERROR');
         }
         const executor = (rv, rj) => {
             const { port } = this.config;
@@ -46,8 +45,8 @@ class HttpConnection {
                 this.server.listen(port, rv);
             }
             catch (e) {
-                logger.error(e);
-                rj(new errors_1.ServerError(errors_1.ServerErrorEnum.E_LISTEN));
+                logger.error(e, e.message);
+                rj(new errors_1.ServerError('E_LISTEN'));
             }
         };
         return new Promise(executor);
@@ -71,14 +70,14 @@ class HttpConnection {
                 await new Promise((rv, rj) => {
                     response.on('error', rj);
                     response.on('end', rv);
-                    res.on('finish', () => logger.info(params, this.getLog(req, 'OK')));
+                    res.on('finish', () => logger.info(params, (0, utils_1.getLog)(req, 'OK')));
                     response.pipe(res);
                 });
                 return;
             }
             const data = JSON.stringify(response);
             res.setHeader('content-type', constants_1.MIME_TYPES_ENUM['application/json']);
-            res.on('finish', () => logger.info(params, this.getLog(req, 'OK')));
+            res.on('finish', () => logger.info(params, (0, utils_1.getLog)(req, 'OK')));
             res.end(data);
         }
         catch (e) {
@@ -102,10 +101,10 @@ class HttpConnection {
         if (!contentType)
             return { options, names, data };
         if (!constants_1.MIME_TYPES_MAP[contentType]) {
-            throw new errors_1.ServerError(errors_1.ServerErrorEnum.E_BED_REQUEST);
+            throw new errors_1.ServerError('E_BED_REQUEST');
         }
         if (length > constants_1.MIME_TYPES_MAP[contentType].maxLength) {
-            throw new errors_1.ServerError(errors_1.ServerErrorEnum.E_BED_REQUEST);
+            throw new errors_1.ServerError('E_BED_REQUEST');
         }
         if (contentType === constants_1.MIME_TYPES_ENUM['application/json'] && length < constants_1.JSON_TRANSFORM_LENGTH) {
             Object.assign(params, await this.getJson(req));
@@ -150,27 +149,23 @@ class HttpConnection {
             return JSON.parse(data);
         }
         catch (e) {
-            logger.error(e);
-            throw new errors_1.ServerError(errors_1.ServerErrorEnum.E_BED_REQUEST);
+            logger.error(e, e.message);
+            throw new errors_1.ServerError('E_BED_REQUEST');
         }
-    }
-    getLog(req, resLog = '') {
-        const { pathname } = (0, utils_1.getUrlInstance)(req.url, req.headers.host);
-        return (0, node_util_1.format)('%s %s', req.method, pathname, '-', resLog);
     }
     onError(e, req, res) {
         let error = e;
         if (!(e instanceof errors_1.ServerError)) {
-            error = new errors_1.ServerError(errors_1.ServerErrorEnum.E_SERVER_ERROR);
+            error = new errors_1.ServerError('E_SERVER_ERROR');
         }
         const { code, statusCode = 500, details } = error;
         res.statusCode = statusCode;
-        if (code === errors_1.ServerErrorEnum.E_REDIRECT)
+        if (code === 'E_REDIRECT')
             res.setHeader('location', details?.location || '/');
         details && res.setHeader('content-type', constants_1.MIME_TYPES_ENUM['application/json']);
-        logger.error({}, this.getLog(req, errors_1.ServerErrorMap[code]));
+        logger.error({}, (0, utils_1.getLog)(req, code + errors_1.ServerErrorMap[code]));
         res.end(error.getMessage());
-        if (code === errors_1.ServerErrorEnum.E_SERVER_ERROR)
+        if (code === 'E_SERVER_ERROR')
             throw e;
     }
 }

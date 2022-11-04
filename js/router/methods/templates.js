@@ -1,26 +1,32 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getExport = exports.getMethod = exports.getImport = exports.getApi = void 0;
+exports.strTypes = exports.strExport = exports.strMethod = exports.strKey = exports.strGetApi = exports.strImport = void 0;
 const node_util_1 = require("node:util");
-const importTpl = 'import { %s } from \'./types\';\n';
-const apiTpl = `import * as Types from './%s';
+const tplImport = 'import { %s } from \'./types\';\n';
+const tplGetApi = `import * as Types from './%s';
 
-export const api = (
+export const getApi = (
   fetch: <T>(pathname: string, options?: Record<string, any>) => Promise<T>
 ) => (`;
-const methodTpl = '(options: %s) => fetch<%s>(\'%s\', options),';
-const methodTplNoTypes = '() => fetch<%s>(\'%s\'),';
-const exportTpl = 'export type %s = %s;\n';
-const getApi = (fileName) => (0, node_util_1.format)(apiTpl, fileName);
-exports.getApi = getApi;
-const getImport = (typeName) => (0, node_util_1.format)(importTpl, typeName);
-exports.getImport = getImport;
-const getMethod = (typeName, responseTypeName, nextPathname) => {
+const tplKey = '\n%s\'%s\': ';
+const tplMethod = '(options: %s) => fetch<%s>(\'%s\', options),';
+const tplMethodNoTypes = '() => fetch<%s>(\'%s\'),';
+const tplExport = 'export type %s = %s;\n';
+const tplTypes = '\n%s  %s: %s;';
+const strImport = (typeName) => (0, node_util_1.format)(tplImport, typeName);
+exports.strImport = strImport;
+const strGetApi = (fileName) => (0, node_util_1.format)(tplGetApi, fileName);
+exports.strGetApi = strGetApi;
+const strKey = (indent, key) => (0, node_util_1.format)(tplKey, indent, key);
+exports.strKey = strKey;
+const strMethod = (typeName, responseTypeName, nextPathname) => {
     return typeName
-        ? (0, node_util_1.format)(methodTpl, typeName, responseTypeName, nextPathname)
-        : (0, node_util_1.format)(methodTplNoTypes, responseTypeName, nextPathname);
+        ? (0, node_util_1.format)(tplMethod, typeName, responseTypeName, nextPathname)
+        : (0, node_util_1.format)(tplMethodNoTypes, responseTypeName, nextPathname);
 };
-exports.getMethod = getMethod;
-const getExport = (paramsTypeName, paramsTypes) => (0, node_util_1.format)(exportTpl, paramsTypeName, paramsTypes);
-exports.getExport = getExport;
+exports.strMethod = strMethod;
+const strExport = (paramsTypeName, paramsTypes) => (0, node_util_1.format)(tplExport, paramsTypeName, paramsTypes);
+exports.strExport = strExport;
+const strTypes = (indent, key, type) => (0, node_util_1.format)(tplTypes, indent, key, type);
+exports.strTypes = strTypes;
 //# sourceMappingURL=templates.js.map

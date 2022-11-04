@@ -7,40 +7,32 @@ exports.loader = exports.loadModule = void 0;
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const node_vm_1 = __importDefault(require("node:vm"));
-const custom_require_1 = require("./custom.require");
 const utils_1 = require("./utils");
-const loadModule = (parentModule) => (modulePath, modulesContext, mode = false) => {
-    const parentModuleDir = node_path_1.default.dirname(parentModule.filename);
-    return (0, exports.loader)(modulePath, parentModuleDir, modulesContext, mode);
+const options = { displayErrors: true };
+const loadModule = (parentModule) => (modulePath, modulesContext) => {
+    const __dirname = node_path_1.default.dirname(parentModule.filename);
+    return (0, exports.loader)(modulePath, __dirname, modulesContext);
 };
 exports.loadModule = loadModule;
-const loader = (modulePath, parentModuleDir, modulesContext, mode = false) => {
-    const moduleFullPath = (0, utils_1.resolve)(parentModuleDir, modulePath);
-    if (!moduleFullPath)
+const loader = (modulePath, parentModuleDir, modulesContext) => {
+    const __filename = (0, utils_1.resolve)(parentModuleDir, modulePath);
+    if (!__filename)
         return require(modulePath);
-    (0, utils_1.log)(moduleFullPath);
-    const moduleFullDir = node_path_1.default.dirname(moduleFullPath);
-    const script = node_fs_1.default.readFileSync(moduleFullPath).toString();
+    (0, utils_1.log)(__filename);
+    const __dirname = node_path_1.default.dirname(__filename);
+    const script = node_fs_1.default.readFileSync(__filename).toString();
     const module = { exports: {} };
-    let newRequire;
+    const newRequire = (modulePath) => (0, exports.loader)(modulePath, __dirname, modulesContext);
     const context = {
-        require: null,
-        console,
+        require: newRequire,
         module,
         exports: module.exports,
-        __filename: moduleFullPath,
-        __dirname: moduleFullDir,
+        __filename,
+        __dirname,
         ...modulesContext,
     };
-    if (mode === 'isolate_all') {
-        newRequire = ((modulePath) => (0, exports.loader)(modulePath, moduleFullDir, modulesContext, mode));
-    }
-    else {
-        newRequire = (0, custom_require_1.customRequire)(moduleFullDir, context);
-    }
-    context.require = newRequire;
     node_vm_1.default.createContext(context);
-    node_vm_1.default.runInContext(script, context, { displayErrors: true });
+    node_vm_1.default.runInContext(script, context, options);
     return module.exports;
 };
 exports.loader = loader;

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.api = void 0;
-const api = (fetch) => ({
+exports.getApi = void 0;
+const getApi = (fetch) => ({
     'account': {
         'confirm': (options) => fetch('/account/confirm', options),
         'login': (options) => fetch('/account/login', options),
@@ -24,5 +24,5 @@ const api = (fetch) => ({
         'read': () => fetch('/user/read'),
     },
 });
-exports.api = api;
+exports.getApi = getApi;
 //# sourceMappingURL=client.api.js.map

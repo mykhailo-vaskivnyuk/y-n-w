@@ -1,15 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handleOperationError = exports.AppError = exports.AppErrorEnum = exports.AppErrorMap = void 0;
+exports.handleOperationError = exports.AppError = exports.AppErrorMap = void 0;
 const errors_1 = require("../router/errors");
 const errors_2 = require("../server/http/errors");
-const utils_1 = require("../utils/utils");
 exports.AppErrorMap = {
     E_START: 'CAN\'T START APP',
-    E_SETUP: 'WRONG APP SETUP',
     E_ROUTER: 'ROUTER ERROR',
+    E_INIT: 'APP IS NOT INITIALIZED',
 };
-exports.AppErrorEnum = (0, utils_1.getEnumFromMap)(exports.AppErrorMap);
 class AppError extends Error {
     code;
     constructor(code, message = '') {
@@ -19,25 +17,25 @@ class AppError extends Error {
     }
 }
 exports.AppError = AppError;
+const errors = {
+    E_NO_ROUTE: (details) => {
+        throw new errors_2.ServerError('E_NOT_FOUND', details);
+    },
+    E_MODULE: (details) => {
+        throw new errors_2.ServerError('E_BED_REQUEST', details);
+    },
+    E_REDIRECT: (details) => {
+        throw new errors_2.ServerError('E_REDIRECT', details);
+    },
+};
 const handleOperationError = (e) => {
-    const errors = {
-        [errors_1.RouterErrorEnum.E_NO_ROUTE]: (details) => {
-            throw new errors_2.ServerError(errors_2.ServerErrorEnum.E_NOT_FOUND, details);
-        },
-        [errors_1.RouterErrorEnum.E_MODULE]: (details) => {
-            throw new errors_2.ServerError(errors_2.ServerErrorEnum.E_BED_REQUEST, details);
-        },
-        [errors_1.RouterErrorEnum.E_REDIRECT]: (details) => {
-            throw new errors_2.ServerError(errors_2.ServerErrorEnum.E_REDIRECT, details);
-        },
-    };
-    if (e instanceof errors_1.RouterError) {
+    if (e.name === errors_1.RouterError.name) {
         const { code, details } = e;
-        code in errors && errors[code](details || {});
+        code in errors && errors[code](details);
     }
     else
-        logger.error(e);
-    throw new AppError(exports.AppErrorEnum.E_ROUTER, e.message);
+        logger.error(e, e.message);
+    throw new AppError('E_ROUTER', e.message);
 };
 exports.handleOperationError = handleOperationError;
 //# sourceMappingURL=errors.js.map

@@ -18,7 +18,7 @@ class ClientApp extends event_emitter_1.default {
     constructor(baseUrl) {
         super();
         const connection = (0, client_fetch_1.getConnection)(baseUrl);
-        this.clientApi = (0, client_api_1.api)(connection);
+        this.clientApi = (0, client_api_1.getApi)(connection);
         this.account = (0, account_1.getAccountMethods)(this);
     }
     async init() {
@@ -47,14 +47,13 @@ class ClientApp extends event_emitter_1.default {
             .then(() => this.emit('statechanged', this.state))
             .catch((e) => console.log(e));
     }
-    async readUser(...args) {
+    async readUser() {
         this.setState(constants_1.AppState.LOADING);
-        let user = null;
         try {
-            user = await this.clientApi.user.read(...args);
+            const user = await this.clientApi.user.read();
             this.setUser(user);
             this.setState(constants_1.AppState.READY);
-            return Boolean(user);
+            return user;
         }
         catch (e) {
             this.setState(constants_1.AppState.ERROR);

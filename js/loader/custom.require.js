@@ -3,36 +3,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.customRequire = void 0;
+exports.customRequire = exports.loadModule = void 0;
 const node_path_1 = __importDefault(require("node:path"));
-const node_fs_1 = __importDefault(require("node:fs"));
 const node_vm_1 = __importDefault(require("node:vm"));
 const utils_1 = require("./utils");
-// import { TRequire } from './types';
+const options = { displayErrors: true };
+const cache = new Map();
+const loadModule = (parentModule) => (modulePath, { ...context } = {}) => {
+    const __dirname = node_path_1.default.dirname(parentModule.filename);
+    node_vm_1.default.createContext(context);
+    const newRequire = (0, exports.customRequire)(__dirname, context);
+    return newRequire(modulePath);
+};
+exports.loadModule = loadModule;
 const customRequire = (moduleDir, context) => (modulePath) => {
-    const moduleFullPath = (0, utils_1.resolve)(moduleDir, modulePath);
-    if (!moduleFullPath)
+    const __filename = (0, utils_1.resolve)(moduleDir, modulePath);
+    if (!__filename)
         return require(modulePath);
-    (0, utils_1.log)(moduleFullPath);
-    const moduleFullDir = node_path_1.default.dirname(moduleFullPath);
-    const script = node_fs_1.default
-        .readFileSync(moduleFullPath)
-        .toString()
-        .replace(utils_1.use_strict, '');
+    const __dirname = node_path_1.default.dirname(__filename);
+    if (cache.has(__filename))
+        return cache.get(__filename);
+    (0, utils_1.log)(__filename);
+    const scriptInContext = (0, utils_1.getScriptInContext)(__filename);
+    const newRequire = (0, exports.customRequire)(__dirname, context);
     const module = { exports: {} };
-    const newRequire = (0, exports.customRequire)(moduleFullDir, context);
-    const scriptParams = {
+    const contextParams = {
         require: newRequire,
         module,
         exports: module.exports,
-        __filename: moduleFullPath,
-        __dirname: moduleFullDir,
+        __filename,
+        __dirname,
     };
-    const scriptInContext = `
-  (() => ({ module, exports, require, __filename, __dirname }) => {
-    ${script}
-  })()`;
-    node_vm_1.default.runInContext(scriptInContext, context)(scriptParams);
+    node_vm_1.default.runInContext(scriptInContext, context, options)(contextParams);
+    cache.set(__filename, module.exports);
     return module.exports;
 };
 exports.customRequire = customRequire;

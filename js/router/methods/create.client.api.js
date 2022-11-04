@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -8,27 +31,27 @@ const node_path_1 = __importDefault(require("node:path"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const utils_1 = require("../utils");
 const validate_response_1 = require("../modules.response/validate.response");
-const templates_1 = require("./templates");
+const tpl = __importStar(require("./templates"));
 const createClientApi = (config, routes) => {
-    if (!routes)
-        throw new Error('Routes is not set');
     const executor = (rv, rj) => {
         const apiPath = config.clientApiPath;
-        const apiFileNameBase = node_path_1.default.basename(apiPath, node_path_1.default.extname(apiPath));
+        const apiExt = node_path_1.default.extname(apiPath);
+        const apiDir = node_path_1.default.dirname(apiPath);
+        const apiFileNameBase = node_path_1.default.basename(apiPath, apiExt);
         const typesFileNameBase = apiFileNameBase + '.types';
         const typesFileName = typesFileNameBase + '.ts';
-        const typesPath = node_path_1.default.join(node_path_1.default.dirname(apiPath), typesFileName);
-        const apistream = node_fs_1.default.createWriteStream(apiPath);
+        const typesPath = node_path_1.default.join(apiDir, typesFileName);
+        const apiStream = node_fs_1.default.createWriteStream(apiPath);
         const typesStream = node_fs_1.default.createWriteStream(typesPath);
         let isFinish = false;
         const handleFinish = () => isFinish ? rv() : isFinish = true;
         const handleError = (e) => {
-            apistream.close();
+            apiStream.close();
             typesStream.close();
             rj(e);
         };
-        apistream.on('error', handleError);
-        apistream.on('finish', handleFinish);
+        apiStream.on('error', handleError);
+        apiStream.on('finish', handleFinish);
         typesStream.on('error', handleError);
         typesStream.on('finish', handleFinish);
         const apiTypesPath = node_path_1.default.resolve(config.apiPath, 'types.js');
@@ -36,11 +59,11 @@ const createClientApi = (config, routes) => {
         Object
             .keys(apiTypes)
             .map((schemaName) => 'I' + schemaName.replace('Schema', ''))
-            .forEach((typeName) => apistream.write((0, templates_1.getImport)(typeName)));
-        apistream.write((0, templates_1.getApi)(typesFileNameBase));
-        (0, exports.createJs)(apiTypes, apistream, typesStream)(routes);
-        apistream.write(');\n');
-        apistream.close();
+            .forEach((typeName) => apiStream.write(tpl.strImport(typeName)));
+        apiStream.write(tpl.strGetApi(typesFileNameBase));
+        (0, exports.createJs)(apiTypes, apiStream, typesStream)(routes);
+        apiStream.write(');\n');
+        apiStream.close();
         typesStream.close();
     };
     return new Promise(executor);
@@ -51,7 +74,7 @@ const createJs = (apiTypes, apiStream, typesStream) => function createJs(routes,
     const nextIndent = indent + '  ';
     const routesKeys = Object.keys(routes);
     for (const key of routesKeys) {
-        apiStream.write(`\n${nextIndent}'${key}': `);
+        apiStream.write(tpl.strKey(nextIndent, key));
         const handler = routes[key];
         const nextPathname = pathname + '/' + key;
         if (!(0, utils_1.isHandler)(handler)) {
@@ -64,21 +87,21 @@ const createJs = (apiTypes, apiStream, typesStream) => function createJs(routes,
         const responseTypeNameExport = typeName + 'Response';
         const paramsTypes = getTypes(handler.paramsSchema, nextIndent);
         const paramsTypeName = paramsTypes && 'Types.' + paramsTypeNameExport;
-        paramsTypes && typesStream.write((0, templates_1.getExport)(paramsTypeNameExport, paramsTypes));
+        paramsTypes && typesStream.write(tpl.strExport(paramsTypeNameExport, paramsTypes));
         const responseSchema = handler.responseSchema;
         const predefinedResponseSchema = Object.keys(apiTypes)
             .find((key) => apiTypes[key] === responseSchema);
         if (predefinedResponseSchema) {
             const responseTypeName = 'I' + predefinedResponseSchema.replace('Schema', '');
-            apiStream.write((0, templates_1.getMethod)(paramsTypeName, responseTypeName, nextPathname));
+            apiStream.write(tpl.strMethod(paramsTypeName, responseTypeName, nextPathname));
             continue;
         }
         const responseTypes = getTypes(responseSchema, nextIndent);
         if (!responseTypes)
             throw new Error(`Handler ${nextPathname} dosn't have response schema`);
-        typesStream.write((0, templates_1.getExport)(responseTypeNameExport, responseTypes));
+        typesStream.write(tpl.strExport(responseTypeNameExport, responseTypes));
         const responseTypeName = 'Types.' + responseTypeNameExport;
-        apiStream.write((0, templates_1.getMethod)(paramsTypeName, responseTypeName, nextPathname));
+        apiStream.write(tpl.strMethod(paramsTypeName, responseTypeName, nextPathname));
     }
     apiStream.write('\n' + indent + '}');
 };
@@ -93,7 +116,7 @@ const getTypeNameFromPathname = (pathname) => {
 };
 const getTypes = (schema, indent = '') => {
     if (!schema)
-        return;
+        return '';
     if ((0, validate_response_1.isJoiSchema)(schema)) {
         let type = schema.type || '';
         if (type === 'object')
@@ -108,8 +131,9 @@ const getTypes = (schema, indent = '') => {
             .join(' | ');
     }
     const schemaEntries = Object.entries(schema);
-    const result = schemaEntries.map(([key, item]) => `\n${indent}  ${key}: ${getTypes(item, indent)};`);
-    return '{' + result.join('') + '\n' + indent + '}';
+    const types = schemaEntries
+        .map(([key, item]) => tpl.strTypes(indent, key, getTypes(item, indent)));
+    return '{' + types.join('') + '\n' + indent + '}';
 };
 const getSchemaType = (schema) => {
     const schemaValuesSet = schema._valids._values;

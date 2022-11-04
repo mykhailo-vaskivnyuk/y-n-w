@@ -29,10 +29,10 @@ const getAccountMethods = (parent) => ({
             throw e;
         }
     },
-    async overmail(...args) {
+    async overmail(args) {
         parent.setState(constants_1.AppState.LOADING);
         try {
-            const success = await parent.clientApi.account.overmail(...args);
+            const success = await parent.clientApi.account.overmail(args);
             parent.setState(constants_1.AppState.READY);
             return success;
         }
@@ -41,10 +41,10 @@ const getAccountMethods = (parent) => ({
             throw e;
         }
     },
-    async loginOverLink(type, ...args) {
+    async loginOverLink(type, args) {
         parent.setState(constants_1.AppState.LOADING);
         try {
-            const user = await parent.clientApi.account[type](...args);
+            const user = await parent.clientApi.account[type](args);
             user && parent.setUser(user);
             parent.setState(constants_1.AppState.READY);
             return user;

@@ -9,25 +9,25 @@ const set_session_1 = require("../modules/set.session");
 const validate_1 = require("../modules/validate");
 const errorHandler = (e) => {
     const { message, code, details } = e;
-    if (e instanceof errors_1.DatabaseError) {
-        throw new errors_2.RouterError(errors_2.RouterErrorEnum.E_HANDLER, message);
+    if (e.name === errors_1.DatabaseError.name) {
+        throw new errors_2.RouterError('E_HANDLER', message);
     }
     if (e instanceof errors_2.HandlerError) {
-        if (code === errors_2.HandlerErrorEnum.E_REDIRECT) {
-            throw new errors_2.RouterError(errors_2.RouterErrorEnum.E_REDIRECT, details);
+        if (code === 'E_REDIRECT') {
+            throw new errors_2.RouterError('E_REDIRECT', details);
         }
-        throw new errors_2.RouterError(errors_2.RouterErrorEnum.E_HANDLER, message);
+        throw new errors_2.RouterError('E_HANDLER', message);
     }
     if (e instanceof set_session_1.SessionError)
-        throw new errors_2.RouterError(errors_2.RouterErrorEnum.E_ROUTER, message);
+        throw new errors_2.RouterError('E_ROUTER', message);
     if (e instanceof validate_1.ValidationError)
-        throw new errors_2.RouterError(errors_2.RouterErrorEnum.E_MODULE, details);
+        throw new errors_2.RouterError('E_MODULE', details);
     if (e instanceof get_stream_1.GetStreamError)
-        throw new errors_2.RouterError(errors_2.RouterErrorEnum.E_MODULE, message);
+        throw new errors_2.RouterError('E_MODULE', message);
     if (e instanceof validate_response_1.ValidationResponseError)
-        throw new errors_2.RouterError(errors_2.RouterErrorEnum.E_MODULE, message);
-    logger.error(e);
-    throw new errors_2.RouterError(errors_2.RouterErrorEnum.E_ROUTER, details || message);
+        throw new errors_2.RouterError('E_MODULE', message);
+    logger.error(e, e.message);
+    throw new errors_2.RouterError('E_ROUTER', details || message);
 };
 exports.errorHandler = errorHandler;
 //# sourceMappingURL=error.handler.js.map
