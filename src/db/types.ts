@@ -18,7 +18,8 @@ export interface IDatabaseConfig {
 }
 
 export interface IDatabase {
-  init(): Promise<IDatabaseQueries>;
+  init(): Promise<void>;
+  getQueries(): IDatabaseQueries;
 }
 
 export interface IDatabaseConnection {

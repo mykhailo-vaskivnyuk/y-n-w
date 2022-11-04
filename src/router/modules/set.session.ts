@@ -1,6 +1,6 @@
 
 import { ISessionContent, TModule } from '../types';
-import { createService } from '../../services/session/session';
+import { getService } from '../../services/session/session';
 
 export class SessionError extends Error {
   constructor() {
@@ -9,7 +9,7 @@ export class SessionError extends Error {
   }
 }
 
-const createSession = createService<ISessionContent>();
+const { createSession } = getService<ISessionContent>();
 
 const setSession: TModule = () => async (operation, context) => {
   const { options } = operation;
@@ -19,8 +19,8 @@ const setSession: TModule = () => async (operation, context) => {
     const session = await createSession(sessionKey);
     context.session = session;
     return [operation, context];
-  } catch (e) {
-    logger.error(e);
+  } catch (e: any) {
+    logger.error(e, e.message);
     throw new SessionError();
   }
 };

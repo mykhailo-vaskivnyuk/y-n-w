@@ -1,5 +1,4 @@
 import { TOperationResponse } from '../../app/types';
-import { getEnumFromMap } from '../../utils/utils';
 
 export const ServerErrorMap = {
   E_NOT_FOUND: 'Not found',
@@ -7,21 +6,19 @@ export const ServerErrorMap = {
   E_SERVER_ERROR: 'Internal server error',
   E_UNAVAILABLE: 'Service unavailable',
   E_NO_CALLBACK: 'onOperation callback is not set',
-  E_LISTEN: 'CAN\'T start server',
-  E_REDIRECT: 'REDIRECT',
+  E_LISTEN: 'Can\'t start server',
+  E_REDIRECT: 'Redirect',
 } as const;
 
-export const ServerErrorEnum = getEnumFromMap(ServerErrorMap);
-
-export const StatusCodeMap = {
-  [ServerErrorEnum.E_REDIRECT]: 301,
-  [ServerErrorEnum.E_NOT_FOUND]: 404,
-  [ServerErrorEnum.E_BED_REQUEST]: 400,
-  [ServerErrorEnum.E_SERVER_ERROR]: 500,
-  [ServerErrorEnum.E_UNAVAILABLE]: 503,
-}
-
 export type ServerErrorCode = keyof typeof ServerErrorMap;
+
+export const ErrorStatusCodeMap: Partial<Record<ServerErrorCode, number>> = {
+  E_REDIRECT: 301,
+  E_NOT_FOUND: 404,
+  E_BED_REQUEST: 400,
+  E_SERVER_ERROR: 500,
+  E_UNAVAILABLE: 503,
+}
 
 export class ServerError extends Error {
   public code: ServerErrorCode;
@@ -32,7 +29,7 @@ export class ServerError extends Error {
     super(ServerErrorMap[code]);
     this.name = this.constructor.name;
     this.code = code;
-    this.statusCode = StatusCodeMap[code];
+    this.statusCode = ErrorStatusCodeMap[code];
     this.details = details;
   }
 

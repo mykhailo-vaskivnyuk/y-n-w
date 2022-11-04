@@ -2,13 +2,13 @@
 import { AppState } from '../constants';
 import { IUserResponse } from '../api/types';
 import EventEmitter from '../event.emitter';
-import { api } from '../api/client.api';
+import { getApi } from '../api/client.api';
 import { getConnection } from '../client.fetch';
 import { getAccountMethods } from './account';
 
 export type ClientAppThis = ClientApp & {
   state: AppState;
-  clientApi: ReturnType<typeof api>;
+  clientApi: ReturnType<typeof getApi>;
   setState: (state: AppState) => void;
   setUser: (user: IUserResponse) => void;
 };
@@ -25,7 +25,7 @@ export class ClientApp extends EventEmitter {
   constructor(baseUrl: string) {
     super();
     const connection = getConnection(baseUrl);
-    this.clientApi = api(connection);
+    this.clientApi = getApi(connection);
     this.account = getAccountMethods(this as unknown as ClientAppThis);
   }
 
@@ -58,14 +58,13 @@ export class ClientApp extends EventEmitter {
       .catch((e) => console.log(e));
   }
 
-  private async readUser(...args: Parameters<typeof this.clientApi.user.read>) {
+  private async readUser() {
     this.setState(AppState.LOADING);
-    let user = null;
     try {
-      user = await this.clientApi.user.read(...args);
+      const user = await this.clientApi.user.read();
       this.setUser(user);
       this.setState(AppState.READY);
-      return Boolean(user);
+      return user;
     } catch (e) {
       this.setState(AppState.ERROR);
     }

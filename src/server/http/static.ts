@@ -3,8 +3,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { Readable } from 'node:stream';
 import { INDEX, MIME_TYPES, NOT_FOUND } from './constants';
+import { ErrorStatusCodeMap, ServerErrorMap } from './errors';
 import { IRequest, IResponse } from './types';
-import { getUrlInstance } from './utils';
+import { getLog, getUrlInstance } from './utils';
 
 interface IPreparedFile {
   found: boolean;
@@ -40,11 +41,17 @@ const createStaticServer = (staticPath: string) => {
     const path = pathname.replace(/\/$/, '');
     const { found, mimeType, stream } = await prepareFile(path);
     if (!found && !mimeType) {
-      res.writeHead(301, { location: '/' });
+      const statusCode = ErrorStatusCodeMap['E_REDIRECT'];
+      const resLog = statusCode + ' ' + ServerErrorMap['E_REDIRECT'];
+      logger.error(getLog(req, resLog));
+      res.writeHead(statusCode || 301, { location: '/' });
       res.end();
       return;
     }
-    const statusCode = found ? 200 : 404;
+    const statusCode = found ? 200 : ErrorStatusCodeMap['E_NOT_FOUND'] || 404;
+    const resLog = found ? 'OK' : statusCode + ' ' + ServerErrorMap['E_NOT_FOUND']
+    const log = getLog(req, resLog);
+    found ? logger.info(log) : logger.error(log);
     res.writeHead(statusCode, { 'Content-Type': mimeType });
     stream?.pipe(res);
   };

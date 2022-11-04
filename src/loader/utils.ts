@@ -45,3 +45,15 @@ const addExt = (moduleFullPath: string) => {
     return moduleFullPath + '.js';
   }
 };
+
+export const getScriptInContext = (__filename: string) => {
+  const script = fs
+    .readFileSync(__filename)
+    .toString()
+    .replace(use_strict, '');
+  return `
+  'use strict';
+  ({ require, module, exports, __filename, __dirname }) => {
+  ${script}
+  };`;
+};

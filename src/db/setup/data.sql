@@ -108,6 +108,8 @@ VALUES
 (70, 'Kyforuk.a@mail.ru', 'Олексій', '', '', NULL, NULL, NULL, NULL),
 (71, 'petr.fedchenko@gmail.com', 'Петро Федченко', '', '', NULL, NULL, NULL, NULL);
 
+UPDATE users SET password = '3666cf1cfa0c3d959fd942532f1e4959:9162b34b563ef6cc62c764918aaae1c143eaf45353b3cddaf1062a640fd834773d280f86b2f3a69419288974dff86321d80190bbbae07deea6f05dd883691965';
+
 -- --------------------------------------------------------
 
 --

@@ -1,10 +1,11 @@
 import { IObject } from '../../types/types';
 
 export interface ISession<T extends IObject = IObject> {
-  write<K extends keyof T>(key: K, value: T[K]): Promise<T[K]>;
+  write<K extends keyof T>(key: K, value: T[K]): T[K];
   read<K extends keyof T>(key: K): T[K] | undefined;
-  delete<K extends keyof T>(key: K): Promise<T[K] | undefined>;
-  clear(): Promise<void>;
+  delete<K extends keyof T>(key: K): T[K] | undefined;
+  clear(): void;
   init(): Promise<this>;
-  finalize: () => void;
+  finalize(): Promise<void>;
+  persist(): Promise<void>;
 }

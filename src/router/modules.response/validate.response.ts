@@ -37,7 +37,7 @@ const validateResponse: TResponseModule = () => async (response, context, handle
   } else result = schema.validate(response, options);
   const { error, value } = result;
   if (error) {
-    logger.error(error);
+    logger.error(error, error.message);
     throw new ValidationResponseError(error.details);
   }
   return [value, context];

@@ -4,11 +4,12 @@ import {
   IDatabase, IDatabaseConfig, IDatabaseConnection,
   IDatabaseQueries, IQueries, TQueriesModule, TQuery,
 } from './types';
-import { DatabaseError, DatabaseErrorEnum } from './errors';
+import { DatabaseError } from './errors';
 
 class Database implements IDatabase {
   private config: IDatabaseConfig;
   private connection?: IDatabaseConnection;
+  private queries?: IDatabaseQueries;
 
   constructor(config: IDatabaseConfig) {
     this.config = config;
@@ -21,20 +22,25 @@ class Database implements IDatabase {
     try {
       await this.connection!.connect();
     } catch (e: any) {
-      logger.error(e);
-      throw new DatabaseError(DatabaseErrorEnum.E_DB_CONNECTION)
+      logger.error(e, e.message);
+      throw new DatabaseError('E_DB_CONNECTION')
     }
 
     try {
-      const queries = await this.getQueries(this.config.queriesPath);
-      return  queries as unknown as IDatabaseQueries;
+      const queries = await this.readQueries(this.config.queriesPath);
+      this.queries = queries as unknown as IDatabaseQueries;
     } catch (e: any) {
-      logger.error(e);
-      throw new DatabaseError(DatabaseErrorEnum.E_DB_INIT);
+      logger.error(e, e.message);
+      throw new DatabaseError('E_DB_INIT');
     }
   }
 
-  private async getQueries(dirPath: string): Promise<IQueries> {
+  getQueries() {
+    if (!this.queries) throw new DatabaseError('E_DB_INIT');
+    return this.queries;
+  }
+
+  private async readQueries(dirPath: string): Promise<IQueries> {
     const query: IQueries = {};
     const queryPath = path.resolve(dirPath);
     const dir = await fsp.opendir(queryPath);
@@ -43,7 +49,7 @@ class Database implements IDatabase {
       const name = path.basename(item.name, ext);
       if (item.isDirectory()) {
         const dirPath = path.join(queryPath, name);
-        query[name] = await this.getQueries(dirPath);
+        query[name] = await this.readQueries(dirPath);
         continue;
       }
 
@@ -77,8 +83,8 @@ class Database implements IDatabase {
       try {
         return await this.connection!.query(sql, params);
       } catch (e: any) {
-        logger.error(e);
-        throw new DatabaseError(DatabaseErrorEnum.E_DB_QUERY);
+        logger.error(e, e.message);
+        throw new DatabaseError('E_DB_QUERY');
       }
     };
   }

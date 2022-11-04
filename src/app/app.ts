@@ -1,42 +1,57 @@
 import { IConfig, IModulesContext, IOperation } from './types';
-import { AppError, AppErrorEnum, handleOperationError } from './errors';
+import { AppError, handleOperationError } from './errors';
 import { DatabaseError } from '../db/errors';
 import { RouterError } from '../router/errors';
 import { ServerError } from '../server/http/errors';
+import { ILogger } from '../logger/types';
 import { IDatabase } from '../db/types';
 import { IRouter } from '../router/types';
 import { IInputConnection } from '../server/http/types';
-import { loadModule } from '../loader/loader';
+import { loadModule } from '../loader/custom.require';
 
 export default class App {
   private config: IConfig;
+  private logger?: ILogger;
+  private db?: IDatabase;
   private router?: IRouter;
+  private server?: IInputConnection;
 
   constructor(config: IConfig) {
     this.config = config;
     this.setUncaughtErrorHandlers();
   }
   
-  getLogger() {
+  setLogger() {
     const { logger } = this.config;
     const Logger = require(logger.path);
-    return new Logger(logger);
+    this.logger = new Logger(logger);
+    return this;
   }
   
-  getDatabase() {
+  setDatabase() {
     const { database } = this.config;
     const Database = require(database.path);
-    return new Database(database) as IDatabase;
+    this.db = new Database(database);
+    return this;
   }
   
-  setRouter(modulesContext: IModulesContext) {
+  setRouter() {
     const { router } = this.config;
-    const Router = loadModule(module)(router.path, modulesContext);
-    this.router = new Router(router, modulesContext);
+    const logger = this.logger;
+    const execQuery = this.db?.getQueries();
+    if (!logger || !execQuery) throw new AppError('E_INIT')
+    const context: IModulesContext = {
+      console,
+      logger,
+      execQuery,
+    }
+    const Router = loadModule(module)(router.path, context);
+    this.router = new Router(router);
     return this;
   }
 
-  getInputConnection() {
+  setInputConnection() {
+    if (!this.router) throw new AppError('E_INIT');
     const { inConnection } = this.config;
     const { transport } = inConnection;
     const server = inConnection[transport];
@@ -50,35 +65,36 @@ export default class App {
       }
     };
   
-    const newServer = new InConnection(server) as IInputConnection;
-    newServer.onOperation(handleOperation);
-    return newServer;
+    this.server = new InConnection(server)
+      .onOperation(handleOperation);
+    return this;
   }
 
   async start() {
     try {
-      const logger = this.getLogger();
-      Object.assign(global, { logger });
+      this.setLogger();
+      Object.assign(global, { logger: this.logger });
       logger.info('LOGGER IS READY');
 
-      const db = this.getDatabase();
-      const execQuery = await db.init();
+      this.setDatabase();
+      await this.db!.init();
       logger.info('DATABASE IS READY');
 
-      this.setRouter({ execQuery, logger });
+      this.setRouter();
       await this.router!.init();
       logger.info('ROUTER IS READY');
 
-      await this.getInputConnection().start();
+      this.setInputConnection();
+      await this.server!.start()
       logger.info('SERVER IS READY');
 
-    } catch (e) {
+    } catch (e: any) {
       const isKnown =
         e instanceof DatabaseError ||
-        e instanceof RouterError ||
+        e.name === RouterError.name ||
         e instanceof ServerError;
-      if (!isKnown) logger.error(e);
-      throw new AppError(AppErrorEnum.E_START);
+      if (!isKnown) logger.error(e, e.message);
+      throw new AppError('E_START');
     }
   }
 

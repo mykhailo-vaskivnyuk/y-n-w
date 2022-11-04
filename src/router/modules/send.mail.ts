@@ -17,7 +17,7 @@ const setMailService: TModule = (config: MailOptions) => {
     try {
       return await sendMail(type, origin, to, token);
     } catch (e: any) {
-      logger.error(e);
+      logger.error(e, e.message);
       throw new MailError();
     }
   };
