@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { HttpResponseError } from '@api/errors';
+import { HttpResponseError } from '../errors';
 import { AppState } from '../constants';
 import { IUserResponse } from '../api/types';
 import EventEmitter from '../event.emitter';
@@ -22,7 +22,7 @@ export class ClientApp extends EventEmitter {
 
   private user: IUserResponse = null;
 
-  private error: HttpResponseError;
+  private error: HttpResponseError | null = null;
 
   account: ReturnType<typeof getAccountMethods>;
 
@@ -55,6 +55,7 @@ export class ClientApp extends EventEmitter {
   protected setState(state: AppState) {
     if (this.state === AppState.INIT) return;
     this.state = state;
+    this.error = null;
     if (state !== AppState.READY) {
       return this.emit('statechanged', this.state);
     }
