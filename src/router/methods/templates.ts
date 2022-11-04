@@ -1,27 +1,37 @@
 import { format } from 'node:util';
 
-const importTpl = 'import { %s } from \'./types\';\n';
-const apiTpl = 
+const tplImport = 'import { %s } from \'./types\';\n';
+const tplGetApi = 
 `import * as Types from './%s';
 
-export const api = (
+export const getApi = (
   fetch: <T>(pathname: string, options?: Record<string, any>) => Promise<T>
 ) => (`;
-const methodTpl = '(options: %s) => fetch<%s>(\'%s\', options),';
-const methodTplNoTypes = '() => fetch<%s>(\'%s\'),'
-const exportTpl = 'export type %s = %s;\n';
+const tplKey = '\n%s\'%s\': '
+const tplMethod = '(options: %s) => fetch<%s>(\'%s\', options),';
+const tplMethodNoTypes = '() => fetch<%s>(\'%s\'),'
+const tplExport = 'export type %s = %s;\n';
+const tplTypes = '\n%s  %s: %s;';
 
-export const getApi = (fileName: string) => format(apiTpl, fileName);
-export const getImport = (typeName: string) => format(importTpl, typeName);
-
-export const getMethod = (
+export const strImport = (typeName: string) => format(tplImport, typeName);
+export const strGetApi = (fileName: string) => format(tplGetApi, fileName);
+export const strKey = (indent: string, key: string) => format(tplKey, indent, key);
+export const strMethod = (
   typeName: string | undefined,
   responseTypeName: string,
-  nextPathname: string
+  nextPathname: string,
 ) => {
   return typeName
-    ? format(methodTpl, typeName, responseTypeName, nextPathname)
-    : format(methodTplNoTypes, responseTypeName, nextPathname);
+    ? format(tplMethod, typeName, responseTypeName, nextPathname)
+    : format(tplMethodNoTypes, responseTypeName, nextPathname);
 };
-export const getExport = (paramsTypeName: string, paramsTypes: string) =>
-  format(exportTpl, paramsTypeName, paramsTypes);
+export const strExport = (
+  paramsTypeName: string,
+  paramsTypes: string,
+) => format(tplExport, paramsTypeName, paramsTypes);
+
+export const strTypes = (
+  indent: string,
+  key: string,
+  type: string,
+) => format(tplTypes, indent, key, type);

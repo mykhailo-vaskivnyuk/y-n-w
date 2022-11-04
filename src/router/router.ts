@@ -2,7 +2,7 @@ import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { THandler, IRoutes, TModule, IContext, TResponseModule, IRouter, IRouterConfig } from './types';
 import { IOperation, TOperationResponse } from '../app/types';
-import { RouterError, RouterErrorEnum } from './errors';
+import { RouterError } from './errors';
 import { isHandler } from './utils';
 import { createClientApi } from './methods/create.client.api';
 import { errorHandler } from './methods/error.handler';
@@ -23,8 +23,8 @@ class Router implements IRouter {
       this.modules = applyModules(this.config);
       this.responseModules = applyResponseModules(this.config);
     } catch (e: any) {
-      logger.error(e);
-      throw new RouterError(RouterErrorEnum.E_MODULE);
+      logger.error(e, e.message);
+      throw new RouterError('E_MODULE');
     }
 
     try {
@@ -32,13 +32,13 @@ class Router implements IRouter {
       this.routes = await this.createRoutes(apiPath);
       await createClientApi(this.config, this.routes);
     } catch (e: any) {
-      logger.error(e);
-      throw new RouterError(RouterErrorEnum.E_ROUTES);
+      logger.error(e, e.message);
+      throw new RouterError('E_ROUTES');
     }
   }
   
   async exec({ ...operation }: IOperation): Promise<TOperationResponse> {
-    if (!this.routes) throw new RouterError(RouterErrorEnum.E_ROUTES);
+    if (!this.routes) throw new RouterError('E_ROUTES');
     const { options: { origin }, names } = operation;
     let context = { origin } as IContext;
     const handler = this.findRoute(names);
@@ -52,7 +52,7 @@ class Router implements IRouter {
     } catch (e: any) {
       return errorHandler(e);
     } finally {
-      context.session.finalize();
+      await context.session.finalize();
     }
   }
 
@@ -93,10 +93,10 @@ class Router implements IRouter {
     let handler: IRoutes | THandler = this.routes!;
     for (const key of names) {
       if (!isHandler(handler) && key in handler) handler = handler[key]!;
-      else throw new RouterError(RouterErrorEnum.E_NO_ROUTE);
+      else throw new RouterError('E_NO_ROUTE');
     }
     if (isHandler(handler)) return handler;
-    throw new RouterError(RouterErrorEnum.E_NO_ROUTE);
+    throw new RouterError('E_NO_ROUTE');
   }
 
   private async runModules(

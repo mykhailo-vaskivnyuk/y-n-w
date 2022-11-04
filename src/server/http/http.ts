@@ -1,13 +1,12 @@
 import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
-import { format } from 'node:util';
 import { JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../../constants/constants';
 import { IInputConnection, IInputConnectionConfig, IRequest, IResponse, IServer, THttpModule } from './types';
 import { TPromiseExecutor } from '../../types/types';
 import { IOperation, IParams, TOperationResponse } from '../../app/types';
-import { ServerError, ServerErrorEnum, ServerErrorMap } from './errors';
+import { ServerError, ServerErrorMap } from './errors';
 import createStaticServer, { TStaticServer } from './static';
-import { getUrlInstance } from './utils';
+import { getLog, getUrlInstance } from './utils';
 import { createUnicCode } from '../../utils/crypto';
 import { HTTP_MODULES } from './constants';
 
@@ -31,8 +30,8 @@ class HttpConnection implements IInputConnection {
 
   start() {
     if (!this.callback) {
-      const e = new ServerError(ServerErrorEnum.E_NO_CALLBACK);
-      logger.error(e);
+      const e = new ServerError('E_NO_CALLBACK');
+      logger.error(e, e.message);
       throw e;
     }
 
@@ -42,8 +41,8 @@ class HttpConnection implements IInputConnection {
         (module) => require(HTTP_MODULES[module])[module](),
       );
     } catch (e: any) {
-      logger.error(e);
-      throw new ServerError(ServerErrorEnum.E_SERVER_ERROR);
+      logger.error(e, e.message);
+      throw new ServerError('E_SERVER_ERROR');
     }
 
     const executor: TPromiseExecutor<void> = (rv, rj) => {
@@ -51,8 +50,8 @@ class HttpConnection implements IInputConnection {
       try {
         this.server.listen(port, rv);
       } catch (e: any) {
-        logger.error(e);
-        rj(new ServerError(ServerErrorEnum.E_LISTEN));
+        logger.error(e, e.message);
+        rj(new ServerError('E_LISTEN'));
       }
     }
 
@@ -85,7 +84,7 @@ class HttpConnection implements IInputConnection {
           response.on('error', rj);
           response.on('end', rv);
           res.on('finish',
-            () => logger.info(params, this.getLog(req, 'OK'))
+            () => logger.info(params, getLog(req, 'OK'))
           );
           response.pipe(res);
         });
@@ -95,7 +94,7 @@ class HttpConnection implements IInputConnection {
       const data = JSON.stringify(response);
       res.setHeader('content-type', MIME_TYPES_ENUM['application/json']);
       res.on('finish',
-        () => logger.info(params, this.getLog(req, 'OK'))
+        () => logger.info(params, getLog(req, 'OK'))
       );
       res.end(data);
         
@@ -122,10 +121,10 @@ class HttpConnection implements IInputConnection {
     if (!contentType) return { options, names, data };
 
     if (!MIME_TYPES_MAP[contentType]) {
-      throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
+      throw new ServerError('E_BED_REQUEST');
     }
     if (length > MIME_TYPES_MAP[contentType].maxLength) {
-      throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
+      throw new ServerError('E_BED_REQUEST');
     }
       
     if (contentType === MIME_TYPES_ENUM['application/json'] && length < JSON_TRANSFORM_LENGTH) {
@@ -176,30 +175,25 @@ class HttpConnection implements IInputConnection {
       const data = Buffer.concat(buffers).toString();
       return JSON.parse(data);
     } catch (e: any) {
-      logger.error(e);
-      throw new ServerError(ServerErrorEnum.E_BED_REQUEST);
+      logger.error(e, e.message);
+      throw new ServerError('E_BED_REQUEST');
     }
-  }
-      
-  private getLog(req: IRequest, resLog = '') {
-    const { pathname } = getUrlInstance(req.url, req.headers.host);
-    return format('%s %s', req.method, pathname, '-', resLog);
   }
       
   private onError(e: any, req: IRequest, res: IResponse) {
     let error = e;
     if (!(e instanceof ServerError)) {
-      error = new ServerError(ServerErrorEnum.E_SERVER_ERROR);
+      error = new ServerError('E_SERVER_ERROR');
     }
     const { code, statusCode = 500, details } = error as ServerError;
     
     res.statusCode = statusCode;
-    if (code === ServerErrorEnum.E_REDIRECT) res.setHeader('location', details?.location || '/');
+    if (code === 'E_REDIRECT') res.setHeader('location', details?.location || '/');
     details && res.setHeader('content-type', MIME_TYPES_ENUM['application/json']);
-    logger.error({}, this.getLog(req, ServerErrorMap[code]));
+    logger.error({}, getLog(req, code + ServerErrorMap[code]));
     res.end(error.getMessage());
 
-    if (code === ServerErrorEnum.E_SERVER_ERROR) throw e;
+    if (code === 'E_SERVER_ERROR') throw e;
   }
 }
 

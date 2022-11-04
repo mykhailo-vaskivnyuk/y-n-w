@@ -1,34 +1,41 @@
 import path from 'node:path';
-import fs from 'node:fs';
 import vm from 'node:vm';
-import { log, resolve, use_strict } from './utils';
-// import { TRequire } from './types';
+import { IModulesContext } from '../app/types';
+import { getScriptInContext, log, resolve } from './utils';
+
+const options = { displayErrors: true };
+const cache = new Map();
+
+export const loadModule = (parentModule: NodeJS.Module) => (
+  modulePath: string,
+  { ...context } = {} as IModulesContext,
+) => {
+  const __dirname = path.dirname(parentModule.filename);
+  vm.createContext(context);
+  const newRequire = customRequire(__dirname, context);
+  return newRequire(modulePath);
+};
 
 export const customRequire = (
   moduleDir: string,
   context: vm.Context,
 ) => (modulePath: string) => {
-  const moduleFullPath = resolve(moduleDir, modulePath);
-  if (!moduleFullPath) return require(modulePath);
-  log(moduleFullPath);
-  const moduleFullDir = path.dirname(moduleFullPath);
-  const script = fs
-    .readFileSync(moduleFullPath)
-    .toString()
-    .replace(use_strict, '');
+  const __filename = resolve(moduleDir, modulePath);
+  if (!__filename) return require(modulePath);
+  const __dirname = path.dirname(__filename);
+  if (cache.has(__filename)) return cache.get(__filename);
+  log(__filename);
+  const scriptInContext = getScriptInContext(__filename);
+  const newRequire = customRequire(__dirname, context);
   const module = { exports: {} };
-  const newRequire = customRequire(moduleFullDir, context);
-  const scriptParams = {
+  const contextParams = {
     require: newRequire,
     module,
     exports: module.exports,
-    __filename: moduleFullPath,
-    __dirname: moduleFullDir,
+    __filename,
+    __dirname,
   };
-  const scriptInContext =`
-  (() => ({ module, exports, require, __filename, __dirname }) => {
-    ${script}
-  })()`;
-  vm.runInContext(scriptInContext, context)(scriptParams);
+  vm.runInContext(scriptInContext, context, options)(contextParams);
+  cache.set(__filename, module.exports);
   return module.exports;
 };

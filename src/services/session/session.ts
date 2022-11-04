@@ -2,63 +2,45 @@ import { IObject } from '../../types/types';
 import { ISession } from './types';
 
 export class Session<T extends IObject = IObject> implements ISession<T> {
-  private sessionKey: string;
+  private session: Partial<T> | null = null;
+  private isPersisted = false;
 
-  private session: T | null = null;
+  constructor(
+    private sessionKey: string,
+    private finalCallback: (sessionKey: string) => void,
+  ) {}
 
-  private finalCallback: () => void;
-
-  constructor(sessionKey: string, finalCallback: () => void) {
-    this.sessionKey = sessionKey;
-    this.finalCallback = finalCallback;
-  }
-
-  async write<K extends keyof T>(key: K, value: T[K]): Promise<T[K]> {
-    let isUpdate = true;
-    if (!this.session) {
-      this.session = {} as T;
-      isUpdate = false;
-    }
-
-    this.session[key] = value;
-    const sessionValue = this.serialize();
-    if (isUpdate)
-      await execQuery.session.update([this.sessionKey, sessionValue]);
-    else await execQuery.session.create([this.sessionKey, sessionValue]);
-
-    return value;
+  async init() {
+    const [persisted] = await execQuery.session.read([this.sessionKey]);
+    this.isPersisted = Boolean(persisted)
+    this.deserialize(persisted?.session_value);
+    return this;
   }
 
   read<K extends keyof T>(key: K) {
     return this.session?.[key];
   }
 
-  async delete<K extends keyof T>(key: K) {
+  write<K extends keyof T>(key: K, value: T[K]): T[K] {
+    !this.session && (this.session = {});
+    return this.session[key] = value;
+  }
+
+  delete<K extends keyof T>(key: K) {
     if (!this.session) return;
     const value = this.session[key];
-    if (!value) return;
     delete this.session[key];
-    if (Object.keys(this.session).length) {
-      const sessionValue = this.serialize();
-      await execQuery.session.update([this.sessionKey, sessionValue]);
-    } else await this.clear();
+    const length = Object.keys(this.session).length;
+    if (!length) this.clear();
     return value;
   }
 
-  async clear() {
-    if (!this.session) return;
+  clear() {
     this.session = null;
-    await execQuery.session.del([this.sessionKey]);
   }
 
-  async init() {
-    const [result] = await execQuery.session.read([this.sessionKey]);
-    this.deserialize(result?.session_value);
-    return this;
-  }
-
-  finalize() {
-    this.finalCallback();
+  async finalize() {
+    await this.finalCallback(this.sessionKey);
   }
 
   private serialize(): string {
@@ -66,27 +48,41 @@ export class Session<T extends IObject = IObject> implements ISession<T> {
   }
 
   private deserialize(value: string | undefined) {
-    this.session = value ? JSON.parse(value) : null;
+    this.session = JSON.parse(value || 'null');
+  }
+
+  async persist() {
+    if (this.session) {
+      const sessionValue = this.serialize();
+      if (this.isPersisted)
+        await execQuery.session.update([this.sessionKey, sessionValue]);
+      else await execQuery.session.create([this.sessionKey, sessionValue]);
+      return;
+    }
+    if (!this.isPersisted) return;
+    await execQuery.session.del([this.sessionKey]);
   }
 }
 
-export const createService = <T extends IObject = IObject>() => {
+export const getService = <T extends IObject = IObject>() => {
   const activeSessions = new Map<string, [Promise<Session<T>>, number]>();
 
-  const clearSession = (sessionKey: string) => {
-    const [session, count = 0] = activeSessions.get(sessionKey) || [];
-    if (!session) return;
-    if (count <= 1) activeSessions.delete(sessionKey);
-    else activeSessions.set(sessionKey, [session, count - 1]);
+  const clearSession = async (sessionKey: string) => {
+    const [sessionPromise, count = 0] = activeSessions.get(sessionKey) || [];
+    if (!sessionPromise) return;
+    if (count > 1) activeSessions.set(sessionKey, [sessionPromise, count - 1]);
+    else {
+      activeSessions.delete(sessionKey);
+      await sessionPromise.then((session) => session.persist());
+    }
   }
   
   const createSession = async (sessionKey: string): Promise<Session<T>> => {
     let [session, count = 0] = activeSessions.get(sessionKey) || [];
-    if (!session) session = new Session<T>(sessionKey, () => clearSession(sessionKey)).init();
+    if (!session) session = new Session<T>(sessionKey, clearSession).init();
     activeSessions.set(sessionKey,  [session, ++count]);
-    const s = (await activeSessions.get(sessionKey)!)[0]
-    return s;
+    return session;
   }
 
-  return createSession;
+  return { createSession };
 };

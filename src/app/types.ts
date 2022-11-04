@@ -38,6 +38,7 @@ declare global {
 }
 
 export interface IModulesContext {
+  console: Console;
   execQuery: IDatabaseQueries;
   logger: ILogger;
 }

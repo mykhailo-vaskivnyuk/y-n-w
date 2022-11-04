@@ -3,31 +3,32 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { Writable } from 'node:stream';
 import Joi from 'joi';
-import { isHandler } from '../utils';
 import { TPromiseExecutor } from '../../types/types';
-import { isJoiSchema } from '../modules.response/validate.response';
 import { IRouterConfig, IRoutes, JoiSchema, THandler } from '../types';
-import { getApi, getExport, getImport, getMethod } from './templates';
+import { isHandler } from '../utils';
+import { isJoiSchema } from '../modules.response/validate.response';
+import * as tpl from './templates';
 
-export const createClientApi = (config: IRouterConfig, routes?: IRoutes) => {
-  if (!routes) throw new Error('Routes is not set');
+export const createClientApi = (config: IRouterConfig, routes: IRoutes) => {
   const executor: TPromiseExecutor<void> = (rv, rj) => {
     const apiPath = config.clientApiPath;
-    const apiFileNameBase = path.basename(apiPath, path.extname(apiPath));
+    const apiExt = path.extname(apiPath);
+    const apiDir = path.dirname(apiPath)
+    const apiFileNameBase = path.basename(apiPath, apiExt);
     const typesFileNameBase = apiFileNameBase + '.types';
     const typesFileName = typesFileNameBase + '.ts';
-    const typesPath = path.join(path.dirname(apiPath), typesFileName);
-    const apistream = fs.createWriteStream(apiPath);
+    const typesPath = path.join(apiDir, typesFileName);
+    const apiStream = fs.createWriteStream(apiPath);
     const typesStream = fs.createWriteStream(typesPath);
     let isFinish = false;
     const handleFinish = () => isFinish ? rv() : isFinish = true;
     const handleError = (e: Error) => {
-      apistream.close();
+      apiStream.close();
       typesStream.close();
       rj(e);
     }
-    apistream.on('error', handleError);
-    apistream.on('finish', handleFinish);
+    apiStream.on('error', handleError);
+    apiStream.on('finish', handleFinish);
     typesStream.on('error', handleError);
     typesStream.on('finish', handleFinish);
     const apiTypesPath = path.resolve(config.apiPath, 'types.js');
@@ -35,11 +36,11 @@ export const createClientApi = (config: IRouterConfig, routes?: IRoutes) => {
     Object
       .keys(apiTypes)
       .map((schemaName) => 'I' + schemaName.replace('Schema', ''))
-      .forEach((typeName) => apistream.write(getImport(typeName)));
-    apistream.write(getApi(typesFileNameBase));
-    createJs(apiTypes, apistream, typesStream)(routes!);
-    apistream.write(');\n');
-    apistream.close();
+      .forEach((typeName) => apiStream.write(tpl.strImport(typeName)));
+    apiStream.write(tpl.strGetApi(typesFileNameBase));
+    createJs(apiTypes, apiStream, typesStream)(routes);
+    apiStream.write(');\n');
+    apiStream.close();
     typesStream.close();
   };
   
@@ -56,7 +57,7 @@ export const createJs = (
   const routesKeys = Object.keys(routes);
 
   for (const key of routesKeys) {
-    apiStream.write(`\n${nextIndent}'${key}': `);
+    apiStream.write(tpl.strKey(nextIndent, key));
     const handler = routes[key] as THandler | IRoutes;
     const nextPathname = pathname + '/' + key;
 
@@ -72,7 +73,9 @@ export const createJs = (
 
     const paramsTypes = getTypes(handler.paramsSchema, nextIndent);
     const paramsTypeName = paramsTypes && 'Types.' + paramsTypeNameExport;
-    paramsTypes && typesStream.write(getExport(paramsTypeNameExport, paramsTypes));
+    paramsTypes && typesStream.write(
+      tpl.strExport(paramsTypeNameExport, paramsTypes),
+    );
 
     const responseSchema = handler.responseSchema;
 
@@ -80,15 +83,17 @@ export const createJs = (
       .find((key) => apiTypes[key] === responseSchema);
     if (predefinedResponseSchema) {
       const responseTypeName = 'I' + predefinedResponseSchema.replace('Schema', '');
-      apiStream.write(getMethod(paramsTypeName, responseTypeName, nextPathname));
+      apiStream.write(
+        tpl.strMethod(paramsTypeName, responseTypeName, nextPathname),
+      );
       continue;
     }
       
     const responseTypes = getTypes(responseSchema, nextIndent);
     if (!responseTypes) throw new Error(`Handler ${nextPathname} dosn't have response schema`);
-    typesStream.write(getExport(responseTypeNameExport, responseTypes));
+    typesStream.write(tpl.strExport(responseTypeNameExport, responseTypes));
     const responseTypeName = 'Types.' + responseTypeNameExport;
-    apiStream.write(getMethod(paramsTypeName, responseTypeName, nextPathname));
+    apiStream.write(tpl.strMethod(paramsTypeName, responseTypeName, nextPathname));
   }
   apiStream.write('\n' + indent + '}');
 };
@@ -105,8 +110,8 @@ const getTypeNameFromPathname = (pathname: string) => {
 const getTypes = (
   schema?: THandler['paramsSchema'] | THandler['responseSchema'],
   indent = ''
-): string | undefined => {
-  if (!schema) return;
+): string => {
+  if (!schema) return '';
   
   if (isJoiSchema(schema)) {
     let type = schema.type || '';
@@ -122,9 +127,9 @@ const getTypes = (
   }
 
   const schemaEntries = Object.entries(schema);
-  const result = schemaEntries.map(([key, item]) =>
-    `\n${indent}  ${key}: ${getTypes(item, indent)};`);
-  return '{' + result.join('') + '\n' + indent + '}';
+  const types = schemaEntries
+    .map(([key, item]) => tpl.strTypes(indent, key, getTypes(item, indent)));
+  return '{' + types.join('') + '\n' + indent + '}';
 };
 
 const getSchemaType = (schema: Joi.Schema) => {

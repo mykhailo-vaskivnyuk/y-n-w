@@ -1,5 +1,4 @@
 import { TOperationResponse } from '../app/types';
-import { getEnumFromMap } from '../utils/utils';
 
 export const RouterErrorMap = {
   E_ROUTER: 'ROUTER ERROR',
@@ -10,9 +9,8 @@ export const RouterErrorMap = {
   E_REDIRECT: 'REDIRECT',
 } as const;
 
-export const RouterErrorEnum = getEnumFromMap(RouterErrorMap);
-
-type RouterErrorCode = keyof typeof RouterErrorMap;
+export type RouterErrorCode = keyof typeof RouterErrorMap;
+export type TRouterErrorDetails = RouterError['details'];
 
 export class RouterError extends Error {
   public code: RouterErrorCode;
@@ -29,8 +27,6 @@ export class RouterError extends Error {
 export const HandlerErrorMap = {
   E_REDIRECT: 'REDIRECT',
 } as const;
-
-export const HandlerErrorEnum = getEnumFromMap(HandlerErrorMap);
 
 type HandlerErrorCode = keyof typeof HandlerErrorMap;
 
