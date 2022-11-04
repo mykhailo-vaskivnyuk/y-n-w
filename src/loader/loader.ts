@@ -6,14 +6,10 @@ import { log, resolve } from './utils';
 
 const options = { displayErrors: true };
 
-export const loadModule = (parentModule: NodeJS.Module) => (
+export const loadModule = (__dirname: string) => (
   modulePath: string,
   modulesContext?: IModulesContext,
-
-) => {
-  const __dirname = path.dirname(parentModule.filename);
-  return loader(modulePath, __dirname, modulesContext);
-}
+) => loader(modulePath, __dirname, modulesContext);
 
 export const loader = (
   modulePath: string,
@@ -29,6 +25,7 @@ export const loader = (
   const newRequire = (modulePath: string) =>
     loader(modulePath, __dirname, modulesContext);
   const context = {
+    global: this,
     require: newRequire,
     module,
     exports: module.exports,

@@ -1,15 +1,11 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 const node_http_1 = require("node:http");
 const node_stream_1 = require("node:stream");
-const constants_1 = require("../../constants/constants");
+const constants_1 = require("./constants");
 const errors_1 = require("./errors");
-const static_1 = __importDefault(require("./static"));
 const utils_1 = require("./utils");
 const crypto_1 = require("../../utils/crypto");
-const constants_2 = require("./constants");
+const static_1 = require("./static");
 class HttpConnection {
     config;
     server;
@@ -19,7 +15,7 @@ class HttpConnection {
     constructor(config) {
         this.config = config;
         this.server = (0, node_http_1.createServer)(this.onRequest.bind(this));
-        this.staticServer = (0, static_1.default)(this.config.paths.public);
+        this.staticServer = (0, static_1.createStaticServer)(this.config.paths.public);
     }
     onOperation(fn) {
         this.callback = fn;
@@ -33,7 +29,7 @@ class HttpConnection {
         }
         try {
             const { modules } = this.config;
-            this.modules = modules.map((module) => require(constants_2.HTTP_MODULES[module])[module]());
+            this.modules = modules.map((module) => require(constants_1.HTTP_MODULES[module])[module]());
         }
         catch (e) {
             logger.error(e, e.message);
@@ -66,7 +62,7 @@ class HttpConnection {
             const response = await this.callback(operation);
             res.statusCode = 200;
             if (response instanceof node_stream_1.Readable) {
-                res.setHeader('content-type', constants_1.MIME_TYPES_ENUM['application/octet-stream']);
+                res.setHeader('content-type', constants_1.REQ_MIME_TYPES_ENUM['application/octet-stream']);
                 await new Promise((rv, rj) => {
                     response.on('error', rj);
                     response.on('end', rv);
@@ -76,7 +72,7 @@ class HttpConnection {
                 return;
             }
             const data = JSON.stringify(response);
-            res.setHeader('content-type', constants_1.MIME_TYPES_ENUM['application/json']);
+            res.setHeader('content-type', constants_1.REQ_MIME_TYPES_ENUM['application/json']);
             res.on('finish', () => logger.info(params, (0, utils_1.getLog)(req, 'OK')));
             res.end(data);
         }
@@ -100,13 +96,14 @@ class HttpConnection {
         const length = +(headers['content-length'] || Infinity);
         if (!contentType)
             return { options, names, data };
-        if (!constants_1.MIME_TYPES_MAP[contentType]) {
+        if (!constants_1.REQ_MIME_TYPES_MAP[contentType]) {
             throw new errors_1.ServerError('E_BED_REQUEST');
         }
-        if (length > constants_1.MIME_TYPES_MAP[contentType].maxLength) {
+        if (length > constants_1.REQ_MIME_TYPES_MAP[contentType].maxLength) {
             throw new errors_1.ServerError('E_BED_REQUEST');
         }
-        if (contentType === constants_1.MIME_TYPES_ENUM['application/json'] && length < constants_1.JSON_TRANSFORM_LENGTH) {
+        if (contentType === constants_1.REQ_MIME_TYPES_ENUM['application/json']
+            && length < constants_1.JSON_TRANSFORM_LENGTH) {
             Object.assign(params, await this.getJson(req));
             return { options, names, data };
         }
@@ -162,8 +159,8 @@ class HttpConnection {
         res.statusCode = statusCode;
         if (code === 'E_REDIRECT')
             res.setHeader('location', details?.location || '/');
-        details && res.setHeader('content-type', constants_1.MIME_TYPES_ENUM['application/json']);
-        logger.error({}, (0, utils_1.getLog)(req, code + errors_1.ServerErrorMap[code]));
+        details && res.setHeader('content-type', constants_1.REQ_MIME_TYPES_ENUM['application/json']);
+        logger.error({}, (0, utils_1.getLog)(req, statusCode + ' ' + errors_1.ServerErrorMap[code]));
         res.end(error.getMessage());
         if (code === 'E_SERVER_ERROR')
             throw e;

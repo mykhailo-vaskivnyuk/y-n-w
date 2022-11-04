@@ -9,10 +9,7 @@ const node_path_1 = __importDefault(require("node:path"));
 const node_vm_1 = __importDefault(require("node:vm"));
 const utils_1 = require("./utils");
 const options = { displayErrors: true };
-const loadModule = (parentModule) => (modulePath, modulesContext) => {
-    const __dirname = node_path_1.default.dirname(parentModule.filename);
-    return (0, exports.loader)(modulePath, __dirname, modulesContext);
-};
+const loadModule = (__dirname) => (modulePath, modulesContext) => (0, exports.loader)(modulePath, __dirname, modulesContext);
 exports.loadModule = loadModule;
 const loader = (modulePath, parentModuleDir, modulesContext) => {
     const __filename = (0, utils_1.resolve)(parentModuleDir, modulePath);
@@ -24,6 +21,7 @@ const loader = (modulePath, parentModuleDir, modulesContext) => {
     const module = { exports: {} };
     const newRequire = (modulePath) => (0, exports.loader)(modulePath, __dirname, modulesContext);
     const context = {
+        global: this,
         require: newRequire,
         module,
         exports: module.exports,

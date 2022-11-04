@@ -1,8 +1,9 @@
 import { format } from 'node:util';
 
-const tplImport = 'import { %s } from \'./types\';\n';
-const tplGetApi = 
-`import * as Types from './%s';
+const tplImport = 'import * as P from \'./types\';\n';
+const tplGetApi =
+`import * as P from './types';
+import * as Q from './%s';
 
 export const getApi = (
   fetch: <T>(pathname: string, options?: Record<string, any>) => Promise<T>
@@ -10,7 +11,7 @@ export const getApi = (
 const tplKey = '\n%s\'%s\': '
 const tplMethod = '(options: %s) => fetch<%s>(\'%s\', options),';
 const tplMethodNoTypes = '() => fetch<%s>(\'%s\'),'
-const tplExport = 'export type %s = %s;\n';
+const tplExportTypes = 'export type %s = %s;\n';
 const tplTypes = '\n%s  %s: %s;';
 
 export const strImport = (typeName: string) => format(tplImport, typeName);
@@ -25,10 +26,10 @@ export const strMethod = (
     ? format(tplMethod, typeName, responseTypeName, nextPathname)
     : format(tplMethodNoTypes, responseTypeName, nextPathname);
 };
-export const strExport = (
+export const strExportTypes = (
   paramsTypeName: string,
   paramsTypes: string,
-) => format(tplExport, paramsTypeName, paramsTypes);
+) => format(tplExportTypes, paramsTypeName, paramsTypes);
 
 export const strTypes = (
   indent: string,

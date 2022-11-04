@@ -1,5 +1,6 @@
 import Joi, { ValidationErrorItem } from 'joi';
-import { JoiSchema, THandler, TResponseModule } from '../types';
+import { TJoiSchema, THandler, TResponseModule } from '../types';
+import { isJoiSchema } from '../utils';
 
 export class ValidationResponseError extends Error {
   public details: Record<string, unknown>[];
@@ -16,31 +17,30 @@ const options = {
   errors: { render: false },
 };
 
-export const isJoiSchema = (schema: THandler['responseSchema']): schema is Joi.Schema => {
-  return Joi.isSchema(schema);
-}
-
-const responseSchemaToSchema = (schema: THandler['responseSchema']): JoiSchema => {
+const responseSchemaToSchema = (
+  schema: THandler['responseSchema'],
+): TJoiSchema => {
   if (Array.isArray(schema)) {
     return schema.map((item) => responseSchemaToSchema(item) as Joi.Schema);
   }
   return isJoiSchema(schema) ? schema : Joi.object(schema);
 };
 
-const validateResponse: TResponseModule = () => async (response, context, handler) => {
-  const { responseSchema } = handler || {};
-  if (!responseSchema) throw new Error('Handler is not put');
-  const schema = responseSchemaToSchema(responseSchema);
-  let result;
-  if (Array.isArray(schema)) {
-    result = Joi.alternatives().match('any').try(...schema).validate(response, options);
-  } else result = schema.validate(response, options);
-  const { error, value } = result;
-  if (error) {
-    logger.error(error, error.message);
-    throw new ValidationResponseError(error.details);
-  }
-  return [value, context];
-};
+const validateResponse: TResponseModule = () =>
+  async (response, context, handler) => {
+    const { responseSchema } = handler || {};
+    if (!responseSchema) throw new Error('Handler is not put');
+    const schema = responseSchemaToSchema(responseSchema);
+    let result;
+    if (Array.isArray(schema)) {
+      result = Joi.alternatives().match('any').try(...schema).validate(response, options);
+    } else result = schema.validate(response, options);
+    const { error, value } = result;
+    if (error) {
+      logger.error(error, error.message);
+      throw new ValidationResponseError(error.details);
+    }
+    return [value, context];
+  };
 
 export default validateResponse;

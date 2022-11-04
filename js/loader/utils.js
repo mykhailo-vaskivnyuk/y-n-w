@@ -19,25 +19,6 @@ const resolve = (parentModuleDir, modulePath) => {
         const moduleFullPath = node_path_1.default.resolve(parentModuleDir, modulePath);
         return addExt(moduleFullPath);
     }
-    // return require.resolve(modulePath);
-    // const pathParts = [
-    //   'node_modules',
-    //   modulePath,
-    //   'package.json',
-    // ];
-    // let searchPath = parentModuleDir;
-    // while (searchPath.length > 3) {
-    //   try {
-    //     const packageJsonPath = path.join(searchPath, ...pathParts);
-    //     const packageJson = fs.readFileSync(packageJsonPath).toString();
-    //     const moduleName = JSON.parse(packageJson).main;
-    //     const moduleFullPath = path.join(packageJsonPath, '..', moduleName);
-    //     fs.statSync(moduleFullPath);
-    //     return moduleFullPath;
-    //   } catch (e) {
-    //     searchPath = path.resolve(searchPath, '..');
-    //   }
-    // }
 };
 exports.resolve = resolve;
 const addExt = (moduleFullPath) => {
@@ -58,7 +39,7 @@ const getScriptInContext = (__filename) => {
         .replace(exports.use_strict, '');
     return `
   'use strict';
-  ({ require, module, exports, __filename, __dirname }) => {
+  ({ global, require, module, exports, __filename, __dirname }) => {
   ${script}
   };`;
 };

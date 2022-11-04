@@ -4,10 +4,10 @@ import fs from 'node:fs';
 import { Writable } from 'node:stream';
 import Joi from 'joi';
 import { TPromiseExecutor } from '../../types/types';
-import { IRouterConfig, IRoutes, JoiSchema, THandler } from '../types';
-import { isHandler } from '../utils';
-import { isJoiSchema } from '../modules.response/validate.response';
+import { IRouterConfig, IRoutes, TJoiSchema, THandler, THandlerSchema } from '../types';
+import { SIMPLE_TYPES } from '../constants';
 import * as tpl from './templates';
+import { isHandler, isJoiSchema } from '../utils';
 
 export const createClientApi = (config: IRouterConfig, routes: IRoutes) => {
   const executor: TPromiseExecutor<void> = (rv, rj) => {
@@ -32,11 +32,7 @@ export const createClientApi = (config: IRouterConfig, routes: IRoutes) => {
     typesStream.on('error', handleError);
     typesStream.on('finish', handleFinish);
     const apiTypesPath = path.resolve(config.apiPath, 'types.js');
-    const apiTypes = require(apiTypesPath) as Record<string, JoiSchema>;
-    Object
-      .keys(apiTypes)
-      .map((schemaName) => 'I' + schemaName.replace('Schema', ''))
-      .forEach((typeName) => apiStream.write(tpl.strImport(typeName)));
+    const apiTypes = require(apiTypesPath) as Record<string, TJoiSchema>;
     apiStream.write(tpl.strGetApi(typesFileNameBase));
     createJs(apiTypes, apiStream, typesStream)(routes);
     apiStream.write(');\n');
@@ -48,7 +44,7 @@ export const createClientApi = (config: IRouterConfig, routes: IRoutes) => {
 };
 
 export const createJs = (
-  apiTypes: Record<string, JoiSchema>,
+  apiTypes: Record<string, TJoiSchema>,
   apiStream: Writable,
   typesStream: Writable
 ) => function createJs(routes: IRoutes, pathname = '', indent = '') {
@@ -60,55 +56,31 @@ export const createJs = (
     apiStream.write(tpl.strKey(nextIndent, key));
     const handler = routes[key] as THandler | IRoutes;
     const nextPathname = pathname + '/' + key;
-
     if (!isHandler(handler)) {
       createJs(handler, nextPathname, nextIndent);
       apiStream.write(',');
       continue;
     }
-    
     const typeName = getTypeNameFromPathname(nextPathname);
-    const paramsTypeNameExport = typeName;
-    const responseTypeNameExport = typeName + 'Response';
-
-    const paramsTypes = getTypes(handler.paramsSchema, nextIndent);
-    const paramsTypeName = paramsTypes && 'Types.' + paramsTypeNameExport;
-    paramsTypes && typesStream.write(
-      tpl.strExport(paramsTypeNameExport, paramsTypes),
-    );
-
-    const responseSchema = handler.responseSchema;
-
-    const predefinedResponseSchema = Object.keys(apiTypes)
-      .find((key) => apiTypes[key] === responseSchema);
-    if (predefinedResponseSchema) {
-      const responseTypeName = 'I' + predefinedResponseSchema.replace('Schema', '');
-      apiStream.write(
-        tpl.strMethod(paramsTypeName, responseTypeName, nextPathname),
-      );
-      continue;
-    }
-      
-    const responseTypes = getTypes(responseSchema, nextIndent);
-    if (!responseTypes) throw new Error(`Handler ${nextPathname} dosn't have response schema`);
-    typesStream.write(tpl.strExport(responseTypeNameExport, responseTypes));
-    const responseTypeName = 'Types.' + responseTypeNameExport;
+    const paramsTypeName = getTypeName('params', apiTypes, typesStream, typeName, handler);
+    const responseTypeName = getTypeName('response', apiTypes, typesStream, typeName, handler);
     apiStream.write(tpl.strMethod(paramsTypeName, responseTypeName, nextPathname));
   }
+
   apiStream.write('\n' + indent + '}');
 };
 
 const getTypeNameFromPathname = (pathname: string) => {
   return 'T' + pathname
     .replace('/', '')
-    .replace(/\./g, '_')
+    .replace(/\./g, '')
     .split('/')
     .map((part) => part[0]?.toUpperCase() + part.slice(1))
     .join('');
 };
 
 const getTypes = (
-  schema?: THandler['paramsSchema'] | THandler['responseSchema'],
+  schema?: THandlerSchema,
   indent = ''
 ): string => {
   if (!schema) return '';
@@ -136,4 +108,38 @@ const getSchemaType = (schema: Joi.Schema) => {
   const schemaValuesSet = (schema as any)._valids._values;
   const [type] = [...schemaValuesSet.values()];
   return `${type}`;
+};
+
+const findPredefinedSchema = (
+  apiTypes: Record<string, TJoiSchema>,
+  schema: THandlerSchema,
+) => {
+  return Object.keys(apiTypes)
+    .find((key) => apiTypes[key] === schema);
+};
+
+const getTypeName = (
+  type: 'params' | 'response',
+  apiTypes: Record<string, TJoiSchema>,
+  typesStream: Writable,
+  typeName: string,
+  handler: THandler,
+) => {
+  const schema = type === 'params'
+    ? handler.paramsSchema
+    : handler.responseSchema;
+  const types = getTypes(schema);
+  if (!types) return '';
+
+  const predefinedSchema = findPredefinedSchema(apiTypes, schema);
+  if (predefinedSchema) return 'P.I' + predefinedSchema.replace('Schema', '');
+
+  const typeNameExport = type === 'params'
+    ? typeName
+    : typeName + 'Response';
+  if (SIMPLE_TYPES.includes(types)) return types;
+  typesStream.write(
+    tpl.strExportTypes(typeNameExport, types),
+  );
+  return types && 'Q.' + typeNameExport;
 };

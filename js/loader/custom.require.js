@@ -9,8 +9,7 @@ const node_vm_1 = __importDefault(require("node:vm"));
 const utils_1 = require("./utils");
 const options = { displayErrors: true };
 const cache = new Map();
-const loadModule = (parentModule) => (modulePath, { ...context } = {}) => {
-    const __dirname = node_path_1.default.dirname(parentModule.filename);
+const loadModule = (__dirname) => (modulePath, { ...context } = {}) => {
     node_vm_1.default.createContext(context);
     const newRequire = (0, exports.customRequire)(__dirname, context);
     return newRequire(modulePath);
@@ -28,13 +27,15 @@ const customRequire = (moduleDir, context) => (modulePath) => {
     const newRequire = (0, exports.customRequire)(__dirname, context);
     const module = { exports: {} };
     const contextParams = {
+        global: context,
         require: newRequire,
         module,
         exports: module.exports,
         __filename,
         __dirname,
     };
-    node_vm_1.default.runInContext(scriptInContext, context, options)(contextParams);
+    const wrapper = node_vm_1.default.runInContext(scriptInContext, context, options);
+    wrapper(contextParams);
     cache.set(__filename, module.exports);
     return module.exports;
 };

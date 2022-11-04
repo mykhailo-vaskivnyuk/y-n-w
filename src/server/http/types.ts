@@ -1,6 +1,6 @@
 import http from 'node:http';
+import { THttpModulesKeys } from './constants';
 import { IOperation, TOperationResponse } from '../../app/types';
-import { HTTP_MODULES } from './constants';
 
 export interface IInputConnectionConfig {
   transport: 'http' | 'ws';
@@ -10,7 +10,7 @@ export interface IInputConnectionConfig {
       public: string;
       api: string;
     };
-    modules: (keyof typeof HTTP_MODULES)[];
+    modules: THttpModulesKeys[];
     host: string;
     port: number;
   };
@@ -34,6 +34,3 @@ export interface IInputConnection {
   ): this;
   start(): Promise<void>;
 }
-  
-
-  

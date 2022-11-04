@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import { IUserResponse } from '../client/common/api/types';
-import { JoiSchema } from '../router/types';
+import { TJoiSchema } from '../router/types';
 import { OmitNull } from '../types/types';
 
 export const UserResponseSchema = [
@@ -11,5 +11,13 @@ export const UserResponseSchema = [
     mobile: [Joi.string(), Joi.any().equal(null)],
     net_name: [Joi.string(), Joi.any().equal(null)],
     confirmed: Joi.boolean(),
-  } as Record<keyof OmitNull<IUserResponse>, JoiSchema>,
+  } as Record<keyof OmitNull<IUserResponse>, TJoiSchema>,
 ];
+
+export const SignupParamsSchema = {
+  email: Joi.string().required().email(),
+};
+
+export const ConfirmParamsSchema = {
+  token: Joi.string(),
+};

@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.app = exports.ClientApp = void 0;
-/* eslint-disable import/no-cycle */
 const constants_1 = require("../constants");
 const event_emitter_1 = __importDefault(require("../event.emitter"));
 const client_api_1 = require("../api/client.api");
@@ -14,6 +13,7 @@ class ClientApp extends event_emitter_1.default {
     clientApi;
     state = constants_1.AppState.INIT;
     user = null;
+    error = null;
     account;
     constructor(baseUrl) {
         super();
@@ -30,6 +30,7 @@ class ClientApp extends event_emitter_1.default {
         return {
             state: this.state,
             user: this.user,
+            error: this.error,
         };
     }
     setUser(user) {
@@ -40,12 +41,17 @@ class ClientApp extends event_emitter_1.default {
         if (this.state === constants_1.AppState.INIT)
             return;
         this.state = state;
+        this.error = null;
         if (state !== constants_1.AppState.READY) {
             return this.emit('statechanged', this.state);
         }
         Promise.resolve()
             .then(() => this.emit('statechanged', this.state))
             .catch((e) => console.log(e));
+    }
+    setError(e) {
+        this.error = e;
+        this.setState(constants_1.AppState.ERROR);
     }
     async readUser() {
         this.setState(constants_1.AppState.LOADING);

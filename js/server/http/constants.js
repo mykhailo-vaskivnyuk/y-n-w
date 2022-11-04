@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MIME_TYPES = exports.HEADERS = exports.NOT_FOUND = exports.INDEX = exports.HTTP_MODULES = void 0;
+exports.JSON_TRANSFORM_LENGTH = exports.REQ_MIME_TYPES_ENUM = exports.REQ_MIME_TYPES_MAP = exports.RES_MIME_TYPES = exports.HEADERS = exports.NOT_FOUND = exports.INDEX = exports.HTTP_MODULES = void 0;
 const path_1 = require("path");
+const utils_1 = require("../../utils/utils");
 const basePathModules = 'js/server/http/modules';
 exports.HTTP_MODULES = {
-    allowCors: (0, path_1.resolve)(basePathModules, 'allowCors'),
+    allowCors: (0, path_1.resolve)(basePathModules, 'allowCors.js'),
 };
 exports.INDEX = 'index.html';
 exports.NOT_FOUND = '404.html';
@@ -18,7 +19,7 @@ exports.HEADERS = {
     'Access-Control-Allow-Credentials': 'true',
     // 'Content-Type': 'application/json; charset=UTF-8',
 };
-exports.MIME_TYPES = {
+exports.RES_MIME_TYPES = {
     default: 'application/octet-stream',
     html: 'text/html; charset=UTF-8',
     js: 'application/javascript; charset=UTF-8',
@@ -29,4 +30,10 @@ exports.MIME_TYPES = {
     ico: 'image/x-icon',
     svg: 'image/svg+xml',
 };
+exports.REQ_MIME_TYPES_MAP = {
+    'application/json': { maxLength: 1_000 },
+    'application/octet-stream': { maxLength: 1_000_000 },
+};
+exports.REQ_MIME_TYPES_ENUM = (0, utils_1.getEnumFromMap)(exports.REQ_MIME_TYPES_MAP);
+exports.JSON_TRANSFORM_LENGTH = 100;
 //# sourceMappingURL=constants.js.map

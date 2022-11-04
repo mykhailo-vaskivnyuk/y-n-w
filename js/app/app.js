@@ -34,11 +34,10 @@ class App {
         if (!logger || !execQuery)
             throw new errors_1.AppError('E_INIT');
         const context = {
-            console,
             logger,
             execQuery,
         };
-        const Router = (0, custom_require_1.loadModule)(module)(router.path, context);
+        const Router = (0, custom_require_1.loadModule)(__dirname)(router.path, context);
         this.router = new Router(router);
         return this;
     }

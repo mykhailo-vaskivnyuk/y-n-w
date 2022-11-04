@@ -1,22 +1,10 @@
 import nodemailer from 'nodemailer';
-import fs from 'node:fs';
 import { format } from 'node:util';
 import { SentMessageInfo, MailOptions } from 'nodemailer/lib/smtp-transport';
 import { TMailType } from '../../router/types';
+import { generalOptions, OPTIONS_MAP, template } from './constants';
 
-const template = fs.readFileSync('src/services/mail/template.html').toString();
-const generalOptions = { from: 'm.vaskivnyuk@gmail.com', sender: 'You & World' };
-const OptionsMap = {
-  confirm: {
-    text: 'Якщо ви реєструвалсь на сайті You &amp; World - підтвердіть свій email. Для цього клікніть на лінк нижче.',
-    subject: 'Confirm email on You & World',
-  },
-  restore: {
-    text: 'Якщо ви хочете увійти на сайт You &amp; World - клікніть на лінк нижче.',
-    subject: 'Login into You & World',
-  }
-}
-export const initMail = (config: MailOptions) => { 
+export const getMailService = (config: MailOptions) => { 
   const transporter = nodemailer.createTransport(config);
 
   const send = (mailOptions: MailOptions) =>
@@ -27,8 +15,8 @@ export const initMail = (config: MailOptions) => {
       });
     });
 
-  const sendMail = (type: TMailType, origin: string, to: string, token: string) => {
-    const { text, subject } = OptionsMap[type];
+  const sendMail = (type: TMailType, to: string, origin: string, token: string) => {
+    const { text, subject } = OPTIONS_MAP[type];
     const link = `${origin}/#/account/${type}/${token}`;
     const html = format(template, text, link);
     const options = {

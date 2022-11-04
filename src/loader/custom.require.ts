@@ -6,11 +6,10 @@ import { getScriptInContext, log, resolve } from './utils';
 const options = { displayErrors: true };
 const cache = new Map();
 
-export const loadModule = (parentModule: NodeJS.Module) => (
+export const loadModule = (__dirname: string) => (
   modulePath: string,
   { ...context } = {} as IModulesContext,
 ) => {
-  const __dirname = path.dirname(parentModule.filename);
   vm.createContext(context);
   const newRequire = customRequire(__dirname, context);
   return newRequire(modulePath);
@@ -29,13 +28,15 @@ export const customRequire = (
   const newRequire = customRequire(__dirname, context);
   const module = { exports: {} };
   const contextParams = {
+    global: context,
     require: newRequire,
     module,
     exports: module.exports,
     __filename,
     __dirname,
   };
-  vm.runInContext(scriptInContext, context, options)(contextParams);
+  const wrapper = vm.runInContext(scriptInContext, context, options);
+  wrapper(contextParams);
   cache.set(__filename, module.exports);
   return module.exports;
 };

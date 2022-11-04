@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetStreamError = void 0;
-const constants_1 = require("../../constants/constants");
+const constants_1 = require("../../server/http/constants");
 class GetStreamError extends Error {
     constructor(message) {
         super(message || 'Validation error');
@@ -14,7 +14,7 @@ const getStream = () => async (operation, context) => {
     if (!stream)
         return [operation, context];
     const { type, content } = stream;
-    if (type === constants_1.MIME_TYPES_ENUM['application/octet-stream']) {
+    if (type === constants_1.REQ_MIME_TYPES_ENUM['application/octet-stream']) {
         params.stream = stream;
         delete operation.data.stream;
         return [operation, context];

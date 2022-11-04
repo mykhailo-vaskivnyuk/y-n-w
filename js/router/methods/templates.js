@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.strTypes = exports.strExport = exports.strMethod = exports.strKey = exports.strGetApi = exports.strImport = void 0;
+exports.strTypes = exports.strExportTypes = exports.strMethod = exports.strKey = exports.strGetApi = exports.strImport = void 0;
 const node_util_1 = require("node:util");
-const tplImport = 'import { %s } from \'./types\';\n';
-const tplGetApi = `import * as Types from './%s';
+const tplImport = 'import * as P from \'./types\';\n';
+const tplGetApi = `import * as P from './types';
+import * as Q from './%s';
 
 export const getApi = (
   fetch: <T>(pathname: string, options?: Record<string, any>) => Promise<T>
@@ -11,7 +12,7 @@ export const getApi = (
 const tplKey = '\n%s\'%s\': ';
 const tplMethod = '(options: %s) => fetch<%s>(\'%s\', options),';
 const tplMethodNoTypes = '() => fetch<%s>(\'%s\'),';
-const tplExport = 'export type %s = %s;\n';
+const tplExportTypes = 'export type %s = %s;\n';
 const tplTypes = '\n%s  %s: %s;';
 const strImport = (typeName) => (0, node_util_1.format)(tplImport, typeName);
 exports.strImport = strImport;
@@ -25,8 +26,8 @@ const strMethod = (typeName, responseTypeName, nextPathname) => {
         : (0, node_util_1.format)(tplMethodNoTypes, responseTypeName, nextPathname);
 };
 exports.strMethod = strMethod;
-const strExport = (paramsTypeName, paramsTypes) => (0, node_util_1.format)(tplExport, paramsTypeName, paramsTypes);
-exports.strExport = strExport;
+const strExportTypes = (paramsTypeName, paramsTypes) => (0, node_util_1.format)(tplExportTypes, paramsTypeName, paramsTypes);
+exports.strExportTypes = strExportTypes;
 const strTypes = (indent, key, type) => (0, node_util_1.format)(tplTypes, indent, key, type);
 exports.strTypes = strTypes;
 //# sourceMappingURL=templates.js.map

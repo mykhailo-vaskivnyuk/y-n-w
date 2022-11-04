@@ -6,9 +6,10 @@ const promises_1 = __importDefault(require("node:fs/promises"));
 const node_path_1 = __importDefault(require("node:path"));
 const errors_1 = require("./errors");
 const utils_1 = require("./utils");
-const create_client_api_1 = require("./methods/create.client.api");
 const error_handler_1 = require("./methods/error.handler");
+const create_client_api_1 = require("./methods/create.client.api");
 const modules_1 = require("./methods/modules");
+const services_1 = require("./methods/services");
 class Router {
     config;
     routes;
@@ -18,6 +19,14 @@ class Router {
         this.config = config;
     }
     async init() {
+        try {
+            const services = (0, services_1.getServices)(this.config);
+            Object.assign(global, services);
+        }
+        catch (e) {
+            logger.error(e, e.message);
+            throw new errors_1.RouterError('E_SERVICE');
+        }
         try {
             this.modules = (0, modules_1.applyModules)(this.config);
             this.responseModules = (0, modules_1.applyResponseModules)(this.config);

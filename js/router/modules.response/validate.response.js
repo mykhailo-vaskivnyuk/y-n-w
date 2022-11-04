@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isJoiSchema = exports.ValidationResponseError = void 0;
+exports.ValidationResponseError = void 0;
 const joi_1 = __importDefault(require("joi"));
+const utils_1 = require("../utils");
 class ValidationResponseError extends Error {
     details;
     constructor(details) {
@@ -19,15 +20,11 @@ const options = {
     stripUnknown: true,
     errors: { render: false },
 };
-const isJoiSchema = (schema) => {
-    return joi_1.default.isSchema(schema);
-};
-exports.isJoiSchema = isJoiSchema;
 const responseSchemaToSchema = (schema) => {
     if (Array.isArray(schema)) {
         return schema.map((item) => responseSchemaToSchema(item));
     }
-    return (0, exports.isJoiSchema)(schema) ? schema : joi_1.default.object(schema);
+    return (0, utils_1.isJoiSchema)(schema) ? schema : joi_1.default.object(schema);
 };
 const validateResponse = () => async (response, context, handler) => {
     const { responseSchema } = handler || {};

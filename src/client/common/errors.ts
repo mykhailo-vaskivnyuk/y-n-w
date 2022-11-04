@@ -5,14 +5,15 @@ export const HttpResponseErrorMap = {
   500: 'Internal server error',
   503: 'Service unavailable',
 };
-export type ErrorCodeType = keyof typeof HttpResponseErrorMap;
+export type HttpResponseErrorCode = keyof typeof HttpResponseErrorMap;
 
 export class HttpResponseError extends Error {
-  statusCode = 500;
+  statusCode: HttpResponseErrorCode;
 
-  constructor(code: ErrorCodeType) {
-    super(HttpResponseErrorMap[code]);
-    this.statusCode = code;
+  constructor(code: number) {
+    const statusCode = (code in HttpResponseErrorMap ? code : 500) as HttpResponseErrorCode;
+    super(HttpResponseErrorMap[statusCode]);
+    this.statusCode = statusCode;
     this.name = this.constructor.name;
   }
 }

@@ -12,7 +12,7 @@ const getAccountMethods = (parent) => ({
             return user;
         }
         catch (e) {
-            parent.setState(constants_1.AppState.ERROR);
+            parent.setError(e);
             throw e;
         }
     },

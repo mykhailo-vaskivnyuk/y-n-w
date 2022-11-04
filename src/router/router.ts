@@ -1,12 +1,16 @@
 import fsp from 'node:fs/promises';
 import path from 'node:path';
-import { THandler, IRoutes, TModule, IContext, TResponseModule, IRouter, IRouterConfig } from './types';
+import {
+  THandler, IRoutes, TModule, IContext,
+  TResponseModule, IRouter, IRouterConfig,
+} from './types';
 import { IOperation, TOperationResponse } from '../app/types';
 import { RouterError } from './errors';
 import { isHandler } from './utils';
-import { createClientApi } from './methods/create.client.api';
 import { errorHandler } from './methods/error.handler';
+import { createClientApi } from './methods/create.client.api';
 import { applyModules, applyResponseModules } from './methods/modules';
+import { getServices } from './methods/services';
 
 class Router implements IRouter {
   private config: IRouterConfig;
@@ -19,6 +23,14 @@ class Router implements IRouter {
   }
 
   async init() {
+    try{
+      const services = getServices(this.config);
+      Object.assign(global, services);
+    } catch (e: any) {
+      logger.error(e, e.message);
+      throw new RouterError('E_SERVICE');
+    }
+
     try {
       this.modules = applyModules(this.config);
       this.responseModules = applyResponseModules(this.config);

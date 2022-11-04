@@ -13,27 +13,6 @@ export const resolve = (parentModuleDir: string, modulePath: string) => {
     const moduleFullPath = path.resolve(parentModuleDir, modulePath);
     return addExt(moduleFullPath);
   }
-
-  // return require.resolve(modulePath);
-
-  // const pathParts = [
-  //   'node_modules',
-  //   modulePath,
-  //   'package.json',
-  // ];
-  // let searchPath = parentModuleDir;
-  // while (searchPath.length > 3) {
-  //   try {
-  //     const packageJsonPath = path.join(searchPath, ...pathParts);
-  //     const packageJson = fs.readFileSync(packageJsonPath).toString();
-  //     const moduleName = JSON.parse(packageJson).main;
-  //     const moduleFullPath = path.join(packageJsonPath, '..', moduleName);
-  //     fs.statSync(moduleFullPath);
-  //     return moduleFullPath;
-  //   } catch (e) {
-  //     searchPath = path.resolve(searchPath, '..');
-  //   }
-  // }
 };
 
 const addExt = (moduleFullPath: string) => {
@@ -53,7 +32,7 @@ export const getScriptInContext = (__filename: string) => {
     .replace(use_strict, '');
   return `
   'use strict';
-  ({ require, module, exports, __filename, __dirname }) => {
+  ({ global, require, module, exports, __filename, __dirname }) => {
   ${script}
   };`;
 };

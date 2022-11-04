@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createStaticServer = void 0;
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const constants_1 = require("./constants");
@@ -25,7 +26,7 @@ const createStaticServer = (staticPath) => {
             filePath = node_path_1.default.join(staticPath, constants_1.NOT_FOUND);
         }
         const ext = node_path_1.default.extname(filePath).substring(1).toLowerCase();
-        const mimeType = constants_1.MIME_TYPES[ext] || constants_1.MIME_TYPES.default;
+        const mimeType = constants_1.RES_MIME_TYPES[ext] || constants_1.RES_MIME_TYPES.default;
         const stream = node_fs_1.default.createReadStream(filePath);
         return { found, mimeType, stream };
     };
@@ -49,5 +50,5 @@ const createStaticServer = (staticPath) => {
         stream?.pipe(res);
     };
 };
-exports.default = createStaticServer;
+exports.createStaticServer = createStaticServer;
 //# sourceMappingURL=static.js.map

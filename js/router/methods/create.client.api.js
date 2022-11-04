@@ -29,9 +29,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createJs = exports.createClientApi = void 0;
 const node_path_1 = __importDefault(require("node:path"));
 const node_fs_1 = __importDefault(require("node:fs"));
-const utils_1 = require("../utils");
-const validate_response_1 = require("../modules.response/validate.response");
+const constants_1 = require("../constants");
 const tpl = __importStar(require("./templates"));
+const utils_1 = require("../utils");
 const createClientApi = (config, routes) => {
     const executor = (rv, rj) => {
         const apiPath = config.clientApiPath;
@@ -56,10 +56,6 @@ const createClientApi = (config, routes) => {
         typesStream.on('finish', handleFinish);
         const apiTypesPath = node_path_1.default.resolve(config.apiPath, 'types.js');
         const apiTypes = require(apiTypesPath);
-        Object
-            .keys(apiTypes)
-            .map((schemaName) => 'I' + schemaName.replace('Schema', ''))
-            .forEach((typeName) => apiStream.write(tpl.strImport(typeName)));
         apiStream.write(tpl.strGetApi(typesFileNameBase));
         (0, exports.createJs)(apiTypes, apiStream, typesStream)(routes);
         apiStream.write(');\n');
@@ -83,24 +79,8 @@ const createJs = (apiTypes, apiStream, typesStream) => function createJs(routes,
             continue;
         }
         const typeName = getTypeNameFromPathname(nextPathname);
-        const paramsTypeNameExport = typeName;
-        const responseTypeNameExport = typeName + 'Response';
-        const paramsTypes = getTypes(handler.paramsSchema, nextIndent);
-        const paramsTypeName = paramsTypes && 'Types.' + paramsTypeNameExport;
-        paramsTypes && typesStream.write(tpl.strExport(paramsTypeNameExport, paramsTypes));
-        const responseSchema = handler.responseSchema;
-        const predefinedResponseSchema = Object.keys(apiTypes)
-            .find((key) => apiTypes[key] === responseSchema);
-        if (predefinedResponseSchema) {
-            const responseTypeName = 'I' + predefinedResponseSchema.replace('Schema', '');
-            apiStream.write(tpl.strMethod(paramsTypeName, responseTypeName, nextPathname));
-            continue;
-        }
-        const responseTypes = getTypes(responseSchema, nextIndent);
-        if (!responseTypes)
-            throw new Error(`Handler ${nextPathname} dosn't have response schema`);
-        typesStream.write(tpl.strExport(responseTypeNameExport, responseTypes));
-        const responseTypeName = 'Types.' + responseTypeNameExport;
+        const paramsTypeName = getTypeName('params', apiTypes, typesStream, typeName, handler);
+        const responseTypeName = getTypeName('response', apiTypes, typesStream, typeName, handler);
         apiStream.write(tpl.strMethod(paramsTypeName, responseTypeName, nextPathname));
     }
     apiStream.write('\n' + indent + '}');
@@ -109,7 +89,7 @@ exports.createJs = createJs;
 const getTypeNameFromPathname = (pathname) => {
     return 'T' + pathname
         .replace('/', '')
-        .replace(/\./g, '_')
+        .replace(/\./g, '')
         .split('/')
         .map((part) => part[0]?.toUpperCase() + part.slice(1))
         .join('');
@@ -117,7 +97,7 @@ const getTypeNameFromPathname = (pathname) => {
 const getTypes = (schema, indent = '') => {
     if (!schema)
         return '';
-    if ((0, validate_response_1.isJoiSchema)(schema)) {
+    if ((0, utils_1.isJoiSchema)(schema)) {
         let type = schema.type || '';
         if (type === 'object')
             type = 'Record<string, any>';
@@ -139,5 +119,27 @@ const getSchemaType = (schema) => {
     const schemaValuesSet = schema._valids._values;
     const [type] = [...schemaValuesSet.values()];
     return `${type}`;
+};
+const findPredefinedSchema = (apiTypes, schema) => {
+    return Object.keys(apiTypes)
+        .find((key) => apiTypes[key] === schema);
+};
+const getTypeName = (type, apiTypes, typesStream, typeName, handler) => {
+    const schema = type === 'params'
+        ? handler.paramsSchema
+        : handler.responseSchema;
+    const types = getTypes(schema);
+    if (!types)
+        return '';
+    const predefinedSchema = findPredefinedSchema(apiTypes, schema);
+    if (predefinedSchema)
+        return 'P.I' + predefinedSchema.replace('Schema', '');
+    const typeNameExport = type === 'params'
+        ? typeName
+        : typeName + 'Response';
+    if (constants_1.SIMPLE_TYPES.includes(types))
+        return types;
+    typesStream.write(tpl.strExportTypes(typeNameExport, types));
+    return types && 'Q.' + typeNameExport;
 };
 //# sourceMappingURL=create.client.api.js.map

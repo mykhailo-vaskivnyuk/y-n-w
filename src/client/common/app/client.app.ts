@@ -1,4 +1,5 @@
 /* eslint-disable import/no-cycle */
+import { HttpResponseError } from '../errors';
 import { AppState } from '../constants';
 import { IUserResponse } from '../api/types';
 import EventEmitter from '../event.emitter';
@@ -11,6 +12,7 @@ export type ClientAppThis = ClientApp & {
   clientApi: ReturnType<typeof getApi>;
   setState: (state: AppState) => void;
   setUser: (user: IUserResponse) => void;
+  setError: (e: HttpResponseError) => void;
 };
 
 export class ClientApp extends EventEmitter {
@@ -19,6 +21,8 @@ export class ClientApp extends EventEmitter {
   protected state: AppState = AppState.INIT;
 
   private user: IUserResponse = null;
+
+  private error: HttpResponseError | null = null;
 
   account: ReturnType<typeof getAccountMethods>;
 
@@ -39,6 +43,7 @@ export class ClientApp extends EventEmitter {
     return {
       state: this.state,
       user: this.user,
+      error: this.error,
     };
   }
 
@@ -50,12 +55,18 @@ export class ClientApp extends EventEmitter {
   protected setState(state: AppState) {
     if (this.state === AppState.INIT) return;
     this.state = state;
+    this.error = null;
     if (state !== AppState.READY) {
       return this.emit('statechanged', this.state);
     }
     Promise.resolve()
       .then(() => this.emit('statechanged', this.state))
       .catch((e) => console.log(e));
+  }
+
+  protected setError(e: HttpResponseError) {
+    this.error = e;
+    this.setState(AppState.ERROR);
   }
 
   private async readUser() {
