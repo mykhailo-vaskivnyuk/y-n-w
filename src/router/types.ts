@@ -1,19 +1,20 @@
 import Joi, { ObjectSchema } from 'joi';
 import { SentMessageInfo } from 'nodemailer';
+import { TModulesKeys, TModulesResponseKeys, TServicesKeys } from './constants';
+import { IObject } from '../types/types';
 import { IOperation, IParams, TOperationResponse } from '../app/types';
 import { ITableUsers } from '../db/db.types';
 import { Session } from '../services/session/session';
-import { IObject } from '../types/types';
-import { MODULES, MODULES_RESPONSE } from './constants';
 
 export interface IRouterConfig {
   path: string;
   apiPath: string;
   clientApiPath: string;
-  modules: (keyof typeof MODULES)[];
-  responseModules: (keyof typeof MODULES_RESPONSE)[];
+  services: TServicesKeys[];
+  modules: TModulesKeys[];
+  responseModules: TModulesResponseKeys[];
   modulesConfig: {
-    [key in (keyof typeof MODULES | keyof typeof MODULES_RESPONSE)]?: Record<string, any>;
+    [key in TModulesKeys | TModulesResponseKeys | TServicesKeys]?: Record<string, any>;
   };
 }
 
@@ -31,11 +32,13 @@ export type THandler<T extends Partial<IParams> = IParams, Q extends TOperationR
   paramsSchema?: Record<keyof T, Joi.Schema>;
   schema?: ObjectSchema<T>;
   responseSchema: Q extends IObject
-    ? Record<keyof Q, JoiSchema> | (Record<keyof Q, JoiSchema> | Joi.Schema)[]
-    : JoiSchema;
+    ? Record<keyof Q, TJoiSchema> | (Record<keyof Q, TJoiSchema> | Joi.Schema)[]
+    : TJoiSchema;
 };
 
-export type JoiSchema = Joi.Schema | Joi.Schema[];
+export type TJoiSchema = Joi.Schema | Joi.Schema[];
+
+export type THandlerSchema = THandler['responseSchema' | 'paramsSchema'];
 
 export interface IServices {
   session: Session<ISessionContent>;
@@ -58,8 +61,10 @@ export type ISessionContent = Partial<{
 }>;
 
 export interface IMailService {
-  confirm: (to: string, token: string) => Promise<SentMessageInfo>;
-  restore: (to: string, token: string) => Promise<SentMessageInfo>;
+  sendMail: {
+    confirm: (to: string, origin: string, token: string) => Promise<SentMessageInfo>;
+    restore: (to: string, origin: string, token: string) => Promise<SentMessageInfo>;
+  };
 }
 
 export type TMailType = 'confirm' | 'restore';

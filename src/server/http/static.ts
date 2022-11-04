@@ -2,7 +2,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { Readable } from 'node:stream';
-import { INDEX, MIME_TYPES, NOT_FOUND } from './constants';
+import {
+  INDEX, RES_MIME_TYPES,
+  NOT_FOUND, ResMimeTypeKeys,
+} from './constants';
 import { ErrorStatusCodeMap, ServerErrorMap } from './errors';
 import { IRequest, IResponse } from './types';
 import { getLog, getUrlInstance } from './utils';
@@ -15,7 +18,7 @@ interface IPreparedFile {
 
 export type TStaticServer = ReturnType<typeof createStaticServer>;
 
-const createStaticServer = (staticPath: string) => {
+export const createStaticServer = (staticPath: string) => {
   const prepareFile = async (url: string): Promise<IPreparedFile> => {
     const paths = [staticPath, url || INDEX];
     let filePath = path.join(...paths);
@@ -30,8 +33,8 @@ const createStaticServer = (staticPath: string) => {
       if (!ext) return { found };
       filePath = path.join(staticPath, NOT_FOUND);
     }
-    const ext = path.extname(filePath).substring(1).toLowerCase() as keyof typeof MIME_TYPES;
-    const mimeType = MIME_TYPES[ext] || MIME_TYPES.default;
+    const ext = path.extname(filePath).substring(1).toLowerCase() as ResMimeTypeKeys;
+    const mimeType = RES_MIME_TYPES[ext] || RES_MIME_TYPES.default;
     const stream = fs.createReadStream(filePath);
     return { found, mimeType, stream };
   };
@@ -49,12 +52,10 @@ const createStaticServer = (staticPath: string) => {
       return;
     }
     const statusCode = found ? 200 : ErrorStatusCodeMap['E_NOT_FOUND'] || 404;
-    const resLog = found ? 'OK' : statusCode + ' ' + ServerErrorMap['E_NOT_FOUND']
+    const resLog = found ? 'OK' : statusCode + ' ' + ServerErrorMap['E_NOT_FOUND'];
     const log = getLog(req, resLog);
     found ? logger.info(log) : logger.error(log);
     res.writeHead(statusCode, { 'Content-Type': mimeType });
     stream?.pipe(res);
   };
 }
-
-export default createStaticServer;

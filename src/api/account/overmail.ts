@@ -1,12 +1,12 @@
 import Joi from 'joi';
 import { THandler } from '../../router/types';
+import { ISignupParams } from '../../client/common/api/types';
+import { SignupParamsSchema } from '../types';
 import { createUnicCode } from '../../utils/crypto';
 
-type IOvermailParams = {
-  email: string,
-}
-
-const overmail: THandler<IOvermailParams, boolean> = async (context, { email }) => {
+const overmail: THandler<ISignupParams, boolean> = async (
+  { origin }, { email },
+) => {
   const [user] = await execQuery.user.findUserByEmail([email]);
   if (!user) return false;
   const token = createUnicCode(15);
@@ -16,12 +16,10 @@ const overmail: THandler<IOvermailParams, boolean> = async (context, { email }) 
     : [user_id, null, token] as const;
   await execQuery.user.setLink([...params]);
   const type = link ? 'confirm' : 'restore';
-  await context.sendMail[type](email, token);
+  await mailService.sendMail[type](email, origin, token);
   return true;
 };
-overmail.paramsSchema = {
-  email: Joi.string().required(), //.email(),
-};
+overmail.paramsSchema = SignupParamsSchema;
 overmail.responseSchema = Joi.boolean();
 
 export = overmail;

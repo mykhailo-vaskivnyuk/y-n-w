@@ -1,15 +1,10 @@
 /* eslint-disable import/no-cycle */
 import {
-  TAccountConfirm,
-  TAccountLogin,
-  TAccountOvermail,
-  TAccountSignup,
-} from '../api/client.api.types';
-import { IUserResponse } from '../api/types';
+  IConfirmParams, ISignupParams,
+  IUserResponse, TLoginOrSignup,
+} from '../api/types';
 import { AppState } from '../constants';
 import { ClientAppThis } from './client.app';
-
-type TLoginOrSignup = ['login', TAccountLogin] | ['signup', TAccountSignup];
 
 export const getAccountMethods = (parent: ClientAppThis) => ({
   async loginOrSignup(...[type, args]: TLoginOrSignup) {
@@ -38,7 +33,7 @@ export const getAccountMethods = (parent: ClientAppThis) => ({
     }
   },
 
-  async overmail(args: TAccountOvermail) {
+  async overmail(args: ISignupParams) {
     parent.setState(AppState.LOADING);
     try {
       const success = await parent.clientApi.account.overmail(args);
@@ -50,7 +45,10 @@ export const getAccountMethods = (parent: ClientAppThis) => ({
     }
   },
 
-  async loginOverLink(type: 'confirm' | 'restore', args: TAccountConfirm): Promise<IUserResponse> {
+  async loginOverLink(
+    type: 'confirm' | 'restore',
+    args: IConfirmParams
+  ): Promise<IUserResponse> {
     parent.setState(AppState.LOADING);
     try {
       const user = await parent.clientApi.account[type](args);

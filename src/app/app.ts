@@ -39,13 +39,12 @@ export default class App {
     const { router } = this.config;
     const logger = this.logger;
     const execQuery = this.db?.getQueries();
-    if (!logger || !execQuery) throw new AppError('E_INIT')
+    if (!logger || !execQuery) throw new AppError('E_INIT');
     const context: IModulesContext = {
-      console,
       logger,
       execQuery,
-    }
-    const Router = loadModule(module)(router.path, context);
+    };
+    const Router = loadModule(__dirname)(router.path, context);
     this.router = new Router(router);
     return this;
   }
@@ -56,7 +55,6 @@ export default class App {
     const { transport } = inConnection;
     const server = inConnection[transport];
     const InConnection = require(server.path);
-    
     const handleOperation = async (operation: IOperation) => {
       try {
         return await this.router!.exec(operation);
@@ -64,7 +62,6 @@ export default class App {
         return handleOperationError(e);
       }
     };
-  
     this.server = new InConnection(server)
       .onOperation(handleOperation);
     return this;

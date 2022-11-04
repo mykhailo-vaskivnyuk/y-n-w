@@ -1,28 +1,24 @@
-import Joi from 'joi';
-import { IUserResponse } from '../../client/common/api/types';
+import { ISignupParams, IUserResponse } from '../../client/common/api/types';
 import { THandler } from '../../router/types';
 import { createHash, createUnicCode } from '../../utils/crypto';
-import { UserResponseSchema } from '../types';
+import { SignupParamsSchema, UserResponseSchema } from '../types';
 
-type ISignupParams = {
-  email: string,
-}
-
-const signup: THandler<ISignupParams, IUserResponse> = async (context, { email }) => {
+const signup: THandler<ISignupParams, IUserResponse> = async (
+  { session, origin }, { email },
+) => {
   let [user] = await execQuery.user.findUserByEmail([email]);
   if (user) return null;
   const hashedPassword = await createHash('12345');
-  const link = createUnicCode(15);
-  await execQuery.user.createUser([email, hashedPassword, link]);
+  const token = createUnicCode(15);
+  await execQuery.user.createUser([email, hashedPassword, token]);
   [user] = await execQuery.user.findUserByEmail([email]);
   if (!user) throw new Error('Unknown error');
-  context.session.write('user_id', user.user_id);
-  await context.sendMail.confirm(email, link);
-  return { ...user, confirmed: !user!.link};
+  const { user_id, link } = user;
+  session.write('user_id', user_id);
+  await mailService.sendMail.confirm(email, origin, token);
+  return { ...user, confirmed: !link};
 };
-signup.paramsSchema = {
-  email: Joi.string().required(), //.email(),
-};
+signup.paramsSchema = SignupParamsSchema;
 signup.responseSchema = UserResponseSchema;
 
 export = signup;

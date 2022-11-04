@@ -41,19 +41,21 @@ const config: IConfig = {
     path: path.resolve(buildPath, 'router/router'),
     apiPath: path.join(buildPath, 'api'),
     clientApiPath: 'src/client/common/api/client.api.ts',
+    services: [
+      'mailService',
+    ],
     modules: [
       'setSession',
       'getStream',
       'validate',
-      'setMailService',
     ],
     responseModules: ['validateResponse'],
     modulesConfig: {
-      setMailService: {
+      mailService: {
         service: 'gmail',
         auth: {
           user: 'm.vaskivnyuk@gmail.com',
-          pass: 'jnvmldmwaiadoiwj',
+          pass: 'okvjifqaumuznqlu',
         },
       },
     },

@@ -1,14 +1,19 @@
 import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
-import { JSON_TRANSFORM_LENGTH, MIME_TYPES_ENUM, MIME_TYPES_MAP } from '../../constants/constants';
-import { IInputConnection, IInputConnectionConfig, IRequest, IResponse, IServer, THttpModule } from './types';
+import {
+  HTTP_MODULES, REQ_MIME_TYPES_MAP, ReqMimeTypesKeys,
+  REQ_MIME_TYPES_ENUM, JSON_TRANSFORM_LENGTH,
+} from './constants';
+import {
+  IInputConnection, IInputConnectionConfig,
+  IRequest, IResponse, IServer, THttpModule,
+} from './types';
 import { TPromiseExecutor } from '../../types/types';
 import { IOperation, IParams, TOperationResponse } from '../../app/types';
 import { ServerError, ServerErrorMap } from './errors';
-import createStaticServer, { TStaticServer } from './static';
 import { getLog, getUrlInstance } from './utils';
 import { createUnicCode } from '../../utils/crypto';
-import { HTTP_MODULES } from './constants';
+import { createStaticServer, TStaticServer } from './static';
 
 class HttpConnection implements IInputConnection {
   private config: IInputConnectionConfig['http'];
@@ -79,7 +84,7 @@ class HttpConnection implements IInputConnection {
       res.statusCode = 200;
 
       if (response instanceof Readable) {
-        res.setHeader('content-type', MIME_TYPES_ENUM['application/octet-stream']);
+        res.setHeader('content-type', REQ_MIME_TYPES_ENUM['application/octet-stream']);
         await new Promise((rv, rj) => {
           response.on('error', rj);
           response.on('end', rv);
@@ -92,7 +97,7 @@ class HttpConnection implements IInputConnection {
       }
 
       const data = JSON.stringify(response);
-      res.setHeader('content-type', MIME_TYPES_ENUM['application/json']);
+      res.setHeader('content-type', REQ_MIME_TYPES_ENUM['application/json']);
       res.on('finish',
         () => logger.info(params, getLog(req, 'OK'))
       );
@@ -115,19 +120,22 @@ class HttpConnection implements IInputConnection {
     const { options, names, params } = this.getRequestParams(req);
     const data = { params } as IOperation['data'];
     const { headers } = req;
-    const contentType = headers['content-type'] as (keyof typeof MIME_TYPES_MAP) | undefined;
+    const contentType = headers['content-type'] as ReqMimeTypesKeys | undefined;
     const length = +(headers['content-length'] || Infinity);
 
     if (!contentType) return { options, names, data };
 
-    if (!MIME_TYPES_MAP[contentType]) {
+    if (!REQ_MIME_TYPES_MAP[contentType]) {
       throw new ServerError('E_BED_REQUEST');
     }
-    if (length > MIME_TYPES_MAP[contentType].maxLength) {
+    if (length > REQ_MIME_TYPES_MAP[contentType].maxLength) {
       throw new ServerError('E_BED_REQUEST');
     }
       
-    if (contentType === MIME_TYPES_ENUM['application/json'] && length < JSON_TRANSFORM_LENGTH) {
+    if (
+      contentType === REQ_MIME_TYPES_ENUM['application/json']
+      && length < JSON_TRANSFORM_LENGTH
+    ) {
       Object.assign(params, await this.getJson(req));
       return { options, names, data };
     }
@@ -189,8 +197,8 @@ class HttpConnection implements IInputConnection {
     
     res.statusCode = statusCode;
     if (code === 'E_REDIRECT') res.setHeader('location', details?.location || '/');
-    details && res.setHeader('content-type', MIME_TYPES_ENUM['application/json']);
-    logger.error({}, getLog(req, code + ServerErrorMap[code]));
+    details && res.setHeader('content-type', REQ_MIME_TYPES_ENUM['application/json']);
+    logger.error({}, getLog(req, statusCode + ' ' + ServerErrorMap[code]));
     res.end(error.getMessage());
 
     if (code === 'E_SERVER_ERROR') throw e;

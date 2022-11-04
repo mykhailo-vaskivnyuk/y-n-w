@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream';
 import { IObject, TPrimitiv } from '../types/types';
 import { IDatabaseConfig, IDatabaseQueries } from '../db/types';
-import { IRouterConfig } from '../router/types';
+import { IMailService, IRouterConfig } from '../router/types';
 import { ILogger, ILoggerConfig } from '../logger/types';
 import { IInputConnectionConfig } from '../server/http/types';
 
@@ -35,10 +35,10 @@ export type TOperationResponse =
 declare global {
   const execQuery: IDatabaseQueries;
   const logger: ILogger;
+  const mailService: IMailService;
 }
 
 export interface IModulesContext {
-  console: Console;
   execQuery: IDatabaseQueries;
   logger: ILogger;
 }

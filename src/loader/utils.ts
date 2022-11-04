@@ -53,7 +53,7 @@ export const getScriptInContext = (__filename: string) => {
     .replace(use_strict, '');
   return `
   'use strict';
-  ({ require, module, exports, __filename, __dirname }) => {
+  ({ global, require, module, exports, __filename, __dirname }) => {
   ${script}
   };`;
 };
