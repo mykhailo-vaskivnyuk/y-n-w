@@ -15,4 +15,6 @@ export type IConfirmParams = {
   token: string,
 };
 
-export type TLoginOrSignup = ['login', TAccountLogin] | ['signup', ISignupParams];
+export type TLoginOrSignup =
+  | ['login', TAccountLogin]
+  | ['signup', ISignupParams];

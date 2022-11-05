@@ -10,7 +10,7 @@ const confirm: THandler<IConfirmParams, IUserResponse> = async (
   const { user_id, link } = user;
   await execQuery.user.unsetLink([user_id]);
   await session.write('user_id', user_id);
-  return { ...user, confirmed: !link};
+  return { ...user, confirmed: !link };
 };
 confirm.paramsSchema = ConfirmParamsSchema;
 confirm.responseSchema = UserResponseSchema;

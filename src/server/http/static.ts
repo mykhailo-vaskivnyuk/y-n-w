@@ -1,4 +1,4 @@
-'use strict';
+
 import fs from 'node:fs';
 import path from 'node:path';
 import { Readable } from 'node:stream';
@@ -19,7 +19,10 @@ interface IPreparedFile {
 export type TStaticServer = ReturnType<typeof createStaticServer>;
 
 export const createStaticServer = (staticPath: string) => {
-  const prepareFile = async (url: string, unavailable: boolean): Promise<IPreparedFile> => {
+  const prepareFile = async (
+    url: string,
+    unavailable: boolean,
+  ): Promise<IPreparedFile> => {
     const paths = [staticPath, url || INDEX];
     let filePath = path.join(...paths);
     const notTraversal = filePath.startsWith(staticPath);
@@ -35,26 +38,32 @@ export const createStaticServer = (staticPath: string) => {
     } else if (unavailable) {
       filePath = path.join(staticPath, UNAVAILABLE);
     }
-    const ext = path.extname(filePath).substring(1).toLowerCase() as ResMimeTypeKeys;
+    const ext = path
+      .extname(filePath)
+      .substring(1)
+      .toLowerCase() as ResMimeTypeKeys;
     const mimeType = RES_MIME_TYPES[ext] || RES_MIME_TYPES.default;
     const stream = fs.createReadStream(filePath);
     return { found, mimeType, stream };
   };
 
-  return async (req: IRequest, res: IResponse, context: IHttpModulsContext): Promise<void> => {
+  return async (
+    req: IRequest, res: IResponse, context: IHttpModulsContext,
+  ): Promise<void> => {
     const { staticUnavailable } = context;
     const { url, headers } = req;
     const pathname = getUrlInstance(url, headers.host).pathname;
     const path = pathname.replace(/\/$/, '');
-    const { found, mimeType, stream } = await prepareFile(path, staticUnavailable);
+    const {
+      found, mimeType, stream,
+    } = await prepareFile(path, staticUnavailable);
     let errCode = '' as ErrorStatusCode;
     let resHeaders = { 'Content-Type': mimeType } as IHeaders;
 
-    if (!found && !mimeType) { 
+    if (!found && !mimeType) {
       errCode = 'E_REDIRECT';
       resHeaders = { location: '/' };
-    }
-    else if (!found) errCode = 'E_NOT_FOUND';
+    } else if (!found) errCode = 'E_NOT_FOUND';
     else if (staticUnavailable) errCode = 'E_UNAVAILABLE';
 
     const statusCode = errCode ? ErrorStatusCodeMap[errCode]! : 200;

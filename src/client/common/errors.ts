@@ -11,7 +11,10 @@ export class HttpResponseError extends Error {
   statusCode: HttpResponseErrorCode;
 
   constructor(code: number) {
-    const statusCode = (code in HttpResponseErrorMap ? code : 500) as HttpResponseErrorCode;
+    const statusCode = (code in HttpResponseErrorMap ?
+      code :
+      500
+    ) as HttpResponseErrorCode;
     super(HttpResponseErrorMap[statusCode]);
     this.statusCode = statusCode;
     this.name = this.constructor.name;

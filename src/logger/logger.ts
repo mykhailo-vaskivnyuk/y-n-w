@@ -1,6 +1,9 @@
 import { format } from 'util';
 import pino = require('pino');
-import { ILogger, ILoggerConfig, LOGGER_LEVEL, TLoggerParameters } from './types';
+import {
+  ILogger, ILoggerConfig,
+  LOGGER_LEVEL, TLoggerParameters,
+} from './types';
 
 class Logger implements ILogger {
   private logger;
@@ -9,30 +12,34 @@ class Logger implements ILogger {
     const { level: levelKey, target } = config;
     const level = LOGGER_LEVEL[levelKey];
     const toConsole = { target: 'pino-pretty', level, options: {} };
-    const toStdOut = { target: 'pino/file', level, options: { destination: 1 } };
+    const toStdOut = {
+      target: 'pino/file',
+      level,
+      options: { destination: 1 },
+    };
     const transport =  target === 'stdout' ? toStdOut : toConsole;
     const options = { level, transport };
     this.logger = pino.default(options);
   }
 
   fatal<T>(obj: T, ...message: TLoggerParameters) {
-    this.logger.fatal(obj, format(...message))
+    this.logger.fatal(obj, format(...message));
   }
 
   error<T>(obj: T, ...message: TLoggerParameters) {
-    this.logger.error(obj, format(...message))
+    this.logger.error(obj, format(...message));
   }
 
   warn<T>(obj: T, ...message: TLoggerParameters) {
-    this.logger.warn(obj, format(...message))
+    this.logger.warn(obj, format(...message));
   }
 
   info<T>(obj: T, ...message: TLoggerParameters) {
-    this.logger.info(obj, format(...message))
+    this.logger.info(obj, format(...message));
   }
 
   debug<T>(obj: T, ...message: TLoggerParameters) {
-    this.logger.debug(obj, format(...message))
+    this.logger.debug(obj, format(...message));
   }
 }
 

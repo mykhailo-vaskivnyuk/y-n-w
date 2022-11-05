@@ -14,4 +14,4 @@ export const allowCors: THttpModule = () => async (req, res) => {
       res.setHeader(key, HEADERS[key as keyof typeof HEADERS])
     );
   return true;
-} 
+};

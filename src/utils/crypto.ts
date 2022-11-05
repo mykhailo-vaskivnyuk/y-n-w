@@ -2,9 +2,9 @@ import { TPromiseExecutor } from '../types/types';
 
 const crypto = require('node:crypto');
 
-export const createUnicCode = (length: number): string => {
-  return crypto.randomBytes(length).toString('hex');
-};
+export const createUnicCode = (
+  length: number,
+): string => crypto.randomBytes(length).toString('hex');
 
 export const createHash = (password: string) => {
   const executor: TPromiseExecutor<string> = (rv, rj) => {
@@ -14,7 +14,7 @@ export const createHash = (password: string) => {
       const hash = result.toString('hex');
       rv(salt + ':' + hash);
     });
-  }
+  };
   return new Promise(executor);
 };
 
@@ -26,6 +26,6 @@ export const verifyHash = (password: string, hashedPasword: string) => {
       const hashToVerify = result.toString('hex');
       rv(hashToVerify === hash);
     });
-  }
+  };
   return new Promise(executor);
 };

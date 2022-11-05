@@ -9,14 +9,15 @@ type ILoginParams = {
   password: string,
 }
 
-const login: THandler<ILoginParams, IUserResponse | null> = async (context, { email, password }) => {
+const login: THandler<ILoginParams, IUserResponse | null> =
+async (context, { email, password }) => {
   const [user] = await execQuery.user.findUserByEmail([email]);
   if (!user) return null;
   if (!user.password) return null;
   const isVerified = await verifyHash(password, user.password);
   if (!isVerified) return null;
   await context.session.write('user_id', user.user_id);
-  return { ...user, confirmed: !user.link};
+  return { ...user, confirmed: !user.link };
 };
 login.paramsSchema = {
   email: Joi.string().required(), //.email(),

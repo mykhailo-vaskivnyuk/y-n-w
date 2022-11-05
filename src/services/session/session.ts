@@ -12,7 +12,7 @@ export class Session<T extends IObject = IObject> implements ISession<T> {
 
   async init() {
     const [persisted] = await execQuery.session.read([this.sessionKey]);
-    this.isPersisted = Boolean(persisted)
+    this.isPersisted = Boolean(persisted);
     this.deserialize(persisted?.session_value);
     return this;
   }
@@ -75,14 +75,14 @@ export const getService = <T extends IObject = IObject>() => {
       activeSessions.delete(sessionKey);
       await sessionPromise.then((session) => session.persist());
     }
-  }
-  
+  };
+
   const createSession = async (sessionKey: string): Promise<Session<T>> => {
     let [session, count = 0] = activeSessions.get(sessionKey) || [];
     if (!session) session = new Session<T>(sessionKey, clearSession).init();
     activeSessions.set(sessionKey,  [session, ++count]);
     return session;
-  }
+  };
 
   return { createSession };
 };

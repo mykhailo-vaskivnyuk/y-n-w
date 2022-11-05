@@ -15,7 +15,7 @@ export type TRouterErrorDetails = RouterError['details'];
 
 export class RouterError extends Error {
   public code: RouterErrorCode;
-  public details?: TOperationResponse ;
+  public details?: TOperationResponse;
 
   constructor(code: RouterErrorCode, details: TOperationResponse = null) {
     super(RouterErrorMap[code]);
@@ -33,7 +33,7 @@ type HandlerErrorCode = keyof typeof HandlerErrorMap;
 
 export class HandlerError extends Error {
   public code: HandlerErrorCode;
-  public details?: TOperationResponse ;
+  public details?: TOperationResponse;
 
   constructor(code: HandlerErrorCode, details: TOperationResponse = null) {
     super(HandlerErrorMap[code]);

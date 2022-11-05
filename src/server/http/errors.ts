@@ -18,15 +18,17 @@ export const ErrorStatusCodeMap: Partial<Record<ServerErrorCode, number>> = {
   E_BED_REQUEST: 400,
   E_SERVER_ERROR: 500,
   E_UNAVAILABLE: 503,
-}
+};
 export type ErrorStatusCode = keyof typeof ErrorStatusCodeMap;
 
 export class ServerError extends Error {
   public code: ServerErrorCode;
   public details: { location?: string } & TOperationResponse | null;
   public statusCode: number | undefined;
- 
-  constructor(code: ServerErrorCode, details: TOperationResponse | null = null) {
+
+  constructor(
+    code: ServerErrorCode, details: TOperationResponse | null = null,
+  ) {
     super(ServerErrorMap[code]);
     this.name = this.constructor.name;
     this.code = code;

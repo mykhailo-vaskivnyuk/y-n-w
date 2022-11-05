@@ -4,7 +4,7 @@ import { SentMessageInfo, MailOptions } from 'nodemailer/lib/smtp-transport';
 import { TMailType } from '../../router/types';
 import { generalOptions, OPTIONS_MAP, template } from './constants';
 
-export const getMailService = (config: MailOptions) => { 
+export const getMailService = (config: MailOptions) => {
   const transporter = nodemailer.createTransport(config);
 
   const send = (mailOptions: MailOptions) =>
@@ -15,7 +15,12 @@ export const getMailService = (config: MailOptions) => {
       });
     });
 
-  const sendMail = (type: TMailType, to: string, origin: string, token: string) => {
+  const sendMail = (
+    type: TMailType,
+    to: string,
+    origin: string,
+    token: string,
+  ) => {
     const { text, subject } = OPTIONS_MAP[type];
     const link = `${origin}/#/account/${type}/${token}`;
     const html = format(template, text, link);

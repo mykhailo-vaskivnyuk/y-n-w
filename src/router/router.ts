@@ -23,7 +23,7 @@ class Router implements IRouter {
   }
 
   async init() {
-    try{
+    try {
       const services = getServices(this.config);
       Object.assign(global, services);
     } catch (e: any) {
@@ -48,7 +48,7 @@ class Router implements IRouter {
       throw new RouterError('E_ROUTES');
     }
   }
-  
+
   async exec({ ...operation }: IOperation): Promise<TOperationResponse> {
     if (!this.routes) throw new RouterError('E_ROUTES');
     const { options: { origin }, names } = operation;
@@ -56,10 +56,16 @@ class Router implements IRouter {
     const handler = this.findRoute(names);
 
     try {
-      [operation, context] = await this.runModules(operation, context, handler);
-      const { params } = operation.data; 
+      [
+        operation,
+        context,
+      ] = await this.runModules(operation, context, handler);
+      const { params } = operation.data;
       let response = await handler(context, params);
-      [response, context] = await this.runResponseModules(response, context, handler);
+      [
+        response,
+        context,
+      ] = await this.runResponseModules(response, context, handler);
       return response;
     } catch (e: any) {
       return errorHandler(e);
@@ -72,7 +78,7 @@ class Router implements IRouter {
     const route: IRoutes = {};
     const routePath = path.resolve(dirPath);
     const dir = await fsp.opendir(routePath);
-  
+
     for await (const item of dir) {
       const ext = path.extname(item.name);
       const name = path.basename(item.name, ext);
@@ -92,7 +98,7 @@ class Router implements IRouter {
         route[name] = moduleExport;
         continue;
       }
-      
+
       if (typeof moduleExport === 'function')
         throw new Error(`Wrong api module: ${filePath}`);
       else Object.assign(route, moduleExport);

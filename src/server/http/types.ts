@@ -27,8 +27,12 @@ export type IServer = http.Server;
 export type IHeaders = http.OutgoingHttpHeaders;
 export type TServerService = 'static' | 'api';
 
-export type THttpModule<T = any> = (config: T) =>
-  (req: IRequest, res: IResponse, context: IHttpModulsContext) => Promise<boolean>;
+export type THttpModule<T = any> =
+  (config: T) => (
+    req: IRequest,
+    res: IResponse,
+    context: IHttpModulsContext,
+  ) => Promise<boolean>;
 
 export interface IInputConnection {
   onOperation(fn:

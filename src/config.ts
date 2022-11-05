@@ -5,7 +5,7 @@ import { IConfig } from './app/types';
 const buildPath = 'js';
 const host = process.env.HOST || 'localhost';
 const port = +(process.env.PORT || 8000);
-const dbConectionType = process.env.DATABASE_URL ? 'heroku' : 'local'
+const dbConectionType = process.env.DATABASE_URL ? 'heroku' : 'local';
 const dbConnection = {
   heroku: {
     connectionString: process.env.DATABASE_URL || '',

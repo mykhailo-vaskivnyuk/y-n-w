@@ -15,7 +15,8 @@ export const NOT_FOUND = '404.html';
 export const HEADERS = {
   // 'X-XSS-Protection': '1; mode=block',
   // 'X-Content-Type-Options': 'nosniff',
-  // 'Strict-Transport-Security': 'max-age=31536000; includeSubdomains; preload',
+  // 'Strict-Transport-Security':
+  //   'max-age=31536000; includeSubdomains; preload',
   'Access-Control-Allow-Origin': 'http://localhost:3000',
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Cookie',
@@ -39,7 +40,7 @@ export type ResMimeTypeKeys = keyof typeof RES_MIME_TYPES;
 export const REQ_MIME_TYPES_MAP = {
   'application/json': { maxLength: 1_000 },
   'application/octet-stream': { maxLength: 1_000_000 },
-}
+};
 export type ReqMimeTypesKeys = keyof typeof REQ_MIME_TYPES_MAP;
 export const REQ_MIME_TYPES_ENUM = getEnumFromMap(REQ_MIME_TYPES_MAP);
 

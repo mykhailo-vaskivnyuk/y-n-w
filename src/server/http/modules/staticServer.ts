@@ -6,7 +6,9 @@ const getfsApi = (api: string) => (url = '') => {
   return regExp.test(url);
 };
 
-export const staticServer: THttpModule = (config: IInputConnectionConfig['http']) => {
+export const staticServer: THttpModule = (
+  config: IInputConnectionConfig['http'],
+) => {
   const { public: publicPath, api } = config.paths;
   const ifApi = getfsApi(api);
   const httpStaticServer = createStaticServer(publicPath);

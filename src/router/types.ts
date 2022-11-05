@@ -14,7 +14,11 @@ export interface IRouterConfig {
   modules: TModulesKeys[];
   responseModules: TModulesResponseKeys[];
   modulesConfig: {
-    [key in TModulesKeys | TModulesResponseKeys | TServicesKeys]?: Record<string, any>;
+    [key in
+      | TModulesKeys
+      | TModulesResponseKeys
+      | TServicesKeys
+    ]?: Record<string, any>;
   };
 }
 
@@ -27,7 +31,10 @@ export interface IRoutes {
   [key: string]: THandler | IRoutes;
 }
 
-export type THandler<T extends Partial<IParams> = IParams, Q extends TOperationResponse = TOperationResponse> = {
+export type THandler<
+  T extends Partial<IParams> = IParams,
+  Q extends TOperationResponse = TOperationResponse
+> = {
   (context: IContext, params: T): Promise<Q>;
   paramsSchema?: Record<keyof T, Joi.Schema>;
   schema?: ObjectSchema<T>;
@@ -45,7 +52,7 @@ export interface IServices {
   sendMail: IMailService;
 }
 
-export type IContext = IServices & { 
+export type IContext = IServices & {
    origin: string };
 
 export type TModule<T = any> = (config: T) =>
@@ -62,8 +69,12 @@ export type ISessionContent = Partial<{
 
 export interface IMailService {
   sendMail: {
-    confirm: (to: string, origin: string, token: string) => Promise<SentMessageInfo>;
-    restore: (to: string, origin: string, token: string) => Promise<SentMessageInfo>;
+    confirm: (
+      to: string, origin: string, token: string,
+    ) => Promise<SentMessageInfo>;
+    restore: (
+      to: string, origin: string, token: string,
+    ) => Promise<SentMessageInfo>;
   };
 }
 

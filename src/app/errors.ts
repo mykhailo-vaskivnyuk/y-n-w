@@ -25,18 +25,20 @@ const errors: Partial<Record<
 RouterErrorCode, (details: TRouterErrorDetails) => never
 >> = {
   E_NO_ROUTE: (details: TRouterErrorDetails) => {
-    throw new ServerError('E_NOT_FOUND', details) },
+    throw new ServerError('E_NOT_FOUND', details);
+  },
   E_MODULE: (details: TRouterErrorDetails) => {
-    throw new ServerError('E_BED_REQUEST', details) },
+    throw new ServerError('E_BED_REQUEST', details);
+  },
   E_REDIRECT: (details: TRouterErrorDetails) => {
-    throw new ServerError('E_REDIRECT', details) },
+    throw new ServerError('E_REDIRECT', details);
+  },
 };
 
 export const handleOperationError = (e: any): never => {
   if (e.name === RouterError.name) {
     const { code, details } = e;
     code in errors && errors[code as RouterErrorCode]!(details);
-  }
-  else logger.error(e, e.message);
+  } else logger.error(e, e.message);
   throw new AppError('E_ROUTER', e.message);
 };
