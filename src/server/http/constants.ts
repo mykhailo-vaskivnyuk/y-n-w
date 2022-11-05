@@ -4,10 +4,12 @@ const basePathModules = 'js/server/http/modules';
 
 export const HTTP_MODULES = {
   allowCors: resolve(basePathModules, 'allowCors.js'),
+  staticServer: resolve(basePathModules, 'staticServer.js'),
 };
 export type THttpModulesKeys = keyof typeof HTTP_MODULES;
 
 export const INDEX = 'index.html';
+export const UNAVAILABLE = '503.html';
 export const NOT_FOUND = '404.html';
 
 export const HEADERS = {

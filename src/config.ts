@@ -39,7 +39,7 @@ const config: IConfig = {
   },
   router: {
     path: path.resolve(buildPath, 'router/router'),
-    apiPath: path.join(buildPath, 'api'),
+    apiPath: path.resolve(buildPath, 'api'),
     clientApiPath: 'src/client/common/api/client.api.ts',
     services: [
       'mailService',
@@ -68,7 +68,7 @@ const config: IConfig = {
         public: 'public',
         api: 'api',
       },
-      modules: ['allowCors'],
+      modules: ['allowCors', 'staticServer'],
       host,
       port,
     },

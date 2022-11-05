@@ -1,31 +1,40 @@
 import path from 'node:path';
 import vm from 'node:vm';
 import { IModulesContext } from '../app/types';
+import { TCache, TRequire } from './types';
 import { getScriptInContext, log, resolve } from './utils';
 
 const options = { displayErrors: true };
-const cache = new Map();
+const curDirName = __dirname;
+const cache: TCache = {};
 
-export const loadModule = (__dirname: string) => (
+export const loadModule = (
   modulePath: string,
   { ...context } = {} as IModulesContext,
 ) => {
+  const __dirname = require.main?.path || path.resolve('.');
   vm.createContext(context);
-  const newRequire = customRequire(__dirname, context);
-  return newRequire(modulePath);
+  const newRequire = getRequire(__dirname, context) as TRequire;
+  try {
+    return newRequire(modulePath);
+  } finally {
+    delete require.cache[__filename];
+  }
 };
 
-export const customRequire = (
+export const getRequire = (
   moduleDir: string,
   context: vm.Context,
 ) => (modulePath: string) => {
   const __filename = resolve(moduleDir, modulePath);
   if (!__filename) return require(modulePath);
   const __dirname = path.dirname(__filename);
-  if (cache.has(__filename)) return cache.get(__filename);
+  if (__filename in cache) return cache[__filename];
   log(__filename);
   const scriptInContext = getScriptInContext(__filename);
-  const newRequire = customRequire(__dirname, context);
+  const newRequire = getRequire(__dirname, context) as TRequire;
+  newRequire.main = { path: curDirName };
+  newRequire.cache = cache;
   const module = { exports: {} };
   const contextParams = {
     global: context,
@@ -37,6 +46,6 @@ export const customRequire = (
   };
   const wrapper = vm.runInContext(scriptInContext, context, options);
   wrapper(contextParams);
-  cache.set(__filename, module.exports);
+  cache[__filename] = module.exports;
   return module.exports;
 };

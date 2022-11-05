@@ -4,7 +4,7 @@ import path from 'node:path';
 export const use_strict = /("|')use strict("|');?/;
 export const cwd = path.resolve(__dirname, '../..');
 export const log = (moduleFullPath: string) =>
-  logger.debug({}, 'loading module...', path.relative(cwd, moduleFullPath));
+  logger.debug({}, 'loading ...', path.relative(cwd, moduleFullPath));
 
 export const resolve = (parentModuleDir: string, modulePath: string) => {
   if (path.isAbsolute(modulePath)) return addExt(modulePath);
@@ -16,7 +16,8 @@ export const resolve = (parentModuleDir: string, modulePath: string) => {
 };
 
 const addExt = (moduleFullPath: string) => {
-  if (!path.extname(moduleFullPath)) return moduleFullPath + '.js';
+  const moduleExt = path.extname(moduleFullPath);
+  if (!moduleExt) return moduleFullPath + '.js';
   try {
     fs.statSync(moduleFullPath);
     return moduleFullPath;

@@ -6,31 +6,35 @@ import {
 } from './constants';
 import {
   IInputConnection, IInputConnectionConfig,
-  IRequest, IResponse, IServer, THttpModule,
+  IRequest, IResponse, IServer, THttpModule, TServerService,
 } from './types';
 import { TPromiseExecutor } from '../../types/types';
 import { IOperation, IParams, TOperationResponse } from '../../app/types';
 import { ServerError, ServerErrorMap } from './errors';
 import { getLog, getUrlInstance } from './utils';
 import { createUnicCode } from '../../utils/crypto';
-import { createStaticServer, TStaticServer } from './static';
 
 class HttpConnection implements IInputConnection {
   private config: IInputConnectionConfig['http'];
   private server: IServer;
-  private staticServer: TStaticServer;
   private callback?: (operation: IOperation) => Promise<TOperationResponse>;
   private modules: ReturnType<THttpModule>[] = [];
+  private staticUnavailable = false;
+  private apiUnavailable = false;
 
   constructor(config: IInputConnectionConfig['http']) {
     this.config = config;
     this.server = createServer(this.onRequest.bind(this));
-    this.staticServer = createStaticServer(this.config.paths.public);
   }
 
   onOperation(fn: (operation: IOperation) => Promise<TOperationResponse>) {
     this.callback = fn;
     return this;
+  }
+
+  setUnavailable(service: TServerService) {
+    service === 'static' && (this.staticUnavailable = true);
+    service === 'api' && (this.apiUnavailable = true);
   }
 
   start() {
@@ -43,8 +47,10 @@ class HttpConnection implements IInputConnection {
     try {
       const { modules } = this.config;
       this.modules = modules.map(
-        (module) => require(HTTP_MODULES[module])[module](),
-      );
+        (moduleName) => {
+          const modulePath = HTTP_MODULES[moduleName];
+          return require(modulePath)[moduleName](this.config);
+        });
     } catch (e: any) {
       logger.error(e, e.message);
       throw new ServerError('E_SERVER_ERROR');
@@ -64,14 +70,11 @@ class HttpConnection implements IInputConnection {
   }
 
   private async onRequest(req: IRequest, res: IResponse) {
-    if (!this.runModules(req, res)) return;
-
-    const { api } = this.config.paths;
-    const ifApi = new RegExp(`^/${api}(/.*)?$`);
-    if (!ifApi.test(req.url || ''))
-      return this.staticServer(req, res);
+    const next = await this.runModules(req, res);
+    if (!next) return;
     
     try {
+      if (this.apiUnavailable) throw new ServerError('E_UNAVAILABLE');
       const operation = await this.getOperation(req);
       const { options, data: { params } } = operation;
       const { sessionKey } = options;
@@ -108,9 +111,13 @@ class HttpConnection implements IInputConnection {
     }
   }
   
-  private runModules(req: IRequest, res: IResponse) {
+  private async runModules(req: IRequest, res: IResponse) {
+    const context = {
+      staticUnavailable: this.staticUnavailable,
+      apiUnavailable: this.apiUnavailable,
+    };
     for (const module of this.modules) {
-      const next = module(req, res);
+      const next = await module(req, res, context);
       if (!next) return false;
     }
     return true;
