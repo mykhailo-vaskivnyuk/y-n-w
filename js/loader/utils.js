@@ -8,7 +8,7 @@ const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 exports.use_strict = /("|')use strict("|');?/;
 exports.cwd = node_path_1.default.resolve(__dirname, '../..');
-const log = (moduleFullPath) => logger.debug({}, 'loading module...', node_path_1.default.relative(exports.cwd, moduleFullPath));
+const log = (moduleFullPath) => logger.debug({}, 'loading ...', node_path_1.default.relative(exports.cwd, moduleFullPath));
 exports.log = log;
 const resolve = (parentModuleDir, modulePath) => {
     if (node_path_1.default.isAbsolute(modulePath))
@@ -22,7 +22,8 @@ const resolve = (parentModuleDir, modulePath) => {
 };
 exports.resolve = resolve;
 const addExt = (moduleFullPath) => {
-    if (!node_path_1.default.extname(moduleFullPath))
+    const moduleExt = node_path_1.default.extname(moduleFullPath);
+    if (!moduleExt)
         return moduleFullPath + '.js';
     try {
         node_fs_1.default.statSync(moduleFullPath);

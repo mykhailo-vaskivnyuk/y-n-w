@@ -1,13 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JSON_TRANSFORM_LENGTH = exports.REQ_MIME_TYPES_ENUM = exports.REQ_MIME_TYPES_MAP = exports.RES_MIME_TYPES = exports.HEADERS = exports.NOT_FOUND = exports.INDEX = exports.HTTP_MODULES = void 0;
+exports.JSON_TRANSFORM_LENGTH = exports.REQ_MIME_TYPES_ENUM = exports.REQ_MIME_TYPES_MAP = exports.RES_MIME_TYPES = exports.HEADERS = exports.NOT_FOUND = exports.UNAVAILABLE = exports.INDEX = exports.HTTP_MODULES = void 0;
 const path_1 = require("path");
 const utils_1 = require("../../utils/utils");
 const basePathModules = 'js/server/http/modules';
 exports.HTTP_MODULES = {
     allowCors: (0, path_1.resolve)(basePathModules, 'allowCors.js'),
+    staticServer: (0, path_1.resolve)(basePathModules, 'staticServer.js'),
 };
 exports.INDEX = 'index.html';
+exports.UNAVAILABLE = '503.html';
 exports.NOT_FOUND = '404.html';
 exports.HEADERS = {
     // 'X-XSS-Protection': '1; mode=block',

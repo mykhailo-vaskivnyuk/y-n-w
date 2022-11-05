@@ -9,7 +9,16 @@ const node_path_1 = __importDefault(require("node:path"));
 const node_vm_1 = __importDefault(require("node:vm"));
 const utils_1 = require("./utils");
 const options = { displayErrors: true };
-const loadModule = (__dirname) => (modulePath, modulesContext) => (0, exports.loader)(modulePath, __dirname, modulesContext);
+const curDiName = __dirname;
+const loadModule = (modulePath, modulesContext) => {
+    const __dirname = require.main?.path || node_path_1.default.resolve('.');
+    try {
+        return (0, exports.loader)(modulePath, __dirname, modulesContext);
+    }
+    finally {
+        delete require.cache[__filename];
+    }
+};
 exports.loadModule = loadModule;
 const loader = (modulePath, parentModuleDir, modulesContext) => {
     const __filename = (0, utils_1.resolve)(parentModuleDir, modulePath);
@@ -19,7 +28,8 @@ const loader = (modulePath, parentModuleDir, modulesContext) => {
     const __dirname = node_path_1.default.dirname(__filename);
     const script = node_fs_1.default.readFileSync(__filename).toString();
     const module = { exports: {} };
-    const newRequire = (modulePath) => (0, exports.loader)(modulePath, __dirname, modulesContext);
+    const newRequire = ((modulePath) => (0, exports.loader)(modulePath, __dirname, modulesContext));
+    newRequire.main.path = curDiName;
     const context = {
         global: this,
         require: newRequire,

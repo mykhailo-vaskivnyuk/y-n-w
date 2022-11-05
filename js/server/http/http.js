@@ -5,21 +5,24 @@ const constants_1 = require("./constants");
 const errors_1 = require("./errors");
 const utils_1 = require("./utils");
 const crypto_1 = require("../../utils/crypto");
-const static_1 = require("./static");
 class HttpConnection {
     config;
     server;
-    staticServer;
     callback;
     modules = [];
+    staticUnavailable = false;
+    apiUnavailable = false;
     constructor(config) {
         this.config = config;
         this.server = (0, node_http_1.createServer)(this.onRequest.bind(this));
-        this.staticServer = (0, static_1.createStaticServer)(this.config.paths.public);
     }
     onOperation(fn) {
         this.callback = fn;
         return this;
+    }
+    setUnavailable(service) {
+        service === 'static' && (this.staticUnavailable = true);
+        service === 'api' && (this.apiUnavailable = true);
     }
     start() {
         if (!this.callback) {
@@ -29,7 +32,10 @@ class HttpConnection {
         }
         try {
             const { modules } = this.config;
-            this.modules = modules.map((module) => require(constants_1.HTTP_MODULES[module])[module]());
+            this.modules = modules.map((moduleName) => {
+                const modulePath = constants_1.HTTP_MODULES[moduleName];
+                return require(modulePath)[moduleName](this.config);
+            });
         }
         catch (e) {
             logger.error(e, e.message);
@@ -48,13 +54,12 @@ class HttpConnection {
         return new Promise(executor);
     }
     async onRequest(req, res) {
-        if (!this.runModules(req, res))
+        const next = await this.runModules(req, res);
+        if (!next)
             return;
-        const { api } = this.config.paths;
-        const ifApi = new RegExp(`^/${api}(/.*)?$`);
-        if (!ifApi.test(req.url || ''))
-            return this.staticServer(req, res);
         try {
+            if (this.apiUnavailable)
+                throw new errors_1.ServerError('E_UNAVAILABLE');
             const operation = await this.getOperation(req);
             const { options, data: { params } } = operation;
             const { sessionKey } = options;
@@ -80,9 +85,13 @@ class HttpConnection {
             this.onError(e, req, res);
         }
     }
-    runModules(req, res) {
+    async runModules(req, res) {
+        const context = {
+            staticUnavailable: this.staticUnavailable,
+            apiUnavailable: this.apiUnavailable,
+        };
         for (const module of this.modules) {
-            const next = module(req, res);
+            const next = await module(req, res, context);
             if (!next)
                 return false;
         }

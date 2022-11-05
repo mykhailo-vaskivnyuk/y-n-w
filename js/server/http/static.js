@@ -10,7 +10,7 @@ const constants_1 = require("./constants");
 const errors_1 = require("./errors");
 const utils_1 = require("./utils");
 const createStaticServer = (staticPath) => {
-    const prepareFile = async (url) => {
+    const prepareFile = async (url, unavailable) => {
         const paths = [staticPath, url || constants_1.INDEX];
         let filePath = node_path_1.default.join(...paths);
         const notTraversal = filePath.startsWith(staticPath);
@@ -22,31 +22,38 @@ const createStaticServer = (staticPath) => {
         if (!found) {
             const ext = node_path_1.default.extname(filePath);
             if (!ext)
-                return { found };
+                return { found: false };
             filePath = node_path_1.default.join(staticPath, constants_1.NOT_FOUND);
+        }
+        else if (unavailable) {
+            filePath = node_path_1.default.join(staticPath, constants_1.UNAVAILABLE);
         }
         const ext = node_path_1.default.extname(filePath).substring(1).toLowerCase();
         const mimeType = constants_1.RES_MIME_TYPES[ext] || constants_1.RES_MIME_TYPES.default;
         const stream = node_fs_1.default.createReadStream(filePath);
         return { found, mimeType, stream };
     };
-    return async (req, res) => {
-        const { pathname } = (0, utils_1.getUrlInstance)(req.url, req.headers.host);
+    return async (req, res, context) => {
+        const { staticUnavailable } = context;
+        const { url, headers } = req;
+        const pathname = (0, utils_1.getUrlInstance)(url, headers.host).pathname;
         const path = pathname.replace(/\/$/, '');
-        const { found, mimeType, stream } = await prepareFile(path);
+        const { found, mimeType, stream } = await prepareFile(path, staticUnavailable);
+        let errCode = '';
+        let resHeaders = { 'Content-Type': mimeType };
         if (!found && !mimeType) {
-            const statusCode = errors_1.ErrorStatusCodeMap['E_REDIRECT'];
-            const resLog = statusCode + ' ' + errors_1.ServerErrorMap['E_REDIRECT'];
-            logger.error((0, utils_1.getLog)(req, resLog));
-            res.writeHead(statusCode || 301, { location: '/' });
-            res.end();
-            return;
+            errCode = 'E_REDIRECT';
+            resHeaders = { location: '/' };
         }
-        const statusCode = found ? 200 : errors_1.ErrorStatusCodeMap['E_NOT_FOUND'] || 404;
-        const resLog = found ? 'OK' : statusCode + ' ' + errors_1.ServerErrorMap['E_NOT_FOUND'];
+        else if (!found)
+            errCode = 'E_NOT_FOUND';
+        else if (staticUnavailable)
+            errCode = 'E_UNAVAILABLE';
+        const statusCode = errCode ? errors_1.ErrorStatusCodeMap[errCode] : 200;
+        const resLog = errCode ? statusCode + ' ' + errors_1.ServerErrorMap[errCode] : 'OK';
         const log = (0, utils_1.getLog)(req, resLog);
-        found ? logger.info(log) : logger.error(log);
-        res.writeHead(statusCode, { 'Content-Type': mimeType });
+        errCode ? logger.error(log) : logger.info(log);
+        res.writeHead(statusCode, resHeaders);
         stream?.pipe(res);
     };
 };

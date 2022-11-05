@@ -38,7 +38,7 @@ const config = {
     },
     router: {
         path: node_path_1.default.resolve(buildPath, 'router/router'),
-        apiPath: node_path_1.default.join(buildPath, 'api'),
+        apiPath: node_path_1.default.resolve(buildPath, 'api'),
         clientApiPath: 'src/client/common/api/client.api.ts',
         services: [
             'mailService',
@@ -67,7 +67,7 @@ const config = {
                 public: 'public',
                 api: 'api',
             },
-            modules: ['allowCors'],
+            modules: ['allowCors', 'staticServer'],
             host,
             port,
         },
