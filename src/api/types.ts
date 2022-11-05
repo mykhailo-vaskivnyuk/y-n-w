@@ -4,7 +4,7 @@ import { TJoiSchema } from '../router/types';
 import { OmitNull } from '../types/types';
 
 export const UserResponseSchema = [
-  Joi.any().equal(null),  
+  Joi.any().equal(null),
   {
     email: Joi.string(),
     name: [Joi.string(), Joi.any().equal(null)],

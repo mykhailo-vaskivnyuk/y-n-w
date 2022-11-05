@@ -4,9 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 const joi_1 = __importDefault(require("joi"));
 const node_fs_1 = __importDefault(require("node:fs"));
-const handler = async () => {
-    return node_fs_1.default.createReadStream(module.filename);
-};
+const handler = async () => node_fs_1.default.createReadStream(module.filename);
 handler.responseSchema = joi_1.default.object();
 module.exports = handler;
 //# sourceMappingURL=script.js.js.map

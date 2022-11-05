@@ -23,7 +23,7 @@ export default class App {
     this.config = config;
     this.setUncaughtErrorHandlers();
   }
-  
+
   async start() {
     try {
       this.setLogger();
@@ -45,6 +45,8 @@ export default class App {
       await this.server!.start();
       logger.info('SERVER IS READY');
 
+      env.RUN_ONCE === 'true' && process.exit(0);
+
     } catch (e: any) {
       await this.handleAppInitError(e);
     }
@@ -60,12 +62,12 @@ export default class App {
 
   private setUncaughtErrorHandlers() {
     const uncaughtErrorHandler = (e: any) => {
-      this.logger
-        ? logger.fatal(e)
-        : console.error(e);
+      this.logger ?
+        logger.fatal(e) :
+        console.error(e);
       if (env.EXIT_ON_ERROR === 'false') return;
       process.nextTick(() => process.exit());
-    }
+    };
     process.on('unhandledRejection', uncaughtErrorHandler);
     process.on('uncaughtException', uncaughtErrorHandler);
   }
@@ -76,14 +78,14 @@ export default class App {
     this.logger = new Logger(logger);
     return this;
   }
-  
+
   private setDatabase() {
     const { database } = this.config;
     const Database = require(database.path);
     this.db = new Database(database);
     return this;
   }
-  
+
   private setRouter() {
     const { router } = this.config;
     const logger = this.logger;
@@ -133,7 +135,7 @@ export default class App {
       this.setInputConnection();
       await this.server!.start();
       this.logger.info('SERVER IS READY');
-    } catch(e: any) {
+    } catch (e: any) {
       if (!isKnown.includes(e.name)) logger.error(e, e.message);
       throw new AppError('E_START');
     }

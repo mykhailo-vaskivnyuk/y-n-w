@@ -52,10 +52,16 @@ class Router {
         let context = { origin };
         const handler = this.findRoute(names);
         try {
-            [operation, context] = await this.runModules(operation, context, handler);
+            [
+                operation,
+                context,
+            ] = await this.runModules(operation, context, handler);
             const { params } = operation.data;
             let response = await handler(context, params);
-            [response, context] = await this.runResponseModules(response, context, handler);
+            [
+                response,
+                context,
+            ] = await this.runResponseModules(response, context, handler);
             return response;
         }
         catch (e) {

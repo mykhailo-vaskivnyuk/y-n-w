@@ -8,7 +8,11 @@ class Logger {
         const { level: levelKey, target } = config;
         const level = types_1.LOGGER_LEVEL[levelKey];
         const toConsole = { target: 'pino-pretty', level, options: {} };
-        const toStdOut = { target: 'pino/file', level, options: { destination: 1 } };
+        const toStdOut = {
+            target: 'pino/file',
+            level,
+            options: { destination: 1 },
+        };
         const transport = target === 'stdout' ? toStdOut : toConsole;
         const options = { level, transport };
         this.logger = pino.default(options);

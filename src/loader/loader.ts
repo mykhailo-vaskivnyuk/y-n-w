@@ -18,7 +18,7 @@ export const loadModule = (
   } finally {
     delete require.cache[__filename];
   }
-}
+};
 
 export const loader = (
   modulePath: string,

@@ -111,8 +111,8 @@ class HttpConnection {
         if (length > constants_1.REQ_MIME_TYPES_MAP[contentType].maxLength) {
             throw new errors_1.ServerError('E_BED_REQUEST');
         }
-        if (contentType === constants_1.REQ_MIME_TYPES_ENUM['application/json']
-            && length < constants_1.JSON_TRANSFORM_LENGTH) {
+        if (contentType === constants_1.REQ_MIME_TYPES_ENUM['application/json'] &&
+            length < constants_1.JSON_TRANSFORM_LENGTH) {
             Object.assign(params, await this.getJson(req));
             return { options, names, data };
         }
@@ -166,9 +166,12 @@ class HttpConnection {
         }
         const { code, statusCode = 500, details } = error;
         res.statusCode = statusCode;
-        if (code === 'E_REDIRECT')
+        if (code === 'E_REDIRECT') {
             res.setHeader('location', details?.location || '/');
-        details && res.setHeader('content-type', constants_1.REQ_MIME_TYPES_ENUM['application/json']);
+        }
+        if (details) {
+            res.setHeader('content-type', constants_1.REQ_MIME_TYPES_ENUM['application/json']);
+        }
         logger.error({}, (0, utils_1.getLog)(req, statusCode + ' ' + errors_1.ServerErrorMap[code]));
         res.end(error.getMessage());
         if (code === 'E_SERVER_ERROR')

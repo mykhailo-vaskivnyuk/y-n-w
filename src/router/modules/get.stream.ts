@@ -12,13 +12,13 @@ const getStream: TModule = () => async (operation, context) => {
   const { params, stream } = operation.data;
   if (!stream) return [operation, context];
   const { type,  content } = stream;
-  
+
   if (type === REQ_MIME_TYPES_ENUM['application/octet-stream']) {
     params.stream = stream;
     delete operation.data.stream;
     return [operation, context];
   }
-  
+
   try {
     const buffers: Uint8Array[] = [];
     for await (const chunk of content) buffers.push(chunk as any);

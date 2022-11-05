@@ -16,7 +16,7 @@ const signup: THandler<ISignupParams, IUserResponse> = async (
   const { user_id, link } = user;
   session.write('user_id', user_id);
   await mailService.sendMail.confirm(email, origin, token);
-  return { ...user, confirmed: !link};
+  return { ...user, confirmed: !link };
 };
 signup.paramsSchema = SignupParamsSchema;
 signup.responseSchema = UserResponseSchema;

@@ -11,7 +11,7 @@ export const TABLES_MAP = {
   NODES_TMP: 'nodes_tmp',
   NODES_USERS: 'nodes_users',
   NOTIFICATIONS_TPL: 'notifications_tpl',
-}
+};
 
 export type ITableUsers = {
   user_id: number;

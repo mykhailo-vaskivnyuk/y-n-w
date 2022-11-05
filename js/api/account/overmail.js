@@ -11,9 +11,9 @@ const overmail = async ({ origin }, { email }) => {
         return false;
     const token = (0, crypto_1.createUnicCode)(15);
     const { user_id, link } = user;
-    const params = link
-        ? [user_id, token, null]
-        : [user_id, null, token];
+    const params = link ?
+        [user_id, token, null] :
+        [user_id, null, token];
     await execQuery.user.setLink([...params]);
     const type = link ? 'confirm' : 'restore';
     await mailService.sendMail[type](email, origin, token);

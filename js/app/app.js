@@ -37,6 +37,7 @@ class App {
             this.setInputConnection();
             await this.server.start();
             logger.info('SERVER IS READY');
+            process_1.env.RUN_ONCE === 'true' && process.exit(0);
         }
         catch (e) {
             await this.handleAppInitError(e);
@@ -51,9 +52,9 @@ class App {
     }
     setUncaughtErrorHandlers() {
         const uncaughtErrorHandler = (e) => {
-            this.logger
-                ? logger.fatal(e)
-                : console.error(e);
+            this.logger ?
+                logger.fatal(e) :
+                console.error(e);
             if (process_1.env.EXIT_ON_ERROR === 'false')
                 return;
             process.nextTick(() => process.exit());

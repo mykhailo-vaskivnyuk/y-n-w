@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -28,7 +28,10 @@ const createStaticServer = (staticPath) => {
         else if (unavailable) {
             filePath = node_path_1.default.join(staticPath, constants_1.UNAVAILABLE);
         }
-        const ext = node_path_1.default.extname(filePath).substring(1).toLowerCase();
+        const ext = node_path_1.default
+            .extname(filePath)
+            .substring(1)
+            .toLowerCase();
         const mimeType = constants_1.RES_MIME_TYPES[ext] || constants_1.RES_MIME_TYPES.default;
         const stream = node_fs_1.default.createReadStream(filePath);
         return { found, mimeType, stream };
@@ -38,7 +41,7 @@ const createStaticServer = (staticPath) => {
         const { url, headers } = req;
         const pathname = (0, utils_1.getUrlInstance)(url, headers.host).pathname;
         const path = pathname.replace(/\/$/, '');
-        const { found, mimeType, stream } = await prepareFile(path, staticUnavailable);
+        const { found, mimeType, stream, } = await prepareFile(path, staticUnavailable);
         let errCode = '';
         let resHeaders = { 'Content-Type': mimeType };
         if (!found && !mimeType) {

@@ -23,7 +23,7 @@ class Database implements IDatabase {
       await this.connection!.connect();
     } catch (e: any) {
       logger.error(e, e.message);
-      throw new DatabaseError('E_DB_CONNECTION')
+      throw new DatabaseError('E_DB_CONNECTION');
     }
 
     try {
@@ -67,7 +67,7 @@ class Database implements IDatabase {
   private createQueries(filePath: string): IQueries | TQuery {
     let moduleExport = require(filePath);
     moduleExport = moduleExport.default || moduleExport as TQueriesModule;
-    if (typeof moduleExport === 'string' ) {
+    if (typeof moduleExport === 'string') {
       return this.sqlToQuery(moduleExport);
     }
     return Object

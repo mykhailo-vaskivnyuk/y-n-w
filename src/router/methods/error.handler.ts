@@ -18,7 +18,7 @@ export const errorHandler = (e: any): never => {
     }
     throw new RouterError('E_HANDLER', message);
   }
-  
+
   if (e instanceof SessionError)
     throw new RouterError('E_ROUTER', message);
   if (e instanceof ValidationError)

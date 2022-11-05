@@ -2,7 +2,7 @@ export const getEnumFromMap =
   <
     T extends Record<string | number, unknown>,
     Q extends Record<keyof T, keyof T>
-  >(map: T): Q => 
+  >(map: T): Q =>
     Object
       .keys(map)
       .reduce((obj, key) => {

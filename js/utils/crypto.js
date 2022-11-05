@@ -2,9 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyHash = exports.createHash = exports.createUnicCode = void 0;
 const crypto = require('node:crypto');
-const createUnicCode = (length) => {
-    return crypto.randomBytes(length).toString('hex');
-};
+const createUnicCode = (length) => crypto.randomBytes(length).toString('hex');
 exports.createUnicCode = createUnicCode;
 const createHash = (password) => {
     const executor = (rv, rj) => {

@@ -33,7 +33,11 @@ const validateResponse = () => async (response, context, handler) => {
     const schema = responseSchemaToSchema(responseSchema);
     let result;
     if (Array.isArray(schema)) {
-        result = joi_1.default.alternatives().match('any').try(...schema).validate(response, options);
+        result = joi_1.default
+            .alternatives()
+            .match('any')
+            .try(...schema)
+            .validate(response, options);
     }
     else
         result = schema.validate(response, options);

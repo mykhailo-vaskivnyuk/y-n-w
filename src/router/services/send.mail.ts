@@ -13,7 +13,7 @@ export class MailError extends Error {
 const createMailServiceMethods = (config: MailOptions) => {
   const { sendMail } = getMailService(config);
 
-  const createSendMethod = (type: TMailType) => 
+  const createSendMethod = (type: TMailType) =>
     async (to: string, origin: string, token: string) => {
       try {
         return await sendMail(type, to, origin, token);

@@ -64,7 +64,7 @@ class HttpConnection implements IInputConnection {
         logger.error(e, e.message);
         rj(new ServerError('E_LISTEN'));
       }
-    }
+    };
 
     return new Promise<void>(executor);
   }
@@ -72,7 +72,7 @@ class HttpConnection implements IInputConnection {
   private async onRequest(req: IRequest, res: IResponse) {
     const next = await this.runModules(req, res);
     if (!next) return;
-    
+
     try {
       if (this.apiUnavailable) throw new ServerError('E_UNAVAILABLE');
       const operation = await this.getOperation(req);
@@ -81,13 +81,16 @@ class HttpConnection implements IInputConnection {
       sessionKey && res.setHeader(
         'set-cookie', `sessionKey=${sessionKey}; Path=/; httpOnly`
       );
-        
+
       const response = await this.callback!(operation);
-      
+
       res.statusCode = 200;
 
       if (response instanceof Readable) {
-        res.setHeader('content-type', REQ_MIME_TYPES_ENUM['application/octet-stream']);
+        res.setHeader(
+          'content-type',
+          REQ_MIME_TYPES_ENUM['application/octet-stream'],
+        );
         await new Promise((rv, rj) => {
           response.on('error', rj);
           response.on('end', rv);
@@ -105,12 +108,12 @@ class HttpConnection implements IInputConnection {
         () => logger.info(params, getLog(req, 'OK'))
       );
       res.end(data);
-        
+
     } catch (e) {
       this.onError(e, req, res);
     }
   }
-  
+
   private async runModules(req: IRequest, res: IResponse) {
     const context = {
       staticUnavailable: this.staticUnavailable,
@@ -138,25 +141,25 @@ class HttpConnection implements IInputConnection {
     if (length > REQ_MIME_TYPES_MAP[contentType].maxLength) {
       throw new ServerError('E_BED_REQUEST');
     }
-      
+
     if (
-      contentType === REQ_MIME_TYPES_ENUM['application/json']
-      && length < JSON_TRANSFORM_LENGTH
+      contentType === REQ_MIME_TYPES_ENUM['application/json'] &&
+      length < JSON_TRANSFORM_LENGTH
     ) {
       Object.assign(params, await this.getJson(req));
       return { options, names, data };
     }
-      
+
     const content = Readable.from(req);
     data.stream = { type: contentType, content };
-      
+
     return { options, names, data };
   }
-    
+
   private getRequestParams(req: IRequest) {
     const { origin, cookie } = req.headers;
     const { pathname, searchParams } = getUrlInstance(req.url, origin);
-      
+
     const names = (pathname
       .replace('/' + this.config.paths.api, '')
       .slice(1) || 'index')
@@ -173,7 +176,7 @@ class HttpConnection implements IInputConnection {
 
     return { options, names, params };
   }
-      
+
   private getSessionKey(cookie?: string) {
     if (cookie) {
       const regExp = /sessionKey=([^\s]*)\s*;?/;
@@ -182,7 +185,7 @@ class HttpConnection implements IInputConnection {
     }
     return createUnicCode(15);
   }
-      
+
   private async getJson(req: IRequest) {
     try {
       const buffers: Uint8Array[] = [];
@@ -194,17 +197,21 @@ class HttpConnection implements IInputConnection {
       throw new ServerError('E_BED_REQUEST');
     }
   }
-      
+
   private onError(e: any, req: IRequest, res: IResponse) {
     let error = e;
     if (!(e instanceof ServerError)) {
       error = new ServerError('E_SERVER_ERROR');
     }
     const { code, statusCode = 500, details } = error as ServerError;
-    
+
     res.statusCode = statusCode;
-    if (code === 'E_REDIRECT') res.setHeader('location', details?.location || '/');
-    details && res.setHeader('content-type', REQ_MIME_TYPES_ENUM['application/json']);
+    if (code === 'E_REDIRECT') {
+      res.setHeader('location', details?.location || '/');
+    }
+    if (details) {
+      res.setHeader('content-type', REQ_MIME_TYPES_ENUM['application/json']);
+    }
     logger.error({}, getLog(req, statusCode + ' ' + ServerErrorMap[code]));
     res.end(error.getMessage());
 

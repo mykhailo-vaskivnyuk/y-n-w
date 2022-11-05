@@ -8,7 +8,7 @@ const usersRead: THandler<any, IUserResponse> = async (context) => {
   if (!user_id) return null;
   const [user] = await execQuery.user.getUserById([user_id]);
   if (!user) return null;
-  return { ...user, confirmed: !user.link};
+  return { ...user, confirmed: !user.link };
 };
 usersRead.responseSchema = UserResponseSchema;
 

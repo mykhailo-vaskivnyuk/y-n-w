@@ -1,4 +1,4 @@
-import { loader } from './loader'
+import { loader } from './loader';
 
 export type TLoader = {
   (modulePath: string): ReturnType<typeof loader>;
