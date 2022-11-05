@@ -45,6 +45,8 @@ export default class App {
       await this.server!.start();
       logger.info('SERVER IS READY');
 
+      env.RUN_ONCE === 'true' && process.exit(0);
+
     } catch (e: any) {
       await this.handleAppInitError(e);
     }

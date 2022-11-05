@@ -20,6 +20,7 @@ module.exports = {
     'import',
     '@typescript-eslint'
   ],
+  ignorePatterns: [ 'src/client/common/*', '!src/client/common/api'],
   root: true,
   'rules': {
     indent: ['error', 2],

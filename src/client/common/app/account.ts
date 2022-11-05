@@ -1,8 +1,5 @@
 /* eslint-disable import/no-cycle */
-import {
-  IConfirmParams, ISignupParams,
-  IUserResponse, TLoginOrSignup,
-} from '../api/types';
+import { IConfirmParams, ISignupParams, IUserResponse, TLoginOrSignup } from '../api/types';
 import { AppState } from '../constants';
 import { ClientAppThis } from './client.app';
 
@@ -45,9 +42,7 @@ export const getAccountMethods = (parent: ClientAppThis) => ({
     }
   },
 
-  async loginOverLink(
-    type: 'confirm' | 'restore', args: IConfirmParams,
-  ): Promise<IUserResponse> {
+  async loginOverLink(type: 'confirm' | 'restore', args: IConfirmParams): Promise<IUserResponse> {
     parent.setState(AppState.LOADING);
     try {
       const user = await parent.clientApi.account[type](args);
