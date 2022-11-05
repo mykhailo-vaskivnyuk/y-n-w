@@ -3,11 +3,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { Readable } from 'node:stream';
 import {
-  INDEX, RES_MIME_TYPES,
-  NOT_FOUND, ResMimeTypeKeys,
+  INDEX, RES_MIME_TYPES, NOT_FOUND,
+  ResMimeTypeKeys, UNAVAILABLE,
 } from './constants';
-import { ErrorStatusCodeMap, ServerErrorMap } from './errors';
-import { IRequest, IResponse } from './types';
+import { ErrorStatusCode, ErrorStatusCodeMap, ServerErrorMap } from './errors';
+import { IHeaders, IHttpModulsContext, IRequest, IResponse } from './types';
 import { getLog, getUrlInstance } from './utils';
 
 interface IPreparedFile {
@@ -19,7 +19,7 @@ interface IPreparedFile {
 export type TStaticServer = ReturnType<typeof createStaticServer>;
 
 export const createStaticServer = (staticPath: string) => {
-  const prepareFile = async (url: string): Promise<IPreparedFile> => {
+  const prepareFile = async (url: string, unavailable: boolean): Promise<IPreparedFile> => {
     const paths = [staticPath, url || INDEX];
     let filePath = path.join(...paths);
     const notTraversal = filePath.startsWith(staticPath);
@@ -30,8 +30,10 @@ export const createStaticServer = (staticPath: string) => {
       .catch(() => false);
     if (!found) {
       const ext = path.extname(filePath);
-      if (!ext) return { found };
+      if (!ext) return { found: false };
       filePath = path.join(staticPath, NOT_FOUND);
+    } else if (unavailable) {
+      filePath = path.join(staticPath, UNAVAILABLE);
     }
     const ext = path.extname(filePath).substring(1).toLowerCase() as ResMimeTypeKeys;
     const mimeType = RES_MIME_TYPES[ext] || RES_MIME_TYPES.default;
@@ -39,23 +41,27 @@ export const createStaticServer = (staticPath: string) => {
     return { found, mimeType, stream };
   };
 
-  return async (req: IRequest, res: IResponse): Promise<void> => {
-    const { pathname } = getUrlInstance(req.url, req.headers.host);
+  return async (req: IRequest, res: IResponse, context: IHttpModulsContext): Promise<void> => {
+    const { staticUnavailable } = context;
+    const { url, headers } = req;
+    const pathname = getUrlInstance(url, headers.host).pathname;
     const path = pathname.replace(/\/$/, '');
-    const { found, mimeType, stream } = await prepareFile(path);
-    if (!found && !mimeType) {
-      const statusCode = ErrorStatusCodeMap['E_REDIRECT'];
-      const resLog = statusCode + ' ' + ServerErrorMap['E_REDIRECT'];
-      logger.error(getLog(req, resLog));
-      res.writeHead(statusCode || 301, { location: '/' });
-      res.end();
-      return;
+    const { found, mimeType, stream } = await prepareFile(path, staticUnavailable);
+    let errCode = '' as ErrorStatusCode;
+    let resHeaders = { 'Content-Type': mimeType } as IHeaders;
+
+    if (!found && !mimeType) { 
+      errCode = 'E_REDIRECT';
+      resHeaders = { location: '/' };
     }
-    const statusCode = found ? 200 : ErrorStatusCodeMap['E_NOT_FOUND'] || 404;
-    const resLog = found ? 'OK' : statusCode + ' ' + ServerErrorMap['E_NOT_FOUND'];
+    else if (!found) errCode = 'E_NOT_FOUND';
+    else if (staticUnavailable) errCode = 'E_UNAVAILABLE';
+
+    const statusCode = errCode ? ErrorStatusCodeMap[errCode]! : 200;
+    const resLog = errCode ? statusCode + ' ' + ServerErrorMap[errCode] : 'OK';
     const log = getLog(req, resLog);
-    found ? logger.info(log) : logger.error(log);
-    res.writeHead(statusCode, { 'Content-Type': mimeType });
+    errCode ? logger.error(log) : logger.info(log);
+    res.writeHead(statusCode, resHeaders);
     stream?.pipe(res);
   };
-}
+};
