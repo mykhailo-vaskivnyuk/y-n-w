@@ -4,8 +4,8 @@
   "description": "communication network for activity",
   "main": "index.js",
   "scripts": {
-    "build": "cross-env NODE_ENV=production tsc",
-    "start": "cross-env NODE_ENV=production node js/index.js",
+    "build": "tsc",
+    "start": "node js/index.js",
     "dev": "cross-env NODE_ENV=development nodemon js/index.js",
     "debug": "nodemon --inspect js/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
