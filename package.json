@@ -4,7 +4,8 @@
   "description": "communication network for activity",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && cross-env RUN_ONCE=true npm run start && npm run sync",
+    "build": "tsc",
+    "pack": "tsc && cross-env RUN_ONCE=true npm run start && npm run sync",
     "start": "node js/index.js",
     "dev": "cross-env NODE_ENV=development nodemon js/index.js",
     "debug": "nodemon --inspect js/index.js",
@@ -35,9 +36,6 @@
   },
   "homepage": "https://github.com/mykhailo-vaskivnyuk/y-n-w#readme",
   "devDependencies": {
-    "@types/node": "^18.7.23",
-    "@types/nodemailer": "^6.4.6",
-    "@types/pg": "^8.6.5",
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
     "cross-env": "^7.0.3",
@@ -46,6 +44,9 @@
     "nodemon": "^2.0.20"
   },
   "dependencies": {
+    "@types/node": "^18.7.23",
+    "@types/nodemailer": "^6.4.6",
+    "@types/pg": "^8.6.5",
     "joi": "^17.6.2",
     "nodemailer": "^6.8.0",
     "pg": "^8.8.0",
