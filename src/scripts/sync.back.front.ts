@@ -1,14 +1,22 @@
 import {
-  backPath, fromBackToFront,
-  fromFrontToBack, frontPath,
+  backPath, frontPath, fromBackToFront, fromFrontToBack,
+  excludeFromBack, excludeFromFront,
+  frontStaticPath, backStaticPath, excludeStatic,
 } from './constants';
-import { copyDir } from './utils';
+import { copyDir, logFromTo } from './utils';
 
 const runSync = async () => {
-  console.log('from BACK to FRONT');
-  await copyDir(backPath, frontPath, fromBackToFront);
-  console.log('\nfrom FRONT to BACK');
-  await copyDir(frontPath, backPath, fromFrontToBack);
+  console.log('[-- copy client API from BACK to FRONT --] ');
+  logFromTo(backPath, frontPath);
+  await copyDir(backPath, frontPath, fromBackToFront, excludeFromBack);
+
+  console.log('\n[-- copy client API from FRONT to BACK --]');
+  logFromTo(backPath, frontPath);
+  await copyDir(frontPath, backPath, fromFrontToBack, excludeFromFront);
+
+  console.log('\n[-- copy STATIC from FRONT to BACK --]');
+  logFromTo(backPath, frontPath);
+  await copyDir(frontStaticPath, backStaticPath, null, excludeStatic);
 };
 
 runSync();
