@@ -29,7 +29,7 @@ export interface ICleanedEnv {
   API_UNAVAILABLE: boolean;
   EXIT_ON_ERROR: boolean;
   RUN_ONCE: boolean;
-  dev: boolean;
+  DEV: boolean;
 }
 export type CleanedEnvKeys = keyof ICleanedEnv;
 
@@ -52,6 +52,13 @@ export type TOperationResponse =
   | IObject
   | (IObject | TPrimitiv)[]
   | Readable;
+
+export interface IGlobalMixins {
+  execQuery: IDatabaseQueries;
+  logger: ILogger;
+  mailService: IMailService;
+  env: ICleanedEnv;
+}
 
 declare global {
   const execQuery: IDatabaseQueries;

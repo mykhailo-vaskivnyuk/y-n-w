@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "start": "js/index.js",
     "pack": "npm run rmjs && tsc && cross-env RUN_ONCE=true npm run start && npm run sync",
-    "start": "node js/index.js",
     "dev": "cross-env NODE_ENV=development nodemon js/index.js",
     "debug": "nodemon --inspect js/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",

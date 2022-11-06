@@ -12,6 +12,7 @@ import { ILogger } from '../logger/types';
 import { IDatabase } from '../db/types';
 import { IRouter } from '../router/types';
 import { IInputConnection } from '../server/http/types';
+import { setToGlobal } from './utils';
 import { loadModule } from '../loader/require';
 
 export default class App {
@@ -31,7 +32,7 @@ export default class App {
       this.setEnv();
 
       this.setLogger();
-      Object.assign(global, { logger: this.logger });
+      setToGlobal('logger', this.logger);
       logger.info('LOGGER IS READY');
 
       if (env.API_UNAVAILABLE)
@@ -57,7 +58,14 @@ export default class App {
   }
 
   private setEnv() {
-    if (processEnv.NODE_ENV !== 'development') return;
+    const cleanedEnvObj = {
+      RUN_ONCE: processEnv.RUN_ONCE === 'true',
+      DEV: processEnv.NODE_ENV === 'development'
+    } as ICleanedEnv;
+    if (cleanedEnvObj.DEV) {
+      setToGlobal('env', cleanedEnvObj);
+      return;
+    }
     const { envPath } = this.config;
     const envJson = fs
       .readFileSync(envPath)
@@ -69,9 +77,8 @@ export default class App {
       cleanedEnvObj, [key, value],
     ) => Object.assign(cleanedEnvObj, {
       [key]: EnvValuesMap[value] || value,
-    }), {} as ICleanedEnv);
-    Object.freeze(envObj);
-    Object.assign(global, { env: envObj });
+    }), cleanedEnvObj);
+    setToGlobal('env', cleanedEnvObj);
   }
 
   private setUncaughtErrorHandlers() {
