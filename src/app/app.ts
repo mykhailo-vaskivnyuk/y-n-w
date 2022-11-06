@@ -1,6 +1,9 @@
 import fs from 'node:fs';
-import { env } from 'process';
-import { IConfig, IModulesContext, IOperation } from './types';
+import { env as processEnv } from 'process';
+import {
+  IConfig, IEnv, IModulesContext, IOperation,
+  ICleanedEnv, CleanedEnvKeys, EnvValuesMap, EnvValuesKeys,
+} from './types';
 import { AppError, handleOperationError } from './errors';
 import { DatabaseError } from '../db/errors';
 import { RouterError } from '../router/errors';
@@ -19,19 +22,20 @@ export default class App {
   private server?: IInputConnection;
 
   constructor(config: IConfig) {
-    env.NODE_ENV === 'development' && this.setEnv('.env.json');
     this.config = config;
     this.setUncaughtErrorHandlers();
   }
 
   async start() {
     try {
+      this.setEnv();
+
       this.setLogger();
       Object.assign(global, { logger: this.logger });
       logger.info('LOGGER IS READY');
 
-      if (env.API_UNAVAILABLE === 'true')
-        throw new AppError('E_INIT');
+      if (env.API_UNAVAILABLE)
+        throw new AppError('E_INIT', 'API set UNAVAILABLE');
 
       this.setDatabase();
       await this.db!.init();
@@ -45,19 +49,29 @@ export default class App {
       await this.server!.start();
       logger.info('SERVER IS READY');
 
-      env.RUN_ONCE === 'true' && process.exit(0);
+      env.RUN_ONCE && process.exit(0);
 
     } catch (e: any) {
       await this.handleAppInitError(e);
     }
   }
 
-  private setEnv(envPath: string) {
+  private setEnv() {
+    if (processEnv.NODE_ENV !== 'development') return;
+    const { envPath } = this.config;
     const envJson = fs
       .readFileSync(envPath)
       .toString();
-    const envObj = JSON.parse(envJson);
-    Object.assign(env, envObj);
+    const envObj = JSON.parse(envJson) as IEnv;
+    const entries = Object
+      .entries(envObj) as  [CleanedEnvKeys, EnvValuesKeys][];
+    entries.reduce((
+      cleanedEnvObj, [key, value],
+    ) => Object.assign(cleanedEnvObj, {
+      [key]: EnvValuesMap[value] || value,
+    }), {} as ICleanedEnv);
+    Object.freeze(envObj);
+    Object.assign(global, { env: envObj });
   }
 
   private setUncaughtErrorHandlers() {
@@ -65,7 +79,8 @@ export default class App {
       this.logger ?
         logger.fatal(e) :
         console.error(e);
-      if (env.EXIT_ON_ERROR === 'false') return;
+      if (e.name !== ServerError.name) return;
+      if (!env.EXIT_ON_ERROR) return;
       process.nextTick(() => process.exit());
     };
     process.on('unhandledRejection', uncaughtErrorHandler);
@@ -90,7 +105,8 @@ export default class App {
     const { router } = this.config;
     const logger = this.logger;
     const execQuery = this.db?.getQueries();
-    if (!logger || !execQuery) throw new AppError('E_INIT');
+    if (!logger || !execQuery)
+      throw new AppError('E_INIT', 'LOGGER or DB is not INITIALIZED');
     const context: IModulesContext = {
       logger,
       execQuery,
@@ -101,9 +117,8 @@ export default class App {
   }
 
   private setInputConnection() {
-    const apiUnavailable = env.API_UNAVAILABLE === 'true';
-    const staticUnavailable = env.STATIC_UNAVAILABLE === 'true';
-    if (!this.router && !apiUnavailable) throw new AppError('E_INIT');
+    if (!this.router && !env.API_UNAVAILABLE)
+      throw new AppError('E_INIT', 'ROUTER is not INITIALIZED');
     const { inConnection } = this.config;
     const { transport } = inConnection;
     const server = inConnection[transport];
@@ -117,8 +132,8 @@ export default class App {
     };
     this.server = new InConnection(server)
       .onOperation(handleOperation);
-    apiUnavailable && this.server!.setUnavailable('api');
-    staticUnavailable && this.server!.setUnavailable('static');
+    env.API_UNAVAILABLE && this.server!.setUnavailable('api');
+    env.STATIC_UNAVAILABLE && this.server!.setUnavailable('static');
     return this;
   }
 
@@ -127,7 +142,6 @@ export default class App {
       DatabaseError.name,
       RouterError.name,
       ServerError.name,
-      AppError.name,
     ];
     if (!isKnown.includes(e.name)) logger.error(e, e.message);
     if (!this.logger) throw new AppError('E_START');

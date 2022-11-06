@@ -6,11 +6,32 @@ import { ILogger, ILoggerConfig } from '../logger/types';
 import { IInputConnectionConfig } from '../server/http/types';
 
 export interface IConfig {
+  envPath: string,
   logger: ILoggerConfig;
   database: IDatabaseConfig;
   router: IRouterConfig;
   inConnection: IInputConnectionConfig;
 }
+
+export interface IEnv {
+  STATIC_UNAVAILABLE: string;
+  API_UNAVAILABLE: string;
+  EXIT_ON_ERROR: string;
+}
+
+export const EnvValuesMap = {
+  true: true,
+  false: false,
+};
+export type EnvValuesKeys = keyof typeof EnvValuesMap;
+export interface ICleanedEnv {
+  STATIC_UNAVAILABLE: boolean;
+  API_UNAVAILABLE: boolean;
+  EXIT_ON_ERROR: boolean;
+  RUN_ONCE: boolean;
+  dev: boolean;
+}
+export type CleanedEnvKeys = keyof ICleanedEnv;
 
 export interface IOperation {
   options: {
@@ -36,6 +57,7 @@ declare global {
   const execQuery: IDatabaseQueries;
   const logger: ILogger;
   const mailService: IMailService;
+  const env: ICleanedEnv;
 }
 
 export interface IModulesContext {

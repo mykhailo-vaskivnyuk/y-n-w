@@ -24,6 +24,7 @@ const dbConnection = {
 
 
 const config: IConfig = {
+  envPath: '.env.json',
   logger: {
     path: path.resolve(buildPath, 'logger/logger'),
     level: 'DEBUG',

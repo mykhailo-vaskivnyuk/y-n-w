@@ -16,10 +16,10 @@
     "dkr:build": "docker build -t ynw .",
     "dkr:run": "docker run -d -p 5432:5432 --name ynw ynw",
     "dkr:stop": "docker stop ynw",
-    "sync": "node js/scripts/sync.back.front.js",
-    "copy:tofront": "node js/scripts/copy.all.to.front.js",
-    "copy:toback": "node js/scripts/copy.all.to.back.js",
-    "rmjs": "node js/scripts/remove.js.js"
+    "sync": "node src/scripts/js/sync.back.front.js",
+    "copy:tofront": "node src/scripts/js/copy.all.to.front.js",
+    "copy:toback": "node src/scripts/js/copy.all.to.back.js",
+    "rmjs": "node src/scripts/js/remove.js.js"
   },
   "repository": {
     "type": "git",

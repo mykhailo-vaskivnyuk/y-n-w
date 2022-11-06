@@ -17,7 +17,7 @@ import { createUnicCode } from '../../utils/crypto';
 class HttpConnection implements IInputConnection {
   private config: IInputConnectionConfig['http'];
   private server: IServer;
-  private callback?: (operation: IOperation) => Promise<TOperationResponse>;
+  private exec?: (operation: IOperation) => Promise<TOperationResponse>;
   private modules: ReturnType<THttpModule>[] = [];
   private staticUnavailable = false;
   private apiUnavailable = false;
@@ -28,7 +28,7 @@ class HttpConnection implements IInputConnection {
   }
 
   onOperation(fn: (operation: IOperation) => Promise<TOperationResponse>) {
-    this.callback = fn;
+    this.exec = fn;
     return this;
   }
 
@@ -38,7 +38,7 @@ class HttpConnection implements IInputConnection {
   }
 
   start() {
-    if (!this.callback) {
+    if (!this.exec) {
       const e = new ServerError('E_NO_CALLBACK');
       logger.error(e, e.message);
       throw e;
@@ -82,7 +82,7 @@ class HttpConnection implements IInputConnection {
         'set-cookie', `sessionKey=${sessionKey}; Path=/; httpOnly`
       );
 
-      const response = await this.callback!(operation);
+      const response = await this.exec!(operation);
 
       res.statusCode = 200;
 
@@ -201,7 +201,7 @@ class HttpConnection implements IInputConnection {
   private onError(e: any, req: IRequest, res: IResponse) {
     let error = e;
     if (!(e instanceof ServerError)) {
-      error = new ServerError('E_SERVER_ERROR');
+      error = new ServerError('E_SERVER_ERROR', e.details);
     }
     const { code, statusCode = 500, details } = error as ServerError;
 
@@ -215,7 +215,8 @@ class HttpConnection implements IInputConnection {
     logger.error({}, getLog(req, statusCode + ' ' + ServerErrorMap[code]));
     res.end(error.getMessage());
 
-    if (code === 'E_SERVER_ERROR') throw e;
+    if (e.name !== ServerError.name) throw e;
+    if (e.code === 'E_SERVER_ERROR') throw e;
   }
 }
 

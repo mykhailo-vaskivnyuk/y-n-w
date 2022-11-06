@@ -4,7 +4,7 @@ import { ServerError } from '../server/http/errors';
 export const AppErrorMap = {
   E_START: 'CAN\'T START APP',
   E_ROUTER: 'ROUTER ERROR',
-  E_INIT: 'APP IS NOT INITIALIZED',
+  E_INIT: 'API IS NOT INITIALIZED OR SET UNAVAILABLE',
 } as const;
 
 type AppErrorCode = keyof typeof AppErrorMap;
