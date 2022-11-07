@@ -62,7 +62,7 @@ const config: IConfig = {
     },
   },
   inConnection: {
-    transport: 'http',
+    transport: 'ws',
     http: {
       path: path.resolve(buildPath, 'server/http/http'),
       paths: {
@@ -74,7 +74,7 @@ const config: IConfig = {
       port,
     },
     ws: {
-      path: path.resolve(buildPath, 'server/ws'),
+      path: path.resolve(buildPath, 'server/ws/ws'),
       host,
       port,
     },

@@ -6,11 +6,12 @@ import {
 } from './constants';
 import {
   IInputConnection, IInputConnectionConfig,
-  IRequest, IResponse, IServer, THttpModule, TServerService,
-} from './types';
+  THttpModule, TServerService,
+} from '../types';
+import { IRequest, IResponse, IServer } from './types';
 import { TPromiseExecutor } from '../../types/types';
 import { IOperation, IParams, TOperationResponse } from '../../app/types';
-import { ServerError, ServerErrorMap } from './errors';
+import { ServerError, ServerErrorMap } from '../errors';
 import { getLog, getUrlInstance } from './utils';
 import { createUnicCode } from '../../utils/crypto';
 

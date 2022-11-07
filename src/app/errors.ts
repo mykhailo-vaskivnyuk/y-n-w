@@ -1,5 +1,5 @@
 import { RouterError, RouterErrorCode } from '../router/errors';
-import { ServerError } from '../server/http/errors';
+import { ServerError } from '../server/errors';
 
 export const AppErrorMap = {
   E_START: 'CAN\'T START APP',

@@ -1,4 +1,4 @@
-import { IRequest } from './types';
+import { IRequest } from '../types';
 import { format } from 'node:util';
 
 export const getUrlInstance = (

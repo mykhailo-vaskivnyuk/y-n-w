@@ -1,4 +1,4 @@
-import { TOperationResponse } from '../../app/types';
+import { TOperationResponse } from '../app/types';
 
 export const ServerErrorMap = {
   E_NOT_FOUND: 'Not found',

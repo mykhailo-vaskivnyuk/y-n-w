@@ -3,7 +3,7 @@ import { IObject, TPrimitiv } from '../types/types';
 import { IDatabaseConfig, IDatabaseQueries } from '../db/types';
 import { IMailService, IRouterConfig } from '../router/types';
 import { ILogger, ILoggerConfig } from '../logger/types';
-import { IInputConnectionConfig } from '../server/http/types';
+import { IInputConnectionConfig } from '../server/types';
 
 export interface IConfig {
   envPath: string,

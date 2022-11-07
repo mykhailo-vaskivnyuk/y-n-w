@@ -7,11 +7,11 @@ import {
 import { AppError, handleOperationError } from './errors';
 import { DatabaseError } from '../db/errors';
 import { RouterError } from '../router/errors';
-import { ServerError } from '../server/http/errors';
+import { ServerError } from '../server/errors';
 import { ILogger } from '../logger/types';
 import { IDatabase } from '../db/types';
 import { IRouter } from '../router/types';
-import { IInputConnection } from '../server/http/types';
+import { IInputConnection } from '../server/types';
 import { setToGlobal } from './utils';
 import { loadModule } from '../loader/require';
 

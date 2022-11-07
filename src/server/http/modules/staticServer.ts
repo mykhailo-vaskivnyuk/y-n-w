@@ -1,5 +1,5 @@
 import { createStaticServer } from '../static';
-import { IInputConnectionConfig, THttpModule } from '../types';
+import { IInputConnectionConfig, THttpModule } from '../../types';
 
 const getfsApi = (api: string) => (url = '') => {
   const regExp = new RegExp(`^/${api}(/.*)?$`);
