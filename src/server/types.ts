@@ -1,7 +1,8 @@
 import http from 'node:http';
-import ws from 'ws';
 import { THttpModulesKeys } from './http/constants';
 import { IOperation, TOperationResponse } from '../app/types';
+import { IHttpServer } from './http/types';
+import { IWsServer } from './ws/types';
 
 export interface IInputConnectionConfig {
   transport: 'http' | 'ws';
@@ -17,33 +18,18 @@ export interface IInputConnectionConfig {
   };
   ws: {
     path: string;
-    host: string;
-    port: number;
   };
 }
 
+export type IServer = IHttpServer | IWsServer;
 export type IRequest = http.IncomingMessage;
-export type IResponse = http.ServerResponse;
-export type IServer = http.Server | ws.Server;
-export type IHeaders = http.OutgoingHttpHeaders;
 export type TServerService = 'static' | 'api';
-
-export type THttpModule<T = any> =
-  (config: T) => (
-    req: IRequest,
-    res: IResponse,
-    context: IHttpModulsContext,
-  ) => Promise<boolean>;
 
 export interface IInputConnection {
   onOperation(fn:
     (operation: IOperation) => Promise<TOperationResponse>
   ): this;
-  setUnavailable(service: TServerService): void;
+  setUnavailable(service?: TServerService): void;
+  getServer(): IServer;
   start(): Promise<void>;
-}
-
-export interface IHttpModulsContext {
-  staticUnavailable: boolean;
-  apiUnavailable: boolean;
 }

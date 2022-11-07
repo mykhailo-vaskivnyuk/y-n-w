@@ -126,20 +126,34 @@ export default class App {
   private setInputConnection() {
     if (!this.router && !env.API_UNAVAILABLE)
       throw new AppError('E_INIT', 'ROUTER is not INITIALIZED');
-    const { inConnection } = this.config;
-    const { transport } = inConnection;
-    const server = inConnection[transport];
-    const InConnection = require(server.path);
+
     const handleOperation = async (operation: IOperation) => {
       try {
-        return await this.router?.exec(operation);
+        return await this.router!.exec(operation);
       } catch (e: any) {
         return handleOperationError(e);
       }
     };
-    this.server = new InConnection(server)
-      .onOperation(handleOperation);
-    env.API_UNAVAILABLE && this.server!.setUnavailable('api');
+
+    const { inConnection } = this.config;
+    const { transport } = inConnection;
+    const server = inConnection['http'];
+    const apiServer = transport === 'ws' && inConnection['ws'];
+    const InConnection = require(server.path);
+    const InApiConnection = apiServer && require(apiServer.path);
+    this.server = new InConnection(server);
+    const apiServerInstance = InApiConnection &&
+      new InApiConnection(apiServer, this.server!.getServer());
+
+    if (apiServerInstance) {
+      this.server!.setUnavailable('api');
+      apiServerInstance.onOperation(handleOperation);
+      env.API_UNAVAILABLE && apiServerInstance!.setUnavailable('api');
+    } else {
+      this.server!.onOperation(handleOperation);
+      env.API_UNAVAILABLE && this.server!.setUnavailable('api');
+    }
+
     env.STATIC_UNAVAILABLE && this.server!.setUnavailable('static');
     return this;
   }

@@ -7,7 +7,8 @@ import {
   ResMimeTypeKeys, UNAVAILABLE,
 } from './constants';
 import { ErrorStatusCode, ErrorStatusCodeMap, ServerErrorMap } from '../errors';
-import { IHeaders, IHttpModulsContext, IRequest, IResponse } from '../types';
+import { IHeaders, IHttpModulsContext, IResponse } from './types';
+import { IRequest } from '../types';
 import { getLog, getUrlInstance } from './utils';
 
 interface IPreparedFile {

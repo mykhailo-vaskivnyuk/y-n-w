@@ -1,5 +1,5 @@
 import { HEADERS } from '../constants';
-import { THttpModule } from '../../types';
+import { THttpModule } from '../types';
 
 export const allowCors: THttpModule = () => async (req, res) => {
   const { method } = req;

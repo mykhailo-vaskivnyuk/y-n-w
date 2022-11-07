@@ -1,7 +1,8 @@
 import { createStaticServer } from '../static';
-import { IInputConnectionConfig, THttpModule } from '../../types';
+import { THttpModule } from '../types';
+import { IInputConnectionConfig } from '../../types';
 
-const getfsApi = (api: string) => (url = '') => {
+const getifApi = (api: string) => (url = '') => {
   const regExp = new RegExp(`^/${api}(/.*)?$`);
   return regExp.test(url);
 };
@@ -10,7 +11,7 @@ export const staticServer: THttpModule = (
   config: IInputConnectionConfig['http'],
 ) => {
   const { public: publicPath, api } = config.paths;
-  const ifApi = getfsApi(api);
+  const ifApi = getifApi(api);
   const httpStaticServer = createStaticServer(publicPath);
   return async (req, res, context) => {
     if (ifApi(req.url)) return true;

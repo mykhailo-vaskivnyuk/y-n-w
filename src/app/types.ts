@@ -37,6 +37,8 @@ export interface IOperation {
   options: {
     sessionKey: string;
     origin: string;
+    requestId?: number;
+    pathname?: string;
   };
   names: string[];
   data: {

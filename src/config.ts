@@ -75,8 +75,6 @@ const config: IConfig = {
     },
     ws: {
       path: path.resolve(buildPath, 'server/ws/ws'),
-      host,
-      port,
     },
   },
 };

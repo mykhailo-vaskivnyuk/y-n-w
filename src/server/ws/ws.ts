@@ -1,31 +1,23 @@
 import { Server, WebSocket } from 'ws';
-import { Readable } from 'node:stream';
-// import {
-//   HTTP_MODULES, REQ_MIME_TYPES_MAP, ReqMimeTypesKeys,
-//   REQ_MIME_TYPES_ENUM, JSON_TRANSFORM_LENGTH,
-// } from './constants';
 import {
-  IInputConnection, IInputConnectionConfig,
-  IRequest, IResponse, TServerService,
+  IInputConnection, IInputConnectionConfig, IRequest,
 } from '../types';
-import { IServer } from './types';
-import { TPromiseExecutor } from '../../types/types';
-import { IOperation, IParams, TOperationResponse } from '../../app/types';
+import { IWsServer } from './types';
+import { IOperation, TOperationResponse } from '../../app/types';
 import { ServerError, ServerErrorMap } from '../errors';
-// import { getLog, getUrlInstance } from '../utils';
 import { createUnicCode } from '../../utils/crypto';
+import { IHttpServer } from '../http/types';
+import { getLog } from './utils';
 
 class WsConnection implements IInputConnection {
   private config: IInputConnectionConfig['ws'];
-  private server: IServer;
+  private server: IWsServer;
   private exec?: (operation: IOperation) => Promise<TOperationResponse>;
-  // private modules: ReturnType<THttpModule>[] = [];
-  // private staticUnavailable = false;
   private apiUnavailable = false;
 
-  constructor(config: IInputConnectionConfig['http']) {
+  constructor(config: IInputConnectionConfig['ws'], server: IHttpServer) {
     this.config = config;
-    this.server = new Server({ port: config.port });
+    this.server = new Server({ server });
     this.server.on('connection', this.handleConnection.bind(this));
   }
 
@@ -34,196 +26,76 @@ class WsConnection implements IInputConnection {
     return this;
   }
 
-  setUnavailable(service: TServerService) {
-    // service === 'static' && (this.staticUnavailable = true);
-    service === 'api' && (this.apiUnavailable = true);
+  setUnavailable() {
+    this.apiUnavailable = true;
+  }
+
+  getServer() {
+    return this.server;
   }
 
   async start() {
-    if (!this.exec) {
-      const e = new ServerError('E_NO_CALLBACK');
-      logger.error(e, e.message);
-      throw e;
-    }
-
-    // try {
-    //   const { modules } = this.config;
-    //   this.modules = modules.map(
-    //     (moduleName) => {
-    //       const modulePath = HTTP_MODULES[moduleName];
-    //       return require(modulePath)[moduleName](this.config);
-    //     });
-    // } catch (e: any) {
-    //   logger.error(e, e.message);
-    //   throw new ServerError('E_SERVER_ERROR');
-    // }
-
-    // const executor: TPromiseExecutor<void> = (rv, rj) => {
-    //   const { port } = this.config;
-    //   try {
-    //     this.server.listen(port, rv);
-    //   } catch (e: any) {
-    //     logger.error(e, e.message);
-    //     rj(new ServerError('E_LISTEN'));
-    //   }
-    // };
-
-    return; // new Promise<void>(executor);
+    if (this.exec) return;
+    const e = new ServerError('E_NO_CALLBACK');
+    logger.error(e, e.message);
+    throw e;
   }
 
   private handleConnection(connection: WebSocket, req: IRequest) {
-    // const ip = req.socket.remoteAddress;
     connection.on('message', async (
       message: string,
-    ) => {
-      try {
-        const response = await this.onRequest(message, req);
-        connection.send(JSON.stringify(response), { binary: false });
-      } catch (err) {
-        console.error(err);
-        connection.send('"Server error"', { binary: false });
-      }
-    });
+    ) => await this.onRequest(
+      message.toString(), req, connection
+    ));
   }
 
-  private async onRequest(message: string, req: IRequest) {
-    console.log(message.toString())
-    // const next = await this.runModules(req, res);
-    // if (!next) return;
-
-    //     const obj = JSON.parse(message);
-    //     const { name, method, args = [] } = obj;
-    //     const entity = routing[name];
-    //     if (!entity)
-    //       return connection.send('"Not found"', { binary: false });
-    //     const handler = entity[method];
-    //     if (!handler)
-    //       return connection.send('"Not found"', { binary: false });
-    //     const json = JSON.stringify(args);
-    //     const parameters = json.substring(1, json.length - 1);
-    //     console.log(`${ip} ${name}.${method}(${parameters})`);
-    //     try {
-    //       const result = await handler(...args);
-    //       connection.send(JSON.stringify(result), { binary: false });
-    //     } catch (err) {
-    //       console.error(err);
-    //       connection.send('"Server error"', { binary: false });
-    //     }
-    //   });
-    // }
-
-
+  private async onRequest(
+    message: string, req: IRequest, connection: WebSocket,
+  ) {
+    let options = {} as IOperation['options'];
     try {
       if (this.apiUnavailable) throw new ServerError('E_UNAVAILABLE');
       const operation = await this.getOperation(message, req);
-      // const { options, data: { params } } = operation;
-      // const { sessionKey } = options;
-      // sessionKey && res.setHeader(
-      //   'set-cookie', `sessionKey=${sessionKey}; Path=/; httpOnly`
-      // );
+      ({ options } = operation);
+      const { requestId, pathname } = options;
 
-      const response = { response: 'test response' };
-      // null; // await this.exec!(operation);
-
-      // res.statusCode = 200;
-
-      // if (response instanceof Readable) {
-      //   res.setHeader(
-      //     'content-type',
-      //     REQ_MIME_TYPES_ENUM['application/octet-stream'],
-      //   );
-      //   await new Promise((rv, rj) => {
-      //     response.on('error', rj);
-      //     response.on('end', rv);
-      //     res.on('finish',
-      //       () => logger.info(params, getLog(req, 'OK'))
-      //     );
-      //     response.pipe(res);
-      //   });
-      //   return;
-      // }
-
-      const data = JSON.stringify(response);
-      // res.setHeader('content-type', REQ_MIME_TYPES_ENUM['application/json']);
-      // res.on('finish',
-      //   () => logger.info(params, getLog(req, 'OK'))
-      // );
-      // res.end(data);
-      return data;
+      const data = await this.exec!(operation);
+      const response = {
+        requestId,
+        status: 200,
+        error: null,
+        data,
+      };
+      const responseMessage = JSON.stringify(response);
+      logger.info({}, getLog(pathname, 'OK'));
+      connection.send(responseMessage, { binary: false });
     } catch (e) {
-      // this.onError(e, req, res);
-      console.log(e);
+      this.onError(e, options, connection);
       throw e;
     }
   }
-
-  // private async runModules(req: IRequest, res: IResponse) {
-  //   const context = {
-  //     staticUnavailable: this.staticUnavailable,
-  //     apiUnavailable: this.apiUnavailable,
-  //   };
-  //   for (const module of this.modules) {
-  //     const next = await module(req, res, context);
-  //     if (!next) return false;
-  //   }
-  //   return true;
-  // }
 
   private async getOperation(message: string, req: IRequest) {
     const { options, names, params } = this.getRequestParams(message, req);
     const data = { params } as IOperation['data'];
-    // const { headers } = req;
-    // const contentType = headers['content-type']
-    //   as ReqMimeTypesKeys | undefined;
-    // const length = +(headers['content-length'] || Infinity);
-
-    // if (!contentType) return { options, names, data };
-
-    // if (!REQ_MIME_TYPES_MAP[contentType]) {
-    //   throw new ServerError('E_BED_REQUEST');
-    // }
-    // if (length > REQ_MIME_TYPES_MAP[contentType].maxLength) {
-    //   throw new ServerError('E_BED_REQUEST');
-    // }
-
-    // if (
-    //   contentType === REQ_MIME_TYPES_ENUM['application/json'] &&
-    //   length < JSON_TRANSFORM_LENGTH
-    // ) {
-    //   Object.assign(params, await this.getJson(req));
-    //   return { options, names, data };
-    // }
-
-    // const content = Readable.from(req);
-    // data.stream = { type: contentType, content };
-
     return { options, names, data };
   }
 
   private getRequestParams(message: string, req: IRequest) {
     const { origin, cookie } = req.headers;
-    // const { pathname, searchParams } = getUrlInstance(req.url, origin);
+    // throw new ServerError('E_SERVER_ERROR');
     const request = JSON.parse(message);
-    const { url, data } = request;
-    const params = JSON.parse(data);
-    const names = ((url as string)
+    const { requestId, pathname, data: params } = request;
+    const names = ((pathname as string)
       .slice(1) || 'index')
       .split('/')
       .filter((path) => Boolean(path));
 
-    // const names = (pathname
-    //   .replace('/' + this.config.paths.api, '')
-    //   .slice(1) || 'index')
-    //   .split('/')
-    //   .filter((path) => Boolean(path));
-
-    // const params = {} as IParams;
-    // const queryParams = searchParams.entries();
-    // for (const [key, value] of queryParams) params[key] = value;
-
     const options: IOperation['options'] = {} as IOperation['options'];
+    options.requestId = requestId;
     options.sessionKey = this.getSessionKey(cookie);
     options.origin = origin || '';
+    options.pathname = pathname;
 
     return { options, names, params };
   }
@@ -237,34 +109,25 @@ class WsConnection implements IInputConnection {
     return createUnicCode(15);
   }
 
-  private async getJson(req: IRequest) {
-    try {
-      const buffers: Uint8Array[] = [];
-      for await (const chunk of req) buffers.push(chunk as any);
-      const data = Buffer.concat(buffers).toString();
-      return JSON.parse(data);
-    } catch (e: any) {
-      logger.error(e, e.message);
-      throw new ServerError('E_BED_REQUEST');
-    }
-  }
-
-  private onError(e: any, req: IRequest, res: IResponse) {
+  private onError(
+    e: any, options: IOperation['options'], connection: WebSocket,
+  ) {
     let error = e;
     if (!(e instanceof ServerError)) {
       error = new ServerError('E_SERVER_ERROR', e.details);
     }
-    const { code, statusCode = 500, details } = error as ServerError;
-
-    res.statusCode = statusCode;
-    if (code === 'E_REDIRECT') {
-      res.setHeader('location', details?.location || '/');
-    }
-    // if (details) {
-    //   res.setHeader('content-type', REQ_MIME_TYPES_ENUM['application/json']);
-    // }
-    // logger.error({}, getLog(req, statusCode + ' ' + ServerErrorMap[code]));
-    res.end(error.getMessage());
+    const { code, statusCode = 500 } = error as ServerError;
+    const { requestId, pathname } = options;
+    const resLog = statusCode + ' ' + ServerErrorMap[code];
+    logger.error({}, getLog(pathname, resLog));
+    const response = {
+      requestId,
+      status: statusCode,
+      error: error.getMessage(),
+      data: null,
+    };
+    const responseMessage = JSON.stringify(response);
+    connection.send(responseMessage);
 
     if (e.name !== ServerError.name) throw e;
     if (e.code === 'E_SERVER_ERROR') throw e;

@@ -5,6 +5,8 @@ const tplGetApi =
 `import * as P from './types';
 import * as Q from './%s';
 
+export type IClientApi = ReturnType<typeof getApi>;
+
 export const getApi = (
   fetch: <T>(pathname: string, options?: Record<string, any>) => Promise<T>
 ) => (`;

@@ -6,9 +6,9 @@ import {
 } from './constants';
 import {
   IInputConnection, IInputConnectionConfig,
-  THttpModule, TServerService,
+  IRequest, TServerService,
 } from '../types';
-import { IRequest, IResponse, IServer } from './types';
+import { IResponse, IHttpServer, THttpModule } from './types';
 import { TPromiseExecutor } from '../../types/types';
 import { IOperation, IParams, TOperationResponse } from '../../app/types';
 import { ServerError, ServerErrorMap } from '../errors';
@@ -17,7 +17,7 @@ import { createUnicCode } from '../../utils/crypto';
 
 class HttpConnection implements IInputConnection {
   private config: IInputConnectionConfig['http'];
-  private server: IServer;
+  private server: IHttpServer;
   private exec?: (operation: IOperation) => Promise<TOperationResponse>;
   private modules: ReturnType<THttpModule>[] = [];
   private staticUnavailable = false;
@@ -38,8 +38,12 @@ class HttpConnection implements IInputConnection {
     service === 'api' && (this.apiUnavailable = true);
   }
 
+  getServer() {
+    return this.server;
+  }
+
   start() {
-    if (!this.exec) {
+    if (!this.exec && !this.apiUnavailable) {
       const e = new ServerError('E_NO_CALLBACK');
       logger.error(e, e.message);
       throw e;
@@ -75,13 +79,13 @@ class HttpConnection implements IInputConnection {
     if (!next) return;
 
     try {
-      if (this.apiUnavailable) throw new ServerError('E_UNAVAILABLE');
       const operation = await this.getOperation(req);
       const { options, data: { params } } = operation;
       const { sessionKey } = options;
       sessionKey && res.setHeader(
         'set-cookie', `sessionKey=${sessionKey}; Path=/; httpOnly`
       );
+      if (this.apiUnavailable) throw new ServerError('E_UNAVAILABLE');
 
       const response = await this.exec!(operation);
 
