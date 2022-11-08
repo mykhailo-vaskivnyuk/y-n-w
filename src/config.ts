@@ -62,14 +62,18 @@ const config: IConfig = {
     },
   },
   inConnection: {
-    transport: 'ws',
+    transport: 'http',
     http: {
       path: path.resolve(buildPath, 'server/http/http'),
       paths: {
         public: 'public',
         api: 'api',
       },
-      modules: ['allowCors', 'staticServer'],
+      modules: [
+        'allowCors',
+        'setSession',
+        'staticServer',
+      ],
       host,
       port,
     },

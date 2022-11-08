@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { IOperation } from '../../app/types';
 import { IRequest } from '../types';
 
 export type IHttpServer = http.Server;
@@ -9,8 +10,9 @@ export type THttpModule<T = any> =
   (config: T) => (
     req: IRequest,
     res: IResponse,
+    options: IOperation['options'],
     context: IHttpModulsContext,
-  ) => Promise<boolean>;
+  ) => Promise<IOperation['options'] | null>;
 
 export interface IHttpModulsContext {
   staticUnavailable: boolean;

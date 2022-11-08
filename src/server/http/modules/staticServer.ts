@@ -13,9 +13,11 @@ export const staticServer: THttpModule = (
   const { public: publicPath, api } = config.paths;
   const ifApi = getifApi(api);
   const httpStaticServer = createStaticServer(publicPath);
-  return async (req, res, context) => {
-    if (ifApi(req.url)) return true;
+  return async function staticServer(
+    req, res, { ...options }, context,
+  ) {
+    if (ifApi(req.url)) return options;
     await httpStaticServer(req, res, context);
-    return false;
+    return null;
   };
 };

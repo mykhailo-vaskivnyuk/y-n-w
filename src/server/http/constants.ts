@@ -4,6 +4,7 @@ const basePathModules = 'js/server/http/modules';
 
 export const HTTP_MODULES = {
   allowCors: resolve(basePathModules, 'allowCors.js'),
+  setSession: resolve(basePathModules, 'setSession.js'),
   staticServer: resolve(basePathModules, 'staticServer.js'),
 };
 export type THttpModulesKeys = keyof typeof HTTP_MODULES;

@@ -11,9 +11,9 @@ import {
 import { IResponse, IHttpServer, THttpModule } from './types';
 import { TPromiseExecutor } from '../../types/types';
 import { IOperation, IParams, TOperationResponse } from '../../app/types';
-import { ServerError, ServerErrorMap } from '../errors';
+import { ServerError } from '../errors';
 import { getLog, getUrlInstance } from './utils';
-import { createUnicCode } from '../../utils/crypto';
+import { handleError } from './error.handler';
 
 class HttpConnection implements IInputConnection {
   private config: IInputConnectionConfig['http'];
@@ -75,20 +75,19 @@ class HttpConnection implements IInputConnection {
   }
 
   private async onRequest(req: IRequest, res: IResponse) {
-    const next = await this.runModules(req, res);
-    if (!next) return;
+    const optionsFromModules = await this.runModules(req, res);
+    if (!optionsFromModules) return;
 
     try {
-      const operation = await this.getOperation(req);
-      const { options, data: { params } } = operation;
-      const { sessionKey } = options;
-      sessionKey && res.setHeader(
-        'set-cookie', `sessionKey=${sessionKey}; Path=/; httpOnly`
-      );
+      const { options, names, data } = await this.getOperation(req);
+      const operation = {
+        options: { ...optionsFromModules, ...options },
+        names,
+        data,
+      };
+      const { params } = data;
       if (this.apiUnavailable) throw new ServerError('E_UNAVAILABLE');
-
       const response = await this.exec!(operation);
-
       res.statusCode = 200;
 
       if (response instanceof Readable) {
@@ -107,15 +106,15 @@ class HttpConnection implements IInputConnection {
         return;
       }
 
-      const data = JSON.stringify(response);
+      const body = JSON.stringify(response);
       res.setHeader('content-type', REQ_MIME_TYPES_ENUM['application/json']);
       res.on('finish',
         () => logger.info(params, getLog(req, 'OK'))
       );
-      res.end(data);
+      res.end(body);
 
     } catch (e) {
-      this.onError(e, req, res);
+      handleError(e, req, res);
     }
   }
 
@@ -124,11 +123,14 @@ class HttpConnection implements IInputConnection {
       staticUnavailable: this.staticUnavailable,
       apiUnavailable: this.apiUnavailable,
     };
+    let options = {} as IOperation['options'];
     for (const module of this.modules) {
-      const next = await module(req, res, context);
-      if (!next) return false;
+      console.log(this.modules.length, module.name);
+      const next = await module(req, res, options, context);
+      if (!next) return null;
+      options = next;
     }
-    return true;
+    return options;
   }
 
   private async getOperation(req: IRequest) {
@@ -162,7 +164,7 @@ class HttpConnection implements IInputConnection {
   }
 
   private getRequestParams(req: IRequest) {
-    const { origin, cookie } = req.headers;
+    const { origin } = req.headers;
     const { pathname, searchParams } = getUrlInstance(req.url, origin);
 
     const names = (pathname
@@ -176,19 +178,9 @@ class HttpConnection implements IInputConnection {
     for (const [key, value] of queryParams) params[key] = value;
 
     const options: IOperation['options'] = {} as IOperation['options'];
-    options.sessionKey = this.getSessionKey(cookie);
     options.origin = origin || '';
 
     return { options, names, params };
-  }
-
-  private getSessionKey(cookie?: string) {
-    if (cookie) {
-      const regExp = /sessionKey=([^\s]*)\s*;?/;
-      const [, result] = cookie.match(regExp) || [];
-      if (result) return result;
-    }
-    return createUnicCode(15);
   }
 
   private async getJson(req: IRequest) {
@@ -201,27 +193,6 @@ class HttpConnection implements IInputConnection {
       logger.error(e, e.message);
       throw new ServerError('E_BED_REQUEST');
     }
-  }
-
-  private onError(e: any, req: IRequest, res: IResponse) {
-    let error = e;
-    if (!(e instanceof ServerError)) {
-      error = new ServerError('E_SERVER_ERROR', e.details);
-    }
-    const { code, statusCode = 500, details } = error as ServerError;
-
-    res.statusCode = statusCode;
-    if (code === 'E_REDIRECT') {
-      res.setHeader('location', details?.location || '/');
-    }
-    if (details) {
-      res.setHeader('content-type', REQ_MIME_TYPES_ENUM['application/json']);
-    }
-    logger.error({}, getLog(req, statusCode + ' ' + ServerErrorMap[code]));
-    res.end(error.getMessage());
-
-    if (e.name !== ServerError.name) throw e;
-    if (e.code === 'E_SERVER_ERROR') throw e;
   }
 }
 
