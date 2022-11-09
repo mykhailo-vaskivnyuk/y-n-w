@@ -8,12 +8,18 @@ export type IHttpServer = http.Server;
 export type IResponse = http.ServerResponse;
 export type IHeaders = http.OutgoingHttpHeaders;
 
-export type THttpModule<T = any> =
+export type THttpReqModule<T = any> =
   (config: T) => (
     req: IRequest,
     res: IResponse,
     context: IHttpContext,
   ) => Promise<IHttpContext | null>;
+
+export type THttpResModule<T = any> =
+(config: T) => (
+  res: IResponse,
+  body: string | Readable,
+) => Promise<boolean>;
 
 export type IHttpContext = IOperation & {
   contextParams: IHttpContextParams;

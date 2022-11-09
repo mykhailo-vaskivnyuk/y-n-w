@@ -1,7 +1,7 @@
 import { HEADERS } from '../constants';
-import { THttpModule } from '../types';
+import { THttpReqModule } from '../types';
 
-export const allowCors: THttpModule = () =>
+export const allowCors: THttpReqModule = () =>
   async function allowCors(req, res, { ...context }) {
     const { method } = req;
     if (method?.toLocaleLowerCase() === 'options') {

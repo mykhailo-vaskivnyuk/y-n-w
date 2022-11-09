@@ -1,17 +1,16 @@
 
-import path from 'node:path';
+import { resolve } from 'node:path';
+import { env } from 'node:process';
 import { IConfig } from './app/types';
+import { BUILD_PATH } from './constants/constants';
 
-const buildPath = 'js';
-const host = process.env.HOST || 'localhost';
-const port = +(process.env.PORT || 8000);
-const dbConectionType = process.env.DATABASE_URL ? 'heroku' : 'local';
+const host = env.HOST || 'localhost';
+const port = +(env.PORT || 8000);
+const dbConectionType = env.DATABASE_URL ? 'heroku' : 'local';
 const dbConnection = {
   heroku: {
-    connectionString: process.env.DATABASE_URL || '',
-    ssl: {
-      rejectUnauthorized: false,
-    },
+    connectionString: env.DATABASE_URL || '',
+    ssl: { rejectUnauthorized: false },
   },
   local: {
     host,
@@ -22,25 +21,24 @@ const dbConnection = {
   },
 }[dbConectionType];
 
-
 const config: IConfig = {
   envPath: '.env.json',
   logger: {
-    path: path.resolve(buildPath, 'logger/logger'),
+    path: resolve(BUILD_PATH, 'logger/logger'),
     level: 'DEBUG',
     target: 'console',
   },
   database: {
-    path: path.resolve(buildPath, 'db/db'),
-    queriesPath: path.resolve(buildPath, 'db/queries'),
+    path: resolve(BUILD_PATH, 'db/db'),
+    queriesPath: resolve(BUILD_PATH, 'db/queries'),
     connection: {
-      path: path.resolve(buildPath, 'db/connection/pg'),
+      path: resolve(BUILD_PATH, 'db/connection/pg'),
       ...dbConnection,
     },
   },
   router: {
-    path: path.resolve(buildPath, 'router/router'),
-    apiPath: path.resolve(buildPath, 'api'),
+    path: resolve(BUILD_PATH, 'router/router'),
+    apiPath: resolve(BUILD_PATH, 'api'),
     clientApiPath: 'src/client/common/api/client.api.ts',
     services: [
       'mailService',
@@ -64,23 +62,24 @@ const config: IConfig = {
   inConnection: {
     transport: 'http',
     http: {
-      path: path.resolve(buildPath, 'server/http/http'),
-      modulesPath: path.resolve(buildPath, 'server/http/modules'),
+      path: resolve(BUILD_PATH, 'server/http/http'),
+      modulesPath: resolve(BUILD_PATH, 'server/http/modules'),
       paths: {
         public: 'public',
         api: 'api',
       },
-      modules: [
+      reqModules: [
         'allowCors',
         'setSession',
         'staticServer',
         'getOperation',
       ],
+      resModules: ['sendResponse'],
       host,
       port,
     },
     ws: {
-      path: path.resolve(buildPath, 'server/ws/ws'),
+      path: resolve(BUILD_PATH, 'server/ws/ws'),
     },
   },
 };

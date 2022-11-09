@@ -1,17 +1,17 @@
 import { Readable } from 'node:stream';
 import { IOperation, IParams } from '../../../app/types';
 import { ServerError } from '../../errors';
-import { IInputConnectionConfig, IRequest } from '../../types';
+import { IHttpConfig, IRequest } from '../../types';
 import {
   JSON_TRANSFORM_LENGTH, ReqMimeTypesKeys, REQ_MIME_TYPES_MAP,
 } from '../constants';
-import { IHttpContext, THttpModule } from '../types';
+import { IHttpContext, THttpReqModule } from '../types';
 import { getJson, getUrlInstance } from '../utils';
 
-let thisConfig: IInputConnectionConfig['http'];
+let thisConfig: IHttpConfig;
 
-export const getOperation: THttpModule = (
-  config: IInputConnectionConfig['http'],
+export const getOperation: THttpReqModule = (
+  config: IHttpConfig,
 ) => {
   thisConfig = config;
   return async (req, res, context) => {

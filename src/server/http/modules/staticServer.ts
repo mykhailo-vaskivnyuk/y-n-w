@@ -1,10 +1,10 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { IInputConnectionConfig, IRequest } from '../../types';
+import { IHttpConfig, IRequest } from '../../types';
 import {
   IHeaders, IHttpContext, IPreparedFile,
-  IResponse, THttpModule,
+  IResponse, THttpReqModule,
 } from '../types';
 import {
   INDEX, NOT_FOUND, ResMimeTypeKeys,
@@ -13,19 +13,17 @@ import {
 import {
   ErrorStatusCode, ErrorStatusCodeMap, ServerError, ServerErrorMap,
 } from '../../errors';
-import { getifApi, getLog, getUrlInstance } from '../utils';
+import { getisApi, getLog, getUrlInstance } from '../utils';
 
-export const staticServer: THttpModule = (
-  config: IInputConnectionConfig['http'],
-) => {
+export const staticServer: THttpReqModule = (config: IHttpConfig) => {
   const { public: publicPath, api } = config.paths;
-  const ifApi = getifApi(api);
+  const isApi = getisApi(api);
   const httpStaticServer = createStaticServer(publicPath);
 
   return async function staticServer(
     req, res, context,
   ) {
-    if (ifApi(req.url)) return context;
+    if (isApi(req.url)) return context;
     await httpStaticServer(req, res, context);
     return null;
   };

@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { THttpModulesKeys } from './http/constants';
+import { THttpReqModulesKeys, THttpResModulesKeys } from './http/constants';
 import { IOperation, TOperationResponse } from '../app/types';
 import { IHttpServer } from './http/types';
 import { IWsServer } from './ws/types';
@@ -13,7 +13,8 @@ export interface IInputConnectionConfig {
       public: string;
       api: string;
     };
-    modules: THttpModulesKeys[];
+    reqModules: THttpReqModulesKeys[];
+    resModules: THttpResModulesKeys[];
     host: string;
     port: number;
   };
@@ -21,6 +22,8 @@ export interface IInputConnectionConfig {
     path: string;
   };
 }
+export type IHttpConfig = IInputConnectionConfig['http'];
+export type IWsConfig = IInputConnectionConfig['ws'];
 
 export type IServer = IHttpServer | IWsServer;
 export type IRequest = http.IncomingMessage;

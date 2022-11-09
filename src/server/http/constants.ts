@@ -1,12 +1,17 @@
 import { getEnumFromMap } from '../../utils/utils';
 
-export const HTTP_MODULES = {
+export const HTTP_REQ_MODULES = {
   allowCors: 'allowCors.js',
   setSession: 'setSession.js',
   staticServer: 'staticServer.js',
   getOperation: 'getOperation.js',
 };
-export type THttpModulesKeys = keyof typeof HTTP_MODULES;
+export type THttpReqModulesKeys = keyof typeof HTTP_REQ_MODULES;
+
+export const HTTP_RES_MODULES = {
+  sendResponse: 'sendResponse.js',
+};
+export type THttpResModulesKeys = keyof typeof HTTP_RES_MODULES;
 
 export const INDEX = 'index.html';
 export const UNAVAILABLE = '503.html';

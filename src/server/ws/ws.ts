@@ -1,7 +1,7 @@
 import { Server, WebSocket } from 'ws';
 import {
-  IInputConnection, IInputConnectionConfig, IRequest,
-} from '../types';
+  IInputConnection, IInputConnectionConfig,
+  IRequest, IWsConfig } from '../types';
 import { IWsServer } from './types';
 import { IOperation, TOperationResponse } from '../../app/types';
 import { ServerError, ServerErrorMap } from '../errors';
@@ -10,12 +10,12 @@ import { IHttpServer } from '../http/types';
 import { getLog } from './utils';
 
 class WsConnection implements IInputConnection {
-  private config: IInputConnectionConfig['ws'];
+  private config: IWsConfig;
   private server: IWsServer;
   private exec?: (operation: IOperation) => Promise<TOperationResponse>;
   private apiUnavailable = false;
 
-  constructor(config: IInputConnectionConfig['ws'], server: IHttpServer) {
+  constructor(config: IWsConfig, server: IHttpServer) {
     this.config = config;
     this.server = new Server({ server });
     this.server.on('connection', this.handleConnection.bind(this));

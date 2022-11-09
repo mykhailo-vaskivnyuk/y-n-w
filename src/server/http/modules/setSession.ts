@@ -1,7 +1,7 @@
-import { THttpModule } from '../types';
+import { THttpReqModule } from '../types';
 import { createUnicCode } from '../../../utils/crypto';
 
-export const setSession: THttpModule = () =>
+export const setSession: THttpReqModule = () =>
   async function setSession(req, res, context) {
     const { cookie } = req.headers;
     let result;
