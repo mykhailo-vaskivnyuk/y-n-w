@@ -11,9 +11,10 @@ const cache: TCache = {};
 export const loadModule = (
   modulePath: string,
   { ...context } = {} as IModulesContext,
+  mode?: 'isolate_all',
 ) => {
   const __dirname = require.main?.path || path.resolve('.');
-  vm.createContext(context);
+  if (mode !== 'isolate_all') vm.createContext(context);
   const newRequire = getRequire(__dirname, context) as TRequire;
   try {
     return newRequire(modulePath);
@@ -24,7 +25,7 @@ export const loadModule = (
 
 export const getRequire = (
   moduleDir: string,
-  context: vm.Context,
+  context: vm.Context | IModulesContext,
 ) => (modulePath: string) => {
   const __filename = resolve(moduleDir, modulePath);
   if (!__filename) return require(modulePath);
@@ -36,6 +37,7 @@ export const getRequire = (
   newRequire.main = { path: curDirName };
   newRequire.cache = cache;
   const module = { exports: {} };
+  if (!vm.isContext(context)) vm.createContext(context);
   const contextParams = {
     global: context,
     require: newRequire,

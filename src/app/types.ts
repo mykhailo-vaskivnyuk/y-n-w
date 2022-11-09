@@ -67,7 +67,6 @@ declare global {
   const execQuery: IDatabaseQueries;
   const logger: ILogger;
   const mailService: IMailService;
-  const env: ICleanedEnv;
 }
 
 export interface IModulesContext {

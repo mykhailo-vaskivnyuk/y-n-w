@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { env as processEnv } from 'process';
+import { env } from 'process';
 import {
   IConfig, IEnv, IModulesContext, IOperation,
   ICleanedEnv, CleanedEnvKeys, EnvValuesMap, EnvValuesKeys,
@@ -21,6 +21,7 @@ export default class App {
   private db?: IDatabase;
   private router?: IRouter;
   private server?: IInputConnection;
+  private env = {} as ICleanedEnv;
 
   constructor(config: IConfig) {
     this.config = config;
@@ -35,7 +36,7 @@ export default class App {
       setToGlobal('logger', this.logger);
       logger.info('LOGGER IS READY');
 
-      if (env.API_UNAVAILABLE)
+      if (this.env.API_UNAVAILABLE)
         throw new AppError('E_INIT', 'API set UNAVAILABLE');
 
       this.setDatabase();
@@ -50,7 +51,7 @@ export default class App {
       await this.server!.start();
       logger.info('SERVER IS READY');
 
-      env.RUN_ONCE && process.exit(0);
+      this.env.RUN_ONCE && process.exit(0);
 
     } catch (e: any) {
       await this.handleAppInitError(e);
@@ -59,11 +60,11 @@ export default class App {
 
   private setEnv() {
     const cleanedEnvObj = {
-      RUN_ONCE: processEnv.RUN_ONCE === 'true',
-      DEV: processEnv.NODE_ENV === 'development'
+      RUN_ONCE: env.RUN_ONCE === 'true',
+      DEV: env.NODE_ENV === 'development'
     } as ICleanedEnv;
     if (cleanedEnvObj.DEV) {
-      setToGlobal('env', cleanedEnvObj);
+      this.env = cleanedEnvObj;
       return;
     }
     const { envPath } = this.config;
@@ -78,7 +79,7 @@ export default class App {
     ) => Object.assign(cleanedEnvObj, {
       [key]: EnvValuesMap[value] || value,
     }), cleanedEnvObj);
-    setToGlobal('env', cleanedEnvObj);
+    this.env = cleanedEnvObj;
   }
 
   private setUncaughtErrorHandlers() {
@@ -87,7 +88,7 @@ export default class App {
         logger.fatal(e) :
         console.error(e);
       if (e.name !== ServerError.name) return;
-      if (!env.EXIT_ON_ERROR) return;
+      if (!this.env.EXIT_ON_ERROR) return;
       process.nextTick(() => process.exit());
     };
     process.on('unhandledRejection', uncaughtErrorHandler);
@@ -118,13 +119,13 @@ export default class App {
       logger,
       execQuery,
     };
-    const Router = loadModule(router.path, context);
+    const Router = loadModule(router.path, context, 'isolate_all');
     this.router = new Router(router);
     return this;
   }
 
   private setInputConnection() {
-    if (!this.router && !env.API_UNAVAILABLE)
+    if (!this.router && !this.env.API_UNAVAILABLE)
       throw new AppError('E_INIT', 'ROUTER is not INITIALIZED');
 
     const handleOperation = async (operation: IOperation) => {
@@ -148,13 +149,13 @@ export default class App {
     if (apiServerInstance) {
       this.server!.setUnavailable('api');
       apiServerInstance.onOperation(handleOperation);
-      env.API_UNAVAILABLE && apiServerInstance!.setUnavailable('api');
+      this.env.API_UNAVAILABLE && apiServerInstance!.setUnavailable('api');
     } else {
       this.server!.onOperation(handleOperation);
-      env.API_UNAVAILABLE && this.server!.setUnavailable('api');
+      this.env.API_UNAVAILABLE && this.server!.setUnavailable('api');
     }
 
-    env.STATIC_UNAVAILABLE && this.server!.setUnavailable('static');
+    this.env.STATIC_UNAVAILABLE && this.server!.setUnavailable('static');
     return this;
   }
 
