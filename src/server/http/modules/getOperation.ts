@@ -26,10 +26,10 @@ export const getOperation: THttpReqModule = (
     if (!contentType) return { options, names, data, contextParams };
 
     if (!REQ_MIME_TYPES_MAP[contentType]) {
-      throw new ServerError('E_BED_REQUEST');
+      throw new ServerError('BED_REQUEST');
     }
     if (length > REQ_MIME_TYPES_MAP[contentType].maxLength) {
-      throw new ServerError('E_BED_REQUEST');
+      throw new ServerError('BED_REQUEST');
     }
 
     try {
@@ -42,7 +42,7 @@ export const getOperation: THttpReqModule = (
       }
     } catch (e: any) {
       logger.error(e, e.message);
-      throw new ServerError('E_BED_REQUEST');
+      throw new ServerError('BED_REQUEST');
     }
 
     const content = Readable.from(req);

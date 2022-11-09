@@ -60,7 +60,7 @@ const config: IConfig = {
     },
   },
   inConnection: {
-    transport: 'http',
+    transport: 'ws',
     http: {
       path: resolve(BUILD_PATH, 'server/http/http'),
       modulesPath: resolve(BUILD_PATH, 'server/http/modules'),

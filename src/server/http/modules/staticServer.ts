@@ -45,10 +45,10 @@ export const createStaticServer = (staticPath: string) =>
       'Content-Type': RES_MIME_TYPES_MAP[ext] || RES_MIME_TYPES_MAP.default,
     } as IHeaders;
     if (!found && !ext) {
-      errCode = 'E_REDIRECT';
+      errCode = 'REDIRECT';
       resHeaders = { location: '/' };
-    } else if (!found) errCode = 'E_NOT_FOUND';
-    else if (staticUnavailable) errCode = 'E_UNAVAILABLE';
+    } else if (!found) errCode = 'NOT_FOUND';
+    else if (staticUnavailable) errCode = 'SERVICE_UNAVAILABLE';
     const statusCode = errCode ? ErrorStatusCodeMap[errCode]! : 200;
     const resLog = errCode ? statusCode + ' ' + ServerErrorMap[errCode] : 'OK';
     const log = getLog(req, resLog);
@@ -70,9 +70,9 @@ const prepareFile = async (
     .toLowerCase() as ResMimeTypeKeys;
   const notTraversal = filePath.startsWith(staticPath);
   try {
-    if (!notTraversal) throw new ServerError('E_NOT_FOUND');
+    if (!notTraversal) throw new ServerError('NOT_FOUND');
     const file = await fs.promises.stat(filePath);
-    if (!file || !file.isFile()) throw new ServerError('E_NOT_FOUND');
+    if (!file || !file.isFile()) throw new ServerError('NOT_FOUND');
     found = true;
     if (staticUnavailable)
       filePath = path.join(staticPath, UNAVAILABLE);

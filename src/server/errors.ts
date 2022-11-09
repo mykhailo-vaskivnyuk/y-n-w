@@ -1,23 +1,23 @@
 import { TOperationResponse } from '../app/types';
 
 export const ServerErrorMap = {
-  E_NOT_FOUND: 'Not found',
-  E_BED_REQUEST: 'Bad request',
-  E_SERVER_ERROR: 'Internal server error',
-  E_UNAVAILABLE: 'Service unavailable',
-  E_NO_CALLBACK: 'onOperation callback is not set',
-  E_LISTEN: 'Can\'t start server',
-  E_REDIRECT: 'Redirect',
+  NOT_FOUND: 'Not found',
+  BED_REQUEST: 'Bad request',
+  REDIRECT: 'Redirect',
+  SERVICE_UNAVAILABLE: 'Service unavailable',
+  SERVER_ERROR: 'Internal server error',
+  NO_CALLBACK: 'onOperation callback is not set',
+  LISTEN_ERROR: 'Can\'t start server',
 } as const;
 
 export type ServerErrorCode = keyof typeof ServerErrorMap;
 
 export const ErrorStatusCodeMap: Partial<Record<ServerErrorCode, number>> = {
-  E_REDIRECT: 301,
-  E_NOT_FOUND: 404,
-  E_BED_REQUEST: 400,
-  E_SERVER_ERROR: 500,
-  E_UNAVAILABLE: 503,
+  REDIRECT: 301,
+  NOT_FOUND: 404,
+  BED_REQUEST: 400,
+  SERVER_ERROR: 500,
+  SERVICE_UNAVAILABLE: 503,
 };
 export type ErrorStatusCode = keyof typeof ErrorStatusCodeMap;
 

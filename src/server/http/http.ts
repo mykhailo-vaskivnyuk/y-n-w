@@ -44,7 +44,7 @@ class HttpConnection implements IInputConnection {
 
   start() {
     if (!this.exec && !this.apiUnavailable) {
-      const e = new ServerError('E_NO_CALLBACK');
+      const e = new ServerError('NO_CALLBACK');
       logger.error(e, e.message);
       throw e;
     }
@@ -53,7 +53,7 @@ class HttpConnection implements IInputConnection {
       this.resModules = applyResModules(this.config);
     } catch (e: any) {
       logger.error(e, e.message);
-      throw new ServerError('E_SERVER_ERROR');
+      throw new ServerError('SERVER_ERROR');
     }
     const executor: TPromiseExecutor<void> = (rv, rj) => {
       const { port } = this.config;
@@ -61,7 +61,7 @@ class HttpConnection implements IInputConnection {
         this.server.listen(port, rv);
       } catch (e: any) {
         logger.error(e, e.message);
-        rj(new ServerError('E_LISTEN'));
+        rj(new ServerError('LISTEN_ERROR'));
       }
     };
     return new Promise<void>(executor);
@@ -78,7 +78,7 @@ class HttpConnection implements IInputConnection {
       );
 
       if (!context) return;
-      if (this.apiUnavailable) throw new ServerError('E_UNAVAILABLE');
+      if (this.apiUnavailable) throw new ServerError('SERVICE_UNAVAILABLE');
       const { ...operation } = context;
 
       let response = await this.exec!(operation);

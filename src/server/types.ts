@@ -27,7 +27,6 @@ export type IWsConfig = IInputConnectionConfig['ws'];
 
 export type IServer = IHttpServer | IWsServer;
 export type IRequest = http.IncomingMessage;
-export type TServerService = 'static' | 'api';
 
 export interface IInputConnection {
   onOperation(fn:
@@ -37,3 +36,5 @@ export interface IInputConnection {
   getServer(): IServer;
   start(): Promise<void>;
 }
+
+export type TServerService = 'static' | 'api';

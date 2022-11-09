@@ -25,13 +25,13 @@ const errors: Partial<Record<
 RouterErrorCode, (details: TRouterErrorDetails) => never
 >> = {
   E_NO_ROUTE: (details: TRouterErrorDetails) => {
-    throw new ServerError('E_NOT_FOUND', details);
+    throw new ServerError('NOT_FOUND', details);
   },
   E_MODULE: (details: TRouterErrorDetails) => {
-    throw new ServerError('E_BED_REQUEST', details);
+    throw new ServerError('BED_REQUEST', details);
   },
   E_REDIRECT: (details: TRouterErrorDetails) => {
-    throw new ServerError('E_REDIRECT', details);
+    throw new ServerError('REDIRECT', details);
   },
 };
 

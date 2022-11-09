@@ -1,13 +1,12 @@
 import { Server, WebSocket } from 'ws';
-import {
-  IInputConnection, IInputConnectionConfig,
-  IRequest, IWsConfig } from '../types';
+import { IInputConnection, IRequest, IWsConfig } from '../types';
 import { IWsServer } from './types';
 import { IOperation, TOperationResponse } from '../../app/types';
-import { ServerError, ServerErrorMap } from '../errors';
-import { createUnicCode } from '../../utils/crypto';
 import { IHttpServer } from '../http/types';
+import { ServerError } from '../errors';
 import { getLog } from './utils';
+import { getSessionKey } from '../utils';
+import { handleError } from './errorHandler';
 
 class WsConnection implements IInputConnection {
   private config: IWsConfig;
@@ -36,29 +35,26 @@ class WsConnection implements IInputConnection {
 
   async start() {
     if (this.exec) return;
-    const e = new ServerError('E_NO_CALLBACK');
+    const e = new ServerError('NO_CALLBACK');
     logger.error(e, e.message);
     throw e;
   }
 
   private handleConnection(connection: WebSocket, req: IRequest) {
-    connection.on('message', async (
-      message: string,
-    ) => await this.onRequest(
-      message.toString(), req, connection
-    ));
+    const options = this.getRequestParams(req);
+    const handleRequest = async (message: Buffer) =>
+      await this.handleRequest(message, options, connection);
+    connection.on('message', handleRequest);
   }
 
-  private async onRequest(
-    message: string, req: IRequest, connection: WebSocket,
+  private async handleRequest(
+    message: Buffer, options: IOperation['options'], connection: WebSocket,
   ) {
-    let options = {} as IOperation['options'];
     try {
-      if (this.apiUnavailable) throw new ServerError('E_UNAVAILABLE');
-      const operation = await this.getOperation(message, req);
+      if (this.apiUnavailable) throw new ServerError('SERVICE_UNAVAILABLE');
+      const operation = await this.getOperation(message, options);
       ({ options } = operation);
       const { requestId, pathname } = options;
-
       const data = await this.exec!(operation);
       const response = {
         requestId,
@@ -70,67 +66,30 @@ class WsConnection implements IInputConnection {
       logger.info({}, getLog(pathname, 'OK'));
       connection.send(responseMessage, { binary: false });
     } catch (e) {
-      this.onError(e, options, connection);
+      handleError(e, options, connection);
       throw e;
     }
   }
 
-  private async getOperation(message: string, req: IRequest) {
-    const { options, names, params } = this.getRequestParams(message, req);
-    const data = { params } as IOperation['data'];
-    return { options, names, data };
+  private getRequestParams(req: IRequest): IOperation['options'] {
+    const { origin } = req.headers;
+    const options: IOperation['options'] = {} as IOperation['options'];
+    options.sessionKey = getSessionKey(req);
+    options.origin = origin || '';
+    return options;
   }
 
-  private getRequestParams(message: string, req: IRequest) {
-    const { origin, cookie } = req.headers;
-    // throw new ServerError('E_SERVER_ERROR');
-    const request = JSON.parse(message);
+  private async getOperation(message: Buffer, options: IOperation['options']) {
+    const request = JSON.parse(message.toString());
     const { requestId, pathname, data: params } = request;
     const names = ((pathname as string)
       .slice(1) || 'index')
       .split('/')
       .filter((path) => Boolean(path));
-
-    const options: IOperation['options'] = {} as IOperation['options'];
     options.requestId = requestId;
-    options.sessionKey = this.getSessionKey(cookie);
-    options.origin = origin || '';
     options.pathname = pathname;
-
-    return { options, names, params };
-  }
-
-  private getSessionKey(cookie?: string) {
-    if (cookie) {
-      const regExp = /sessionKey=([^\s]*)\s*;?/;
-      const [, result] = cookie.match(regExp) || [];
-      if (result) return result;
-    }
-    return createUnicCode(15);
-  }
-
-  private onError(
-    e: any, options: IOperation['options'], connection: WebSocket,
-  ) {
-    let error = e;
-    if (!(e instanceof ServerError)) {
-      error = new ServerError('E_SERVER_ERROR', e.details);
-    }
-    const { code, statusCode = 500 } = error as ServerError;
-    const { requestId, pathname } = options;
-    const resLog = statusCode + ' ' + ServerErrorMap[code];
-    logger.error({}, getLog(pathname, resLog));
-    const response = {
-      requestId,
-      status: statusCode,
-      error: error.getMessage(),
-      data: null,
-    };
-    const responseMessage = JSON.stringify(response);
-    connection.send(responseMessage);
-
-    if (e.name !== ServerError.name) throw e;
-    if (e.code === 'E_SERVER_ERROR') throw e;
+    const data = { params } as IOperation['data'];
+    return { options, names, data };
   }
 }
 
