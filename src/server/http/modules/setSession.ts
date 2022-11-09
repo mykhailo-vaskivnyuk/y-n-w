@@ -2,7 +2,7 @@ import { THttpModule } from '../types';
 import { createUnicCode } from '../../../utils/crypto';
 
 export const setSession: THttpModule = () =>
-  async function setSession(req, res, options) {
+  async function setSession(req, res, context) {
     const { cookie } = req.headers;
     let result;
     if (cookie) {
@@ -13,5 +13,6 @@ export const setSession: THttpModule = () =>
     res.setHeader(
       'set-cookie', `sessionKey=${sessionKey}; Path=/; httpOnly`
     );
-    return { ...options, sessionKey };
+    const options = { ...context.options, sessionKey };
+    return { ...context, options };
   };

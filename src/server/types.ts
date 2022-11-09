@@ -8,6 +8,7 @@ export interface IInputConnectionConfig {
   transport: 'http' | 'ws';
   http: {
     path: string;
+    modulesPath: string;
     paths: {
       public: string;
       api: string;

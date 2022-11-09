@@ -4,6 +4,7 @@ import { IDatabaseConfig, IDatabaseQueries } from '../db/types';
 import { IMailService, IRouterConfig } from '../router/types';
 import { ILogger, ILoggerConfig } from '../logger/types';
 import { IInputConnectionConfig } from '../server/types';
+import { ReqMimeTypesKeys } from '../server/http/constants';
 
 export interface IConfig {
   envPath: string,
@@ -42,7 +43,7 @@ export interface IOperation {
   };
   names: string[];
   data: {
-    stream?: { type?: string; content: Readable };
+    stream?: { type?: ReqMimeTypesKeys; content: Readable };
     params: IParams;
   };
 }

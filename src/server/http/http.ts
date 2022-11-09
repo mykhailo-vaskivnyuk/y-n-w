@@ -1,19 +1,17 @@
 import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
-import {
-  HTTP_MODULES, REQ_MIME_TYPES_MAP, ReqMimeTypesKeys,
-  REQ_MIME_TYPES_ENUM, JSON_TRANSFORM_LENGTH,
-} from './constants';
+import { join } from 'node:path';
+import { TPromiseExecutor } from '../../types/types';
+import { IOperation, TOperationResponse } from '../../app/types';
 import {
   IInputConnection, IInputConnectionConfig,
   IRequest, TServerService,
 } from '../types';
-import { IResponse, IHttpServer, THttpModule } from './types';
-import { TPromiseExecutor } from '../../types/types';
-import { IOperation, IParams, TOperationResponse } from '../../app/types';
+import { IResponse, IHttpServer, THttpModule, IHttpContext } from './types';
+import { HTTP_MODULES, REQ_MIME_TYPES_ENUM } from './constants';
 import { ServerError } from '../errors';
-import { getLog, getUrlInstance } from './utils';
 import { handleError } from './error.handler';
+import { getLog } from './utils';
 
 class HttpConnection implements IInputConnection {
   private config: IInputConnectionConfig['http'];
@@ -50,10 +48,11 @@ class HttpConnection implements IInputConnection {
     }
 
     try {
-      const { modules } = this.config;
+      const { modules, modulesPath } = this.config;
       this.modules = modules.map(
         (moduleName) => {
-          const modulePath = HTTP_MODULES[moduleName];
+          const moduleFileName = HTTP_MODULES[moduleName];
+          const modulePath = join(modulesPath, moduleFileName);
           return require(modulePath)[moduleName](this.config);
         });
     } catch (e: any) {
@@ -75,18 +74,12 @@ class HttpConnection implements IInputConnection {
   }
 
   private async onRequest(req: IRequest, res: IResponse) {
-    const optionsFromModules = await this.runModules(req, res);
-    if (!optionsFromModules) return;
-
     try {
-      const { options, names, data } = await this.getOperation(req);
-      const operation = {
-        options: { ...optionsFromModules, ...options },
-        names,
-        data,
-      };
-      const { params } = data;
+      const context = await this.runModules(req, res);
+      if (!context) return;
       if (this.apiUnavailable) throw new ServerError('E_UNAVAILABLE');
+      const { ...operation } = context;
+      const { data: { params } } = operation;
       const response = await this.exec!(operation);
       res.statusCode = 200;
 
@@ -119,80 +112,20 @@ class HttpConnection implements IInputConnection {
   }
 
   private async runModules(req: IRequest, res: IResponse) {
-    const context = {
+    const operation = {
+      options: {},
+      data: { params: {} },
+    } as IOperation;
+    const contextParams = {
       staticUnavailable: this.staticUnavailable,
       apiUnavailable: this.apiUnavailable,
     };
-    let options = {} as IOperation['options'];
+    let context: IHttpContext | null = { ...operation, contextParams,  };
     for (const module of this.modules) {
-      console.log(this.modules.length, module.name);
-      const next = await module(req, res, options, context);
-      if (!next) return null;
-      options = next;
+      context = await module(req, res, context);
+      if (!context) return null;
     }
-    return options;
-  }
-
-  private async getOperation(req: IRequest) {
-    const { options, names, params } = this.getRequestParams(req);
-    const data = { params } as IOperation['data'];
-    const { headers } = req;
-    const contentType = headers['content-type'] as ReqMimeTypesKeys | undefined;
-    const length = +(headers['content-length'] || Infinity);
-
-    if (!contentType) return { options, names, data };
-
-    if (!REQ_MIME_TYPES_MAP[contentType]) {
-      throw new ServerError('E_BED_REQUEST');
-    }
-    if (length > REQ_MIME_TYPES_MAP[contentType].maxLength) {
-      throw new ServerError('E_BED_REQUEST');
-    }
-
-    if (
-      contentType === REQ_MIME_TYPES_ENUM['application/json'] &&
-      length < JSON_TRANSFORM_LENGTH
-    ) {
-      Object.assign(params, await this.getJson(req));
-      return { options, names, data };
-    }
-
-    const content = Readable.from(req);
-    data.stream = { type: contentType, content };
-
-    return { options, names, data };
-  }
-
-  private getRequestParams(req: IRequest) {
-    const { origin } = req.headers;
-    const { pathname, searchParams } = getUrlInstance(req.url, origin);
-
-    const names = (pathname
-      .replace('/' + this.config.paths.api, '')
-      .slice(1) || 'index')
-      .split('/')
-      .filter((path) => Boolean(path));
-
-    const params = {} as IParams;
-    const queryParams = searchParams.entries();
-    for (const [key, value] of queryParams) params[key] = value;
-
-    const options: IOperation['options'] = {} as IOperation['options'];
-    options.origin = origin || '';
-
-    return { options, names, params };
-  }
-
-  private async getJson(req: IRequest) {
-    try {
-      const buffers: Uint8Array[] = [];
-      for await (const chunk of req) buffers.push(chunk as any);
-      const data = Buffer.concat(buffers).toString();
-      return JSON.parse(data);
-    } catch (e: any) {
-      logger.error(e, e.message);
-      throw new ServerError('E_BED_REQUEST');
-    }
+    return context;
   }
 }
 

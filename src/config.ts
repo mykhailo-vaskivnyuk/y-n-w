@@ -65,6 +65,7 @@ const config: IConfig = {
     transport: 'http',
     http: {
       path: path.resolve(buildPath, 'server/http/http'),
+      modulesPath: path.resolve(buildPath, 'server/http/modules'),
       paths: {
         public: 'public',
         api: 'api',
@@ -73,6 +74,7 @@ const config: IConfig = {
         'allowCors',
         'setSession',
         'staticServer',
+        'getOperation',
       ],
       host,
       port,

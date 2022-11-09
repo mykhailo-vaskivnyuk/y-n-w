@@ -2,7 +2,7 @@ import { HEADERS } from '../constants';
 import { THttpModule } from '../types';
 
 export const allowCors: THttpModule = () =>
-  async function allowCors(req, res, { ...options }) {
+  async function allowCors(req, res, { ...context }) {
     const { method } = req;
     if (method?.toLocaleLowerCase() === 'options') {
       res.writeHead(200, HEADERS);
@@ -14,5 +14,5 @@ export const allowCors: THttpModule = () =>
       .forEach((key) =>
         res.setHeader(key, HEADERS[key as keyof typeof HEADERS])
       );
-    return options;
+    return context;
   };
