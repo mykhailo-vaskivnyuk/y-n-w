@@ -3,11 +3,10 @@ import { Readable } from 'node:stream';
 import { TPromiseExecutor } from '../../types/types';
 import { IOperation, TOperationResponse } from '../../app/types';
 import {
-  IInputConnection, IHttpConfig,
-  IRequest, TServerService } from '../types';
+  IInputConnection, IRequest, TServerService } from '../types';
 import {
   IResponse, IHttpServer,
-  THttpReqModule, THttpResModule } from './types';
+  THttpReqModule, THttpResModule, IHttpConfig } from './types';
 import { ServerError } from '../errors';
 import { handleError } from './error.handler';
 import {

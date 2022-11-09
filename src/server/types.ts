@@ -1,29 +1,13 @@
 import http from 'node:http';
-import { THttpReqModulesKeys, THttpResModulesKeys } from './http/constants';
 import { IOperation, TOperationResponse } from '../app/types';
-import { IHttpServer } from './http/types';
-import { IWsServer } from './ws/types';
+import { IHttpConfig, IHttpServer } from './http/types';
+import { IWsConfig, IWsServer } from './ws/types';
 
 export interface IInputConnectionConfig {
   transport: 'http' | 'ws';
-  http: {
-    path: string;
-    modulesPath: string;
-    paths: {
-      public: string;
-      api: string;
-    };
-    reqModules: THttpReqModulesKeys[];
-    resModules: THttpResModulesKeys[];
-    host: string;
-    port: number;
-  };
-  ws: {
-    path: string;
-  };
+  http: IHttpConfig;
+  ws: IWsConfig;
 }
-export type IHttpConfig = IInputConnectionConfig['http'];
-export type IWsConfig = IInputConnectionConfig['ws'];
 
 export type IServer = IHttpServer | IWsServer;
 export type IRequest = http.IncomingMessage;

@@ -1,27 +1,25 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { IHttpConfig, IRequest } from '../../types';
+import { IRequest } from '../../types';
 import {
-  IHeaders, IHttpContext, IPreparedFile,
-  IResponse, THttpReqModule,
-} from '../types';
+  IHeaders, IHttpConfig, IHttpContext,
+  IPreparedFile, IResponse, THttpReqModule } from '../types';
 import {
   INDEX, NOT_FOUND, ResMimeTypeKeys,
-  RES_MIME_TYPES_MAP, UNAVAILABLE,
-} from '../constants';
+  RES_MIME_TYPES_MAP, UNAVAILABLE } from '../constants';
 import {
-  ErrorStatusCode, ErrorStatusCodeMap, ServerError, ServerErrorMap,
-} from '../../errors';
-import { getisApi, getLog, getUrlInstance } from '../utils';
+  ErrorStatusCode, ErrorStatusCodeMap,
+  ServerError, ServerErrorMap } from '../../errors';
+import { makeIsApi, getLog, getUrlInstance } from '../utils';
 
 export const staticServer: THttpReqModule = (config: IHttpConfig) => {
-  const { public: publicPath, api } = config.paths;
-  const isApi = getisApi(api);
-  const httpStaticServer = createStaticServer(publicPath);
+  const { static: staticPath, api } = config.servicePrefix;
+  const isApi = makeIsApi(api);
+  const httpStaticServer = createStaticServer(staticPath);
 
   return async function staticServer(
-    req, res, context,
+    req, res, { ...context },
   ) {
     if (isApi(req.url)) return context;
     await httpStaticServer(req, res, context);

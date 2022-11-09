@@ -1,11 +1,11 @@
 import { Readable } from 'node:stream';
 import { IOperation, IParams } from '../../../app/types';
 import { ServerError } from '../../errors';
-import { IHttpConfig, IRequest } from '../../types';
+import { IRequest } from '../../types';
 import {
-  JSON_TRANSFORM_LENGTH, ReqMimeTypesKeys, REQ_MIME_TYPES_MAP,
-} from '../constants';
-import { IHttpContext, THttpReqModule } from '../types';
+  JSON_TRANSFORM_LENGTH, ReqMimeTypesKeys,
+  REQ_MIME_TYPES_MAP } from '../constants';
+import { IHttpConfig, IHttpContext, THttpReqModule } from '../types';
 import { getJson, getUrlInstance } from '../utils';
 
 let thisConfig: IHttpConfig;
@@ -58,7 +58,7 @@ const getRequestParams = (req: IRequest, context: IHttpContext) => {
   const { pathname, searchParams } = getUrlInstance(req.url, origin);
 
   const names = (pathname
-    .replace('/' + thisConfig?.paths.api, '')
+    .replace('/' + thisConfig?.servicePrefix.api, '')
     .slice(1) || 'index')
     .split('/')
     .filter((path) => Boolean(path));

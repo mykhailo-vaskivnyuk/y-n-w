@@ -2,7 +2,22 @@ import http from 'node:http';
 import { Readable } from 'node:stream';
 import { IOperation } from '../../app/types';
 import { IRequest } from '../types';
-import { ResMimeTypeKeys } from './constants';
+import {
+  ResMimeTypeKeys, THttpReqModulesKeys,
+  THttpResModulesKeys } from './constants';
+
+export interface IHttpConfig {
+  path: string;
+  modulesPath: string;
+  servicePrefix: {
+    static: string;
+    api: string;
+  };
+  reqModules: THttpReqModulesKeys[];
+  resModules: THttpResModulesKeys[];
+  host: string;
+  port: number;
+}
 
 export type IHttpServer = http.Server;
 export type IResponse = http.ServerResponse;

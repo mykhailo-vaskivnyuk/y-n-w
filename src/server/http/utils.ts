@@ -2,9 +2,9 @@ import { format } from 'node:util';
 import { Readable } from 'node:stream';
 import { join } from 'node:path';
 import { HTTP_REQ_MODULES, HTTP_RES_MODULES } from './constants';
-import { IHttpConfig, IRequest } from '../types';
+import { IRequest } from '../types';
 import {
-  IHttpContext, IHttpContextParams,
+  IHttpConfig, IHttpContext, IHttpContextParams,
   IResponse, THttpReqModule, THttpResModule } from './types';
 import { IOperation } from '../../app/types';
 
@@ -25,7 +25,7 @@ export const getJson = async (stream: Readable) => {
   return JSON.parse(data);
 };
 
-export const getisApi = (api: string) => (url = '') => {
+export const makeIsApi = (api: string) => (url = '') => {
   const regExp = new RegExp(`^/${api}(/.*)?$`);
   return regExp.test(url);
 };

@@ -1,6 +1,6 @@
 import { Server, WebSocket } from 'ws';
-import { IInputConnection, IRequest, IWsConfig } from '../types';
-import { IWsServer } from './types';
+import { IInputConnection, IRequest } from '../types';
+import { IWsConfig, IWsServer } from './types';
 import { IOperation, TOperationResponse } from '../../app/types';
 import { IHttpServer } from '../http/types';
 import { ServerError } from '../errors';
@@ -79,7 +79,9 @@ class WsConnection implements IInputConnection {
     return options;
   }
 
-  private async getOperation(message: Buffer, options: IOperation['options']) {
+  private async getOperation(
+    message: Buffer, { ...options }: IOperation['options'],
+  ) {
     const request = JSON.parse(message.toString());
     const { requestId, pathname, data: params } = request;
     const names = ((pathname as string)

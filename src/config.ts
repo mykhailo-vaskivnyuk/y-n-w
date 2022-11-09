@@ -64,8 +64,8 @@ const config: IConfig = {
     http: {
       path: resolve(BUILD_PATH, 'server/http/http'),
       modulesPath: resolve(BUILD_PATH, 'server/http/modules'),
-      paths: {
-        public: 'public',
+      servicePrefix: {
+        static: 'public',
         api: 'api',
       },
       reqModules: [
