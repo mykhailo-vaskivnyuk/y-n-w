@@ -60,14 +60,12 @@ const config: IConfig = {
     },
   },
   inConnection: {
-    transport: 'ws',
+    transport: 'http',
     http: {
       path: resolve(BUILD_PATH, 'server/http/http'),
       modulesPath: resolve(BUILD_PATH, 'server/http/modules'),
-      servicePrefix: {
-        static: 'public',
-        api: 'api',
-      },
+      staticPath: resolve('public'),
+      apiPathname: 'api',
       reqModules: [
         'allowCors',
         'setSession',

@@ -119,7 +119,7 @@ export default class App {
       logger,
       execQuery,
     };
-    const Router = loadModule(router.path, context, 'isolate_all');
+    const Router = loadModule(router.path, context);
     this.router = new Router(router);
     return this;
   }

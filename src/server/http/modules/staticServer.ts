@@ -14,8 +14,8 @@ import {
 import { makeIsApi, getLog, getUrlInstance } from '../utils';
 
 export const staticServer: THttpReqModule = (config: IHttpConfig) => {
-  const { static: staticPath, api } = config.servicePrefix;
-  const isApi = makeIsApi(api);
+  const { staticPath, apiPathname } = config;
+  const isApi = makeIsApi(apiPathname);
   const httpStaticServer = createStaticServer(staticPath);
 
   return async function staticServer(

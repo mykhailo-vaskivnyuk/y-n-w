@@ -9,10 +9,8 @@ import {
 export interface IHttpConfig {
   path: string;
   modulesPath: string;
-  servicePrefix: {
-    static: string;
-    api: string;
-  };
+  staticPath: string;
+  apiPathname: string;
   reqModules: THttpReqModulesKeys[];
   resModules: THttpResModulesKeys[];
   host: string;

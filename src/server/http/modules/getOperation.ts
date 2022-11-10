@@ -58,7 +58,7 @@ const getRequestParams = (req: IRequest, context: IHttpContext) => {
   const { pathname, searchParams } = getUrlInstance(req.url, origin);
 
   const names = (pathname
-    .replace('/' + thisConfig?.servicePrefix.api, '')
+    .replace('/' + thisConfig?.apiPathname, '')
     .slice(1) || 'index')
     .split('/')
     .filter((path) => Boolean(path));
