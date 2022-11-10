@@ -42,16 +42,15 @@ export class ClientApp extends EventEmitter {
       this.clientApi = getApi(connection);
       await this.clientApi.health();
     } catch (e) {
-      if (!(e instanceof HttpResponseError)) throw e;
-      if (e.statusCode !== 503) throw e;
-      const baseUrl = `ws://${this.baseUrl}`;
-      const connection = await getWsConnection(baseUrl);
-      this.clientApi = getApi(connection);
+      if (!(e instanceof HttpResponseError)) return this.setState(AppState.ERROR);
+      if (e.statusCode !== 503) return this.setState(AppState.ERROR);
       try {
+        const baseUrl = `ws://${this.baseUrl}`;
+        const connection = await getWsConnection(baseUrl);
+        this.clientApi = getApi(connection);
         await this.clientApi.health();
       } catch (err) {
-        this.setState(AppState.ERROR);
-        throw err;
+        return this.setState(AppState.ERROR);
       }
     }
     await this.readUser();

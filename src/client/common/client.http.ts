@@ -16,7 +16,6 @@ export const getConnection =
       throw new HttpResponseError(status as HttpResponseErrorCode);
     } catch (e) {
       console.log(e);
-      if (e instanceof HttpResponseError) throw e;
-      throw new HttpResponseError(503);
+      throw e;
     }
   };
