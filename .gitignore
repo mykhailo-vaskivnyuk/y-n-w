@@ -1,5 +1,5 @@
 # compiled
-js
+/js
 # js/**/*.*s
 # js/**/*.map
 # !js/**/*.js
