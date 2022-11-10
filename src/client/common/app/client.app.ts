@@ -32,20 +32,19 @@ export class ClientApp extends EventEmitter {
   constructor() {
     super();
     this.account = getAccountMethods(this as unknown as ClientAppThis);
-    this.baseUrl = process.env.API || `${window.location.host}/api`;
+    this.baseUrl = process.env.API || `${window.location.origin}/api`;
   }
 
   async init() {
     try {
-      const baseUrl = `http://${this.baseUrl}`;
-      const connection = await getHttpConnection(baseUrl);
+      const connection = await getHttpConnection(this.baseUrl);
       this.clientApi = getApi(connection);
       await this.clientApi.health();
     } catch (e) {
       if (!(e instanceof HttpResponseError)) return this.setState(AppState.ERROR);
       if (e.statusCode !== 503) return this.setState(AppState.ERROR);
       try {
-        const baseUrl = `ws://${this.baseUrl}`;
+        const baseUrl = this.baseUrl.replace('http', 'ws');
         const connection = await getWsConnection(baseUrl);
         this.clientApi = getApi(connection);
         await this.clientApi.health();
