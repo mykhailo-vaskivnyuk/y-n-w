@@ -39,6 +39,6 @@ export const handleOperationError = (e: any): never => {
   if (e.name === RouterError.name) {
     const { code, details } = e;
     code in errors && errors[code as RouterErrorCode]!(details);
-  } else logger.error(e, e.message);
-  throw new AppError('E_ROUTER', e.message);
+  } else logger.error(e);
+  throw new AppError('E_ROUTER');
 };

@@ -36,7 +36,7 @@ class WsConnection implements IInputConnection {
   async start() {
     if (this.exec) return;
     const e = new ServerError('NO_CALLBACK');
-    logger.error(e, e.message);
+    logger.error(e);
     throw e;
   }
 

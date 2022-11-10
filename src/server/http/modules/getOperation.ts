@@ -41,7 +41,7 @@ export const getOperation: THttpReqModule = (
         return { options, names, data, contextParams };
       }
     } catch (e: any) {
-      logger.error(e, e.message);
+      logger.error(e);
       throw new ServerError('BED_REQUEST');
     }
 

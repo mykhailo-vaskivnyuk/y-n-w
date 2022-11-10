@@ -165,14 +165,14 @@ export default class App {
       RouterError.name,
       ServerError.name,
     ];
-    if (!knownErrors.includes(e.name)) logger.error(e, e.message);
+    if (!knownErrors.includes(e.name)) logger.error(e);
     if (!this.logger) throw new AppError('E_START');
     try {
       this.setInputConnection();
       await this.server!.start();
       this.logger.info('SERVER IS READY');
     } catch (e: any) {
-      if (!knownErrors.includes(e.name)) logger.error(e, e.message);
+      if (!knownErrors.includes(e.name)) logger.error(e);
       throw new AppError('E_START');
     }
   }

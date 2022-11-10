@@ -25,7 +25,7 @@ const getStream: TModule = () => async (operation, context) => {
     Object.assign(params, JSON.parse(string));
     return [operation, context];
   } catch (e: any) {
-    logger.error(e, e.message);
+    logger.error(e);
     throw new GetStreamError(e.message);
   }
 };

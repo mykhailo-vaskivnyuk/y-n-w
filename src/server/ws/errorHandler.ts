@@ -8,13 +8,13 @@ export const handleError = (
 ) => {
   let error = e;
   if (e.name !== ServerError.name) {
-    logger.error(e, e.message);
+    logger.error(e);
     error = new ServerError('SERVER_ERROR', e.details);
   }
   const { code, statusCode = 500 } = error as ServerError;
   const { requestId, pathname } = options;
   const resLog = statusCode + ' ' + ServerErrorMap[code];
-  logger.error({}, getLog(pathname, resLog));
+  logger.error(getLog(pathname, resLog));
   const response = {
     requestId,
     status: statusCode,

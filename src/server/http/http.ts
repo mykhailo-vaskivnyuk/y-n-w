@@ -44,14 +44,14 @@ class HttpConnection implements IInputConnection {
   start() {
     if (!this.exec && !this.apiUnavailable) {
       const e = new ServerError('NO_CALLBACK');
-      logger.error(e, e.message);
+      logger.error(e);
       throw e;
     }
     try {
       this.reqModules = applyReqModules(this.config);
       this.resModules = applyResModules(this.config);
     } catch (e: any) {
-      logger.error(e, e.message);
+      logger.error(e);
       throw new ServerError('SERVER_ERROR');
     }
     const executor: TPromiseExecutor<void> = (rv, rj) => {
@@ -59,7 +59,7 @@ class HttpConnection implements IInputConnection {
       try {
         this.server.listen(port, rv);
       } catch (e: any) {
-        logger.error(e, e.message);
+        logger.error(e);
         rj(new ServerError('LISTEN_ERROR'));
       }
     };

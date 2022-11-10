@@ -20,7 +20,7 @@ const setSession: TModule = () => async (operation, context) => {
     context.session = session;
     return [operation, context];
   } catch (e: any) {
-    logger.error(e, e.message);
+    logger.error(e);
     throw new SessionError();
   }
 };
