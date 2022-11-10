@@ -119,7 +119,7 @@ export default class App {
       logger,
       execQuery,
     };
-    const Router = loadModule(router.path, context);
+    const Router = loadModule(__dirname, router.path, context);
     this.router = new Router(router);
     return this;
   }
@@ -160,19 +160,19 @@ export default class App {
   }
 
   private async handleAppInitError(e: any) {
-    const isKnown = [
+    const knownErrors = [
       DatabaseError.name,
       RouterError.name,
       ServerError.name,
     ];
-    if (!isKnown.includes(e.name)) logger.error(e, e.message);
+    if (!knownErrors.includes(e.name)) logger.error(e, e.message);
     if (!this.logger) throw new AppError('E_START');
     try {
       this.setInputConnection();
       await this.server!.start();
       this.logger.info('SERVER IS READY');
     } catch (e: any) {
-      if (!isKnown.includes(e.name)) logger.error(e, e.message);
+      if (!knownErrors.includes(e.name)) logger.error(e, e.message);
       throw new AppError('E_START');
     }
   }
