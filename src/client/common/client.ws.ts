@@ -60,11 +60,11 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
     const request = { requestId, pathname, data };
     const requestMessage = JSON.stringify(request);
     console.log('request', request);
-    socket.send(requestMessage);
     return new Promise((resolve, reject) => {
       const handler = getHandler(resolve, reject);
       requests.set(handler, id);
       socket.addEventListener('message', handler);
+      socket.send(requestMessage);
     });
   };
 

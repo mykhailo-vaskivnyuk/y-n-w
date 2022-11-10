@@ -1,5 +1,6 @@
 export enum AppState {
-  INIT = 'init',
+  INITING = 'initing',
+  INITED = 'inited',
   LOADING = 'loading',
   READY = 'ready',
   ERROR = 'error',

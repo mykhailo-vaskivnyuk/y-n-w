@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
-import { IModulesContext } from '../app/types';
+import { IRouterContext } from '../app/types';
 import { TLoader } from './types';
 import { log, resolve } from './utils';
 
@@ -10,7 +10,7 @@ const curDiName = __dirname;
 
 export const loadModule = (
   modulePath: string,
-  modulesContext?: IModulesContext,
+  modulesContext?: IRouterContext,
 ) => {
   const __dirname = require.main?.path || path.resolve('.');
   try {
@@ -23,7 +23,7 @@ export const loadModule = (
 export const loader = (
   modulePath: string,
   parentModuleDir: string,
-  modulesContext?: IModulesContext,
+  modulesContext?: IRouterContext,
 ) => {
   const __filename = resolve(parentModuleDir, modulePath);
   if (!__filename) return require(modulePath);

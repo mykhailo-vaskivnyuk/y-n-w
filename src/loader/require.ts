@@ -1,6 +1,6 @@
 import path from 'node:path';
 import vm from 'node:vm';
-import { IModulesContext } from '../app/types';
+import { IRouterContext } from '../app/types';
 import { TCache, TRequire } from './types';
 import { getScriptInContext, log, resolve } from './utils';
 
@@ -9,7 +9,7 @@ const options = { displayErrors: true };
 export const loadModule = (
   parentModuleDir: string,
   modulePath: string,
-  { ...context } = {} as IModulesContext,
+  { ...context } = {} as IRouterContext,
   mode?: 'isolate_all',
 ) => {
   if (mode !== 'isolate_all') vm.createContext(context);
@@ -25,7 +25,7 @@ export const loadModule = (
 
 export const getRequire = (
   moduleDir: string,
-  context: vm.Context | IModulesContext,
+  context: vm.Context | IRouterContext,
 ) => {
   const curRequire = ((modulePath: string) => {
     const __filename = resolve(moduleDir, modulePath);

@@ -1,10 +1,21 @@
 import { Readable } from 'node:stream';
 import { IObject, TPrimitiv } from '../types/types';
 import { IDatabaseConfig, IDatabaseQueries } from '../db/types';
-import { IMailService, IRouterConfig } from '../router/types';
+import { IMailService, IRouter, IRouterConfig } from '../router/types';
 import { ILogger, ILoggerConfig } from '../logger/types';
-import { IInputConnectionConfig } from '../server/types';
+import { IInputConnection, IInputConnectionConfig } from '../server/types';
 import { ReqMimeTypesKeys } from '../server/http/constants';
+import App from './app';
+
+export type IAppThis = App & {
+  config: IConfig;
+  env: ICleanedEnv;
+  logger?: ILogger;
+  router?: IRouter;
+  server?: IInputConnection;
+  shutdown: () => Promise<void>;
+  setInputConnection: () => Promise<IAppThis>;
+};
 
 export interface IConfig {
   envPath: string,
@@ -19,7 +30,6 @@ export interface IEnv {
   API_UNAVAILABLE: string;
   EXIT_ON_ERROR: string;
 }
-
 export const EnvValuesMap = {
   true: true,
   false: false,
@@ -47,7 +57,6 @@ export interface IOperation {
     params: IParams;
   };
 }
-
 export type IParams = Record<string, TPrimitiv | IObject>;
 
 export type TOperationResponse =
@@ -56,20 +65,19 @@ export type TOperationResponse =
   | (IObject | TPrimitiv)[]
   | Readable;
 
+export interface IRouterContext {
+    execQuery: IDatabaseQueries;
+    logger: ILogger;
+}
+
 export interface IGlobalMixins {
   execQuery: IDatabaseQueries;
   logger: ILogger;
   mailService: IMailService;
-  env: ICleanedEnv;
 }
 
 declare global {
   const execQuery: IDatabaseQueries;
   const logger: ILogger;
   const mailService: IMailService;
-}
-
-export interface IModulesContext {
-  execQuery: IDatabaseQueries;
-  logger: ILogger;
 }

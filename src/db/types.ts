@@ -1,3 +1,4 @@
+import { GetParamsTypes } from '../types/types';
 import { IQueriesSession } from './queries/session';
 import { IQueriesUser } from './queries/user/types';
 
@@ -17,18 +18,20 @@ export interface IDatabaseConfig {
   }>;
 }
 
-export interface IDatabase {
-  init(): Promise<void>;
-  getQueries(): IDatabaseQueries;
-}
-
 export interface IDatabaseConnection {
   connect(): Promise<void>;
   query<T extends any[]>(sql: string, params: T): Promise<any>;
 }
 
-type GetParamsTypes<T extends [string, any][]> =
-  { [key in keyof T]: T[key][1] };
+export interface IDatabase {
+  init(): Promise<this>;
+  getQueries(): IDatabaseQueries;
+}
+
+export interface IDatabaseQueries {
+  user: IQueriesUser;
+  session: IQueriesSession;
+}
 
 export interface IQueries {
   [key: string]: TQuery | IQueries;
@@ -40,8 +43,3 @@ export type TQuery<
 > = (params: GetParamsTypes<T>) => Promise<Q[]>;
 
 export type TQueriesModule = Record<string, string> | string;
-
-export interface IDatabaseQueries {
-  user: IQueriesUser;
-  session: IQueriesSession;
-}

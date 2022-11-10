@@ -47,6 +47,7 @@ class Router implements IRouter {
       logger.error(e);
       throw new RouterError('E_ROUTES');
     }
+    return this;
   }
 
   async exec({ ...operation }: IOperation): Promise<TOperationResponse> {

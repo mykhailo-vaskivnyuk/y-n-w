@@ -18,3 +18,6 @@ export type IObject = {
     | (TPrimitiv | IObject)[]
     | Readable;
 }
+
+export type GetParamsTypes<T extends [string, any][]> =
+  { [key in keyof T]: T[key][1] };

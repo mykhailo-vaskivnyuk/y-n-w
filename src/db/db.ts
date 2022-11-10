@@ -33,6 +33,7 @@ class Database implements IDatabase {
       logger.error(e);
       throw new DatabaseError('E_DB_INIT');
     }
+    return this;
   }
 
   getQueries() {

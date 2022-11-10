@@ -23,7 +23,7 @@ export interface IRouterConfig {
 }
 
 export interface IRouter {
-  init(): Promise<void>;
+  init(): Promise<this>;
   exec(operation: IOperation): Promise<TOperationResponse>;
 }
 

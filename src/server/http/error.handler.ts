@@ -7,7 +7,6 @@ import { getLog } from './utils';
 export const handleError = (e: any, req: IRequest, res: IResponse) => {
   let error = e;
   if (e.name !== ServerError.name) {
-    logger.error(e);
     error = new ServerError('SERVER_ERROR', e.details);
   }
   const { code, statusCode = 500, details } = error as ServerError;

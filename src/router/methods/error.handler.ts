@@ -5,29 +5,35 @@ import { GetStreamError } from '../modules/get.stream';
 import { SessionError } from '../modules/set.session';
 import { ValidationError } from '../modules/validate';
 
-export const errorHandler = (e: any): never => {
-  const { message, code, details } = e;
-
-  if (e.name === DatabaseError.name) {
-    throw new RouterError('E_HANDLER', message);
-  }
-
-  if (e instanceof HandlerError) {
-    if (code === 'E_REDIRECT') {
-      throw new RouterError('E_REDIRECT', details);
+const ROUTER_ERRORS_MAP = {
+  [DatabaseError.name]: (e: any) => {
+    throw new RouterError('E_HANDLER', e.message);
+  },
+  [HandlerError.name]: (e: any) => {
+    if (e.code === 'E_REDIRECT') {
+      throw new RouterError('E_REDIRECT', e.details);
     }
-    throw new RouterError('E_HANDLER', message);
-  }
+    throw new RouterError('E_HANDLER', e.message);
+  },
+  [SessionError.name]: (e: any) => {
+    throw new RouterError('E_ROUTER', e.message);
+  },
+  [ValidationError.name]: (e: any) => {
+    throw new RouterError('E_MODULE', e.details);
+  },
+  [GetStreamError.name]: (e: any) => {
+    throw new RouterError('E_MODULE', e.message);
+  },
+  [ValidationResponseError.name]: (e: any) => {
+    throw new RouterError('E_MODULE', e.message);
+  },
+};
 
-  if (e instanceof SessionError)
-    throw new RouterError('E_ROUTER', message);
-  if (e instanceof ValidationError)
-    throw new RouterError('E_MODULE', details);
-  if (e instanceof GetStreamError)
-    throw new RouterError('E_MODULE', message);
-  if (e instanceof ValidationResponseError)
-    throw new RouterError('E_MODULE', message);
+const throwError = (e: any) => ROUTER_ERRORS_MAP[e.name]?.(e);
 
+export const errorHandler = (e: any): never => {
+  throwError(e);
   logger.error(e);
+  const { message, details } = e;
   throw new RouterError('E_ROUTER', details || message);
 };
