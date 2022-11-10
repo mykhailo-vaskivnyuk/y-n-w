@@ -18,7 +18,7 @@ const createMailServiceMethods = (config: MailOptions) => {
       try {
         return await sendMail(type, to, origin, token);
       } catch (e: any) {
-        logger.error(e, e.message);
+        logger.error(e);
       }
     };
 

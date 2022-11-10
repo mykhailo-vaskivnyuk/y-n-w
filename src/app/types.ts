@@ -3,23 +3,47 @@ import { IObject, TPrimitiv } from '../types/types';
 import { IDatabaseConfig, IDatabaseQueries } from '../db/types';
 import { IMailService, IRouterConfig } from '../router/types';
 import { ILogger, ILoggerConfig } from '../logger/types';
-import { IInputConnectionConfig } from '../server/http/types';
+import { IInputConnectionConfig } from '../server/types';
+import { ReqMimeTypesKeys } from '../server/http/constants';
 
 export interface IConfig {
+  envPath: string,
   logger: ILoggerConfig;
   database: IDatabaseConfig;
   router: IRouterConfig;
   inConnection: IInputConnectionConfig;
 }
 
+export interface IEnv {
+  STATIC_UNAVAILABLE: string;
+  API_UNAVAILABLE: string;
+  EXIT_ON_ERROR: string;
+}
+
+export const EnvValuesMap = {
+  true: true,
+  false: false,
+};
+export type EnvValuesKeys = keyof typeof EnvValuesMap;
+export interface ICleanedEnv {
+  STATIC_UNAVAILABLE: boolean;
+  API_UNAVAILABLE: boolean;
+  EXIT_ON_ERROR: boolean;
+  RUN_ONCE: boolean;
+  DEV: boolean;
+}
+export type CleanedEnvKeys = keyof ICleanedEnv;
+
 export interface IOperation {
   options: {
     sessionKey: string;
     origin: string;
+    requestId?: number;
+    pathname?: string;
   };
   names: string[];
   data: {
-    stream?: { type?: string; content: Readable };
+    stream?: { type?: ReqMimeTypesKeys; content: Readable };
     params: IParams;
   };
 }
@@ -31,6 +55,13 @@ export type TOperationResponse =
   | IObject
   | (IObject | TPrimitiv)[]
   | Readable;
+
+export interface IGlobalMixins {
+  execQuery: IDatabaseQueries;
+  logger: ILogger;
+  mailService: IMailService;
+  env: ICleanedEnv;
+}
 
 declare global {
   const execQuery: IDatabaseQueries;

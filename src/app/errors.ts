@@ -1,10 +1,10 @@
 import { RouterError, RouterErrorCode } from '../router/errors';
-import { ServerError } from '../server/http/errors';
+import { ServerError } from '../server/errors';
 
 export const AppErrorMap = {
   E_START: 'CAN\'T START APP',
   E_ROUTER: 'ROUTER ERROR',
-  E_INIT: 'APP IS NOT INITIALIZED',
+  E_INIT: 'API IS NOT INITIALIZED OR SET UNAVAILABLE',
 } as const;
 
 type AppErrorCode = keyof typeof AppErrorMap;
@@ -25,13 +25,13 @@ const errors: Partial<Record<
 RouterErrorCode, (details: TRouterErrorDetails) => never
 >> = {
   E_NO_ROUTE: (details: TRouterErrorDetails) => {
-    throw new ServerError('E_NOT_FOUND', details);
+    throw new ServerError('NOT_FOUND', details);
   },
   E_MODULE: (details: TRouterErrorDetails) => {
-    throw new ServerError('E_BED_REQUEST', details);
+    throw new ServerError('BED_REQUEST', details);
   },
   E_REDIRECT: (details: TRouterErrorDetails) => {
-    throw new ServerError('E_REDIRECT', details);
+    throw new ServerError('REDIRECT', details);
   },
 };
 
@@ -39,6 +39,6 @@ export const handleOperationError = (e: any): never => {
   if (e.name === RouterError.name) {
     const { code, details } = e;
     code in errors && errors[code as RouterErrorCode]!(details);
-  } else logger.error(e, e.message);
-  throw new AppError('E_ROUTER', e.message);
+  } else logger.error(e);
+  throw new AppError('E_ROUTER');
 };

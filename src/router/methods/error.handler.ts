@@ -28,6 +28,6 @@ export const errorHandler = (e: any): never => {
   if (e instanceof ValidationResponseError)
     throw new RouterError('E_MODULE', message);
 
-  logger.error(e, e.message);
+  logger.error(e);
   throw new RouterError('E_ROUTER', details || message);
 };

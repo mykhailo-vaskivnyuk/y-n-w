@@ -1,12 +1,8 @@
-import fsp from 'node:fs/promises';
-import path from 'node:path';
 
-export const copyDir = async (
-  dirFrom: string,
-  dirTo: string,
-  include: string[] | null = null,
-  exclude: string[] | null = null,
-) => {
+const  fsp = require('node:fs/promises');
+const path = require('node:path');
+
+const copyDir = async (dirFrom, dirTo, include = null, exclude = null) => {
   const dir = await fsp.opendir(dirFrom);
   let counter = 0;
   for await (const item of dir) {
@@ -33,8 +29,10 @@ export const copyDir = async (
       counter += count;
       continue;
     }
-    if (exclude && exclude.includes(dirFrom)) continue;
-    if (include && !include.includes(dirFrom)) continue;
+    if (exclude && exclude.includes(dirFrom))
+      continue;
+    if (include && !include.includes(dirFrom))
+      continue;
     const filePathFrom = path.join(dirFrom, name);
     const filePathTo = path.join(dirTo, name);
     fsp.copyFile(filePathFrom, filePathTo);
@@ -45,13 +43,18 @@ export const copyDir = async (
   return counter;
 };
 
-export const logFromTo = (from: string, to: string) => {
+const logFromTo = (from, to) => {
   console.log('\nfrom', from);
   console.log('to', to, '\n');
 };
 
-export const rmDir = async (dirToDel: string) => {
-  const dir = await fsp.opendir(dirToDel);
+const rmDir = async (dirToDel) => {
+  let dir;
+  try {
+    dir = await fsp.opendir(dirToDel);
+  } catch (e) {
+    return;
+  }
   let counter = 0;
   for await (const item of dir) {
     const { name } = item;
@@ -68,3 +71,5 @@ export const rmDir = async (dirToDel: string) => {
   await fsp.rmdir(dirToDel);
   return counter;
 };
+
+module.exports = { copyDir, rmDir, logFromTo };

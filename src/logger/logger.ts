@@ -1,9 +1,9 @@
-import { format } from 'util';
 import pino = require('pino');
 import {
   ILogger, ILoggerConfig,
   LOGGER_LEVEL, TLoggerParameters,
 } from './types';
+import { createErrorlog, createLog } from './utils';
 
 class Logger implements ILogger {
   private logger;
@@ -22,24 +22,29 @@ class Logger implements ILogger {
     this.logger = pino.default(options);
   }
 
-  fatal<T>(obj: T, ...message: TLoggerParameters) {
-    this.logger.fatal(obj, format(...message));
+  fatal(...message: TLoggerParameters) {
+    const [error, errorMmessage] = createErrorlog(message);
+    this.logger.fatal(error, errorMmessage);
   }
 
-  error<T>(obj: T, ...message: TLoggerParameters) {
-    this.logger.error(obj, format(...message));
+  error(...message: TLoggerParameters) {
+    const [error, errorMmessage] = createErrorlog(message);
+    this.logger.error(error, errorMmessage);
   }
 
-  warn<T>(obj: T, ...message: TLoggerParameters) {
-    this.logger.warn(obj, format(...message));
+  warn(...message: TLoggerParameters) {
+    const [first, second] = createLog(message);
+    this.logger.warn(first, second);
   }
 
-  info<T>(obj: T, ...message: TLoggerParameters) {
-    this.logger.info(obj, format(...message));
+  info(...message: TLoggerParameters) {
+    const [first, second] = createLog(message);
+    this.logger.info(first, second);
   }
 
-  debug<T>(obj: T, ...message: TLoggerParameters) {
-    this.logger.debug(obj, format(...message));
+  debug(...message: TLoggerParameters) {
+    const [first, second] = createLog(message);
+    this.logger.debug(first, second);
   }
 }
 

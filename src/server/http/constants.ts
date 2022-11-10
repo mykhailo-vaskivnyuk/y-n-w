@@ -1,16 +1,22 @@
-import { resolve } from 'path';
 import { getEnumFromMap } from '../../utils/utils';
-const basePathModules = 'js/server/http/modules';
 
-export const HTTP_MODULES = {
-  allowCors: resolve(basePathModules, 'allowCors.js'),
-  staticServer: resolve(basePathModules, 'staticServer.js'),
+export const HTTP_REQ_MODULES = {
+  allowCors: 'allowCors.js',
+  setSession: 'setSession.js',
+  staticServer: 'staticServer.js',
+  getOperation: 'getOperation.js',
 };
-export type THttpModulesKeys = keyof typeof HTTP_MODULES;
+export type THttpReqModulesKeys = keyof typeof HTTP_REQ_MODULES;
+
+export const HTTP_RES_MODULES = {
+  sendResponse: 'sendResponse.js',
+};
+export type THttpResModulesKeys = keyof typeof HTTP_RES_MODULES;
 
 export const INDEX = 'index.html';
 export const UNAVAILABLE = '503.html';
 export const NOT_FOUND = '404.html';
+export const JSON_TRANSFORM_LENGTH = 100;
 
 export const HEADERS = {
   // 'X-XSS-Protection': '1; mode=block',
@@ -24,7 +30,7 @@ export const HEADERS = {
   // 'Content-Type': 'application/json; charset=UTF-8',
 };
 
-export const RES_MIME_TYPES = {
+export const RES_MIME_TYPES_MAP = {
   default: 'application/octet-stream',
   html: 'text/html; charset=UTF-8',
   js: 'application/javascript; charset=UTF-8',
@@ -35,7 +41,7 @@ export const RES_MIME_TYPES = {
   ico: 'image/x-icon',
   svg: 'image/svg+xml',
 };
-export type ResMimeTypeKeys = keyof typeof RES_MIME_TYPES;
+export type ResMimeTypeKeys = keyof typeof RES_MIME_TYPES_MAP;
 
 export const REQ_MIME_TYPES_MAP = {
   'application/json': { maxLength: 1_000 },
@@ -43,5 +49,3 @@ export const REQ_MIME_TYPES_MAP = {
 };
 export type ReqMimeTypesKeys = keyof typeof REQ_MIME_TYPES_MAP;
 export const REQ_MIME_TYPES_ENUM = getEnumFromMap(REQ_MIME_TYPES_MAP);
-
-export const JSON_TRANSFORM_LENGTH = 100;

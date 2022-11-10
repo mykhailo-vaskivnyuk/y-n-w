@@ -3,9 +3,10 @@ import { HttpResponseError } from '../errors';
 import { AppState } from '../constants';
 import { IUserResponse } from '../api/types';
 import EventEmitter from '../event.emitter';
-import { getApi } from '../api/client.api';
-import { getConnection } from '../client.fetch';
+import { getApi, IClientApi } from '../api/client.api';
 import { getAccountMethods } from './account';
+import { getConnection as getHttpConnection } from '../client.http';
+import { getConnection as getWsConnection } from '../client.ws';
 
 export type ClientAppThis = ClientApp & {
   state: AppState;
@@ -16,7 +17,9 @@ export type ClientAppThis = ClientApp & {
 };
 
 export class ClientApp extends EventEmitter {
-  protected clientApi;
+  protected clientApi: IClientApi | null;
+
+  private baseUrl = '';
 
   protected state: AppState = AppState.INIT;
 
@@ -26,14 +29,30 @@ export class ClientApp extends EventEmitter {
 
   account: ReturnType<typeof getAccountMethods>;
 
-  constructor(baseUrl: string) {
+  constructor() {
     super();
-    const connection = getConnection(baseUrl);
-    this.clientApi = getApi(connection);
     this.account = getAccountMethods(this as unknown as ClientAppThis);
+    this.baseUrl = process.env.API || `${window.location.host}/api`;
   }
 
   async init() {
+    try {
+      const baseUrl = `http://${this.baseUrl}`;
+      const connection = await getHttpConnection(baseUrl);
+      this.clientApi = getApi(connection);
+      await this.clientApi.health();
+    } catch (e) {
+      if (!(e instanceof HttpResponseError)) return this.setState(AppState.ERROR);
+      if (e.statusCode !== 503) return this.setState(AppState.ERROR);
+      try {
+        const baseUrl = `ws://${this.baseUrl}`;
+        const connection = await getWsConnection(baseUrl);
+        this.clientApi = getApi(connection);
+        await this.clientApi.health();
+      } catch (err) {
+        return this.setState(AppState.ERROR);
+      }
+    }
     await this.readUser();
     this.state = AppState.READY;
     this.emit('statechanged', this.state);
@@ -53,7 +72,7 @@ export class ClientApp extends EventEmitter {
   }
 
   protected setState(state: AppState) {
-    if (this.state === AppState.INIT) return;
+    if (state !== AppState.ERROR && this.state === AppState.INIT) return;
     this.state = state;
     this.error = null;
     if (state !== AppState.READY) {
@@ -72,7 +91,7 @@ export class ClientApp extends EventEmitter {
   private async readUser() {
     this.setState(AppState.LOADING);
     try {
-      const user = await this.clientApi.user.read();
+      const user = await this.clientApi!.user.read();
       this.setUser(user);
       this.setState(AppState.READY);
       return user;
@@ -82,11 +101,4 @@ export class ClientApp extends EventEmitter {
   }
 }
 
-let baseUrl = process.env.API;
-
-if (!baseUrl) {
-  const { protocol, host } = window.location;
-  baseUrl = `${protocol}//${host}/api`;
-}
-
-export const app = new ClientApp(baseUrl);
+export const app = new ClientApp();

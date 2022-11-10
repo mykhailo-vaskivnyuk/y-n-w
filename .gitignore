@@ -1,7 +1,8 @@
 # compiled
-js/**/*.*s
-js/**/*.map
-!js/**/*.js
+js
+# js/**/*.*s
+# js/**/*.map
+# !js/**/*.js
 
 # IDE
 .vscode/

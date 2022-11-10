@@ -1,5 +1,3 @@
-import { format } from 'node:util';
-
 export interface ILoggerConfig {
   path: string;
   level: keyof typeof LOGGER_LEVEL,
@@ -21,7 +19,7 @@ export type TLoggerMethodName =
   | 'error'
   | 'fatal';
 
-export type TLoggerParameters = Parameters<typeof format>;
+export type TLoggerParameters = Parameters<typeof console.log>;
 
 export type TLoggerMethod =
   <T>(object: T, ...message: TLoggerParameters) => void;

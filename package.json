@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "pack": "tsc && cross-env RUN_ONCE=true npm run start && npm run sync",
     "start": "node js/index.js",
+    "pack": "npm run rmjs && tsc && cross-env RUN_ONCE=true npm run start && npm run sync",
     "dev": "cross-env NODE_ENV=development nodemon js/index.js",
     "debug": "nodemon --inspect js/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -16,9 +16,10 @@
     "dkr:build": "docker build -t ynw .",
     "dkr:run": "docker run -d -p 5432:5432 --name ynw ynw",
     "dkr:stop": "docker stop ynw",
-    "sync": "node js/scripts/sync.back.front.js",
-    "copy:tofront": "node js/scripts/copy.all.to.front.js",
-    "copy:toback": "node js/scripts/copy.all.to.back.js"
+    "sync": "node src/scripts/js/sync.back.front.js",
+    "copy:tofront": "node src/scripts/js/copy.all.to.front.js",
+    "copy:toback": "node src/scripts/js/copy.all.to.back.js",
+    "rmjs": "node src/scripts/js/remove.js.js"
   },
   "repository": {
     "type": "git",
@@ -47,11 +48,13 @@
     "@types/node": "^18.7.23",
     "@types/nodemailer": "^6.4.6",
     "@types/pg": "^8.6.5",
+    "@types/ws": "^8.5.3",
     "joi": "^17.6.2",
     "nodemailer": "^6.8.0",
     "pg": "^8.8.0",
     "pino": "^8.6.1",
     "pino-pretty": "^9.1.1",
-    "typescript": "^4.8.4"
+    "typescript": "^4.8.4",
+    "ws": "^8.10.0"
   }
 }

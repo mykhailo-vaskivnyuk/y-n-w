@@ -9,9 +9,6 @@ export type TLoader = {
 
 export type TRequire = {
   (modulePath: string): any;
-  main: {
-    path: string;
-  };
   cache: TCache;
 };
 

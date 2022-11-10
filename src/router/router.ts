@@ -27,7 +27,7 @@ class Router implements IRouter {
       const services = getServices(this.config);
       Object.assign(global, services);
     } catch (e: any) {
-      logger.error(e, e.message);
+      logger.error(e);
       throw new RouterError('E_SERVICE');
     }
 
@@ -35,7 +35,7 @@ class Router implements IRouter {
       this.modules = applyModules(this.config);
       this.responseModules = applyResponseModules(this.config);
     } catch (e: any) {
-      logger.error(e, e.message);
+      logger.error(e);
       throw new RouterError('E_MODULE');
     }
 
@@ -44,7 +44,7 @@ class Router implements IRouter {
       this.routes = await this.createRoutes(apiPath);
       await createClientApi(this.config, this.routes);
     } catch (e: any) {
-      logger.error(e, e.message);
+      logger.error(e);
       throw new RouterError('E_ROUTES');
     }
   }
