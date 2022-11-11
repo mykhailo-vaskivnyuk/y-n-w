@@ -68,3 +68,10 @@ export const rmDir = async (dirToDel: string) => {
   await fsp.rmdir(dirToDel);
   return counter;
 };
+
+export const copyFiles = async (filesToCopy: [string, string][]) => {
+  for (const [from, to] of filesToCopy) {
+    console.log('--> copying', from, '-->', to);
+    await fsp.copyFile(from, to);
+  }
+};

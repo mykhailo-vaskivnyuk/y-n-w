@@ -1,7 +1,7 @@
 import path from 'node:path';
 import vm from 'node:vm';
 import { IRouterContext } from '../app/types';
-import { TCache, TRequire } from './types';
+import { TRequire } from './types';
 import { getScriptInContext, log, resolve } from './utils';
 
 const options = { displayErrors: true };
@@ -14,7 +14,7 @@ export const loadModule = (
 ) => {
   if (mode !== 'isolate_all') vm.createContext(context);
   const __dirname = parentModuleDir;
-  const newRequire = getRequire(__dirname, context) as TRequire;
+  const newRequire = getRequire(__dirname, context);
   newRequire.cache = {};
   try {
     return newRequire(modulePath);
@@ -40,8 +40,8 @@ export const getRequire = (
     const scriptInContext = getScriptInContext(__filename);
     const newContext = !vm.isContext(context);
     const nextContext = newContext ? vm.createContext({ ...context }) : context;
-    const nextRequire = getRequire(__dirname, context) as TRequire;
-    nextRequire.cache = newContext ? {} as TCache : curRequire.cache;
+    const nextRequire = getRequire(__dirname, context);
+    nextRequire.cache = newContext ? {} : curRequire.cache;
     const module = { exports: {} };
     const contextParams = {
       global: nextContext,

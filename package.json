@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "build:front": "cd ../node-y-n-w-front && rimraf build && cross-env NODE_ENV=production npx webpack --config webpack/webpack.config.js",
     "start": "node js/index.js",
-    "pack": "npm run rmjs && tsc && cross-env RUN_ONCE=true npm run start && npm run sync",
+    "pack": "npm run build:front && npm run rmjs && tsc && cross-env RUN_ONCE=true npm run start && npm run sync",
     "dev": "cross-env NODE_ENV=development nodemon js/index.js",
     "debug": "nodemon --inspect js/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -2,19 +2,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { IRouterContext } from '../app/types';
-import { TLoader } from './types';
 import { log, resolve } from './utils';
 
 const options = { displayErrors: true };
-const curDiName = __dirname;
 
 export const loadModule = (
+  parentModuleDir: string,
   modulePath: string,
-  modulesContext?: IRouterContext,
+  { ...modulesContext } = {} as IRouterContext,
 ) => {
-  const __dirname = require.main?.path || path.resolve('.');
   try {
-    return loader(modulePath, __dirname, modulesContext);
+    return loader(modulePath, parentModuleDir, modulesContext);
   } finally {
     delete require.cache[__filename];
   }
@@ -31,12 +29,11 @@ export const loader = (
   const __dirname = path.dirname(__filename);
   const script = fs.readFileSync(__filename).toString();
   const module = { exports: {} };
-  const newRequire = ((modulePath: string) =>
-    loader(modulePath, __dirname, modulesContext)) as TLoader;
-  newRequire.main.path = curDiName;
+  const nextRequire = ((modulePath: string) =>
+    loader(modulePath, __dirname, modulesContext));
   const context = {
     global: this,
-    require: newRequire,
+    require: nextRequire,
     module,
     exports: module.exports,
     __filename,
