@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
-import { IConfirmParams, ISignupParams, IUserResponse, TLoginOrSignup } from '../api/types';
+import { IConfirmParams, ISignupParams, IUserResponse } from '../api/types';
 import { AppState } from '../constants';
-import { IClientAppThis } from './types';
+import { IClientAppThis, TLoginOrSignup } from './types';
 
 export const getAccountMethods = (parent: IClientAppThis) => ({
   async loginOrSignup(...[type, args]: TLoginOrSignup) {
@@ -24,8 +24,8 @@ export const getAccountMethods = (parent: IClientAppThis) => ({
       success && parent.setUser(null);
       parent.setState(AppState.READY);
       return success;
-    } catch (e) {
-      parent.setState(AppState.ERROR);
+    } catch (e: any) {
+      parent.setError(e);
       throw e;
     }
   },
@@ -36,8 +36,8 @@ export const getAccountMethods = (parent: IClientAppThis) => ({
       const success = await parent.clientApi.account.overmail(args);
       parent.setState(AppState.READY);
       return success;
-    } catch (e) {
-      parent.setState(AppState.ERROR);
+    } catch (e: any) {
+      parent.setError(e);
       throw e;
     }
   },
@@ -49,8 +49,8 @@ export const getAccountMethods = (parent: IClientAppThis) => ({
       user && parent.setUser(user);
       parent.setState(AppState.READY);
       return user;
-    } catch (e) {
-      parent.setState(AppState.ERROR);
+    } catch (e: any) {
+      parent.setError(e);
       throw e;
     }
   },

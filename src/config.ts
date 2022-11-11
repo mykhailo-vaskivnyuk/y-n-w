@@ -1,9 +1,11 @@
 
 import { resolve } from 'node:path';
 import { env } from 'node:process';
-import { IConfig } from './app/types';
+import { IConfig } from './types/config.types';
 import { BUILD_PATH } from './constants/constants';
+import { createPathResolve } from './utils/utils';
 
+const resolvePath  = createPathResolve(BUILD_PATH);
 const host = env.HOST || 'localhost';
 const port = +(env.PORT || 8000);
 const dbConectionType = env.DATABASE_URL ? 'heroku' : 'local';
@@ -24,31 +26,33 @@ const dbConnection = {
 const config: IConfig = {
   envPath: '.env.json',
   logger: {
-    path: resolve(BUILD_PATH, 'logger/logger'),
+    path: resolvePath('logger/logger'),
     level: 'DEBUG',
     target: 'console',
   },
   database: {
-    path: resolve(BUILD_PATH, 'db/db'),
-    queriesPath: resolve(BUILD_PATH, 'db/queries'),
+    path: resolvePath('db/db'),
+    queriesPath: resolvePath('db/queries'),
     connection: {
-      path: resolve(BUILD_PATH, 'db/connection/pg'),
+      path: resolvePath('db/connection/pg'),
       ...dbConnection,
     },
   },
   router: {
-    path: resolve(BUILD_PATH, 'router/router'),
-    apiPath: resolve(BUILD_PATH, 'api'),
-    clientApiPath: 'src/client/common/api/client.api.ts',
+    path: resolvePath('router/router'),
+    apiPath: resolvePath('api'),
+    modulesPath: resolvePath('router/modules'),
+    servicesPath: resolvePath('router/services'),
+    clientApiPath: resolve('src/client/common/api/client.api.ts'),
     services: [
       'mailService',
     ],
-    modules: [
+    inputModules: [
       'setSession',
       'getStream',
       'validate',
     ],
-    responseModules: ['validateResponse'],
+    outputModules: ['validateResponse'],
     modulesConfig: {
       mailService: {
         service: 'gmail',
@@ -62,8 +66,8 @@ const config: IConfig = {
   inConnection: {
     transport: 'http',
     http: {
-      path: resolve(BUILD_PATH, 'server/http/http'),
-      modulesPath: resolve(BUILD_PATH, 'server/http/modules'),
+      path: resolvePath('server/http/http'),
+      modulesPath: resolvePath('server/http/modules'),
       staticPath: resolve('public'),
       apiPathname: 'api',
       reqModules: [
@@ -77,7 +81,7 @@ const config: IConfig = {
       port,
     },
     ws: {
-      path: resolve(BUILD_PATH, 'server/ws/ws'),
+      path: resolvePath('server/ws/ws'),
     },
   },
 };

@@ -3,8 +3,8 @@ import path from 'node:path';
 
 export const use_strict = /("|')use strict("|');?/;
 export const cwd = path.resolve(__dirname, '../..');
-export const log = (moduleFullPath: string) =>
-  logger.debug({}, 'loading ...', path.relative(cwd, moduleFullPath));
+export const log = (moduleFullPath: string, loadingString = 'loading ...') =>
+  logger.debug(loadingString, path.relative(cwd, moduleFullPath));
 
 export const resolve = (parentModuleDir: string, modulePath: string) => {
   if (path.isAbsolute(modulePath)) return addExt(modulePath);

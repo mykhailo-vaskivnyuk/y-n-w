@@ -1,22 +1,30 @@
 import Joi, { ObjectSchema } from 'joi';
 import { SentMessageInfo } from 'nodemailer';
-import { TModulesKeys, TModulesResponseKeys, TServicesKeys } from './constants';
+import {
+  TInputModulesKeys, TOutputModulesKeys,
+  TServicesKeys,
+} from './constants';
 import { IObject } from '../types/types';
-import { IOperation, IParams, TOperationResponse } from '../app/types';
+import {
+  IOperation, TOperationResponse,
+  IParams,
+} from '../types/operation.types';
 import { ITableUsers } from '../db/db.types';
 import { Session } from '../services/session/session';
 
 export interface IRouterConfig {
   path: string;
   apiPath: string;
+  servicesPath: string;
+  modulesPath: string;
   clientApiPath: string;
   services: TServicesKeys[];
-  modules: TModulesKeys[];
-  responseModules: TModulesResponseKeys[];
+  inputModules: TInputModulesKeys[];
+  outputModules: TOutputModulesKeys[];
   modulesConfig: {
     [key in
-      | TModulesKeys
-      | TModulesResponseKeys
+      | TInputModulesKeys
+      | TOutputModulesKeys
       | TServicesKeys
     ]?: Record<string, any>;
   };
@@ -55,11 +63,11 @@ export interface IServices {
 export type IContext = IServices & {
    origin: string };
 
-export type TModule<T = any> = (config: T) =>
+export type TInputModule<T = any> = (config: T) =>
   (operation: IOperation, context: IContext, handler?: THandler) =>
     Promise<[IOperation, IContext]>;
 
-export type TResponseModule<T = any> = (config?: T) =>
+export type TOutputModule<T = any> = (config?: T) =>
 (response: TOperationResponse, context: IContext, handler?: THandler) =>
   Promise<[TOperationResponse, IContext]>;
 

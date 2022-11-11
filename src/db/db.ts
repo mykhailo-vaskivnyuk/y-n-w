@@ -23,7 +23,7 @@ class Database implements IDatabase {
       await this.connection!.connect();
     } catch (e: any) {
       logger.error(e);
-      throw new DatabaseError('E_DB_CONNECTION');
+      throw new DatabaseError('DB_CONNECTION_ERROR');
     }
 
     try {
@@ -31,13 +31,13 @@ class Database implements IDatabase {
       this.queries = queries as unknown as IDatabaseQueries;
     } catch (e: any) {
       logger.error(e);
-      throw new DatabaseError('E_DB_INIT');
+      throw new DatabaseError('DB_INIT_ERROR');
     }
     return this;
   }
 
   getQueries() {
-    if (!this.queries) throw new DatabaseError('E_DB_INIT');
+    if (!this.queries) throw new DatabaseError('DB_INIT_ERROR');
     return this.queries;
   }
 
@@ -85,7 +85,7 @@ class Database implements IDatabase {
         return await this.connection!.query(sql, params);
       } catch (e: any) {
         logger.error(e);
-        throw new DatabaseError('E_DB_QUERY');
+        throw new DatabaseError('DB_QUERY_ERROR');
       }
     };
   }

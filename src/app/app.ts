@@ -1,4 +1,5 @@
-import { IConfig, IRouterContext, ICleanedEnv, IAppThis } from './types';
+import { IRouterContext, IAppThis } from './types';
+import { IConfig, ICleanedEnv } from '../types/config.types';
 import {
   AppError, handleAppInitError, setUncaughtErrorHandlers,
 } from './errors';
@@ -32,29 +33,26 @@ export default class App {
       this.setLogger();
       setToGlobal('logger', this.logger);
       logger.info('LOGGER IS READY');
-
       if (this.env.API_UNAVAILABLE)
-        throw new AppError('E_INIT', 'API set UNAVAILABLE');
-
+        throw new AppError('INIT_ERROR', 'API set UNAVAILABLE');
       await this.setDatabase();
       logger.info('DATABASE IS READY');
-
       await this.setRouter();
       logger.info('ROUTER IS READY');
-
       await this.setInputConnection();
       logger.info('SERVER IS READY');
-
       this.env.RUN_ONCE && process.exit(0);
-
     } catch (e: any) {
       await handleAppInitError(e, this as any);
     }
   }
 
-  protected async shutdown() {
-    const log = 'APP SHUTDOWN...';
-    this.logger ? logger.fatal(log) : console.error(log);
+  protected async shutdown(message?: string) {
+    const shutdownLogger = this.logger ?
+      (message: string) => logger.fatal(message) :
+      (message: string) => console.error(message);
+    message && shutdownLogger(message);
+    shutdownLogger('APP SHUTDOWN...');
     process.nextTick(() => process.exit());
   }
 
@@ -77,7 +75,7 @@ export default class App {
     const logger = this.logger;
     const execQuery = this.db?.getQueries();
     if (!logger || !execQuery)
-      throw new AppError('E_INIT', 'LOGGER or DB is not INITIALIZED');
+      throw new AppError('INIT_ERROR', 'LOGGER or DB is not INITIALIZED');
     const context: IRouterContext = {
       logger,
       execQuery,

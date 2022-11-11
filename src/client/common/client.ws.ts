@@ -1,5 +1,6 @@
-import { TFetch } from './api/types';
-import { IWsResponse, TPromiseExecutor } from './types';
+import { logData } from '../../utils/utils';
+import { TPromiseExecutor } from '../local/imports';
+import { IWsResponse, TFetch } from './types';
 import { HttpResponseError } from './errors';
 
 export const getConnection = async (baseUrl: string): Promise<TFetch> => {
@@ -45,8 +46,8 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
   const getHandler = (...[rv, rj]: Parameters<TPromiseExecutor<any>>) =>
     function handler({ data: message }: MessageEvent) {
       const response = JSON.parse(message) as IWsResponse;
+      logData(response, 'response');
       const { requestId: reqId, status, data: resData } = response;
-      console.log('response', response);
       if (reqId && reqId !== requests.get(handler)) return;
       socket.removeEventListener('message', handler);
       requests.delete(handler);
@@ -58,8 +59,8 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
     await checkConnection();
     const requestId = getId();
     const request = { requestId, pathname, data };
+    logData(request, 'request');
     const requestMessage = JSON.stringify(request);
-    console.log('request', request);
     return new Promise((resolve, reject) => {
       const handler = getHandler(resolve, reject);
       requests.set(handler, id);

@@ -31,7 +31,10 @@ export const getRequire = (
     const __filename = resolve(moduleDir, modulePath);
     if (!__filename) return require(modulePath);
     const { cache } = curRequire;
-    if (__filename in cache) return cache[__filename];
+    if (__filename in cache) {
+      log(__filename, 'loading from cache ...');
+      return cache[__filename];
+    }
     const __dirname = path.dirname(__filename);
     log(__filename);
     const scriptInContext = getScriptInContext(__filename);

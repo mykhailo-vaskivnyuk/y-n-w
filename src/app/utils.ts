@@ -1,9 +1,10 @@
 import { env } from 'node:process';
 import fs from 'node:fs';
 import {
-  CleanedEnvKeys, EnvValuesKeys, EnvValuesMap,
-  ICleanedEnv, IConfig, IEnv, IGlobalMixins,
-} from './types';
+  CleanedEnvKeys, ICleanedEnv,
+  IConfig, IEnv,
+} from '../types/config.types';
+import { IGlobalMixins } from './types';
 
 export const setToGlobal = (
   key: keyof IGlobalMixins, obj?: Record<string, any>,
@@ -12,10 +13,18 @@ export const setToGlobal = (
   Object.assign(global, { [key]: obj });
 };
 
+const EnvValuesMap = {
+  true: true,
+  false: false,
+  undefined: false,
+  development: true,
+};
+type EnvValuesKeys = keyof typeof EnvValuesMap;
+
 export const setEnv = (config: IConfig) => {
   const cleanedEnvObj = {
-    RUN_ONCE: env.RUN_ONCE === 'true',
-    DEV: env.NODE_ENV === 'development'
+    RUN_ONCE: EnvValuesMap[env.RUN_ONCE as EnvValuesKeys],
+    DEV: EnvValuesMap[env.NODE_ENV as EnvValuesKeys]
   } as ICleanedEnv;
   if (!cleanedEnvObj.DEV) return cleanedEnvObj;
   const { envPath } = config;

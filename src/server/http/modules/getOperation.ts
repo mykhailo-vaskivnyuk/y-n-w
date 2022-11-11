@@ -1,5 +1,5 @@
 import { Readable } from 'node:stream';
-import { IOperation, IParams } from '../../../app/types';
+import { IOperation, IParams } from '../../../types/operation.types';
 import { ServerError } from '../../errors';
 import { IRequest } from '../../types';
 import {

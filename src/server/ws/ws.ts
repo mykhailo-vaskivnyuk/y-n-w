@@ -1,12 +1,12 @@
 import { Server, WebSocket } from 'ws';
 import { IInputConnection, IRequest } from '../types';
 import { IWsConfig, IWsServer } from './types';
-import { IOperation, TOperationResponse } from '../../app/types';
+import { IOperation, TOperationResponse } from '../../types/operation.types';
 import { IHttpServer } from '../http/types';
 import { ServerError } from '../errors';
 import { getLog } from './utils';
 import { getSessionKey } from '../utils';
-import { handleError } from './errorHandler';
+import { handleError } from './error.handler';
 
 class WsConnection implements IInputConnection {
   private config: IWsConfig;
@@ -63,7 +63,7 @@ class WsConnection implements IInputConnection {
         data,
       };
       const responseMessage = JSON.stringify(response);
-      logger.info({}, getLog(pathname, 'OK'));
+      logger.info(getLog(pathname, 'OK'));
       connection.send(responseMessage, { binary: false });
     } catch (e) {
       handleError(e, options, connection);

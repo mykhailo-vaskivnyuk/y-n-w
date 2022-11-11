@@ -1,9 +1,10 @@
-import { IAppThis, IOperation } from './types';
+import { IOperation } from '../types/operation.types';
+import { IAppThis } from './types';
 import { AppError, handleOperationError } from './errors';
 
 export const createSetInputConnection = (parent: IAppThis) => async () => {
   if (!parent.router && !parent.env.API_UNAVAILABLE)
-    throw new AppError('E_INIT', 'ROUTER is not INITIALIZED');
+    throw new AppError('INIT_ERROR', 'ROUTER is not INITIALIZED');
 
   const handleOperation = async (operation: IOperation) => {
     try {

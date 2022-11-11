@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
 import { TPromiseExecutor } from '../../types/types';
-import { IOperation, TOperationResponse } from '../../app/types';
+import { IOperation, TOperationResponse } from '../../types/operation.types';
 import {
   IInputConnection, IRequest, TServerService } from '../types';
 import {
@@ -75,17 +75,18 @@ class HttpConnection implements IInputConnection {
       const context = await runReqModules(
         req, res, this.reqModules, contextParams,
       );
-
       if (!context) return;
       if (this.apiUnavailable) throw new ServerError('SERVICE_UNAVAILABLE');
       const { ...operation } = context;
 
       let response = await this.exec!(operation);
 
-      if (!(response instanceof Readable))
-        response = JSON.stringify(response);
+      if (!(response instanceof Readable)) response = JSON.stringify(response);
       const { data: { params } } = operation;
-      res.on('finish', () => logger.info(params, getLog(req, 'OK')));
+      const password = 'password' in params ? '*****' : undefined;
+      res.on('finish',
+        () => logger.info({ ...params, password }, getLog(req, 'OK')),
+      );
 
       await runResModules(res, this.resModules, response);
     } catch (e) {

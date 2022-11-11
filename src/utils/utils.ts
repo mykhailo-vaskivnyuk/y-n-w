@@ -1,3 +1,5 @@
+import { resolve } from 'path';
+
 export const getEnumFromMap =
   <
     T extends Record<string | number, unknown>,
@@ -10,3 +12,6 @@ export const getEnumFromMap =
         Object.assign(obj, { [key]: value });
         return obj;
       }, {} as Q);
+
+export const createPathResolve = (basePath: string) =>
+  (path: string) => resolve(basePath, path);

@@ -10,15 +10,10 @@ import { getConnection as getWsConnection } from '../client.ws';
 
 export class ClientApp extends EventEmitter {
   protected clientApi: IClientApi | null;
-
   private baseUrl = '';
-
   protected state: AppState = AppState.INITING;
-
   private user: IUserResponse = null;
-
   private error: HttpResponseError | null = null;
-
   account: ReturnType<typeof getAccountMethods>;
 
   constructor() {
@@ -32,16 +27,16 @@ export class ClientApp extends EventEmitter {
       const connection = await getHttpConnection(this.baseUrl);
       this.clientApi = getApi(connection);
       await this.clientApi.health();
-    } catch (e) {
-      if (!(e instanceof HttpResponseError)) return this.setState(AppState.ERROR);
-      if (e.statusCode !== 503) return this.setState(AppState.ERROR);
+    } catch (e: any) {
+      if (!(e instanceof HttpResponseError)) return this.setError(e);
+      if (e.statusCode !== 503) return this.setError(e);
       try {
         const baseUrl = this.baseUrl.replace('http', 'ws');
         const connection = await getWsConnection(baseUrl);
         this.clientApi = getApi(connection);
         await this.clientApi.health();
-      } catch (err) {
-        return this.setState(AppState.ERROR);
+      } catch (err: any) {
+        return this.setError(err);
       }
     }
     await this.readUser();
@@ -88,8 +83,8 @@ export class ClientApp extends EventEmitter {
       this.setUser(user);
       this.setState(AppState.READY);
       return user;
-    } catch (e) {
-      this.setState(AppState.ERROR);
+    } catch (e: any) {
+      this.setError(e);
     }
   }
 }

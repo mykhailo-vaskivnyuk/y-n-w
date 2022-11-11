@@ -1,12 +1,12 @@
 import { format } from 'node:util';
 import { Readable } from 'node:stream';
 import { join } from 'node:path';
-import { HTTP_REQ_MODULES, HTTP_RES_MODULES } from './constants';
+import { IOperation } from '../../types/operation.types';
 import { IRequest } from '../types';
 import {
   IHttpConfig, IHttpContext, IHttpContextParams,
   IResponse, THttpReqModule, THttpResModule } from './types';
-import { IOperation } from '../../app/types';
+import { HTTP_REQ_MODULES, HTTP_RES_MODULES } from './constants';
 
 export const getUrlInstance = (
   pathnameWithSearchString = '/',

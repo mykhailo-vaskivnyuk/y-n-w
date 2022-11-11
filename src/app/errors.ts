@@ -5,8 +5,8 @@ import {
 import { ServerError } from '../server/errors';
 
 export const AppErrorMap = {
-  E_ROUTER: 'ROUTER ERROR',
-  E_INIT: 'API IS NOT INITIALIZED OR SET UNAVAILABLE',
+  ROUTER_ERROR: 'ROUTER ERROR',
+  INIT_ERROR: 'API IS NOT INITIALIZED OR SET UNAVAILABLE',
 } as const;
 type AppErrorCode = keyof typeof AppErrorMap;
 
@@ -39,28 +39,29 @@ export const setUncaughtErrorHandlers = (parent: IAppThis) => {
 };
 
 export const handleAppInitError = async (e: any, parent: IAppThis) => {
-  if (!parent.logger) return await parent.shutdown();
+  if (!parent.logger) return await parent.shutdown('CAN\'T START APP');
   if (!KNOWN_ERRORS_MAP.includes(e.name)) logger.error(e);
   parent.env.API_UNAVAILABLE = true;
   try {
+    parent.logger.fatal('CAN\'T START API SERVICE');
     await parent.setInputConnection();
     parent.logger.info('SERVER IS READY');
   } catch (e: any) {
     if (!KNOWN_ERRORS_MAP.includes(e.name)) logger.error(e);
-    await parent.shutdown();
+    await parent.shutdown('CAN\'T START APP');
   }
 };
 
 const OPERATION_ERRORS_MAP: Partial<
   Record<RouterErrorCode, (details: TRouterErrorDetails) => never>
 > = {
-  E_NO_ROUTE: (details: TRouterErrorDetails) => {
+  CANT_FIND_ROUTE: (details: TRouterErrorDetails) => {
     throw new ServerError('NOT_FOUND', details);
   },
-  E_MODULE: (details: TRouterErrorDetails) => {
+  MODULE_ERROR: (details: TRouterErrorDetails) => {
     throw new ServerError('BED_REQUEST', details);
   },
-  E_REDIRECT: (details: TRouterErrorDetails) => {
+  REDIRECT: (details: TRouterErrorDetails) => {
     throw new ServerError('REDIRECT', details);
   },
 };
@@ -72,5 +73,5 @@ export const handleOperationError = (e: any): never => {
   } else {
     logger.error(e);
   }
-  throw new AppError('E_ROUTER');
+  throw new AppError('ROUTER_ERROR');
 };

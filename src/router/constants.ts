@@ -1,23 +1,17 @@
-import { resolve } from 'path';
-
-const basePathModules = 'js/router/modules';
-const basePathResponseModules = 'js/router/modules.response';
-const basePathServices = 'js/router/services';
-
-export const MODULES = {
-  getStream: resolve(basePathModules, 'get.stream.js'),
-  validate: resolve(basePathModules, 'validate.js'),
-  setSession: resolve(basePathModules, 'set.session.js'),
+export const INPUT_MODULES = {
+  getStream: 'get.stream.js',
+  validate: 'validate.js',
+  setSession: 'set.session.js',
 };
-export type TModulesKeys = keyof typeof MODULES;
+export type TInputModulesKeys = keyof typeof INPUT_MODULES;
 
-export const MODULES_RESPONSE = {
-  validateResponse: resolve(basePathResponseModules, 'validate.response.js'),
+export const OUTPUT_MODULES = {
+  validateResponse: 'validate.response.js',
 };
-export type TModulesResponseKeys = keyof typeof MODULES_RESPONSE;
+export type TOutputModulesKeys = keyof typeof OUTPUT_MODULES;
 
 export const SERVICES = {
-  mailService: resolve(basePathServices, 'send.mail.js'),
+  mailService: 'send.mail.js',
 };
 export type TServicesKeys = keyof typeof SERVICES;
 

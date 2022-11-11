@@ -1,7 +1,7 @@
 export const DatabaseErrorMap = {
-  E_DB_CONNECTION: 'Connection to database is not set',
-  E_DB_QUERY: 'Database query error',
-  E_DB_INIT: 'Initialization error',
+  DB_CONNECTION_ERROR: 'Connection to database is not set',
+  DB_QUERY_ERROR: 'Database query error',
+  DB_INIT_ERROR: 'Initialization error',
 } as const;
 
 type DatabaseErrorCode = keyof typeof DatabaseErrorMap;

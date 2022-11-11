@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { IOperation, TOperationResponse } from '../app/types';
+import { IOperation, TOperationResponse } from '../types/operation.types';
 import { IHttpConfig, IHttpServer } from './http/types';
 import { IWsConfig, IWsServer } from './ws/types';
 
