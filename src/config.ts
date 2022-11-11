@@ -4,6 +4,7 @@ import { env } from 'node:process';
 import { IConfig } from './types/config.types';
 import { BUILD_PATH } from './constants/constants';
 import { createPathResolve } from './utils/utils';
+import { getEnv } from './utils/env.utils';
 
 const resolvePath  = createPathResolve(BUILD_PATH);
 const host = env.HOST || 'localhost';
@@ -24,7 +25,7 @@ const dbConnection = {
 }[dbConectionType];
 
 const config: IConfig = {
-  envPath: '.env.json',
+  env: getEnv(),
   logger: {
     path: resolvePath('logger/logger'),
     level: 'DEBUG',

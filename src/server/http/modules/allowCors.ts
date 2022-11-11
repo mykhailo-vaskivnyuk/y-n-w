@@ -3,6 +3,8 @@ import { THttpReqModule } from '../types';
 
 export const allowCors: THttpReqModule = () =>
   async function allowCors(req, res, { ...context }) {
+    const { origin } = req.headers;
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
     const { method } = req;
     if (method?.toLocaleLowerCase() === 'options') {
       res.writeHead(200, HEADERS);

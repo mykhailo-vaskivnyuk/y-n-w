@@ -6,7 +6,7 @@ import {
   JSON_TRANSFORM_LENGTH, ReqMimeTypesKeys,
   REQ_MIME_TYPES_MAP } from '../constants';
 import { IHttpConfig, IHttpContext, THttpReqModule } from '../types';
-import { getJson, getUrlInstance } from '../utils';
+import { getJson, getUrlInstance } from '../methods/utils';
 
 let thisConfig: IHttpConfig;
 

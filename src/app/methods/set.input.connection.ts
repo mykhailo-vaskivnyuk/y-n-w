@@ -1,9 +1,10 @@
-import { IOperation } from '../types/operation.types';
-import { IAppThis } from './types';
-import { AppError, handleOperationError } from './errors';
+import { IOperation } from '../../types/operation.types';
+import { IAppThis } from '../types';
+import { AppError, handleOperationError } from '../errors';
 
 export const createSetInputConnection = (parent: IAppThis) => async () => {
-  if (!parent.router && !parent.env.API_UNAVAILABLE)
+  const { env } = parent.config;
+  if (!parent.router && !env.API_UNAVAILABLE)
     throw new AppError('INIT_ERROR', 'ROUTER is not INITIALIZED');
 
   const handleOperation = async (operation: IOperation) => {
@@ -27,13 +28,13 @@ export const createSetInputConnection = (parent: IAppThis) => async () => {
   if (apiServerInstance) {
       parent.server!.setUnavailable('api');
       apiServerInstance.onOperation(handleOperation);
-      parent.env.API_UNAVAILABLE && apiServerInstance!.setUnavailable('api');
+      env.API_UNAVAILABLE && apiServerInstance!.setUnavailable('api');
   } else {
       parent.server!.onOperation(handleOperation);
-      parent.env.API_UNAVAILABLE && parent.server!.setUnavailable('api');
+      env.API_UNAVAILABLE && parent.server!.setUnavailable('api');
   }
 
-  parent.env.STATIC_UNAVAILABLE && parent.server!.setUnavailable('static');
+  env.STATIC_UNAVAILABLE && parent.server!.setUnavailable('static');
   await parent.server!.start();
   return parent;
 };

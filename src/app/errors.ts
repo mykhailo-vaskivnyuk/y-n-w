@@ -28,10 +28,11 @@ export const KNOWN_ERRORS_MAP = [
 ];
 
 export const setUncaughtErrorHandlers = (parent: IAppThis) => {
+  const { env } = parent.config;
   const uncaughtErrorHandler = (e: any) => {
     if (!KNOWN_ERRORS_MAP.includes(e.name))
       parent.logger ? logger.fatal(e) : console.error(e);
-    if (!parent.env.EXIT_ON_ERROR) return;
+    if (!env.EXIT_ON_ERROR) return;
     parent.shutdown();
   };
   process.on('unhandledRejection', uncaughtErrorHandler);
@@ -39,9 +40,10 @@ export const setUncaughtErrorHandlers = (parent: IAppThis) => {
 };
 
 export const handleAppInitError = async (e: any, parent: IAppThis) => {
+  const { env } = parent.config;
   if (!parent.logger) return await parent.shutdown('CAN\'T START APP');
   if (!KNOWN_ERRORS_MAP.includes(e.name)) logger.error(e);
-  parent.env.API_UNAVAILABLE = true;
+  env.API_UNAVAILABLE = true;
   try {
     parent.logger.fatal('CAN\'T START API SERVICE');
     await parent.setInputConnection();

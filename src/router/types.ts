@@ -1,5 +1,4 @@
 import Joi, { ObjectSchema } from 'joi';
-import { SentMessageInfo } from 'nodemailer';
 import {
   TInputModulesKeys, TOutputModulesKeys,
   TServicesKeys,
@@ -10,6 +9,7 @@ import {
   IParams,
 } from '../types/operation.types';
 import { ITableUsers } from '../db/db.types';
+import { IMailService } from '../services/mail/types';
 import { Session } from '../services/session/session';
 
 export interface IRouterConfig {
@@ -51,8 +51,8 @@ export type THandler<
     : TJoiSchema;
 };
 
+export type IContext = IServices & { origin: string };
 export type TJoiSchema = Joi.Schema | Joi.Schema[];
-
 export type THandlerSchema = THandler['responseSchema' | 'paramsSchema'];
 
 export interface IServices {
@@ -60,8 +60,9 @@ export interface IServices {
   sendMail: IMailService;
 }
 
-export type IContext = IServices & {
-   origin: string };
+export type ISessionContent = Partial<{
+  user_id: ITableUsers['user_id'];
+}>;
 
 export type TInputModule<T = any> = (config: T) =>
   (operation: IOperation, context: IContext, handler?: THandler) =>
@@ -70,20 +71,3 @@ export type TInputModule<T = any> = (config: T) =>
 export type TOutputModule<T = any> = (config?: T) =>
 (response: TOperationResponse, context: IContext, handler?: THandler) =>
   Promise<[TOperationResponse, IContext]>;
-
-export type ISessionContent = Partial<{
-  user_id: ITableUsers['user_id'];
-}>;
-
-export interface IMailService {
-  sendMail: {
-    confirm: (
-      to: string, origin: string, token: string,
-    ) => Promise<SentMessageInfo>;
-    restore: (
-      to: string, origin: string, token: string,
-    ) => Promise<SentMessageInfo>;
-  };
-}
-
-export type TMailType = 'confirm' | 'restore';

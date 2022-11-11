@@ -1,6 +1,6 @@
 
 import { MailOptions } from 'nodemailer/lib/smtp-transport';
-import { TMailType } from '../types';
+import { TMailType } from '../../services/mail/types';
 import { getMailService } from '../../services/mail/mail';
 
 export class MailError extends Error {

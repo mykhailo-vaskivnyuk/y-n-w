@@ -7,7 +7,7 @@ export const generalOptions = {
   from: 'm.vaskivnyuk@gmail.com',
   sender: 'You & World',
 };
-export const OPTIONS_MAP = {
+export const MAIL_OPTIONS_MAP = {
   confirm: {
     text: `Якщо ви реєструвалсь на сайті You &amp; World -
       підтвердіть свій email. Для цього клікніть на лінк нижче.`,

@@ -1,16 +1,14 @@
+import { TLoggerLevelKeys } from './constants';
+
 export interface ILoggerConfig {
   path: string;
-  level: keyof typeof LOGGER_LEVEL,
-  target: 'console' | 'stdout',
+  level: TLoggerLevelKeys,
+  target: TLoggerTarget,
 }
 
-export const LOGGER_LEVEL = {
-  FATAL: 'fatal',
-  ERROR: 'error',
-  WARN: 'warn',
-  INFO: 'info',
-  DEBUG: 'debug',
-};
+type TLoggerTarget = 'console' | 'stdout'
+
+export type ILogger = Record<TLoggerMethodName, TLoggerMethod>;
 
 export type TLoggerMethodName =
   | 'debug'
@@ -19,9 +17,7 @@ export type TLoggerMethodName =
   | 'error'
   | 'fatal';
 
-export type TLoggerParameters = Parameters<typeof console.log>;
-
 export type TLoggerMethod =
   <T>(object: T, ...message: TLoggerParameters) => void;
 
-export type ILogger = Record<TLoggerMethodName, TLoggerMethod>;
+export type TLoggerParameters = Parameters<typeof console.log>;

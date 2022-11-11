@@ -1,5 +1,10 @@
 import { getEnumFromMap } from '../../utils/utils';
 
+export const INDEX = 'index.html';
+export const UNAVAILABLE = '503.html';
+export const NOT_FOUND = '404.html';
+export const JSON_TRANSFORM_LENGTH = 100;
+
 export const HTTP_REQ_MODULES = {
   allowCors: 'allowCors.js',
   setSession: 'setSession.js',
@@ -13,17 +18,12 @@ export const HTTP_RES_MODULES = {
 };
 export type THttpResModulesKeys = keyof typeof HTTP_RES_MODULES;
 
-export const INDEX = 'index.html';
-export const UNAVAILABLE = '503.html';
-export const NOT_FOUND = '404.html';
-export const JSON_TRANSFORM_LENGTH = 100;
-
 export const HEADERS = {
   // 'X-XSS-Protection': '1; mode=block',
   // 'X-Content-Type-Options': 'nosniff',
   // 'Strict-Transport-Security':
   //   'max-age=31536000; includeSubdomains; preload',
-  'Access-Control-Allow-Origin': 'http://localhost:3000',
+  // 'Access-Control-Allow-Origin': 'http://localhost:3000',
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Cookie',
   'Access-Control-Allow-Credentials': 'true',

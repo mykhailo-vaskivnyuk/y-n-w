@@ -4,9 +4,9 @@ import { IWsConfig, IWsServer } from './types';
 import { IOperation, TOperationResponse } from '../../types/operation.types';
 import { IHttpServer } from '../http/types';
 import { ServerError } from '../errors';
-import { getLog } from './utils';
+import { getLog } from './methods/utils';
 import { getSessionKey } from '../utils';
-import { handleError } from './error.handler';
+import { handleError } from './methods/handle.error';
 
 class WsConnection implements IInputConnection {
   private config: IWsConfig;

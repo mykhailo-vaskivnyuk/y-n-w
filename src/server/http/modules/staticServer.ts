@@ -11,7 +11,7 @@ import {
 import {
   ErrorStatusCode, ErrorStatusCodeMap,
   ServerError, ServerErrorMap } from '../../errors';
-import { makeIsApi, getLog, getUrlInstance } from '../utils';
+import { makeIsApi, getLog, getUrlInstance } from '../methods/utils';
 
 export const staticServer: THttpReqModule = (config: IHttpConfig) => {
   const { staticPath, apiPathname } = config;

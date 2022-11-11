@@ -1,4 +1,5 @@
-import { IMailService, IRouterConfig } from '../types';
+import { IRouterConfig } from '../types';
+import { IMailService } from '../../services/mail/types';
 import { SERVICES } from '../constants';
 import { createPathResolve } from '../../utils/utils';
 

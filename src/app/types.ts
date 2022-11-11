@@ -1,13 +1,13 @@
-import { ICleanedEnv, IConfig } from '../types/config.types';
+import { IConfig } from '../types/config.types';
 import { ILogger } from '../logger/types';
 import { IDatabaseQueries } from '../db/types';
-import { IMailService, IRouter } from '../router/types';
+import { IRouter } from '../router/types';
 import { IInputConnection } from '../server/types';
+import { IMailService } from '../services/mail/types';
 import App from './app';
 
 export type IAppThis = App & {
   config: IConfig;
-  env: ICleanedEnv;
   logger?: ILogger;
   router?: IRouter;
   server?: IInputConnection;

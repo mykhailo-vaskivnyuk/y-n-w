@@ -1,7 +1,7 @@
-import { IRequest } from '../types';
-import { IResponse } from './types';
-import { REQ_MIME_TYPES_ENUM } from './constants';
-import { ServerError, ServerErrorMap } from '../errors';
+import { IRequest } from '../../types';
+import { IResponse } from '../types';
+import { REQ_MIME_TYPES_ENUM } from '../constants';
+import { ServerError, ServerErrorMap } from '../../errors';
 import { getLog } from './utils';
 
 export const handleError = (e: any, req: IRequest, res: IResponse) => {

@@ -3,8 +3,8 @@ import { Readable } from 'node:stream';
 import { IOperation } from '../../types/operation.types';
 import { IRequest } from '../types';
 import {
-  ResMimeTypeKeys, THttpReqModulesKeys,
-  THttpResModulesKeys } from './constants';
+  ResMimeTypeKeys, THttpReqModulesKeys, THttpResModulesKeys,
+} from './constants';
 
 export interface IHttpConfig {
   path: string;

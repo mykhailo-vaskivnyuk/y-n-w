@@ -1,8 +1,6 @@
 import pino = require('pino');
-import {
-  ILogger, ILoggerConfig,
-  LOGGER_LEVEL, TLoggerParameters,
-} from './types';
+import { ILogger, ILoggerConfig, TLoggerParameters } from './types';
+import { LOGGER_LEVEL_MAP } from './constants';
 import { createErrorlog, createLog } from './utils';
 
 class Logger implements ILogger {
@@ -10,7 +8,7 @@ class Logger implements ILogger {
 
   constructor(config: ILoggerConfig) {
     const { level: levelKey, target } = config;
-    const level = LOGGER_LEVEL[levelKey];
+    const level = LOGGER_LEVEL_MAP[levelKey];
     const toConsole = { target: 'pino-pretty', level, options: {} };
     const toStdOut = {
       target: 'pino/file',

@@ -1,7 +1,7 @@
 import { ValidationErrorItem } from 'joi';
 import { TOperationResponse } from '../types/operation.types';
 
-export const RouterErrorMap = {
+export const ROUTER_ERROR_MAP = {
   ROUTER_ERROR: 'ROUTER ERROR',
   ROUTES_CREATE_ERROR: 'CAN\'T CREATE ROUTES',
   CANT_FIND_ROUTE: 'CAN\'T FIND ROUTE',
@@ -10,7 +10,7 @@ export const RouterErrorMap = {
   HANDLER_ERROR: 'CAN\'T HANDLE OPERATION',
   REDIRECT: 'REDIRECT',
 } as const;
-export type RouterErrorCode = keyof typeof RouterErrorMap;
+export type RouterErrorCode = keyof typeof ROUTER_ERROR_MAP;
 export type TRouterErrorDetails = RouterError['details'];
 
 export class RouterError extends Error {
@@ -18,24 +18,24 @@ export class RouterError extends Error {
   public details?: TOperationResponse;
 
   constructor(code: RouterErrorCode, details: TOperationResponse = null) {
-    super(RouterErrorMap[code]);
+    super(ROUTER_ERROR_MAP[code]);
     this.name = this.constructor.name;
     this.code = code;
     this.details = details;
   }
 }
 
-export const HandlerErrorMap = {
+export const HANDLER_ERROR_MAP = {
   E_REDIRECT: 'REDIRECT',
 } as const;
-type HandlerErrorCode = keyof typeof HandlerErrorMap;
+type HandlerErrorCode = keyof typeof HANDLER_ERROR_MAP;
 
 export class HandlerError extends Error {
   public code: HandlerErrorCode;
   public details?: TOperationResponse;
 
   constructor(code: HandlerErrorCode, details: TOperationResponse = null) {
-    super(HandlerErrorMap[code]);
+    super(HANDLER_ERROR_MAP[code]);
     this.name = this.constructor.name;
     this.code = code;
     this.details = details;

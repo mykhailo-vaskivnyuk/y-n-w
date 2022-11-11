@@ -4,13 +4,11 @@ import { IHttpConfig, IHttpServer } from './http/types';
 import { IWsConfig, IWsServer } from './ws/types';
 
 export interface IInputConnectionConfig {
-  transport: 'http' | 'ws';
+  transport: TTransport;
   http: IHttpConfig;
   ws: IWsConfig;
 }
-
-export type IServer = IHttpServer | IWsServer;
-export type IRequest = http.IncomingMessage;
+type TTransport = 'http' | 'ws';
 
 export interface IInputConnection {
   onOperation(fn:
@@ -21,4 +19,6 @@ export interface IInputConnection {
   start(): Promise<void>;
 }
 
+export type IServer = IHttpServer | IWsServer;
 export type TServerService = 'static' | 'api';
+export type IRequest = http.IncomingMessage;

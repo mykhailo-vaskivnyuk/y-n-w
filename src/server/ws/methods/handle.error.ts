@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws';
-import { IOperation } from '../../types/operation.types';
-import { ServerError, ServerErrorMap } from '../errors';
+import { IOperation } from '../../../types/operation.types';
+import { ServerError, ServerErrorMap } from '../../errors';
 import { getLog } from './utils';
 
 export const handleError = (

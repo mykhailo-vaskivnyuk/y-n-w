@@ -8,10 +8,10 @@ import {
   IResponse, IHttpServer,
   THttpReqModule, THttpResModule, IHttpConfig } from './types';
 import { ServerError } from '../errors';
-import { handleError } from './error.handler';
+import { handleError } from './methods/handle.error';
 import {
   applyReqModules, applyResModules,
-  getLog, runReqModules, runResModules } from './utils';
+  getLog, runReqModules, runResModules } from './methods/utils';
 
 class HttpConnection implements IInputConnection {
   private config: IHttpConfig;
