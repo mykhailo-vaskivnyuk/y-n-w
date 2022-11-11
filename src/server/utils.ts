@@ -11,7 +11,7 @@ export const getSessionKey = (req: IRequest, res?: IResponse) => {
   }
   const sessionKey = result || createUnicCode(15);
   res && !result && res.setHeader(
-    'set-cookie', `sessionKey=${sessionKey}; Path=/; httpOnly`
+    'set-cookie', `sessionKey=${sessionKey}; Path=/; httpOnly;`,
   );
   return sessionKey;
 };

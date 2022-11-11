@@ -7,10 +7,11 @@ import { createPathResolve } from './utils/utils';
 import { getEnv } from './utils/env.utils';
 
 const resolvePath  = createPathResolve(BUILD_PATH);
+const transport = env.TRANSPORT === 'http' ? 'http' : 'ws';
 const host = env.HOST || 'localhost';
 const port = +(env.PORT || 8000);
 const dbConectionType = env.DATABASE_URL ? 'heroku' : 'local';
-const dbConnection = {
+const DB_CONNECTION = {
   heroku: {
     connectionString: env.DATABASE_URL || '',
     ssl: { rejectUnauthorized: false },
@@ -22,7 +23,7 @@ const dbConnection = {
     user: 'merega',
     password: 'merega',
   },
-}[dbConectionType];
+};
 
 const config: IConfig = {
   env: getEnv(),
@@ -36,7 +37,7 @@ const config: IConfig = {
     queriesPath: resolvePath('db/queries'),
     connection: {
       path: resolvePath('db/connection/pg'),
-      ...dbConnection,
+      ...DB_CONNECTION[dbConectionType],
     },
   },
   router: {
@@ -65,7 +66,7 @@ const config: IConfig = {
     },
   },
   inConnection: {
-    transport: 'http',
+    transport,
     http: {
       path: resolvePath('server/http/http'),
       modulesPath: resolvePath('server/http/modules'),

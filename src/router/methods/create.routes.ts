@@ -20,7 +20,8 @@ export const createRoutes = async (dirPath: string): Promise<IRoutes> => {
     if (ext !== '.js' || name === 'types') continue;
 
     const filePath = path.join(routePath, item.name);
-    const moduleExport = require(filePath) as THandler | IRoutes;
+    let moduleExport = require(filePath);
+    moduleExport = moduleExport.default || moduleExport as THandler | IRoutes;
 
     if (name !== 'index') {
       route[name] = moduleExport;
