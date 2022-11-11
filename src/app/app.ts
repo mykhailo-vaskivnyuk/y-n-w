@@ -72,10 +72,9 @@ export default class App {
 
   private async setRouter() {
     const { router } = this.config;
-    const logger = this.logger;
     const execQuery = this.db?.getQueries();
-    if (!logger || !execQuery)
-      throw new AppError('INIT_ERROR', 'LOGGER or DB is not INITIALIZED');
+    if (!execQuery)
+      throw new AppError('INIT_ERROR', 'DB is not INITIALIZED');
     const context: IRouterContext = {
       logger,
       execQuery,
