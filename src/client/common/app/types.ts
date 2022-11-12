@@ -1,6 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { ISignupParams, IUserResponse } from '../api/types';
-import { TAccountLogin } from '../api/client.api.types';
+import { ILoginParams, ISignupParams, IUserResponse } from '../api/types';
 import { AppState } from '../constants';
 import { HttpResponseError } from '../errors';
 import { getApi } from '../api/client.api';
@@ -14,4 +13,4 @@ export type IClientAppThis = ClientApp & {
   setError: (e: HttpResponseError) => void;
 };
 
-export type TLoginOrSignup = ['login', TAccountLogin] | ['signup', ISignupParams];
+export type TLoginOrSignup = ['login', ILoginParams] | ['signup', ISignupParams];
