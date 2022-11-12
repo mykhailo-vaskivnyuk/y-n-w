@@ -1,9 +1,9 @@
 import { join, resolve } from 'node:path';
 
 export const BACK_PATH = './src/client';
-export const FRONT_PATH = '../node-y-n-w-front/src/api';
+export const FRONT_PATH = '../node-u-n-w-front/src/api';
 export const BACK_STATIC_PATH = './public';
-export const FRONT_STATIC_PATH = '../node-y-n-w-front/build';
+export const FRONT_STATIC_PATH = '../node-u-n-w-front/build';
 export const FROM_BACK_TO_FRONT = [
   'common/api',
 ].map((i) => join(BACK_PATH, i));

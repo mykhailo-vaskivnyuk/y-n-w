@@ -1,9 +1,9 @@
 const { join, resolve } = require('node:path');
 
 exports.backPath = './src/client';
-exports.frontPath = '../node-y-n-w-front/src/api';
+exports.frontPath = '../node-u-n-w-front/src/api';
 exports.backStaticPath = './public';
-exports.frontStaticPath = '../node-y-n-w-front/build';
+exports.frontStaticPath = '../node-u-n-w-front/build';
 exports.fromBackToFront = [
   'common/api',
 ].map((i) => join(exports.backPath, i));
