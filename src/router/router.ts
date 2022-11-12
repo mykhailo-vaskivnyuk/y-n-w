@@ -52,19 +52,19 @@ class Router implements IRouter {
     return this;
   }
 
-  async exec({ ...operation }: IOperation): Promise<TOperationResponse> {
+  async exec(operation: IOperation): Promise<TOperationResponse> {
     if (!this.routes) throw new RouterError('ROUTES_CREATE_ERROR');
     const { options: { origin }, names } = operation;
-    let context = { origin } as IContext;
+    const context = { origin } as IContext;
     const handler = this.findRoute(names);
 
     try {
-      [operation, context] = await runInputModules(
+      operation = await runInputModules(
         this.modules
       )(operation, context, handler);
       const { params } = operation.data;
       let response = await handler(context, params);
-      [response, context] = await runOutputModules(
+      response = await runOutputModules(
         this.responseModules
       )(response, context, handler);
       return response;

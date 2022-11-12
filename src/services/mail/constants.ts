@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 
-export const template = fs
-  .readFileSync('src/services/mail/template.html')
+export const MAIL_TEMPLATE = fs
+  .readFileSync('src/services/mail/mail.template.html')
   .toString();
-export const generalOptions = {
+export const MAIL_COMMON_OPTIONS = {
   from: 'm.vaskivnyuk@gmail.com',
   sender: 'You & World',
 };

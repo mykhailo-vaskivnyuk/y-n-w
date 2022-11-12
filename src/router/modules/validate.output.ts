@@ -10,7 +10,7 @@ const options = {
 };
 
 const validateOutput: TOutputModule = () =>
-  async (response, { ...context }, handler) => {
+  async (response, context, handler) => {
     const { responseSchema } = handler || {};
     if (!responseSchema) throw new Error('Handler is not put');
     const schema = outputSchemaToSchema(responseSchema);
@@ -27,7 +27,7 @@ const validateOutput: TOutputModule = () =>
       logger.error(error);
       throw new OutputValidationError(error.details);
     }
-    return [value, context];
+    return value;
   };
 
 export default validateOutput;

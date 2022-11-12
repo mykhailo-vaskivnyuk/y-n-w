@@ -1,18 +1,18 @@
-export const INPUT_MODULES = {
+export const INPUT_MODULES_MAP = {
   getStream: 'get.stream.js',
-  validate: 'validate.js',
+  validateInput: 'validate.input.js',
   setSession: 'set.session.js',
 };
-export type TInputModulesKeys = keyof typeof INPUT_MODULES;
+export type TInputModulesKeys = keyof typeof INPUT_MODULES_MAP;
 
-export const OUTPUT_MODULES = {
-  validateResponse: 'validate.response.js',
+export const OUTPUT_MODULES_MAP = {
+  validateOutput: 'validate.output.js',
 };
-export type TOutputModulesKeys = keyof typeof OUTPUT_MODULES;
+export type TOutputModulesKeys = keyof typeof OUTPUT_MODULES_MAP;
 
-export const SERVICES = {
+export const SERVICES_MAP = {
   mailService: 'send.mail.js',
 };
-export type TServicesKeys = keyof typeof SERVICES;
+export type TServicesKeys = keyof typeof SERVICES_MAP;
 
 export const SIMPLE_TYPES = ['boolean', 'string', 'number'];

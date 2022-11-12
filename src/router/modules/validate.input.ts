@@ -9,9 +9,9 @@ const options = {
 };
 
 const validateInput: TInputModule = () =>
-  async ({ ...operation }, { ...context }, handler) => {
+  async ({ ...operation }, context, handler) => {
     const { schema, paramsSchema } = handler || {};
-    if (!paramsSchema) return [operation, context];
+    if (!paramsSchema) return operation;
     if (!schema) handler!.schema = Joi.object(paramsSchema);
     const { data } = operation;
     const { error, value } = handler!.schema!.validate(data.params, options);
@@ -19,8 +19,8 @@ const validateInput: TInputModule = () =>
       logger.error(error);
       throw new InputValidationError(error.details);
     }
-    Object.assign(data.params, { ...value });
-    return [operation, context];
+    data.params = value;
+    return operation;
   };
 
 export default validateInput;

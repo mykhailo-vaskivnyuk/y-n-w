@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 export const TABLES_MAP = {
   SESSIONS: 'sessions',
   USERS: 'users',

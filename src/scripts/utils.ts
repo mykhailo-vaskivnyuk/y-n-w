@@ -1,5 +1,5 @@
 import fsp from 'node:fs/promises';
-import path from 'node:path';
+import { join } from 'node:path';
 
 export const copyDir = async (
   dirFrom: string,
@@ -12,8 +12,8 @@ export const copyDir = async (
   for await (const item of dir) {
     const { name } = item;
     if (item.isDirectory()) {
-      const nextDirFrom = path.join(dirFrom, name);
-      const nextDirTo = path.join(dirTo, name);
+      const nextDirFrom = join(dirFrom, name);
+      const nextDirTo = join(dirTo, name);
       console.log('[o] read', nextDirFrom);
       let created = false;
       try {
@@ -35,8 +35,8 @@ export const copyDir = async (
     }
     if (exclude && exclude.includes(dirFrom)) continue;
     if (include && !include.includes(dirFrom)) continue;
-    const filePathFrom = path.join(dirFrom, name);
-    const filePathTo = path.join(dirTo, name);
+    const filePathFrom = join(dirFrom, name);
+    const filePathTo = join(dirTo, name);
     fsp.copyFile(filePathFrom, filePathTo);
     counter++;
     console.log('--> copying', name);
@@ -56,12 +56,12 @@ export const rmDir = async (dirToDel: string) => {
   for await (const item of dir) {
     const { name } = item;
     if (item.isDirectory()) {
-      const nextDirToDel = path.join(dirToDel, name);
+      const nextDirToDel = join(dirToDel, name);
       const count = await rmDir(nextDirToDel);
       counter += count;
       continue;
     }
-    const filePathToDel = path.join(dirToDel, name);
+    const filePathToDel = join(dirToDel, name);
     await fsp.rm(filePathToDel);
     counter++;
   }

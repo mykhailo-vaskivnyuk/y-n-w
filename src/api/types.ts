@@ -18,6 +18,11 @@ export const SignupParamsSchema = {
   email: Joi.string().required().email(),
 };
 
+export const LoginParamsSchema = {
+  ...SignupParamsSchema,
+  password: Joi.string().required(),
+};
+
 export const ConfirmParamsSchema = {
   token: Joi.string(),
 };

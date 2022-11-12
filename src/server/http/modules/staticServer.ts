@@ -11,17 +11,17 @@ import {
 import {
   ErrorStatusCode, ErrorStatusCodeMap,
   ServerError, ServerErrorMap } from '../../errors';
-import { makeIsApi, getLog, getUrlInstance } from '../methods/utils';
+import { makeIsApiPathname, getLog, getUrlInstance } from '../methods/utils';
 
 export const staticServer: THttpReqModule = (config: IHttpConfig) => {
   const { staticPath, apiPathname } = config;
-  const isApi = makeIsApi(apiPathname);
+  const IsApiPathname = makeIsApiPathname(apiPathname);
   const httpStaticServer = createStaticServer(staticPath);
 
   return async function staticServer(
     req, res, { ...context },
   ) {
-    if (isApi(req.url)) return context;
+    if (IsApiPathname(req.url)) return context;
     await httpStaticServer(req, res, context);
     return null;
   };

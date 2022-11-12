@@ -3,7 +3,7 @@ import { ISession } from './types';
 
 export class Session<T extends IObject = IObject> implements ISession<T> {
   private session: Partial<T> | null = null;
-  private isPersisted = false;
+  private persisted = false;
 
   constructor(
     private sessionKey: string,
@@ -12,7 +12,7 @@ export class Session<T extends IObject = IObject> implements ISession<T> {
 
   async init() {
     const [persisted] = await execQuery.session.read([this.sessionKey]);
-    this.isPersisted = Boolean(persisted);
+    this.persisted = Boolean(persisted);
     this.deserialize(persisted?.session_value);
     return this;
   }
@@ -54,12 +54,12 @@ export class Session<T extends IObject = IObject> implements ISession<T> {
   async persist() {
     if (this.session) {
       const sessionValue = this.serialize();
-      if (this.isPersisted)
+      if (this.persisted)
         await execQuery.session.update([this.sessionKey, sessionValue]);
       else await execQuery.session.create([this.sessionKey, sessionValue]);
       return;
     }
-    if (!this.isPersisted) return;
+    if (!this.persisted) return;
     await execQuery.session.del([this.sessionKey]);
   }
 }

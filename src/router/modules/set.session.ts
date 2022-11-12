@@ -12,14 +12,14 @@ export class SessionError extends Error {
 const { createSession } = getService<ISessionContent>();
 
 const setSession: TInputModule = () =>
-  async ({ ...operation }, { ...context }) => {
+  async ({ ...operation }, context) => {
     const { options } = operation;
     const { sessionKey } = options;
-    if (!sessionKey) return [operation, context];
+    if (!sessionKey) return operation;
     try {
       const session = await createSession(sessionKey);
       context.session = session;
-      return [operation, context];
+      return operation;
     } catch (e: any) {
       logger.error(e);
       throw new SessionError();

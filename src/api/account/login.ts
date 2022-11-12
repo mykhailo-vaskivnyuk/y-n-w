@@ -1,28 +1,20 @@
-import Joi from 'joi';
-import { IUserResponse } from '../../client/common/api/types';
+import { ILoginParams, IUserResponse } from '../../client/common/api/types';
 import { THandler } from '../../router/types';
+import { LoginParamsSchema, UserResponseSchema } from '../types';
 import { verifyHash } from '../../utils/crypto';
-import { UserResponseSchema } from '../types';
 
-type ILoginParams = {
-  email: string,
-  password: string,
-}
-
-const login: THandler<ILoginParams, IUserResponse | null> =
+const login: THandler<ILoginParams, IUserResponse> =
 async (context, { email, password }) => {
   const [user] = await execQuery.user.findUserByEmail([email]);
   if (!user) return null;
   if (!user.password) return null;
-  const isVerified = await verifyHash(password, user.password);
-  if (!isVerified) return null;
-  await context.session.write('user_id', user.user_id);
-  return { ...user, confirmed: !user.link };
+  const verified = await verifyHash(password, user.password);
+  if (!verified) return null;
+  const { user_id, link } = user;
+  await context.session.write('user_id', user_id);
+  return { ...user, confirmed: !link };
 };
-login.paramsSchema = {
-  email: Joi.string().required(), //.email(),
-  password: Joi.string().required(),
-};
+login.paramsSchema = LoginParamsSchema;
 login.responseSchema = UserResponseSchema;
 
 export = login;

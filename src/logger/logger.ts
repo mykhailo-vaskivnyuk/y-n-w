@@ -31,7 +31,7 @@ class Logger implements ILogger {
   }
 
   warn(...message: TLoggerParameters) {
-    const [first, second] = createLog(message);
+    const [first, second] = createErrorlog(message);
     this.logger.warn(first, second);
   }
 

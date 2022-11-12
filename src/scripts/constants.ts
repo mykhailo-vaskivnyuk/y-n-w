@@ -1,28 +1,24 @@
 import { join, resolve } from 'node:path';
 
-export const backPath = './src/client';
-export const frontPath = '../node-y-n-w-front/src/api';
-export const fromBackToFront = [
+export const BACK_PATH = './src/client';
+export const FRONT_PATH = '../node-y-n-w-front/src/api';
+export const BACK_STATIC_PATH = './public';
+export const FRONT_STATIC_PATH = '../node-y-n-w-front/build';
+export const FROM_BACK_TO_FRONT = [
   'common/api',
-].map((i) => join(backPath, i));
-export const fromFrontToBack = [
+].map((i) => join(BACK_PATH, i));
+export const FROM_FRONT_TO_BACK = [
   'common', 'common/app',
-].map((i) => join(frontPath, i));
-export const excludeFromBack = [
+].map((i) => join(FRONT_PATH, i));
+export const EXCLUDE_FROM_BACK = [
   'local'
-].map((i) => join(backPath, i));
-export const excludeFromFront = [
+].map((i) => join(BACK_PATH, i));
+export const EXCLUDE_FROM_FRONT = [
   'local'
-].map((i) => join(frontPath, i));
-
-export const backStaticPath = './public';
-export const frontStaticPath = '../node-y-n-w-front/build';
-export const excludeStatic = [
+].map((i) => join(FRONT_PATH, i));
+export const EXCLUDE_STATIC = [
   'assets/icons'
-].map((i) => join(frontStaticPath, i));
-
-export const buildPath = 'js';
-
-export const filesToCopyFromBackToFront: [string, string][] = [
+].map((i) => join(FRONT_STATIC_PATH, i));
+export const FILES_TO_COPY_FROM_BACK_TO_FRONT: [string, string][] = [
   ['src/db/db.types.ts', 'local/db.types.ts'],
-].map(([i, j]) => [resolve(i!), join(frontPath, j!)]);
+].map(([i, j]) => [resolve(i!), join(FRONT_PATH, j!)]);

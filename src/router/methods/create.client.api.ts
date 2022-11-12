@@ -18,8 +18,8 @@ export const createClientApi = (config: IRouterConfig, routes: IRoutes) => {
     const typesPath = path.join(apiDir, typesFileName);
     const apiStream = fs.createWriteStream(apiPath);
     const typesStream = fs.createWriteStream(typesPath);
-    let isFinish = false;
-    const handleFinish = () => (isFinish ? rv() : isFinish = true);
+    let done = false;
+    const handleFinish = () => (done ? rv() : done = true);
     const handleError = (e: Error) => {
       apiStream.close();
       typesStream.close();

@@ -10,6 +10,10 @@ export type ISignupParams = {
   email: string,
 };
 
+export type ILoginParams = ISignupParams & {
+  password: string,
+};
+
 export type IConfirmParams = {
   token: string,
 };

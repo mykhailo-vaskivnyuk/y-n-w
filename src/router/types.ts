@@ -66,8 +66,8 @@ export type ISessionContent = Partial<{
 
 export type TInputModule<T = any> = (config: T) =>
   (operation: IOperation, context: IContext, handler?: THandler) =>
-    Promise<[IOperation, IContext]>;
+    Promise<IOperation>;
 
 export type TOutputModule<T = any> = (config?: T) =>
 (response: TOperationResponse, context: IContext, handler?: THandler) =>
-  Promise<[TOperationResponse, IContext]>;
+  Promise<TOperationResponse>;

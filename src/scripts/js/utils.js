@@ -1,6 +1,6 @@
 
 const  fsp = require('node:fs/promises');
-const path = require('node:path');
+const { join } = require('node:path');
 
 const copyDir = async (dirFrom, dirTo, include = null, exclude = null) => {
   const dir = await fsp.opendir(dirFrom);
@@ -8,8 +8,8 @@ const copyDir = async (dirFrom, dirTo, include = null, exclude = null) => {
   for await (const item of dir) {
     const { name } = item;
     if (item.isDirectory()) {
-      const nextDirFrom = path.join(dirFrom, name);
-      const nextDirTo = path.join(dirTo, name);
+      const nextDirFrom = join(dirFrom, name);
+      const nextDirTo = join(dirTo, name);
       console.log('[o] read', nextDirFrom);
       let created = false;
       try {
@@ -33,8 +33,8 @@ const copyDir = async (dirFrom, dirTo, include = null, exclude = null) => {
       continue;
     if (include && !include.includes(dirFrom))
       continue;
-    const filePathFrom = path.join(dirFrom, name);
-    const filePathTo = path.join(dirTo, name);
+    const filePathFrom = join(dirFrom, name);
+    const filePathTo = join(dirTo, name);
     fsp.copyFile(filePathFrom, filePathTo);
     counter++;
     console.log('--> copying', name);
@@ -59,12 +59,12 @@ const rmDir = async (dirToDel) => {
   for await (const item of dir) {
     const { name } = item;
     if (item.isDirectory()) {
-      const nextDirToDel = path.join(dirToDel, name);
+      const nextDirToDel = join(dirToDel, name);
       const count = await rmDir(nextDirToDel);
       counter += count;
       continue;
     }
-    const filePathToDel = path.join(dirToDel, name);
+    const filePathToDel = join(dirToDel, name);
     await fsp.rm(filePathToDel);
     counter++;
   }

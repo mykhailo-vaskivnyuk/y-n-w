@@ -2,20 +2,27 @@ import nodemailer from 'nodemailer';
 import { format } from 'node:util';
 import { SentMessageInfo, MailOptions } from 'nodemailer/lib/smtp-transport';
 import { TMailType } from './types';
-import { generalOptions, MAIL_OPTIONS_MAP, template } from './constants';
+import {
+  MAIL_COMMON_OPTIONS, MAIL_OPTIONS_MAP,
+  MAIL_TEMPLATE,
+} from './constants';
+import { TPromiseExecutor } from '../../types/types';
 
 export const getMailService = (config: MailOptions) => {
   const transporter = nodemailer.createTransport(config);
 
-  const send = (mailOptions: MailOptions) =>
-    new Promise<SentMessageInfo>((rv, rj) => {
-      const options = { ...generalOptions, ...mailOptions };
+  const send = (mailOptions: MailOptions) => {
+    const executor: TPromiseExecutor<SentMessageInfo> =
+    (rv, rj) => {
+      const options = { ...MAIL_COMMON_OPTIONS, ...mailOptions };
       transporter.sendMail(options, (error, info) => {
         error ? rj(error) : rv(info);
       });
-    });
+    };
+    return new Promise(executor);
+  };
 
-  const sendMail = (
+  const sendMail = async (
     type: TMailType,
     to: string,
     origin: string,
@@ -23,14 +30,18 @@ export const getMailService = (config: MailOptions) => {
   ) => {
     const { text, subject } = MAIL_OPTIONS_MAP[type];
     const link = `${origin}/#/account/${type}/${token}`;
-    const html = format(template, text, link);
+    const html = format(MAIL_TEMPLATE, text, link);
     const options = {
-      ...generalOptions,
+      ...MAIL_COMMON_OPTIONS,
       to,
       subject,
       html,
     };
-    return send(options);
+    try {
+      return await send(options);
+    } catch (e) {
+      logger.warn(e);
+    }
   };
 
   return { sendMail };

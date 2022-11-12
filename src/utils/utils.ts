@@ -8,7 +8,7 @@ export const getEnumFromMap =
     Object
       .keys(map)
       .reduce((obj, key) => {
-        const value = isNaN(+key) ? key : +key;
+        const value = Number.isNaN(+key) ? key : +key;
         Object.assign(obj, { [key]: value });
         return obj;
       }, {} as Q);

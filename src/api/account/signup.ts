@@ -13,10 +13,10 @@ const signup: THandler<ISignupParams, IUserResponse> = async (
   await execQuery.user.createUser([email, hashedPassword, token]);
   [user] = await execQuery.user.findUserByEmail([email]);
   if (!user) throw new Error('Unknown error');
-  const { user_id, link } = user;
+  const { user_id } = user;
   session.write('user_id', user_id);
   await mailService.sendMail.confirm(email, origin, token);
-  return { ...user, confirmed: !link };
+  return { ...user, confirmed: false };
 };
 signup.paramsSchema = SignupParamsSchema;
 signup.responseSchema = UserResponseSchema;

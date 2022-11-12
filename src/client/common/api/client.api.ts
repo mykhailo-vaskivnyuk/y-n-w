@@ -10,7 +10,7 @@ export const getApi = (
     'confirm': (options: P.IConfirmParams) =>
       fetch<P.IUserResponse>('/account/confirm', options),
 
-    'login': (options: Q.TAccountLogin) =>
+    'login': (options: P.ILoginParams) =>
       fetch<P.IUserResponse>('/account/login', options),
 
     'logout': () => fetch<boolean>('/account/logout'),

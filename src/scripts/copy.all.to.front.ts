@@ -1,9 +1,9 @@
-import { backPath, frontPath } from './constants';
+import { BACK_PATH, FRONT_PATH } from './constants';
 import { copyDir } from './utils';
 
 const runSync = async () => {
   console.log('copy ALL from BACK to FRONT');
-  await copyDir(backPath, frontPath);
+  await copyDir(BACK_PATH, FRONT_PATH);
 };
 
 runSync();

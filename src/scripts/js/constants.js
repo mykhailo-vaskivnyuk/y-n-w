@@ -1,8 +1,9 @@
 const { join, resolve } = require('node:path');
 
-exports.buildPath = 'js';
 exports.backPath = './src/client';
 exports.frontPath = '../node-y-n-w-front/src/api';
+exports.backStaticPath = './public';
+exports.frontStaticPath = '../node-y-n-w-front/build';
 exports.fromBackToFront = [
   'common/api',
 ].map((i) => join(exports.backPath, i));
@@ -15,8 +16,6 @@ exports.excludeFromBack = [
 exports.excludeFromFront = [
   'local'
 ].map((i) => join(exports.frontPath, i));
-exports.backStaticPath = './public';
-exports.frontStaticPath = '../node-y-n-w-front/build';
 exports.excludeStatic = [
   'assets/icons'
 ].map((i) => join(exports.frontStaticPath, i));

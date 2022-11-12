@@ -25,7 +25,7 @@ export const getJson = async (stream: Readable) => {
   return JSON.parse(data);
 };
 
-export const makeIsApi = (api: string) => (url = '') => {
+export const makeIsApiPathname = (api: string) => (url = '') => {
   const regExp = new RegExp(`^/${api}(/.*)?$`);
   return regExp.test(url);
 };

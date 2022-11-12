@@ -52,9 +52,9 @@ const config: IConfig = {
     inputModules: [
       'setSession',
       'getStream',
-      'validate',
+      'validateInput',
     ],
-    outputModules: ['validateResponse'],
+    outputModules: ['validateOutput'],
     modulesConfig: {
       mailService: {
         service: 'gmail',

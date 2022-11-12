@@ -1,6 +1,6 @@
 import { IRouterConfig } from '../types';
 import { IMailService } from '../../services/mail/types';
-import { SERVICES } from '../constants';
+import { SERVICES_MAP } from '../constants';
 import { createPathResolve } from '../../utils/utils';
 
 export const getServices = (config: IRouterConfig) => {
@@ -9,7 +9,7 @@ export const getServices = (config: IRouterConfig) => {
   return services.reduce(
     (contextObj, service) => {
       const moduleConfig = modulesConfig[service];
-      const servicePath = resolvePath(SERVICES[service]);
+      const servicePath = resolvePath(SERVICES_MAP[service]);
       const moduleExport = require(servicePath).default;
       contextObj[service] = moduleExport(moduleConfig);
       return contextObj;
