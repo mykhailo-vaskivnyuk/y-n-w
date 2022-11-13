@@ -9,7 +9,7 @@ import { errorHandler } from './methods/error.handler';
 import { createClientApi } from './methods/create.client.api';
 import {
   applyInputModules, applyOutputModules,
-  runInputModules, runOutputModules,
+  getExecInputModules, getExecOutputModules,
 } from './methods/modules';
 import { getServices } from './methods/services';
 import { createRoutes } from './methods/create.routes';
@@ -57,17 +57,14 @@ class Router implements IRouter {
     const { options: { origin }, names } = operation;
     const context = { origin } as IContext;
     const handler = this.findRoute(names);
+    const execInputModules = getExecInputModules(this.modules);
+    const execOutputModules = getExecOutputModules(this.responseModules);
 
     try {
-      operation = await runInputModules(
-        this.modules
-      )(operation, context, handler);
-      const { params } = operation.data;
-      let response = await handler(context, params);
-      response = await runOutputModules(
-        this.responseModules
-      )(response, context, handler);
-      return response;
+      const { data } = await execInputModules(operation, context, handler);
+      const { params } = data;
+      const response = await handler(context, params);
+      return await execOutputModules(response, context, handler);
     } catch (e: any) {
       return errorHandler(e);
     } finally {

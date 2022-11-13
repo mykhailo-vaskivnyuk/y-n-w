@@ -1,24 +1,29 @@
 import { env } from 'node:process';
-
-export const EnvValuesMap = {
-  true: true,
-  false: false,
-  undefined: false,
-  development: true,
-};
-export type TEnvValuesKeys = keyof typeof EnvValuesMap;
+import { CleanedEnvKeys, ICleanedEnv } from '../types/config.types';
 
 export const getEnv = () => {
-  const DEV = EnvValuesMap[env.NODE_ENV as TEnvValuesKeys];
+  const DEV = env.NODE_ENV === 'development';
+  const {
+    TRANSPORT = 'ws',
+    HOST = 'localhost',
+    PORT = 8000,
+    DATABASE_URL = '',
+    RUN_ONCE = false,
+    STATIC_UNAVAILABLE = false,
+    API_UNAVAILABLE = false,
+    EXIT_ON_ERROR = false,
+  } = env as Record<CleanedEnvKeys, any>;
 
-  const cleanedEnvObj = {
+  const cleanedEnvObj: ICleanedEnv = {
     DEV,
-    RUN_ONCE: EnvValuesMap[env.RUN_ONCE as TEnvValuesKeys],
-    STATIC_UNAVAILABLE: EnvValuesMap[
-      env.STATIC_UNAVAILABLE as TEnvValuesKeys
-    ],
-    API_UNAVAILABLE: EnvValuesMap[env.API_UNAVAILABLE as TEnvValuesKeys],
-    EXIT_ON_ERROR: DEV && EnvValuesMap[env.EXIT_ON_ERROR as TEnvValuesKeys],
+    TRANSPORT,
+    HOST,
+    PORT: +PORT,
+    DATABASE_URL,
+    RUN_ONCE,
+    STATIC_UNAVAILABLE,
+    API_UNAVAILABLE,
+    EXIT_ON_ERROR,
   };
 
   return cleanedEnvObj;

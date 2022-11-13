@@ -1,19 +1,21 @@
 
 import { resolve } from 'node:path';
-import { env } from 'node:process';
 import { IConfig } from './types/config.types';
 import { BUILD_PATH } from './constants/constants';
 import { createPathResolve } from './utils/utils';
 import { getEnv } from './utils/env.utils';
 
 const resolvePath  = createPathResolve(BUILD_PATH);
-const transport = env.TRANSPORT === 'http' ? 'http' : 'ws';
-const host = env.HOST || 'localhost';
-const port = +(env.PORT || 8000);
-const dbConectionType = env.DATABASE_URL ? 'heroku' : 'local';
+const {
+  TRANSPORT: transport,
+  HOST: host,
+  PORT: port,
+  DATABASE_URL: dbUrl,
+  ...restEnv
+} = getEnv();
 const DB_CONNECTION = {
   heroku: {
-    connectionString: env.DATABASE_URL || '',
+    connectionString: dbUrl,
     ssl: { rejectUnauthorized: false },
   },
   local: {
@@ -23,10 +25,11 @@ const DB_CONNECTION = {
     user: 'merega',
     password: 'merega',
   },
-};
+}[dbUrl ? 'heroku' : 'local'];
+
 
 const config: IConfig = {
-  env: getEnv(),
+  env: restEnv,
   logger: {
     path: resolvePath('logger/logger'),
     level: 'DEBUG',
@@ -37,7 +40,7 @@ const config: IConfig = {
     queriesPath: resolvePath('db/queries'),
     connection: {
       path: resolvePath('db/connection/pg'),
-      ...DB_CONNECTION[dbConectionType],
+      ...DB_CONNECTION,
     },
   },
   router: {

@@ -8,7 +8,7 @@ export interface IInputConnectionConfig {
   http: IHttpConfig;
   ws: IWsConfig;
 }
-type TTransport = 'http' | 'ws';
+export type TTransport = 'http' | 'ws';
 
 export interface IInputConnection {
   onOperation(fn:

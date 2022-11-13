@@ -21,11 +21,7 @@ module.exports = {
     'import',
     '@typescript-eslint'
   ],
-  ignorePatterns: [
-    'js',
-    'src/client/common/*',
-    '!src/client/common/api',
-  ],
+  ignorePatterns: ['js'],
   root: true,
   'rules': {
     'max-lines': ['error', 100],

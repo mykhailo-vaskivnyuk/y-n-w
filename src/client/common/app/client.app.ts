@@ -59,6 +59,7 @@ export class ClientApp extends EventEmitter {
   protected setState(state: AppState) {
     if (state === AppState.ERROR) {
       this.state = state;
+      this.emit('error', this.error);
       return this.emit('statechanged', this.state);
     }
     this.error = null;

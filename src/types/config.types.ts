@@ -1,10 +1,10 @@
 import { ILoggerConfig } from '../logger/types';
 import { IDatabaseConfig } from '../db/types';
 import { IRouterConfig } from '../router/types';
-import { IInputConnectionConfig } from '../server/types';
+import { IInputConnectionConfig, TTransport } from '../server/types';
 
 export interface IConfig {
-  env: ICleanedEnv;
+  env: Partial<ICleanedEnv>;
   logger: ILoggerConfig;
   database: IDatabaseConfig;
   router: IRouterConfig;
@@ -13,6 +13,10 @@ export interface IConfig {
 
 export interface ICleanedEnv {
   DEV: boolean;
+  TRANSPORT: TTransport;
+  HOST: string;
+  PORT: number;
+  DATABASE_URL : string;
   RUN_ONCE: boolean;
   STATIC_UNAVAILABLE: boolean;
   API_UNAVAILABLE: boolean;

@@ -30,7 +30,7 @@ export const applyOutputModules = (config: IRouterConfig) => {
     });
 };
 
-export const runInputModules = (
+export const getExecInputModules = (
   inputModules: ReturnType<TInputModule>[],
 ) => async (
   { ...operation }: IOperation, context: IContext, handler: THandler
@@ -41,7 +41,7 @@ export const runInputModules = (
   return operation;
 };
 
-export const runOutputModules = (
+export const getExecOutputModules = (
   outputModules: ReturnType<TOutputModule>[],
 ) => async (
   response: TOperationResponse, context: IContext, handler: THandler

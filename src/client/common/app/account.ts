@@ -42,7 +42,9 @@ export const getAccountMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  async loginOverLink(type: 'confirm' | 'restore', args: IConfirmParams): Promise<IUserResponse> {
+  async loginOverLink(
+    type: 'confirm' | 'restore', args: IConfirmParams,
+  ): Promise<IUserResponse> {
     parent.setState(AppState.LOADING);
     try {
       const user = await parent.clientApi.account[type](args);

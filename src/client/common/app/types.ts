@@ -13,4 +13,6 @@ export type IClientAppThis = ClientApp & {
   setError: (e: HttpResponseError) => void;
 };
 
-export type TLoginOrSignup = ['login', ILoginParams] | ['signup', ISignupParams];
+export type TLoginOrSignup =
+  | ['login', ILoginParams]
+  | ['signup', ISignupParams];

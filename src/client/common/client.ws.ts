@@ -1,4 +1,4 @@
-import { logData } from '../../utils/utils';
+import { logData } from './utils';
 import { TPromiseExecutor } from '../local/imports';
 import { IWsResponse, TFetch } from './types';
 import { HttpResponseError } from './errors';
@@ -55,7 +55,9 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
       rv(resData);
     };
 
-  const fetch = async (pathname: string, data: Record<string, any> = {}): Promise<any> => {
+  const fetch = async (
+    pathname: string, data: Record<string, any> = {},
+  ): Promise<any> => {
     await checkConnection();
     const requestId = getId();
     const request = { requestId, pathname, data };
