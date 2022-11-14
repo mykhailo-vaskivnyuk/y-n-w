@@ -55,10 +55,10 @@ CREATE TABLE public.members_users (
     net_id bigint NOT NULL,
     member_id bigint NOT NULL,
     user_id bigint NOT NULL,
-    list_name character varying(50) DEFAULT NULL::character varying,
-    note character varying(255) DEFAULT NULL::character varying,
-    dislike bit(1) DEFAULT '0'::"bit",
-    voice bit(1) DEFAULT '0'::"bit"
+    list_name character varying(50) DEFAULT NULL,
+    note character varying(255) DEFAULT NULL,
+    dislike bit(1) DEFAULT '0',
+    voice bit(1) DEFAULT '0'
 );
 
 
@@ -104,16 +104,16 @@ ALTER TABLE public.nets OWNER TO merega;
 
 CREATE TABLE public.nets_data (
     net_id bigint NOT NULL,
-    name character varying(50) DEFAULT NULL::character varying,
+    name character varying(50) DEFAULT NULL,
     goal text,
-    resource_name_1 character varying(50) DEFAULT NULL::character varying,
-    resource_link_1 character varying(255) DEFAULT NULL::character varying,
-    resource_name_2 character varying(50) DEFAULT NULL::character varying,
-    resource_link_2 character varying(255) DEFAULT NULL::character varying,
-    resource_name_3 character varying(50) DEFAULT NULL::character varying,
-    resource_link_3 character varying(255) DEFAULT NULL::character varying,
-    resource_name_4 character varying(50) DEFAULT NULL::character varying,
-    resource_link_4 character varying(255) DEFAULT NULL::character varying
+    resource_name_1 character varying(50) DEFAULT NULL,
+    resource_link_1 character varying(255) DEFAULT NULL,
+    resource_name_2 character varying(50) DEFAULT NULL,
+    resource_link_2 character varying(255) DEFAULT NULL,
+    resource_name_3 character varying(50) DEFAULT NULL,
+    resource_link_3 character varying(255) DEFAULT NULL,
+    resource_name_4 character varying(50) DEFAULT NULL,
+    resource_link_4 character varying(255) DEFAULT NULL
 );
 
 
@@ -131,9 +131,9 @@ CREATE TABLE public.nets_events (
     event_node_id bigint NOT NULL,
     notification_tpl_id bigint NOT NULL,
     event_code integer,
-    notification_text character varying(255) DEFAULT NULL::character varying,
-    new bit(1) DEFAULT '1'::"bit",
-    shown bit(1) DEFAULT '0'::"bit"
+    notification_text character varying(255) DEFAULT NULL,
+    new bit(1) DEFAULT '1',
+    shown bit(1) DEFAULT '0'
 );
 
 
@@ -177,9 +177,9 @@ ALTER TABLE public.nets ALTER COLUMN net_id ADD GENERATED ALWAYS AS IDENTITY (
 CREATE TABLE public.nets_users_data (
     net_id bigint NOT NULL,
     user_id bigint NOT NULL,
-    email_show bit(1) DEFAULT '0'::"bit",
-    name_show bit(1) DEFAULT '0'::"bit",
-    mobile_show bit(1) DEFAULT '0'::"bit"
+    email_show bit(1) DEFAULT '0',
+    name_show bit(1) DEFAULT '0',
+    mobile_show bit(1) DEFAULT '0'
 );
 
 
@@ -199,8 +199,8 @@ CREATE TABLE public.nodes (
     full_node_address integer,
     count_of_members integer,
     node_date timestamp without time zone,
-    blocked bit(1) DEFAULT NULL::"bit",
-    changes bit(1) DEFAULT NULL::"bit"
+    blocked bit(1) DEFAULT NULL,
+    changes bit(1) DEFAULT NULL
 );
 
 
@@ -228,9 +228,9 @@ ALTER TABLE public.nodes ALTER COLUMN node_id ADD GENERATED ALWAYS AS IDENTITY (
 
 CREATE TABLE public.nodes_tmp (
     node_id bigint NOT NULL,
-    email character varying(50) DEFAULT NULL::character varying,
-    list_name character varying(50) DEFAULT NULL::character varying,
-    note character varying(255) DEFAULT NULL::character varying
+    email character varying(50) DEFAULT NULL,
+    list_name character varying(50) DEFAULT NULL,
+    note character varying(255) DEFAULT NULL
 );
 
 
@@ -244,9 +244,9 @@ ALTER TABLE public.nodes_tmp OWNER TO merega;
 CREATE TABLE public.nodes_users (
     node_id bigint NOT NULL,
     user_id bigint NOT NULL,
-    invite character varying(255) DEFAULT NULL::character varying,
-    old_list_name character varying(50) DEFAULT NULL::character varying,
-    old_list_note character varying(255) DEFAULT NULL::character varying
+    invite character varying(255) DEFAULT NULL,
+    old_list_name character varying(50) DEFAULT NULL,
+    old_list_note character varying(255) DEFAULT NULL
 );
 
 
@@ -261,9 +261,9 @@ CREATE TABLE public.notifications_tpl (
     notification_tpl_id bigint NOT NULL,
     event_code integer,
     notification_code integer,
-    notification_text character varying(255) DEFAULT NULL::character varying,
-    notification_action character varying(255) DEFAULT NULL::character varying,
-    notification_close bit(1) DEFAULT '0'::"bit"
+    notification_text character varying(255) DEFAULT NULL,
+    notification_action character varying(255) DEFAULT NULL,
+    notification_close bit(1) DEFAULT '0'
 );
 
 
@@ -321,13 +321,13 @@ ALTER TABLE public.sessions ALTER COLUMN session_id ADD GENERATED ALWAYS AS IDEN
 CREATE TABLE public.users (
     user_id bigint NOT NULL,
     email character varying(50) NOT NULL,
-    name character varying(50) DEFAULT NULL::character varying,
-    mobile character varying(255) DEFAULT NULL::character varying,
-    password character varying(255) DEFAULT NULL::character varying,
-    link character varying(255) DEFAULT NULL::character varying,
-    invite character varying(255) DEFAULT NULL::character varying,
-    restore character varying(255) DEFAULT NULL::character varying,
-    net_name character varying(50) DEFAULT NULL::character varying
+    name character varying(50) DEFAULT NULL,
+    mobile character varying(255) DEFAULT NULL,
+    password character varying(255) DEFAULT NULL,
+    link character varying(255) DEFAULT NULL,
+    invite character varying(255) DEFAULT NULL,
+    restore character varying(255) DEFAULT NULL,
+    net_name character varying(50) DEFAULT NULL
 );
 
 
@@ -342,10 +342,10 @@ CREATE TABLE public.users_notifications (
     notification_id bigint NOT NULL,
     user_id bigint NOT NULL,
     code integer,
-    notification character varying(511) DEFAULT NULL::character varying,
-    new bit(1) DEFAULT '1'::"bit",
-    shown bit(1) DEFAULT '0'::"bit",
-    close bit(1) DEFAULT '0'::"bit"
+    notification character varying(511) DEFAULT NULL,
+    new bit(1) DEFAULT '1',
+    shown bit(1) DEFAULT '0',
+    close bit(1) DEFAULT '0'
 );
 
 

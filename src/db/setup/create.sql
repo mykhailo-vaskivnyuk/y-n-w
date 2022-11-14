@@ -1,8 +1,8 @@
-DROP DATABASE IF EXISTS merega;
-DROP USER IF EXISTS merega;
-CREATE USER merega WITH PASSWORD 'merega';
-CREATE DATABASE merega WITH
-    OWNER = merega
+DROP DATABASE IF EXISTS mereganew;
+DROP USER IF EXISTS mereganew;
+CREATE USER mereganew WITH PASSWORD 'mereganew';
+CREATE DATABASE mereganew WITH
+    OWNER = mereganew
     TEMPLATE = template0
     LC_COLLATE = 'C'
     LC_CTYPE = 'C';
