@@ -53,12 +53,11 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.nets (
     net_id bigint NOT NULL,
-    net_level integer DEFAULT 0,
-    net_address integer,
+    net_level integer NOT NULL DEFAULT 0,
     parent_net_id bigint,
     first_net_id bigint,
-    full_net_address integer,
-    count_of_nets integer NOT NULL DEFAULT 0
+    count_of_nets integer NOT NULL DEFAULT 0,
+    node_id bigint NOT NULL,
 );
 
 
