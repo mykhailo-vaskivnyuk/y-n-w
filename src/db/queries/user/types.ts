@@ -8,20 +8,20 @@ export interface IQueriesUser {
   findByEmail: TQuery<[
     ['email', string],
   ], ITableUsers>;
-  findByLink: TQuery<[
-    ['link', string],
+  findByToken: TQuery<[
+    ['confirm_token', string],
   ], ITableUsers>;
   create: TQuery<[
     ['email', string],
     ['password', string],
-    ['link', string],
+    ['confirm_token', string],
   ], ITableUsers>;
-  setLink: TQuery<[
+  setToken: TQuery<[
     ['user_id', number],
-    ['link', string | null],
-    ['restore', string | null],
+    ['confirm_token', string | null],
+    ['restore_token', string | null],
   ]>;
-  unsetLink: TQuery<[
+  unsetToken: TQuery<[
     ['user_id', number],
   ]>;
   remove: TQuery;

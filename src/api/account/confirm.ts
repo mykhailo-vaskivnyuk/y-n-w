@@ -9,12 +9,12 @@ import {
 const confirm: THandler<IConfirmParams, IUserResponse> = async (
   { session }, { token },
 ) => {
-  const [user] = await execQuery.user.findByLink([token]);
+  const [user] = await execQuery.user.findByToken([token]);
   if (!user) return null;
-  const { user_id, link } = user;
-  await execQuery.user.unsetLink([user_id]);
+  const { user_id, confirm_token } = user;
+  await execQuery.user.unsetToken([user_id]);
   await session.write('user_id', user_id);
-  return { ...user, confirmed: !link };
+  return { ...user, confirmed: !confirm_token };
 };
 confirm.paramsSchema = ConfirmParamsSchema;
 confirm.responseSchema = UserResponseSchema;

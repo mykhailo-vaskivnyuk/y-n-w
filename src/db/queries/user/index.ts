@@ -8,23 +8,23 @@ export const findByEmail = `
   WHERE email=$1
 `;
 
-export const findByLink = `
+export const findByToken = `
   SELECT * FROM users
-  WHERE link=$1 OR restore=$1
+  WHERE confirm_token=$1 OR restore_token=$1
 `;
 
 export const create = `
-  INSERT INTO users (email, password, link)
+  INSERT INTO users (email, password, confirm_token)
   VALUES($1, $2, $3)
   RETURNING *
 `;
 
-export const setLink = `
-  UPDATE users SET link=$2, restore=$3
+export const setToken = `
+  UPDATE users SET confirm_token=$2, restore_token=$3
   WHERE user_id=$1
 `;
 
-export const unsetLink = `
-  UPDATE users SET link=NULL, restore=NULL
+export const unsetToken = `
+  UPDATE users SET confirm_token=NULL, restore_token=NULL
   WHERE user_id=$1
 `;

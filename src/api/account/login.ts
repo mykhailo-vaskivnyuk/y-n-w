@@ -14,9 +14,9 @@ async (context, { email, password }) => {
   if (!user.password) return null;
   const verified = await verifyHash(password, user.password);
   if (!verified) return null;
-  const { user_id, link } = user;
+  const { user_id, confirm_token } = user;
   await context.session.write('user_id', user_id);
-  return { ...user, confirmed: !link };
+  return { ...user, confirmed: !confirm_token };
 };
 login.paramsSchema = LoginParamsSchema;
 login.responseSchema = UserResponseSchema;

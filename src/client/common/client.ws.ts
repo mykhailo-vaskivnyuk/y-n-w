@@ -63,12 +63,13 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
     const request = { requestId, pathname, data };
     logData(request, 'request');
     const requestMessage = JSON.stringify(request);
-    return new Promise((resolve, reject) => {
+    const executor: TPromiseExecutor<void> = (resolve, reject) => {
       const handler = getHandler(resolve, reject);
       requests.set(handler, id);
       socket.addEventListener('message', handler);
       socket.send(requestMessage);
-    });
+    };
+    return new Promise(executor);
   };
 
   return fetch;

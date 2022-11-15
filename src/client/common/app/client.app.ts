@@ -75,7 +75,7 @@ export class ClientApp extends EventEmitter {
     }
     this.error = null;
     if (state === AppState.INITED) {
-      this.state = state;
+      this.state = AppState.READY;
       return this.emit('statechanged', this.state);
     }
     if (this.state === AppState.INITING) return;
