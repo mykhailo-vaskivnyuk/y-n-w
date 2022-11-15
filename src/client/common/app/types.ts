@@ -1,6 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { TNetCreateResponse } from '@api/api/client.api.types';
-import { ILoginParams, ISignupParams, IUserResponse } from '../api/types';
+import * as T from '../api/types/types';
 import { AppState } from '../constants';
 import { HttpResponseError } from '../errors';
 import { getApi } from '../api/client.api';
@@ -10,11 +9,11 @@ export type IClientAppThis = ClientApp & {
   state: AppState;
   clientApi: ReturnType<typeof getApi>;
   setState: (state: AppState) => void;
-  setUser: (user: IUserResponse) => void;
-  setNet: (net: TNetCreateResponse) => void;
+  setUser: (user: T.IUserResponse) => void;
+  setNet: (net: T.INetCreateResponse) => void;
   setError: (e: HttpResponseError) => void;
 };
 
 export type TLoginOrSignup =
-  | ['login', ILoginParams]
-  | ['signup', ISignupParams];
+  | ['login', T.ILoginParams]
+  | ['signup', T.ISignupParams];

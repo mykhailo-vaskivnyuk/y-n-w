@@ -40,7 +40,7 @@ export default class App {
       logger.info('ROUTER IS READY');
       await this.setInputConnection();
       logger.info('SERVER IS READY');
-      env.RUN_ONCE && process.exit(0);
+      env.RUN_ONCE && process.exit();
     } catch (e: any) {
       await handleAppInitError(e, this as any);
     }

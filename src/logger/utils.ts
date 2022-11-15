@@ -14,7 +14,7 @@ export const createErrorlog = (message: TLoggerParameters) => {
   let stack = (e.stack || '') as string;
   stack = stack
     .split('\n')
-    .slice(1, 2)
+    .slice(1, 4)
     .map((item) => item.replace('at', '').trim())
     .join('\n');
   if (e instanceof Error) {

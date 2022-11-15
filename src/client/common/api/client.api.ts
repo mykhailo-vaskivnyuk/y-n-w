@@ -1,5 +1,5 @@
-import * as P from './types';
-import * as Q from './client.api.types';
+import * as P from './types/types';
+import * as Q from './types/client.api.types';
 
 export type IClientApi = ReturnType<typeof getApi>;
 
@@ -32,8 +32,8 @@ export const getApi = (
   'health': () => fetch<string>('/health'),
 
   'net': {
-    'create': (options: Q.TNetCreate) =>
-      fetch<Q.TNetCreateResponse>('/net/create', options),
+    'create': (options: P.INetCreateParams) =>
+      fetch<P.INetCreateResponse>('/net/create', options),
 
   },
   'scripts': {

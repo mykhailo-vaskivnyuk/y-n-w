@@ -15,7 +15,7 @@ export const createClientApi = (config: IRouterConfig, routes: IRoutes) => {
     const apiFileNameBase = path.basename(apiPath, apiExt);
     const typesFileNameBase = apiFileNameBase + '.types';
     const typesFileName = typesFileNameBase + '.ts';
-    const typesPath = path.join(apiDir, typesFileName);
+    const typesPath = path.join(apiDir, 'types', typesFileName);
     const apiStream = fs.createWriteStream(apiPath);
     const typesStream = fs.createWriteStream(typesPath);
     let done = false;
@@ -29,7 +29,7 @@ export const createClientApi = (config: IRouterConfig, routes: IRoutes) => {
     apiStream.on('finish', handleFinish);
     typesStream.on('error', handleError);
     typesStream.on('finish', handleFinish);
-    const apiTypesPath = path.resolve(config.apiPath, 'types.js');
+    const apiTypesPath = path.resolve(config.apiPath, 'schema/schema.js');
     const apiTypes = require(apiTypesPath) as Record<string, TJoiSchema>;
     apiStream.write(tpl.strGetApi(typesFileNameBase));
     createJs(apiTypes, apiStream, typesStream)(routes);

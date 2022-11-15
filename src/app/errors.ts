@@ -43,6 +43,7 @@ export const handleAppInitError = async (e: any, parent: IAppThis) => {
   const { env } = parent.config;
   if (!parent.logger) return await parent.shutdown('CAN\'T START APP');
   if (!KNOWN_ERRORS_MAP.includes(e.name)) logger.error(e);
+  env.RUN_ONCE && process.exit();
   env.API_UNAVAILABLE = true;
   try {
     parent.logger.fatal('CAN\'T START API SERVICE');

@@ -1,10 +1,10 @@
 /* eslint-disable import/no-cycle */
-import { TNetCreate } from '@api/api/client.api.types';
-import { AppState } from '../constants';
+import { INetCreateParams } from '../api/types/net.types';
 import { IClientAppThis } from './types';
+import { AppState } from '../constants';
 
 export const getNetMethods = (parent: IClientAppThis) => ({
-  async create(args: TNetCreate) {
+  async create(args: INetCreateParams) {
     parent.setState(AppState.LOADING);
     try {
       const net = await parent.clientApi.net.create(args);

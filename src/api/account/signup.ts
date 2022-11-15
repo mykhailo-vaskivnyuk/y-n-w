@@ -1,7 +1,11 @@
-import { ISignupParams, IUserResponse } from '../../client/common/api/types';
+import {
+  ISignupParams, IUserResponse,
+} from '../../client/common/api/types/account.types';
+import {
+  SignupParamsSchema, UserResponseSchema,
+} from '../schema/account.schema';
 import { THandler } from '../../router/types';
 import { createHash, createUnicCode } from '../../utils/crypto';
-import { SignupParamsSchema, UserResponseSchema } from '../types';
 
 const signup: THandler<ISignupParams, IUserResponse> = async (
   { session, origin }, { email },

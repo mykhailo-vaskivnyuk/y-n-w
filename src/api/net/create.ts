@@ -1,31 +1,23 @@
-import Joi from 'joi';
 import { ITableNets } from '../../db/db.types';
 import { THandler } from '../../router/types';
+import { NetCreateResponse, NetCreateParamsSchema } from '../schema/net.schema';
 
-type INetCreateParams  = Omit<ITableNets, 'net_id'>;
+type INetCreateParams  = Partial<Omit<ITableNets, 'net_id'>>;
 
 const create: THandler<INetCreateParams, ITableNets> =
   async (context, params) => {
     const {
-      net_level, parent_net_id, first_net_id, count_of_nets,
+      net_level = 0,
+      parent_net_id = null,
+      first_net_id = null,
+      count_of_nets = 0,
     } = params;
     const [net] = await execQuery.net.create(
       [net_level, parent_net_id, first_net_id, count_of_nets],
     );
     return net!;
   };
-create.paramsSchema = {
-  net_level: Joi.number().integer(),
-  parent_net_id: [Joi.number().integer(), Joi.any().equal(null)],
-  first_net_id: [Joi.number().integer(), Joi.any().equal(null)],
-  count_of_nets: Joi.number().integer(),
-};
-create.responseSchema =   {
-  net_id: Joi.number().integer(),
-  net_level: Joi.number().integer(),
-  parent_net_id: [Joi.number().integer(), Joi.any().equal(null)],
-  first_net_id: [Joi.number().integer(), Joi.any().equal(null)],
-  count_of_nets: Joi.number().integer(),
-};
+create.paramsSchema = NetCreateParamsSchema;
+create.responseSchema = NetCreateResponse;
 
 export = create;

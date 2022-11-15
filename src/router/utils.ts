@@ -71,7 +71,11 @@ const getTypes = (
 
   const schemaEntries = Object.entries(schema);
   const types = schemaEntries
-    .map(([key, item]) => tpl.strTypes(indent, key, getTypes(item, indent)));
+    .map(([key, item]) => {
+      const types = getTypes(item, indent);
+      types.includes('undefined') && (key += '?');
+      return tpl.strTypes(indent, key, types);
+    });
   return '{' + types.join('') + '\n' + indent + '}';
 };
 
@@ -80,7 +84,8 @@ const isJoiSchema = (
 ): schema is Joi.Schema => Joi.isSchema(schema);
 
 const getSchemaType = (schema: Joi.Schema) => {
-  const schemaValuesSet = (schema as any)._valids._values;
+  if (!(schema as any)._valids) return 'undefined';
+  const schemaValuesSet = (schema as any)._valids?._values;
   const [type] = [...schemaValuesSet.values()];
   return `${type}`;
 };

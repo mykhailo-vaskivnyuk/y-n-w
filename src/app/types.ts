@@ -18,6 +18,7 @@ export type IAppThis = App & {
 export interface IRouterContext {
   execQuery: IDatabaseQueries;
   logger: ILogger;
+  console?: typeof console;
 }
 
 export interface IGlobalMixins {

@@ -1,4 +1,4 @@
-import { ITableUsers } from '../../local/imports';
+import { ITableUsers } from '../../../local/imports';
 
 export type IUserResponse =
   | null

@@ -2,8 +2,8 @@ import { format } from 'node:util';
 
 const tplImport = 'import * as P from \'./types\';\n';
 const tplGetApi =
-`import * as P from './types';
-import * as Q from './%s';
+`import * as P from './types/types';
+import * as Q from './types/%s';
 
 export type IClientApi = ReturnType<typeof getApi>;
 

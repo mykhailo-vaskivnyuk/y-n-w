@@ -12,6 +12,7 @@ export const createRoutes = async (dirPath: string): Promise<IRoutes> => {
     const name = path.basename(item.name, ext);
 
     if (item.isDirectory()) {
+      if (item.name === 'schema') continue;
       const dirPath = path.join(routePath, name);
       route[name] = await createRoutes(dirPath);
       continue;

@@ -1,6 +1,10 @@
 import { THandler } from '../../router/types';
-import { IConfirmParams, IUserResponse } from '../../client/common/api/types';
-import { ConfirmParamsSchema, UserResponseSchema } from '../types';
+import {
+  IConfirmParams, IUserResponse,
+} from '../../client/common/api/types/account.types';
+import {
+  ConfirmParamsSchema, UserResponseSchema,
+} from '../schema/account.schema';
 
 const confirm: THandler<IConfirmParams, IUserResponse> = async (
   { session }, { token },

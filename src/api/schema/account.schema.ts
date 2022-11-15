@@ -1,7 +1,7 @@
 import Joi from 'joi';
-import { IUserResponse } from '../client/common/api/types';
-import { TJoiSchema } from '../router/types';
-import { OmitNull } from '../types/types';
+import { IUserResponse } from '../../client/common/api/types/account.types';
+import { TJoiSchema } from '../../router/types';
+import { OmitNull } from '../../types/types';
 
 export const UserResponseSchema = [
   Joi.any().equal(null),

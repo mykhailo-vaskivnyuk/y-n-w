@@ -1,8 +1,9 @@
+/* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
-import { TNetCreateResponse } from '@api/api/client.api.types';
-import { HttpResponseError } from '../errors';
+import { INetCreateResponse } from '../api/types/net.types';
+import { IUserResponse } from '../api/types/types';
 import { AppState } from '../constants';
-import { IUserResponse } from '../api/types';
+import { HttpResponseError } from '../errors';
 import EventEmitter from '../event.emitter';
 import { getApi, IClientApi } from '../api/client.api';
 import { getAccountMethods } from './account';
@@ -15,7 +16,7 @@ export class ClientApp extends EventEmitter {
   private baseUrl = '';
   protected state: AppState = AppState.INITING;
   private user: IUserResponse = null;
-  private user_net: TNetCreateResponse | null = null;
+  private user_net: INetCreateResponse | null = null;
   private error: HttpResponseError | null = null;
   account: ReturnType<typeof getAccountMethods>;
   net: ReturnType<typeof getNetMethods>;
@@ -61,7 +62,7 @@ export class ClientApp extends EventEmitter {
     this.emit('user', user);
   }
 
-  protected setNet(net: TNetCreateResponse) {
+  protected setNet(net: INetCreateResponse) {
     this.user_net = net;
     this.emit('net', net);
   }

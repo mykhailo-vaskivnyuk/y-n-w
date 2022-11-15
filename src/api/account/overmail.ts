@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import { THandler } from '../../router/types';
-import { ISignupParams } from '../../client/common/api/types';
-import { SignupParamsSchema } from '../types';
+import { ISignupParams } from '../../client/common/api/types/account.types';
+import { SignupParamsSchema } from '../schema/account.schema';
 import { createUnicCode } from '../../utils/crypto';
 
 const overmail: THandler<ISignupParams, boolean> = async (

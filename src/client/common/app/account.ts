@@ -1,5 +1,7 @@
 /* eslint-disable import/no-cycle */
-import { IConfirmParams, ISignupParams, IUserResponse } from '../api/types';
+import {
+  IConfirmParams, ISignupParams, IUserResponse,
+} from '../api/types/types';
 import { AppState } from '../constants';
 import { IClientAppThis, TLoginOrSignup } from './types';
 
