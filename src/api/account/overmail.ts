@@ -7,7 +7,7 @@ import { createUnicCode } from '../../utils/crypto';
 const overmail: THandler<ISignupParams, boolean> = async (
   { origin }, { email },
 ) => {
-  const [user] = await execQuery.user.findUserByEmail([email]);
+  const [user] = await execQuery.user.findByEmail([email]);
   if (!user) return false;
   const token = createUnicCode(15);
   const { user_id, link } = user;

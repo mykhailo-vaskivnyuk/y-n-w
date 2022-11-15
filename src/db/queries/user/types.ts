@@ -2,28 +2,24 @@ import { ITableUsers } from '../../db.types';
 import { TQuery } from '../../types';
 
 export interface IQueriesUser {
-  getUserById:TQuery<[
+  getById:TQuery<[
     ['user_id', number],
   ], ITableUsers>;
-  findUserByEmail: TQuery<[
+  findByEmail: TQuery<[
     ['email', string],
   ], ITableUsers>;
   findByLink: TQuery<[
     ['link', string],
   ], ITableUsers>;
-  createUser: TQuery<[
+  create: TQuery<[
     ['email', string],
     ['password', string],
     ['link', string],
-  ]>;
+  ], ITableUsers>;
   setLink: TQuery<[
     ['user_id', number],
     ['link', string | null],
     ['restore', string | null],
-  ]>;
-  setRestoreLink: TQuery<[
-    ['user_id', number],
-    ['restore', string],
   ]>;
   unsetLink: TQuery<[
     ['user_id', number],

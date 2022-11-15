@@ -1,5 +1,6 @@
 import { format } from 'node:util';
 import { TLoggerParameters } from './types';
+import { COLORS_MAP } from './constants';
 
 export const createLog = (message: TLoggerParameters): any[] => {
   const [firstParameter, ...rest] = message;
@@ -29,3 +30,7 @@ export const createErrorlog = (message: TLoggerParameters) => {
   error.stack = stack;
   return [error, errorMessage];
 };
+
+export const colorize = (
+  message: string, color: keyof typeof COLORS_MAP,
+) => '\x1b[' + COLORS_MAP[color] + message + '\x1b[0m';

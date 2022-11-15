@@ -1,4 +1,5 @@
 import { GetParamsTypes } from '../types/types';
+import { IQueriesNet } from './queries/net/types';
 import { IQueriesSession } from './queries/session';
 import { IQueriesUser } from './queries/user/types';
 
@@ -30,6 +31,7 @@ export interface IDatabase {
 
 export interface IDatabaseQueries {
   user: IQueriesUser;
+  net: IQueriesNet;
   session: IQueriesSession;
 }
 

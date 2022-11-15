@@ -5,7 +5,7 @@ import { verifyHash } from '../../utils/crypto';
 
 const login: THandler<ILoginParams, IUserResponse> =
 async (context, { email, password }) => {
-  const [user] = await execQuery.user.findUserByEmail([email]);
+  const [user] = await execQuery.user.findByEmail([email]);
   if (!user) return null;
   if (!user.password) return null;
   const verified = await verifyHash(password, user.password);

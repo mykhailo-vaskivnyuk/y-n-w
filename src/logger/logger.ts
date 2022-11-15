@@ -1,7 +1,7 @@
 import pino = require('pino');
 import { ILogger, ILoggerConfig, TLoggerParameters } from './types';
 import { LOGGER_LEVEL_MAP } from './constants';
-import { createErrorlog, createLog } from './utils';
+import { colorize, createErrorlog, createLog } from './utils';
 
 class Logger implements ILogger {
   private logger;
@@ -22,27 +22,27 @@ class Logger implements ILogger {
 
   fatal(...message: TLoggerParameters) {
     const [error, errorMmessage] = createErrorlog(message);
-    this.logger.fatal(error, errorMmessage);
+    this.logger.fatal(error, colorize(errorMmessage, 'FATAL'));
   }
 
   error(...message: TLoggerParameters) {
     const [error, errorMmessage] = createErrorlog(message);
-    this.logger.error(error, errorMmessage);
+    this.logger.error(error, colorize(errorMmessage, 'ERROR'));
   }
 
   warn(...message: TLoggerParameters) {
     const [first, second] = createErrorlog(message);
-    this.logger.warn(first, second);
+    this.logger.warn(first, colorize(second, 'WARN'));
   }
 
   info(...message: TLoggerParameters) {
     const [first, second] = createLog(message);
-    this.logger.info(first, second);
+    this.logger.info(first, colorize(second, 'INFO'));
   }
 
   debug(...message: TLoggerParameters) {
     const [first, second] = createLog(message);
-    this.logger.debug(first, second);
+    this.logger.debug(first, colorize(second, 'DEBUG'));
   }
 }
 

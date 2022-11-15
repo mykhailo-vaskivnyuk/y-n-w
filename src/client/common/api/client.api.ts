@@ -31,8 +31,9 @@ export const getApi = (
 
   'health': () => fetch<string>('/health'),
 
-  'merega': {
-    'read': () => fetch<Q.TMeregaReadResponse>('/merega/read'),
+  'net': {
+    'create': (options: Q.TNetCreate) =>
+      fetch<Q.TNetCreateResponse>('/net/create', options),
 
   },
   'scripts': {

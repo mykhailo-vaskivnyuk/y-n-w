@@ -5,7 +5,7 @@
 -- Dumped from database version 14.1
 -- Dumped by pg_dump version 14.1
 
--- Started on 2022-11-14 02:45:38
+-- Started on 2022-11-14 18:06:20
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -20,7 +20,7 @@ SET row_security = off;
 
 --DROP DATABASE merega;
 --
--- TOC entry 3405 (class 1262 OID 43864)
+-- TOC entry 3405 (class 1262 OID 50801)
 -- Name: merega; Type: DATABASE; Schema: -; Owner: merega
 --
 
@@ -47,31 +47,31 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 209 (class 1259 OID 43865)
+-- TOC entry 209 (class 1259 OID 50802)
 -- Name: nets; Type: TABLE; Schema: public; Owner: merega
 --
 
 CREATE TABLE public.nets (
     net_id bigint NOT NULL,
-    net_level integer,
+    net_level integer DEFAULT 0,
     net_address integer,
-    parent_net_id integer,
-    first_net_id integer,
+    parent_net_id bigint,
+    first_net_id bigint,
     full_net_address integer,
-    count_of_nets integer
+    count_of_nets integer NOT NULL DEFAULT 0
 );
 
 
 ALTER TABLE public.nets OWNER TO merega;
 
 --
--- TOC entry 210 (class 1259 OID 43870)
+-- TOC entry 210 (class 1259 OID 50805)
 -- Name: nets_data; Type: TABLE; Schema: public; Owner: merega
 --
 
 CREATE TABLE public.nets_data (
     net_id bigint NOT NULL,
-    name character varying(50) DEFAULT NULL::character varying,
+    name character varying(50) NOT NULL,
     goal text,
     resource_name_1 character varying(50) DEFAULT NULL::character varying,
     resource_link_1 character varying(255) DEFAULT NULL::character varying,
@@ -87,7 +87,7 @@ CREATE TABLE public.nets_data (
 ALTER TABLE public.nets_data OWNER TO merega;
 
 --
--- TOC entry 217 (class 1259 OID 43969)
+-- TOC entry 211 (class 1259 OID 50819)
 -- Name: nets_net_id_seq; Type: SEQUENCE; Schema: public; Owner: merega
 --
 
@@ -102,7 +102,7 @@ ALTER TABLE public.nets ALTER COLUMN net_id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 211 (class 1259 OID 43884)
+-- TOC entry 212 (class 1259 OID 50820)
 -- Name: nets_users_data; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -118,28 +118,28 @@ CREATE TABLE public.nets_users_data (
 ALTER TABLE public.nets_users_data OWNER TO merega;
 
 --
--- TOC entry 212 (class 1259 OID 43890)
+-- TOC entry 213 (class 1259 OID 50826)
 -- Name: nodes; Type: TABLE; Schema: public; Owner: merega
 --
 
 CREATE TABLE public.nodes (
     node_id bigint NOT NULL,
-    node_level integer,
-    node_address integer,
-    parent_node_id integer,
-    first_node_id integer,
+    node_level integer NOT NULL DEFAULT 0,
+    node_address integer NOT NULL DEFAULT 0,
+    parent_node_id bigint,
+    first_node_id bigint,
     full_node_address integer,
-    count_of_members integer,
+    count_of_members integer DEFAULT 0,
     node_date timestamp without time zone,
-    blocked bit(1) DEFAULT NULL::"bit",
-    changes bit(1) DEFAULT NULL::"bit"
+    blocked bit(1) DEFAULT '0'::"bit",
+    changes bit(1) DEFAULT '0'::"bit"
 );
 
 
 ALTER TABLE public.nodes OWNER TO merega;
 
 --
--- TOC entry 213 (class 1259 OID 43897)
+-- TOC entry 214 (class 1259 OID 50831)
 -- Name: nodes_nets; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -152,7 +152,7 @@ CREATE TABLE public.nodes_nets (
 ALTER TABLE public.nodes_nets OWNER TO merega;
 
 --
--- TOC entry 218 (class 1259 OID 43974)
+-- TOC entry 215 (class 1259 OID 50834)
 -- Name: nodes_node_id_seq; Type: SEQUENCE; Schema: public; Owner: merega
 --
 
@@ -167,7 +167,7 @@ ALTER TABLE public.nodes ALTER COLUMN node_id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 214 (class 1259 OID 43900)
+-- TOC entry 216 (class 1259 OID 50835)
 -- Name: nodes_users; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -183,7 +183,7 @@ CREATE TABLE public.nodes_users (
 ALTER TABLE public.nodes_users OWNER TO merega;
 
 --
--- TOC entry 215 (class 1259 OID 43908)
+-- TOC entry 217 (class 1259 OID 50843)
 -- Name: sessions; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -197,7 +197,7 @@ CREATE TABLE public.sessions (
 ALTER TABLE public.sessions OWNER TO merega;
 
 --
--- TOC entry 219 (class 1259 OID 43979)
+-- TOC entry 218 (class 1259 OID 50848)
 -- Name: sessions_session_id_seq; Type: SEQUENCE; Schema: public; Owner: merega
 --
 
@@ -212,7 +212,7 @@ ALTER TABLE public.sessions ALTER COLUMN session_id ADD GENERATED ALWAYS AS IDEN
 
 
 --
--- TOC entry 216 (class 1259 OID 43915)
+-- TOC entry 219 (class 1259 OID 50849)
 -- Name: users; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -232,7 +232,7 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO merega;
 
 --
--- TOC entry 220 (class 1259 OID 43980)
+-- TOC entry 220 (class 1259 OID 50861)
 -- Name: users_user_id_seq; Type: SEQUENCE; Schema: public; Owner: merega
 --
 
@@ -247,88 +247,88 @@ ALTER TABLE public.users ALTER COLUMN user_id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 3220 (class 2606 OID 43869)
--- Name: nets nets_pkey; Type: CONSTRAINT; Schema: public; Owner: merega
+-- TOC entry 3220 (class 2606 OID 50863)
+-- Name: nets pk_nets; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.nets
-    ADD CONSTRAINT pkNets PRIMARY KEY (net_id);
+    ADD CONSTRAINT pk_nets PRIMARY KEY (net_id);
 
 
 --
--- TOC entry 3226 (class 2606 OID 43896)
--- Name: nodes nodes_pkey; Type: CONSTRAINT; Schema: public; Owner: merega
---
-
-ALTER TABLE ONLY public.nodes
-    ADD CONSTRAINT pkNodes PRIMARY KEY (node_id);
-
-
---
--- TOC entry 3236 (class 2606 OID 43914)
--- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: merega
---
-
-ALTER TABLE ONLY public.sessions
-    ADD CONSTRAINT pkSessions PRIMARY KEY (session_id);
-
-
---
--- TOC entry 3238 (class 2606 OID 43982)
--- Name: users ukEmail; Type: CONSTRAINT; Schema: public; Owner: merega
---
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT "ukEmail" UNIQUE (email);
-
-
---
--- TOC entry 3222 (class 2606 OID 43971)
--- Name: nets_data ukNet; Type: CONSTRAINT; Schema: public; Owner: merega
+-- TOC entry 3222 (class 2606 OID 50921)
+-- Name: nets_data pk_nets_data; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.nets_data
-    ADD CONSTRAINT "ukNet" UNIQUE (net_id);
+    ADD CONSTRAINT pk_nets_data PRIMARY KEY (net_id);
 
 
 --
--- TOC entry 3224 (class 2606 OID 43973)
--- Name: nets_users_data ukNetUser; Type: CONSTRAINT; Schema: public; Owner: merega
+-- TOC entry 3224 (class 2606 OID 50923)
+-- Name: nets_users_data pk_nets_users_data; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.nets_users_data
-    ADD CONSTRAINT "ukNetUser" UNIQUE (net_id, user_id);
+    ADD CONSTRAINT pk_nets_users_data PRIMARY KEY (net_id, user_id);
 
 
 --
--- TOC entry 3230 (class 2606 OID 43976)
--- Name: nodes_nets ukNodeNets; Type: CONSTRAINT; Schema: public; Owner: merega
+-- TOC entry 3226 (class 2606 OID 50865)
+-- Name: nodes pk_nodes; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.nodes
+    ADD CONSTRAINT pk_nodes PRIMARY KEY (node_id);
+
+
+--
+-- TOC entry 3229 (class 2606 OID 50925)
+-- Name: nodes_nets pk_nodes_nets; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.nodes_nets
-    ADD CONSTRAINT "ukNodeNets" UNIQUE (node_id);
+    ADD CONSTRAINT pk_nodes_nets PRIMARY KEY (node_id);
 
 
 --
--- TOC entry 3234 (class 2606 OID 43978)
--- Name: nodes_users ukNodeUsers; Type: CONSTRAINT; Schema: public; Owner: merega
+-- TOC entry 3233 (class 2606 OID 50927)
+-- Name: nodes_users pk_nodes_users; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.nodes_users
-    ADD CONSTRAINT "ukNodeUsers" UNIQUE (node_id);
+    ADD CONSTRAINT pk_nodes_users PRIMARY KEY (node_id);
 
 
 --
--- TOC entry 3241 (class 2606 OID 43928)
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: merega
+-- TOC entry 3236 (class 2606 OID 50867)
+-- Name: sessions pk_sessions; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT pk_sessions PRIMARY KEY (session_id);
+
+
+--
+-- TOC entry 3238 (class 2606 OID 50879)
+-- Name: users pk_users; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.users
-    ADD CONSTRAINT pkUsers PRIMARY KEY (user_id);
+    ADD CONSTRAINT pk_users PRIMARY KEY (user_id);
 
 
 --
--- TOC entry 3227 (class 1259 OID 43929)
+-- TOC entry 3240 (class 2606 OID 50869)
+-- Name: users uk_email; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT uk_email UNIQUE (email);
+
+
+--
+-- TOC entry 3227 (class 1259 OID 50880)
 -- Name: nodes_nets_node_id_idx; Type: INDEX; Schema: public; Owner: merega
 --
 
@@ -336,7 +336,7 @@ CREATE UNIQUE INDEX nodes_nets_node_id_idx ON public.nodes_nets USING btree (nod
 
 
 --
--- TOC entry 3231 (class 1259 OID 43931)
+-- TOC entry 3231 (class 1259 OID 50881)
 -- Name: nodes_users_node_id_idx; Type: INDEX; Schema: public; Owner: merega
 --
 
@@ -344,7 +344,7 @@ CREATE UNIQUE INDEX nodes_users_node_id_idx ON public.nodes_users USING btree (n
 
 
 --
--- TOC entry 3228 (class 1259 OID 43930)
+-- TOC entry 3230 (class 1259 OID 50882)
 -- Name: ukNodeNet; Type: INDEX; Schema: public; Owner: merega
 --
 
@@ -352,7 +352,7 @@ CREATE UNIQUE INDEX "ukNodeNet" ON public.nodes_nets USING btree (node_id, net_i
 
 
 --
--- TOC entry 3232 (class 1259 OID 43932)
+-- TOC entry 3234 (class 1259 OID 50883)
 -- Name: ukNodeUser; Type: INDEX; Schema: public; Owner: merega
 --
 
@@ -360,7 +360,7 @@ CREATE UNIQUE INDEX "ukNodeUser" ON public.nodes_users USING btree (node_id, use
 
 
 --
--- TOC entry 3239 (class 1259 OID 43933)
+-- TOC entry 3241 (class 1259 OID 50884)
 -- Name: users_email_idx; Type: INDEX; Schema: public; Owner: merega
 --
 
@@ -368,7 +368,7 @@ CREATE UNIQUE INDEX users_email_idx ON public.users USING btree (email);
 
 
 --
--- TOC entry 3242 (class 2606 OID 43934)
+-- TOC entry 3242 (class 2606 OID 50885)
 -- Name: nets_data fkNetsDataNet; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -377,7 +377,7 @@ ALTER TABLE ONLY public.nets_data
 
 
 --
--- TOC entry 3243 (class 2606 OID 43939)
+-- TOC entry 3243 (class 2606 OID 50890)
 -- Name: nets_users_data fkNetsUsersDataNet; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -386,7 +386,7 @@ ALTER TABLE ONLY public.nets_users_data
 
 
 --
--- TOC entry 3244 (class 2606 OID 43944)
+-- TOC entry 3244 (class 2606 OID 50895)
 -- Name: nets_users_data fkNetsUsersDataUser; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -395,7 +395,7 @@ ALTER TABLE ONLY public.nets_users_data
 
 
 --
--- TOC entry 3246 (class 2606 OID 43954)
+-- TOC entry 3245 (class 2606 OID 50900)
 -- Name: nodes_nets fkNodesNetsNet; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -404,7 +404,7 @@ ALTER TABLE ONLY public.nodes_nets
 
 
 --
--- TOC entry 3245 (class 2606 OID 43949)
+-- TOC entry 3246 (class 2606 OID 50905)
 -- Name: nodes_nets fkNodesNetsNode; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -413,7 +413,7 @@ ALTER TABLE ONLY public.nodes_nets
 
 
 --
--- TOC entry 3247 (class 2606 OID 43959)
+-- TOC entry 3247 (class 2606 OID 50910)
 -- Name: nodes_users fkNodesUsersNode; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -422,7 +422,7 @@ ALTER TABLE ONLY public.nodes_users
 
 
 --
--- TOC entry 3248 (class 2606 OID 43964)
+-- TOC entry 3248 (class 2606 OID 50915)
 -- Name: nodes_users fkNodesUsersUser; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -430,7 +430,7 @@ ALTER TABLE ONLY public.nodes_users
     ADD CONSTRAINT "fkNodesUsersUser" FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE NOT VALID;
 
 
--- Completed on 2022-11-14 02:45:39
+-- Completed on 2022-11-14 18:06:20
 
 --
 -- PostgreSQL database dump complete

@@ -11,8 +11,8 @@ export type TPrimitiv =
   | boolean
   | null;
 
-export type IObject = {
-  [key: string]:
+export interface IObject {
+  [key: string | number | symbol]:
     | TPrimitiv
     | IObject
     | (TPrimitiv | IObject)[]

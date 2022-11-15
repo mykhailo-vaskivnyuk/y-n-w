@@ -7,7 +7,7 @@
     "build": "tsc",
     "build:front": "cd ../node-u-n-w-front && rimraf build && cross-env NODE_ENV=production npx webpack --config webpack/webpack.config.js",
     "start": "node js/index.js",
-    "pack": "npm run rmjs && npm run build && cross-env RUN_ONCE=true npm run start && npm run sync && npm run build:front && npm run sync",
+    "pack": "npm run rmjs && npm run build && cross-env RUN_ONCE=true PORT=8001 npm start && npm run sync && npm run build:front && npm run sync",
     "dev": "cross-env NODE_ENV=development nodemon js/index.js",
     "debug": "nodemon --inspect js/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -17,7 +17,7 @@
     "dkr:build": "docker build -t ynw .",
     "dkr:run": "docker run -d -p 5432:5432 --name ynw ynw",
     "dkr:stop": "docker stop ynw",
-    "sync": "node src/scripts/js/sync.back.front.js",
+    "sync": "npm run rmjs && npm run build && cross-env RUN_ONCE=true PORT=8001 npm start && node src/scripts/js/sync.back.front.js",
     "copy:tofront": "node src/scripts/js/copy.all.to.front.js",
     "copy:toback": "node src/scripts/js/copy.all.to.back.js",
     "rmjs": "node src/scripts/js/remove.js.js"

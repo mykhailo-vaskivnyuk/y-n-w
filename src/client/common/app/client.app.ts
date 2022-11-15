@@ -1,4 +1,5 @@
 /* eslint-disable import/no-cycle */
+import { TNetCreateResponse } from '@api/api/client.api.types';
 import { HttpResponseError } from '../errors';
 import { AppState } from '../constants';
 import { IUserResponse } from '../api/types';
@@ -7,18 +8,22 @@ import { getApi, IClientApi } from '../api/client.api';
 import { getAccountMethods } from './account';
 import { getConnection as getHttpConnection } from '../client.http';
 import { getConnection as getWsConnection } from '../client.ws';
+import { getNetMethods } from './net';
 
 export class ClientApp extends EventEmitter {
   protected clientApi: IClientApi | null;
   private baseUrl = '';
   protected state: AppState = AppState.INITING;
   private user: IUserResponse = null;
+  private user_net: TNetCreateResponse | null = null;
   private error: HttpResponseError | null = null;
   account: ReturnType<typeof getAccountMethods>;
+  net: ReturnType<typeof getNetMethods>;
 
   constructor() {
     super();
     this.account = getAccountMethods(this as any);
+    this.net = getNetMethods(this as any);
     this.baseUrl = process.env.API || `${window.location.origin}/api`;
   }
 
@@ -54,6 +59,11 @@ export class ClientApp extends EventEmitter {
   protected setUser(user: IUserResponse) {
     this.user = user;
     this.emit('user', user);
+  }
+
+  protected setNet(net: TNetCreateResponse) {
+    this.user_net = net;
+    this.emit('net', net);
   }
 
   protected setState(state: AppState) {

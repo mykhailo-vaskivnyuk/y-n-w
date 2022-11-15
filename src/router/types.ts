@@ -44,7 +44,7 @@ export type THandler<
   Q extends TOperationResponse = TOperationResponse
 > = {
   (context: IContext, params: T): Promise<Q>;
-  paramsSchema?: Record<keyof T, Joi.Schema>;
+  paramsSchema?: Record<keyof T, TJoiSchema>;
   schema?: ObjectSchema<T>;
   responseSchema: Q extends IObject
     ? Record<keyof Q, TJoiSchema> | (Record<keyof Q, TJoiSchema> | Joi.Schema)[]
