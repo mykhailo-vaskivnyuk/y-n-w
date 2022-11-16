@@ -4,5 +4,5 @@ export const setToGlobal = (
   key: keyof IGlobalMixins, obj?: Record<string, any>,
 ) => {
   Object.freeze(obj);
-  Object.assign(global, { [key]: obj });
+  Object.assign(globalThis, { [key]: obj });
 };

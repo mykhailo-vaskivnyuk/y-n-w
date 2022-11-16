@@ -36,7 +36,7 @@ export const getRequire = (
       return cache[__filename];
     }
     const __dirname = path.dirname(__filename);
-    log(__filename);
+    log(__filename, 'loading ...');
     const scriptInContext = getScriptInContext(__filename);
     const newContext = !vm.isContext(context);
     const nextContext = newContext ? vm.createContext({ ...context }) : context;
@@ -44,7 +44,6 @@ export const getRequire = (
     nextRequire.cache = newContext ? {} : curRequire.cache;
     const module = { exports: {} };
     const contextParams = {
-      global: nextContext,
       require: nextRequire,
       module,
       exports: module.exports,

@@ -32,7 +32,6 @@ export const loader = (
   const nextRequire = ((modulePath: string) =>
     loader(modulePath, __dirname, modulesContext));
   const context = {
-    global: this,
     require: nextRequire,
     module,
     exports: module.exports,

@@ -27,7 +27,7 @@ class Router implements IRouter {
   async init() {
     try {
       const services = getServices(this.config);
-      Object.assign(global, services);
+      Object.assign(globalThis, services);
     } catch (e: any) {
       logger.error(e);
       throw new RouterError('SERVICE_ERROR');
