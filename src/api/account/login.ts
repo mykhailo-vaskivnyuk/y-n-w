@@ -8,15 +8,17 @@ import {
 import { verifyHash } from '../../utils/crypto';
 
 const login: THandler<ILoginParams, IUserResponse> =
-async (context, { email, password }) => {
+async ({ session }, { email, password }) => {
   const [user] = await execQuery.user.findByEmail([email]);
   if (!user) return null;
   if (!user.password) return null;
   const verified = await verifyHash(password, user.password);
   if (!verified) return null;
   const { user_id, confirm_token } = user;
-  await context.session.write('user_id', user_id);
-  return { ...user, confirmed: !confirm_token };
+  const confirmed = !confirm_token;
+  session.write('user_id', user_id);
+  session.write('confirmed', confirmed);
+  return { ...user, confirmed };
 };
 login.paramsSchema = LoginParamsSchema;
 login.responseSchema = UserResponseSchema;

@@ -1,10 +1,10 @@
 import {
   ISignupParams, IUserResponse,
 } from '../../client/common/api/types/account.types';
+import { THandler } from '../../router/types';
 import {
   SignupParamsSchema, UserResponseSchema,
 } from '../schema/account.schema';
-import { THandler } from '../../router/types';
 import { createHash, createUnicCode } from '../../utils/crypto';
 
 const signup: THandler<ISignupParams, IUserResponse> = async (
@@ -17,6 +17,7 @@ const signup: THandler<ISignupParams, IUserResponse> = async (
   [user] = await execQuery.user.create([email, hashedPassword, token]);
   const { user_id } = user!;
   session.write('user_id', user_id);
+  session.write('confirmed', false);
   await mailService.sendMail.confirm(email, origin, token);
   return { ...user!, confirmed: false };
 };

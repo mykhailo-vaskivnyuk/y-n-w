@@ -77,6 +77,7 @@ export default class App {
     const context: IRouterContext = {
       logger,
       execQuery,
+      console,
     };
     const Router = loadModule(__dirname, router.path, context);
     this.router = await new Router(router).init();

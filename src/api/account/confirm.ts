@@ -12,9 +12,11 @@ const confirm: THandler<IConfirmParams, IUserResponse> = async (
   const [user] = await execQuery.user.findByToken([token]);
   if (!user) return null;
   const { user_id, confirm_token } = user;
+  const confirmed = Boolean(confirm_token);
   await execQuery.user.unsetToken([user_id]);
-  await session.write('user_id', user_id);
-  return { ...user, confirmed: !confirm_token };
+  session.write('user_id', user_id);
+  session.write('confirmed', confirmed);
+  return { ...user, confirmed };
 };
 confirm.paramsSchema = ConfirmParamsSchema;
 confirm.responseSchema = UserResponseSchema;

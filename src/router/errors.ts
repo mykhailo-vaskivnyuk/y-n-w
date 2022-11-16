@@ -9,6 +9,8 @@ export const ROUTER_ERROR_MAP = {
   SERVICE_ERROR: 'SERVICE ERROR',
   HANDLER_ERROR: 'CAN\'T HANDLE OPERATION',
   REDIRECT: 'REDIRECT',
+  UNAUTHORIZED: 'USER ISN\'T AUTHORIZED',
+  NOT_CONFIRMED: 'USER ISN\'T CONFIRMED',
 } as const;
 export type RouterErrorCode = keyof typeof ROUTER_ERROR_MAP;
 export type TRouterErrorDetails = RouterError['details'];
@@ -26,9 +28,11 @@ export class RouterError extends Error {
 }
 
 export const HANDLER_ERROR_MAP = {
-  E_REDIRECT: 'REDIRECT',
+  REDIRECT: 'REDIRECT',
+  UNAUTHORIZED: 'USER ISN\'T AUTHORIZED',
+  NOT_CONFIRMED: 'USER ISN\'T CONFIRMED',
 } as const;
-type HandlerErrorCode = keyof typeof HANDLER_ERROR_MAP;
+export type HandlerErrorCode = keyof typeof HANDLER_ERROR_MAP;
 
 export class HandlerError extends Error {
   public code: HandlerErrorCode;

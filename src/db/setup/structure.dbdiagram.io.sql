@@ -32,7 +32,7 @@ CREATE TABLE public.nets (
     net_level integer DEFAULT 0 NOT NULL,
     parent_net_id bigint,
     first_net_id bigint,
-    count_of_nets integer DEFAULT 0 NOT NULL,
+    count_of_nets integer DEFAULT 1 NOT NULL,
     node_id bigint NOT NULL
 );
 
@@ -102,7 +102,7 @@ CREATE TABLE public.nodes (
     node_level integer DEFAULT 0 NOT NULL,
     parent_node_id bigint,
     first_node_id bigint,
-    count_of_members integer DEFAULT 0 NOT NULL,
+    count_of_members integer DEFAULT 1 NOT NULL,
     node_date timestamp without time zone NOT NULL,
     blocked bit(1) DEFAULT 0 NOT NULL,
     changes bit(1) DEFAULT 0 NOT NULL,
@@ -167,7 +167,7 @@ CREATE TABLE public.users (
     name character varying(50) DEFAULT NULL,
     mobile character varying(255) DEFAULT NULL,
     password character varying(255) DEFAULT NULL,
-    comfirm_token character varying(255) DEFAULT NULL,
+    confirm_token character varying(255) DEFAULT NULL,
     invite_token character varying(255) DEFAULT NULL,
     restore_token character varying(255) DEFAULT NULL,
     net_name character varying(50) DEFAULT NULL

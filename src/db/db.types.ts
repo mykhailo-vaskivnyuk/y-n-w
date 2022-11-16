@@ -20,7 +20,7 @@ export type ITableUsers = {
   net_name: string | null;
 }
 
-export interface ITableSessions {
+export type ITableSessions = {
   session_id: number;
   session_key: string;
   session_value: string;
@@ -34,7 +34,7 @@ export type ITableNets = {
   count_of_nets: number;
 }
 
-export interface ITableNetsData {
+export type ITableNetsData = {
   net_id: number;
   name: string;
   goal: string | null;
@@ -48,7 +48,7 @@ export interface ITableNetsData {
   resource_link_4: string | null;
 }
 
-export interface ITableNetsUsersData {
+export type ITableNetsUsersData = {
   net_id: number;
   user_id: number;
   email_show: boolean;
@@ -56,7 +56,7 @@ export interface ITableNetsUsersData {
   mobile_show: boolean;
 }
 
-export interface ITableNodes {
+export type ITableNodes = {
   node_id: number;
   node_level: number;
   parent_node_id: number | null;

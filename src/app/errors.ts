@@ -67,6 +67,12 @@ const OPERATION_ERRORS_MAP: Partial<
   REDIRECT: (details: TRouterErrorDetails) => {
     throw new ServerError('REDIRECT', details);
   },
+  UNAUTHORIZED: (details: TRouterErrorDetails) => {
+    throw new ServerError('UNAUTHORIZED', details);
+  },
+  NOT_CONFIRMED: (details: TRouterErrorDetails) => {
+    throw new ServerError('FORBIDDEN', details);
+  },
 };
 
 export const handleOperationError = (e: any): never => {

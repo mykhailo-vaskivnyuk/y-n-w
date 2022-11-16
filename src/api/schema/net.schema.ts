@@ -9,12 +9,14 @@ export const NetCreateParamsSchema = {
   parent_net_id: [Joi.number().integer(), Joi.any().equal()],
   first_net_id: [Joi.number().integer(), Joi.any().equal()],
   count_of_nets: [Joi.number().integer(), Joi.any().equal()],
+  name: Joi.string().required(),
 } as Record<keyof INetCreateParams, TJoiSchema>;
 
 export const NetCreateResponse = {
-  net_id: Joi.number().integer(),
-  net_level: Joi.number().integer(),
-  parent_net_id: [Joi.number().integer(), Joi.any().equal(null)],
-  first_net_id: [Joi.number().integer(), Joi.any().equal(null)],
-  count_of_nets: Joi.number().integer(),
+  net_id: Joi.number(),
+  net_level: Joi.number(),
+  parent_net_id: [Joi.number(), Joi.any().equal(null)],
+  first_net_id: [Joi.number(), Joi.any().equal(null)],
+  count_of_nets: Joi.number(),
+  name: Joi.string(),
 } as Record<keyof INetCreateResponse, TJoiSchema>;

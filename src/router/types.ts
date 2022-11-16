@@ -1,15 +1,15 @@
 import Joi, { ObjectSchema } from 'joi';
-import {
-  TInputModulesKeys, TOutputModulesKeys,
-  TServicesKeys,
-} from './constants';
+
 import { IObject } from '../types/types';
 import {
   IOperation, TOperationResponse,
   IParams,
 } from '../types/operation.types';
-import { ITableUsers } from '../db/db.types';
+import { ITableNets, ITableNodes, ITableUsers } from '../db/db.types';
 import { IMailService } from '../services/mail/types';
+import {
+  TInputModulesKeys, TOutputModulesKeys, TServicesKeys,
+} from './constants';
 import { Session } from '../services/session/session';
 
 export interface IRouterConfig {
@@ -62,6 +62,9 @@ export interface IServices {
 
 export type ISessionContent = Partial<{
   user_id: ITableUsers['user_id'];
+  node_id: ITableNodes['node_id'];
+  net_id: ITableNets['net_id'];
+  confirmed: boolean;
 }>;
 
 export type TInputModule<T = any> = (config: T) =>

@@ -1,4 +1,6 @@
-import { ITableNets } from '../../db.types';
+import {
+  ITableNets, ITableNetsData, ITableNetsUsersData,
+} from '../../db.types';
 import { TQuery } from '../../types';
 
 export interface IQueriesNet {
@@ -8,4 +10,12 @@ export interface IQueriesNet {
     ['first_net_id', number | null],
     ['count_of_nets', number],
   ], ITableNets>;
+  createData:TQuery<[
+    ['net_id', number],
+    ['name', string],
+  ], ITableNetsData>;
+  createUserData:TQuery<[
+    ['net_id', number],
+    ['user_id', number],
+  ], ITableNetsUsersData>;
 }

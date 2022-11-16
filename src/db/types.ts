@@ -1,7 +1,8 @@
 import { GetParamsTypes } from '../types/types';
 import { IQueriesNet } from './queries/net/types';
-import { IQueriesSession } from './queries/session';
+import { IQueriesNode } from './queries/node/types';
 import { IQueriesUser } from './queries/user/types';
+import { IQueriesSession } from './queries/session';
 
 export interface IDatabaseConfig {
   path: string;
@@ -31,6 +32,7 @@ export interface IDatabase {
 
 export interface IDatabaseQueries {
   user: IQueriesUser;
+  node: IQueriesNode;
   net: IQueriesNet;
   session: IQueriesSession;
 }
