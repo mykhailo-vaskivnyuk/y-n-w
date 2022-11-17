@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
+import { TUserGetNetsResponse } from '../api/types/client.api.types';
 import { INetCreateResponse } from '../api/types/net.types';
 import { IUserResponse } from '../api/types/types';
 import { AppState } from '../constants';
@@ -12,35 +13,36 @@ import { getConnection as getWsConnection } from '../client.ws';
 import { getNetMethods } from './net';
 
 export class ClientApp extends EventEmitter {
-  protected clientApi: IClientApi | null;
+  protected api: IClientApi | null;
   private baseUrl = '';
   protected state: AppState = AppState.INITING;
   private user: IUserResponse = null;
-  private user_net: INetCreateResponse | null = null;
+  private net: INetCreateResponse | null = null;
+  private nets: TUserGetNetsResponse[] = [];
   private error: HttpResponseError | null = null;
   account: ReturnType<typeof getAccountMethods>;
-  net: ReturnType<typeof getNetMethods>;
+  netMethods: ReturnType<typeof getNetMethods>;
 
   constructor() {
     super();
     this.account = getAccountMethods(this as any);
-    this.net = getNetMethods(this as any);
+    this.netMethods = getNetMethods(this as any);
     this.baseUrl = process.env.API || `${window.location.origin}/api`;
   }
 
   async init() {
     try {
       const connection = await getHttpConnection(this.baseUrl);
-      this.clientApi = getApi(connection);
-      await this.clientApi.health();
+      this.api = getApi(connection);
+      await this.api.health();
     } catch (e: any) {
       if (!(e instanceof HttpResponseError)) return this.setError(e);
       if (e.statusCode !== 503) return this.setError(e);
       try {
         const baseUrl = this.baseUrl.replace('http', 'ws');
         const connection = await getWsConnection(baseUrl);
-        this.clientApi = getApi(connection);
-        await this.clientApi.health();
+        this.api = getApi(connection);
+        await this.api.health();
       } catch (err: any) {
         return this.setError(err);
       }
@@ -53,18 +55,37 @@ export class ClientApp extends EventEmitter {
     return {
       state: this.state,
       user: this.user,
+      net: this.net,
+      nets: this.nets,
       error: this.error,
     };
   }
 
-  protected setUser(user: IUserResponse) {
+  protected async setUser(user: IUserResponse) {
     this.user = user;
+    if (user && user.user_state === 'LOGGEDIN') {
+      await this.netMethods.getNets();
+    } else {
+      await this.setNet();
+      this.setNets();
+    }
     this.emit('user', user);
   }
 
-  protected setNet(net: INetCreateResponse) {
-    this.user_net = net;
+  protected async setNet(net: INetCreateResponse | null = null) {
+    this.net = net;
+    if (net) this.user!.user_state = 'INSIDE_NET';
+    else {
+      await this.netMethods.getNets();
+      this.user!.user_state = 'LOGGEDIN';
+    }
     this.emit('net', net);
+    this.emit('user', this.user);
+  }
+
+  protected setNets(nets: TUserGetNetsResponse[] = []) {
+    this.nets = nets;
+    this.emit('nets', nets);
   }
 
   protected setState(state: AppState) {
@@ -91,8 +112,8 @@ export class ClientApp extends EventEmitter {
   private async readUser() {
     this.setState(AppState.LOADING);
     try {
-      const user = await this.clientApi!.user.read();
-      this.setUser(user);
+      const user = await this.api!.user.read();
+      await this.setUser(user);
       this.setState(AppState.READY);
       return user;
     } catch (e: any) {

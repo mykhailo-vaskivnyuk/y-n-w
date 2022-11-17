@@ -1,5 +1,4 @@
 import Joi, { ObjectSchema } from 'joi';
-
 import { IObject } from '../types/types';
 import {
   IOperation, TOperationResponse,
@@ -7,6 +6,9 @@ import {
 } from '../types/operation.types';
 import { ITableNets, ITableNodes, ITableUsers } from '../db/db.types';
 import { IMailService } from '../services/mail/types';
+import {
+  PartialUserStateKeys, UserStateKeys,
+} from '../client/common/constants';
 import {
   TInputModulesKeys, TOutputModulesKeys, TServicesKeys,
 } from './constants';
@@ -40,15 +42,18 @@ export interface IRoutes {
 }
 
 export type THandler<
-  T extends Partial<IParams> = IParams,
+  T extends IParams = IParams,
   Q extends TOperationResponse = TOperationResponse
 > = {
   (context: IContext, params: T): Promise<Q>;
   paramsSchema?: Record<keyof T, TJoiSchema>;
   schema?: ObjectSchema<T>;
   responseSchema: Q extends IObject
-    ? Record<keyof Q, TJoiSchema> | (Record<keyof Q, TJoiSchema> | Joi.Schema)[]
-    : TJoiSchema;
+    ?
+      | Record<keyof Q, TJoiSchema>
+      | (Record<keyof Q, TJoiSchema> | Joi.Schema)[]
+    : Q extends Array<any> ? | Record<keyof Q[number], TJoiSchema> : TJoiSchema;
+  allowedForUser?: PartialUserStateKeys;
 };
 
 export type IContext = IServices & { origin: string };
@@ -64,7 +69,7 @@ export type ISessionContent = Partial<{
   user_id: ITableUsers['user_id'];
   node_id: ITableNodes['node_id'];
   net_id: ITableNets['net_id'];
-  confirmed: boolean;
+  user_state: UserStateKeys;
 }>;
 
 export type TInputModule<T = any> = (config: T) =>

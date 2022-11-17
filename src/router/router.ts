@@ -56,9 +56,11 @@ class Router implements IRouter {
     if (!this.routes) throw new RouterError('ROUTES_CREATE_ERROR');
     const { options: { origin }, names } = operation;
     const context = { origin } as IContext;
-    const handler = this.findRoute(names);
-    const execInputModules = getExecInputModules(this.modules);
-    const execOutputModules = getExecOutputModules(this.responseModules);
+    try {
+      const handler = this.findRoute(names);
+      const execInputModules = getExecInputModules(this.modules);
+      const execOutputModules = getExecOutputModules(this.responseModules);
+
 
     try {
       const { data } = await execInputModules(operation, context, handler);
@@ -70,6 +72,9 @@ class Router implements IRouter {
     } finally {
       await context.session.finalize();
     }
+  } catch (e) {
+    console.log(e);
+  }
   }
 
   private findRoute(names: IOperation['names']): THandler {

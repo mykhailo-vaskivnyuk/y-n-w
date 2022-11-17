@@ -21,5 +21,6 @@ const overmail: THandler<ISignupParams, boolean> = async (
 };
 overmail.paramsSchema = SignupParamsSchema;
 overmail.responseSchema = Joi.boolean();
+overmail.allowedForUser = 'NOT_LOGGEDIN';
 
 export = overmail;

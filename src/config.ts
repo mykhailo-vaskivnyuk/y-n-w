@@ -52,6 +52,7 @@ const config: IConfig = {
     services: ['mailService'],
     inputModules: [
       'setSession',
+      'checkAuthorized',
       'getStream',
       'validateInput',
     ],

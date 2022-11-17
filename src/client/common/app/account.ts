@@ -9,21 +9,20 @@ export const getAccountMethods = (parent: IClientAppThis) => ({
   async loginOrSignup(...[type, args]: TLoginOrSignup) {
     parent.setState(AppState.LOADING);
     try {
-      const user = await parent.clientApi.account[type](args as any);
-      user && parent.setUser(user);
+      const user = await parent.api.account[type](args as any);
+      user && await parent.setUser(user);
       parent.setState(AppState.READY);
       return user;
     } catch (e: any) {
       parent.setError(e);
-      throw e;
     }
   },
 
   async logoutOrRemove(type: 'logout' | 'remove') {
     parent.setState(AppState.LOADING);
     try {
-      const success = await parent.clientApi.account[type]();
-      success && parent.setUser(null);
+      const success = await parent.api.account[type]();
+      success && await parent.setUser(null);
       parent.setState(AppState.READY);
       return success;
     } catch (e: any) {
@@ -35,12 +34,11 @@ export const getAccountMethods = (parent: IClientAppThis) => ({
   async overmail(args: ISignupParams) {
     parent.setState(AppState.LOADING);
     try {
-      const success = await parent.clientApi.account.overmail(args);
+      const success = await parent.api.account.overmail(args);
       parent.setState(AppState.READY);
       return success;
     } catch (e: any) {
       parent.setError(e);
-      throw e;
     }
   },
 
@@ -49,8 +47,8 @@ export const getAccountMethods = (parent: IClientAppThis) => ({
   ): Promise<IUserResponse> {
     parent.setState(AppState.LOADING);
     try {
-      const user = await parent.clientApi.account[type](args);
-      user && parent.setUser(user);
+      const user = await parent.api.account[type](args);
+      user && await parent.setUser(user);
       parent.setState(AppState.READY);
       return user;
     } catch (e: any) {

@@ -4,6 +4,8 @@ import { IRoutes, TJoiSchema, THandler, THandlerSchema } from './types';
 import { SIMPLE_TYPES } from './constants';
 import * as tpl from './methods/templates';
 
+export const JOI_NULL = Joi.any().equal(null);
+
 export const isHandler = (
   handler?: IRoutes | THandler,
 ): handler is THandler => typeof handler === 'function';
@@ -73,7 +75,7 @@ const getTypes = (
   const types = schemaEntries
     .map(([key, item]) => {
       const types = getTypes(item, indent);
-      types.includes('undefined') && (key += '?');
+      !(item as any)._flags?.presence && (key += '?');
       return tpl.strTypes(indent, key, types);
     });
   return '{' + types.join('') + '\n' + indent + '}';

@@ -5,10 +5,7 @@ import { TQuery } from '../../types';
 
 export interface IQueriesNet {
   create:TQuery<[
-    ['net_level', number],
-    ['parent_net_id', number | null],
-    ['first_net_id', number | null],
-    ['count_of_nets', number],
+    ['node_id', number],
   ], ITableNets>;
   createData:TQuery<[
     ['net_id', number],
@@ -18,4 +15,8 @@ export interface IQueriesNet {
     ['net_id', number],
     ['user_id', number],
   ], ITableNetsUsersData>;
+  readUserNet:TQuery<[
+    ['user_id', number],
+    ['net_id', number],
+  ], ITableNets & ITableNetsData>;
 }

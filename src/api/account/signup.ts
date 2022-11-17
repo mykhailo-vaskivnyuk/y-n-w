@@ -10,18 +10,21 @@ import { createHash, createUnicCode } from '../../utils/crypto';
 const signup: THandler<ISignupParams, IUserResponse> = async (
   { session, origin }, { email },
 ) => {
-  let [user] = await execQuery.user.findByEmail([email]);
-  if (user) return null;
+  const [userExists] = await execQuery.user.findByEmail([email]);
+  if (userExists) return null;
   const hashedPassword = await createHash('12345');
   const token = createUnicCode(15);
-  [user] = await execQuery.user.create([email, hashedPassword, token]);
+  const [user] = await execQuery.user.create([email, hashedPassword]);
   const { user_id } = user!;
+  await execQuery.user.createTokens([user_id, token]);
+  const user_state = 'NOT_CONFIRMED';
   session.write('user_id', user_id);
-  session.write('confirmed', false);
+  session.write('user_state', user_state);
   await mailService.sendMail.confirm(email, origin, token);
-  return { ...user!, confirmed: false };
+  return { ...user!, user_state };
 };
 signup.paramsSchema = SignupParamsSchema;
 signup.responseSchema = UserResponseSchema;
+signup.allowedForUser = 'NOT_LOGGEDIN';
 
 export = signup;

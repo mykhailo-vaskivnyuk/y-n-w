@@ -4,7 +4,8 @@ export const getById = `
 `;
 
 export const findByEmail = `
-  SELECT * FROM users
+  SELECT users.*, users_tokens.comfirm_token FROM users
+  LEFT JOIN users_tokens ON users.user_id = users_tokens.user_id
   WHERE email=$1
 `;
 
@@ -14,9 +15,14 @@ export const findByToken = `
 `;
 
 export const create = `
-  INSERT INTO users (email, password, confirm_token)
-  VALUES($1, $2, $3)
+  INSERT INTO users (email, password)
+  VALUES($1, $2)
   RETURNING *
+`;
+
+export const createTokens = `
+  INSERT INTO users_tokens (user_id, confirm_token)
+  VALUES($1, $2)
 `;
 
 export const setToken = `

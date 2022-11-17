@@ -1,7 +1,8 @@
 export const INPUT_MODULES_MAP = {
+  setSession: 'set.session.js',
+  checkAuthorized: 'checkAuthorized.js',
   getStream: 'get.stream.js',
   validateInput: 'validate.input.js',
-  setSession: 'set.session.js',
 };
 export type TInputModulesKeys = keyof typeof INPUT_MODULES_MAP;
 

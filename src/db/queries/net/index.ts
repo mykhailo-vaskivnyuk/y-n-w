@@ -1,7 +1,14 @@
 export const create = `
-  INSERT INTO nets (net_level, parent_net_id, first_net_id, node_id)
-  VALUES ($1, $2, $3, $4)
+  INSERT INTO nets (node_id)
+  VALUES ($1)
   RETURNING *
+`;
+
+export const readUserNet = `
+  SELECT * FROM nets_users_data
+  LEFT JOIN nets ON nets_users_data.net_id = nets.net_id
+  JOIN nets_data ON nets.net_id = nets_data.net_id
+  WHERE nets_users_data.user_id = $1 AND nets.net_id = $2
 `;
 
 export const createData = `

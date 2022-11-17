@@ -10,7 +10,18 @@ const options = {
 };
 
 const validateOutput: TOutputModule = () =>
-  async (response, context, handler) => {
+  async function validateOutput(
+    response, context, handler
+  ): Promise<any> {
+    if (Array.isArray(response)) {
+      const value = [];
+      for (const item of response) {
+        const itemValue = await validateOutput(item, context, handler);
+        value.push(itemValue);
+      }
+      return value;
+    }
+
     const { responseSchema } = handler || {};
     if (!responseSchema) throw new Error('Handler is not put');
     const schema = outputSchemaToSchema(responseSchema);

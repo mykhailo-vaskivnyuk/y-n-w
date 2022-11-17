@@ -1,16 +1,17 @@
 import Joi from 'joi';
 import { IUserResponse } from '../../client/common/api/types/account.types';
 import { TJoiSchema } from '../../router/types';
+import { JOI_NULL } from '../../router/utils';
 import { OmitNull } from '../../types/types';
 
 export const UserResponseSchema = [
-  Joi.any().equal(null),
+  JOI_NULL,
   {
     email: Joi.string(),
-    name: [Joi.string(), Joi.any().equal(null)],
-    mobile: [Joi.string(), Joi.any().equal(null)],
-    net_name: [Joi.string(), Joi.any().equal(null)],
-    confirmed: Joi.boolean(),
+    name: [Joi.string(), JOI_NULL],
+    mobile: [Joi.string(), JOI_NULL],
+    net_name: [Joi.string(), JOI_NULL],
+    user_state: Joi.string(),
   } as Record<keyof OmitNull<IUserResponse>, TJoiSchema>,
 ];
 

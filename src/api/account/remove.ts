@@ -9,5 +9,6 @@ const remove: THandler = async (context) => {
   return true;
 };
 remove.responseSchema = Joi.boolean();
+remove.allowedForUser = 'NOT_CONFIRMED';
 
 export = remove;
