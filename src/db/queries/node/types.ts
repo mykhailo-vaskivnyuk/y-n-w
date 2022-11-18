@@ -20,10 +20,17 @@ export interface IQueriesNode {
     ['node_id', number],
     ['addCount', number]
   ], ITableNodes>;
-  removeUser:TQuery<[
+  removeUserFromAll:TQuery<[
     ['user_id', number],
+  ], ITableNodes>;
+  removeUserFromOne:TQuery<[
+    ['node_id', number],
   ], ITableNodes>;
   removeTree: TQuery<[
     ['parent_node_id', number],
-  ]>
+  ]>;
+  findByUserNet: TQuery<[
+    ['user_id', number],
+    ['net_id', number],
+  ], ITableNodes>;
 }

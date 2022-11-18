@@ -47,6 +47,7 @@ export class ClientApp extends EventEmitter {
         return this.setError(err);
       }
     }
+    await this.api.net.comeout();
     await this.readUser();
     this.setState(AppState.INITED);
   }
@@ -76,9 +77,10 @@ export class ClientApp extends EventEmitter {
   protected async setNet(net: INetCreateResponse | null = null) {
     if (this.net === net) return;
     this.net = net;
-    if (net) this.user!.user_state = 'INSIDE_NET';
-    else if (this.user) {
+    if (net) {
+      this.user!.user_state = 'INSIDE_NET';
       await this.netMethods.getNets();
+    } else if (this.user) {
       this.user!.user_state = 'LOGGEDIN';
       this.emit('user', this.user);
     }

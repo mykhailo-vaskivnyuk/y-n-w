@@ -8,6 +8,10 @@ export const remove = `
   DELETE FROM nets WHERE node_id = $1
 `;
 
+export const removeUser = `
+  DELETE FROM nets_users_data WHERE user_id = $1 AND net_id = $2
+`;
+
 export const createData = `
   INSERT INTO nets_data (net_id, name)
   VALUES ($1, $2)

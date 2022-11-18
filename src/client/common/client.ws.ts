@@ -22,19 +22,19 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
       readyState === CLOSED ||
       readyState === CLOSING
     ) createSocket();
-    
+
     const connectExecutor: TPromiseExecutor<void> = (rv, rj) => {
       const handleError = () => {
         if (attempt === 1) return rj(new HttpResponseError(503));
         delay(CONNECTION_DELAY).then(
           () => checkConnection(attempt - 1),
         ).then(rv).catch(rj);
-      }
+      };
       const handleOpen = () => rv();
       socket.addEventListener('error', handleError);
       socket.addEventListener('open', handleOpen);
     };
-    
+
     return new Promise<void>(connectExecutor);
   };
 
@@ -50,27 +50,27 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
       rv(resData);
     };
 
-    const createSendExecutor = (
-      requestMessage: string,
-    ): TPromiseExecutor<void> => (rv, rj) => {
-      const handlerResponse = getResponseHandler(rv, rj);
-      requests.set(handlerResponse, id);
-      socket.addEventListener('message', handlerResponse);
-      socket.send(requestMessage);
-    };
+  const createSendExecutor = (
+    requestMessage: string,
+  ): TPromiseExecutor<void> => (rv, rj) => {
+    const handlerResponse = getResponseHandler(rv, rj);
+    requests.set(handlerResponse, id);
+    socket.addEventListener('message', handlerResponse);
+    socket.send(requestMessage);
+  };
 
-    const createTrySendExecutor = (
-      send: ReturnType<typeof createSendExecutor>,
-    ): TPromiseExecutor<any> => (rv, rj) => {
-      const handleTimeout = () => rj(new Error('Connection timeout'));
-      const timer = setTimeout(handleTimeout, 3000);
-      const newRv = (...args: Parameters<typeof rv>) => {
-        clearTimeout(timer);
-        rv(...args);
-      };
-      send(newRv, rj);
+  const createTrySendExecutor = (
+    send: ReturnType<typeof createSendExecutor>,
+  ): TPromiseExecutor<any> => (rv, rj) => {
+    const handleTimeout = () => rj(new Error('Connection timeout'));
+    const timer = setTimeout(handleTimeout, 3000);
+    const newRv = (...args: Parameters<typeof rv>) => {
+      clearTimeout(timer);
+      rv(...args);
     };
-  
+    send(newRv, rj);
+  };
+
   const fetch = async (
     pathname: string, data: Record<string, any> = {},
   ): Promise<any> => {
@@ -84,6 +84,7 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
     try {
       return await new Promise(trySendExecutor);
     } catch (e) {
+      if (e instanceof HttpResponseError) throw e;
       socket.close();
       await checkConnection();
       return new Promise(sendExecutor);

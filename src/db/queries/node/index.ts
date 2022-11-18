@@ -27,14 +27,29 @@ export const updateCountOfMembers = `
   RETURNING *
 `;
 
-export const removeUser = `
+export const removeUserFromAll = `
   UPDATE nodes
-  SET user_id = NULL, count_of_members = count_of members - 1
+  SET user_id = NULL, count_of_members = count_of_members - 1
   WHERE user_id = $1
+  RETURNING *
+`;
+
+export const removeUserFromOne = `
+  UPDATE nodes
+  SET user_id = NULL, count_of_members = count_of_members - 1
+  WHERE node_id = $1
   RETURNING *
 `;
 
 export const removeTree = `
     DELETE FROM nodes
     WHERE parent_node_id = $1
+`;
+
+export const findByUserNet = `
+    SELECT nodes.* FROM nodes
+    INNER JOIN nets ON
+      nodes.node_id = nets.node_id OR
+      nodes.node_id = nodes.first_node_id
+    WHERE user_id = $1 AND net_id = $2
 `;

@@ -10,6 +10,10 @@ export interface IQueriesNet {
   remove: TQuery<[
     ['node_id', number],
   ]>;
+  removeUser: TQuery<[
+    ['user_id', number],
+    ['net_id', number],
+  ]>;
   createData:TQuery<[
     ['net_id', number],
     ['name', string],

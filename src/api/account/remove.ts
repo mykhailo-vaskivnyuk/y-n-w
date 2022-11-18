@@ -1,30 +1,13 @@
 import Joi from 'joi';
-import { ITableNodes } from '../../db/db.types';
 import { THandler } from '../../router/types';
+import { updateCountOfMemebers } from '../utils/utils';
 
-const updateCountOfMemebers = async (
-  node: ITableNodes, addCount = 1,
-): Promise<void> => {
-  const { parent_node_id } = node;
-  if (!parent_node_id) return;
-  const [parent_node] = await execQuery.node.updateCountOfMembers(
-    [parent_node_id, addCount],
-  );
-  const { node_id, count_of_members } = parent_node!;
-  if (count_of_members) return await updateCountOfMemebers(parent_node!);
-  await execQuery.node.removeTree([node_id]);
-  if (parent_node!.parent_node_id) return;
-  await execQuery.net.remove([node_id]);
-  await execQuery.node.remove([node_id]);
-};
-
-const remove: THandler = async (context) => {
-  const user_id = await context.session.read('user_id');
-  if (!user_id) return false;
-  await context.session.clear();
-  const nodes = await execQuery.node.removeUser([user_id]);
-  for (const node of nodes) await updateCountOfMemebers(node!, -1);
+const remove: THandler = async ({ session }) => {
+  const user_id = await session.read('user_id');
+  await session.clear();
+  const nodes = await execQuery.node.removeUserFromAll([user_id!]);
   await execQuery.user.remove([user_id]);
+  for (const node of nodes) await updateCountOfMemebers(node!, -1);
   return true;
 };
 remove.responseSchema = Joi.boolean();

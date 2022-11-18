@@ -20,3 +20,5 @@ export type TServicesKeys = keyof typeof SERVICES_MAP;
 
 export const SIMPLE_TYPES = ['boolean', 'string', 'number'];
 export const JOI_NULL = Joi.any().equal(null);
+
+export const EXCLUDE_ROUTES = ['types', 'utils', 'schema'];

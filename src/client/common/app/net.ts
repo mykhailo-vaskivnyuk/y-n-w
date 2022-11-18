@@ -41,6 +41,19 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     }
   },
 
+  async leave() {
+    parent.setState(AppState.LOADING);
+    try {
+      const success = await parent.api.net.leave();
+      success && parent.setNet(null);
+      parent.setState(AppState.READY);
+      return success;
+    } catch (e: any) {
+      parent.setError(e);
+      throw e;
+    }
+  },
+
   async getNets() {
     parent.setState(AppState.LOADING);
     try {

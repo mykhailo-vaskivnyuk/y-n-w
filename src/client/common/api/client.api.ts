@@ -41,6 +41,8 @@ export const getApi = (
     'enter': (options: Q.TNetEnter) =>
       fetch<P.INetCreateResponse>('/net/enter', options),
 
+    'leave': () => fetch<boolean>('/net/leave'),
+
   },
   'scripts': {
     'script.js': () => fetch<Q.TScriptsScriptjsResponse>('/scripts/script.js'),

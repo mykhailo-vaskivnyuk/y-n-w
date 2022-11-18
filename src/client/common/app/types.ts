@@ -7,7 +7,6 @@ import { getApi } from '../api/client.api';
 import { ClientApp } from './client.app';
 
 export type IClientAppThis = ClientApp & {
-  state: AppState;
   api: ReturnType<typeof getApi>;
   setState: (state: AppState) => void;
   setUser: (user: T.IUserResponse) => Promise<void>;
