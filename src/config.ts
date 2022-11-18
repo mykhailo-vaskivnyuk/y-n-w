@@ -13,7 +13,7 @@ const {
   DATABASE_URL: dbUrl,
   ...restEnv
 } = getEnv();
-const DB_CONNECTION = {
+const connection = {
   heroku: {
     connectionString: dbUrl,
     ssl: { rejectUnauthorized: false },
@@ -38,10 +38,8 @@ const config: IConfig = {
   database: {
     path: resolvePath('db/db'),
     queriesPath: resolvePath('db/queries'),
-    connection: {
-      path: resolvePath('db/connection/pg'),
-      ...DB_CONNECTION,
-    },
+    connectionPath: resolvePath('db/connection/pg'),
+    connection,
   },
   router: {
     path: resolvePath('router/router'),

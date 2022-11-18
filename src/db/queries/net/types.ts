@@ -7,6 +7,9 @@ export interface IQueriesNet {
   create:TQuery<[
     ['node_id', number],
   ], ITableNets>;
+  remove: TQuery<[
+    ['node_id', number],
+  ]>;
   createData:TQuery<[
     ['net_id', number],
     ['name', string],

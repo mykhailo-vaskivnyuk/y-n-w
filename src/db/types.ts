@@ -7,11 +7,12 @@ import { IQueriesSession } from './queries/session';
 export interface IDatabaseConfig {
   path: string;
   queriesPath: string;
-  connection: { path: string} & Partial<{
-    connectionString: string,
+  connectionPath: string
+  connection: Partial<{
+    connectionString: string;
     ssl: {
-      rejectUnauthorized: boolean,
-    },
+      rejectUnauthorized: boolean;
+    };
     host: string;
     port: number;
     database: string;

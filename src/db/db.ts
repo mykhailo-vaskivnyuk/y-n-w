@@ -16,8 +16,8 @@ class Database implements IDatabase {
   }
 
   async init() {
-    const { connection } = this.config;
-    const Connection = require(connection.path);
+    const { connectionPath, connection } = this.config;
+    const Connection = require(connectionPath);
     this.connection = new Connection(connection);
     try {
       await this.connection!.connect();

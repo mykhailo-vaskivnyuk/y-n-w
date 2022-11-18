@@ -4,6 +4,10 @@ export const create = `
   RETURNING *
 `;
 
+export const remove = `
+  DELETE FROM nets WHERE node_id = $1
+`;
+
 export const createData = `
   INSERT INTO nets_data (net_id, name)
   VALUES ($1, $2)

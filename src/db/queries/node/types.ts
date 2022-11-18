@@ -13,7 +13,17 @@ export interface IQueriesNode {
     ['first_node_id', number],
     ['node_date', string],
   ]>;
+  remove: TQuery<[
+    ['node_id', number],
+  ]>;
+  updateCountOfMembers:TQuery<[
+    ['node_id', number],
+    ['addCount', number]
+  ], ITableNodes>;
   removeUser:TQuery<[
     ['user_id', number],
-  ]>;
+  ], ITableNodes>;
+  removeTree: TQuery<[
+    ['parent_node_id', number],
+  ]>
 }
