@@ -1,4 +1,5 @@
 /* eslint-disable import/no-cycle */
+import { TUserGetNetsResponse } from '../api/types/client.api.types';
 import * as T from '../api/types/types';
 import { AppState } from '../constants';
 import { HttpResponseError } from '../errors';
@@ -7,10 +8,11 @@ import { ClientApp } from './client.app';
 
 export type IClientAppThis = ClientApp & {
   state: AppState;
-  clientApi: ReturnType<typeof getApi>;
+  api: ReturnType<typeof getApi>;
   setState: (state: AppState) => void;
-  setUser: (user: T.IUserResponse) => void;
+  setUser: (user: T.IUserResponse) => Promise<void>;
   setNet: (net: T.INetCreateResponse) => void;
+  setNets: (nets: TUserGetNetsResponse) => void;
   setError: (e: HttpResponseError) => void;
 };
 

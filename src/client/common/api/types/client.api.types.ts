@@ -1,8 +1,8 @@
-export type TScriptsScriptjsResponse = Record<string, any>;
-export type TUserCreate = {
-  name: string;
-  field: number;
+export type TNetEnter = {
+  net_id: number;
 };
-export type TUserCreateResponse = {
+export type TScriptsScriptjsResponse = Record<string, any>;
+export type TUserGetNetsResponse = {
+  net_id: number;
   name: string;
 };

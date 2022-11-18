@@ -1,4 +1,6 @@
-import { ITableUsers } from '../../db.types';
+import {
+  ITableNets, ITableNetsData, ITableUsers, ITableUsersTokens,
+} from '../../db.types';
 import { TQuery } from '../../types';
 
 export interface IQueriesUser {
@@ -7,15 +9,18 @@ export interface IQueriesUser {
   ], ITableUsers>;
   findByEmail: TQuery<[
     ['email', string],
-  ], ITableUsers>;
+  ], ITableUsers & ITableUsersTokens>;
   findByToken: TQuery<[
     ['confirm_token', string],
   ], ITableUsers>;
   create: TQuery<[
     ['email', string],
     ['password', string],
-    ['confirm_token', string],
   ], ITableUsers>;
+  createTokens: TQuery<[
+    ['user_id', number],
+    ['confirm_token', string],
+  ]>;
   setToken: TQuery<[
     ['user_id', number],
     ['confirm_token', string | null],
@@ -25,4 +30,7 @@ export interface IQueriesUser {
     ['user_id', number],
   ]>;
   remove: TQuery;
+  getNets:TQuery<[
+    ['user_id', number],
+  ], ITableNets & ITableNetsData>;
 }

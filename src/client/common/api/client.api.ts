@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import * as P from './types/types';
 import * as Q from './types/client.api.types';
 
@@ -32,8 +33,13 @@ export const getApi = (
   'health': () => fetch<string>('/health'),
 
   'net': {
+    'comeout': () => fetch<boolean>('/net/comeout'),
+
     'create': (options: P.INetCreateParams) =>
       fetch<P.INetCreateResponse>('/net/create', options),
+
+    'enter': (options: Q.TNetEnter) =>
+      fetch<P.INetCreateResponse>('/net/enter', options),
 
   },
   'scripts': {
@@ -41,8 +47,7 @@ export const getApi = (
 
   },
   'user': {
-    'create': (options: Q.TUserCreate) =>
-      fetch<Q.TUserCreateResponse>('/user/create', options),
+    'getNets': () => fetch<Q.TUserGetNetsResponse>('/user/getNets'),
 
     'update': () => fetch<string>('/user/update'),
 

@@ -1,10 +1,9 @@
 import { ITableUsers } from '../../../local/imports';
+import { UserStateKeys } from '../../constants';
 
 export type IUserResponse =
-  | null
-  | (Pick<ITableUsers, 'email' | 'name' | 'mobile' | 'net_name'> & {
-      confirmed: boolean;
-    });
+  | (Omit<ITableUsers, 'user_id' | 'password'> & { user_state: UserStateKeys })
+  | null;
 
 export type ISignupParams = {
   email: string,

@@ -2,46 +2,55 @@ import {
   INetCreateParams, INetCreateResponse,
 } from '../../client/common/api/types/net.types';
 import { THandler } from '../../router/types';
-import { NetCreateResponse, NetCreateParamsSchema } from '../schema/net.schema';
-import { HandlerError } from '../../router/errors';
+import { ITableNodes } from '../../db/db.types';
+import {
+  NetCreateResponseSchema, NetCreateParamsSchema,
+} from '../schema/net.schema';
+
+const createTree = async (node: ITableNodes) => {
+  const {
+    node_level: parent_node_level,
+    node_id: parent_node_id,
+    first_node_id: parent_first_node_id,
+  } = node;
+  const node_level = parent_node_level + 1;
+  const first_node_id = parent_first_node_id || parent_node_id;
+  const date = new Date().toISOString();
+  for (let node_position = 1; node_position <= 6; node_position++) {
+    await execQuery.node.create([
+      node_level,
+      node_position,
+      parent_node_id,
+      first_node_id,
+      date,
+    ]);
+  }
+};
 
 const create: THandler<INetCreateParams, INetCreateResponse> =
   async (context, params) => {
     const { session } = context;
-    /* check authorized */
     const user_id = session.read('user_id');
-    if (!user_id) throw new HandlerError('UNAUTHORIZED');
-    /* check confirmed */
-    const confirmed = session.read('confirmed');
-    if (!confirmed) throw new HandlerError('NOT_CONFIRMED');
     /* create node */
     const date = new Date().toISOString();
-    const [node] = await execQuery.node.create(
-      [null, null, date, user_id],
-    );
+    const [node] = await execQuery.node.createInitial([date, user_id!]);
     const { node_id } = node!;
     session.write('node_id', node_id);
     /* create tree */
-    /* ... */
+    await createTree(node!);
     /* create net */
-    const {
-      net_level = 0,
-      parent_net_id = null,
-      first_net_id = null,
-      name,
-    } = params;
-    const [net] = await execQuery.net.create(
-      [net_level, parent_net_id, first_net_id, node_id],
-    );
+    const { name } = params;
+    const [net] = await execQuery.net.create([node_id]);
     const { net_id } = net!;
     session.write('net_id', net_id);
     /* create net data */
     const [netData] = await execQuery.net.createData([net_id, name]);
     /* create net user data */
-    await execQuery.net.createUserData([net_id, user_id]);
+    await execQuery.net.createUserData([net_id, user_id!]);
+    session.write('user_state', 'INSIDE_NET');
     return { ...net!, ...netData! };
   };
 create.paramsSchema = NetCreateParamsSchema;
-create.responseSchema = NetCreateResponse;
+create.responseSchema = NetCreateResponseSchema;
 
 export = create;

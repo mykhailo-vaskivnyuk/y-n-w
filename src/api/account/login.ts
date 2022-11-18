@@ -2,6 +2,7 @@ import {
   ILoginParams, IUserResponse,
 } from '../../client/common/api/types/account.types';
 import { THandler } from '../../router/types';
+import { UserStateKeys } from '../../client/common/constants';
 import {
   LoginParamsSchema, UserResponseSchema,
 } from '../schema/account.schema';
@@ -15,12 +16,15 @@ async ({ session }, { email, password }) => {
   const verified = await verifyHash(password, user.password);
   if (!verified) return null;
   const { user_id, confirm_token } = user;
-  const confirmed = !confirm_token;
   session.write('user_id', user_id);
-  session.write('confirmed', confirmed);
-  return { ...user, confirmed };
+  const user_state: UserStateKeys = confirm_token ?
+    'NOT_CONFIRMED' :
+    'LOGGEDIN';
+  session.write('user_state', user_state);
+  return { ...user, user_state };
 };
 login.paramsSchema = LoginParamsSchema;
 login.responseSchema = UserResponseSchema;
+login.allowedForUser = 'NOT_LOGGEDIN';
 
 export = login;

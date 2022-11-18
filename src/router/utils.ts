@@ -73,7 +73,7 @@ const getTypes = (
   const types = schemaEntries
     .map(([key, item]) => {
       const types = getTypes(item, indent);
-      types.includes('undefined') && (key += '?');
+      !(item as any)._flags?.presence && (key += '?');
       return tpl.strTypes(indent, key, types);
     });
   return '{' + types.join('') + '\n' + indent + '}';

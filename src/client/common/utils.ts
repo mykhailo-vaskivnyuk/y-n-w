@@ -10,3 +10,8 @@ export const logData = (data: any, message?: string) => {
   message && console.log(`${message}\n`);
   console.log(log);
 };
+
+export const delay = (time: number) =>
+  new Promise((rv) => {
+    setTimeout(rv, time);
+  });
