@@ -1,8 +1,6 @@
 import { TInputModule } from '../types';
-import { USER_STATE_MAP } from '../../client/common/constants';
+import { loggedInState, USER_STATE_MAP } from '../../client/common/constants';
 import { HandlerError } from '../errors';
-
-const loggedInState = USER_STATE_MAP['LOGGEDIN'];
 
 const validateInput: TInputModule = () =>
   async ({ ...operation }, { session }, handler) => {

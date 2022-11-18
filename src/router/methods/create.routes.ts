@@ -35,5 +35,6 @@ export const createRoutes = async (dirPath: string): Promise<IRoutes> => {
     else Object.assign(route, moduleExport);
   }
 
+  // dir.close();
   return route;
 };

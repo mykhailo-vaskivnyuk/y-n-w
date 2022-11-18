@@ -7,9 +7,9 @@ const enter: THandler<{ net_id: number }, INetCreateResponse> =
   async (context, { net_id }) => {
     const { session } = context;
     const user_id = session.read('user_id');
-    const [net] = await execQuery.net.readUserData([user_id!, net_id]);
+    const [net] = await execQuery.net.user.readData([user_id!, net_id]);
     if (!net) return null;
-    const [node] = await execQuery.node.findByUserNet([user_id!, net_id]);
+    const [node] = await execQuery.node.user.findByNet([user_id!, net_id]);
     const { node_id } = node!;
     session.write('net_id', net_id);
     session.write('node_id', node_id);

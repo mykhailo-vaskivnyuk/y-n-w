@@ -68,6 +68,7 @@ const rmDir = async (dirToDel) => {
     await fsp.rm(filePathToDel);
     counter++;
   }
+  // dir.close();
   await fsp.rmdir(dirToDel);
   return counter;
 };

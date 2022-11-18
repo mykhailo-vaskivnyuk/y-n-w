@@ -2,8 +2,11 @@ import { ITableUsers } from '../../../local/imports';
 import { UserStateKeys } from '../../constants';
 
 export type IUserResponse =
-  | (Omit<ITableUsers, 'user_id' | 'password'> & { user_state: UserStateKeys })
-  | null;
+  | null
+  | Omit<ITableUsers, 'user_id' | 'password'> & {
+      user_state: UserStateKeys;
+      net_id?: number
+    };
 
 export type ISignupParams = {
   email: string,

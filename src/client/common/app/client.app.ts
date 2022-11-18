@@ -3,7 +3,7 @@
 import { TUserGetNetsResponse } from '../api/types/client.api.types';
 import { INetCreateResponse } from '../api/types/net.types';
 import { IUserResponse } from '../api/types/types';
-import { AppState } from '../constants';
+import { AppState, loggedInState, USER_STATE_MAP } from '../constants';
 import { HttpResponseError } from '../errors';
 import EventEmitter from '../event.emitter';
 import { getApi, IClientApi } from '../api/client.api';
@@ -47,7 +47,6 @@ export class ClientApp extends EventEmitter {
         return this.setError(err);
       }
     }
-    await this.api.net.comeout();
     await this.readUser();
     this.setState(AppState.INITED);
   }
@@ -65,8 +64,13 @@ export class ClientApp extends EventEmitter {
   protected async setUser(user: IUserResponse) {
     if (this.user === user) return;
     this.user = user;
-    if (user && user.user_state === 'LOGGEDIN') {
-      await this.netMethods.getNets();
+    const {
+      user_state: userState = 'NOT_LOGGEDIN',
+      net_id: netId,
+    } = user || {};
+    if (user && USER_STATE_MAP[userState] >= loggedInState) {
+      if (netId) await this.netMethods.enter(netId);
+      else await this.netMethods.getNets();
     } else {
       await this.setNet();
       this.setNets();

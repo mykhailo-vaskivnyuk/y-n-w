@@ -15,3 +15,23 @@ export const updateCountOfMemebers = async (
   await execQuery.net.remove([node_id]);
   await execQuery.node.remove([node_id]);
 };
+
+export const createTree = async (node: ITableNodes) => {
+  const {
+    node_level: parent_node_level,
+    node_id: parent_node_id,
+    first_node_id: parent_first_node_id,
+  } = node;
+  const node_level = parent_node_level + 1;
+  const first_node_id = parent_first_node_id || parent_node_id;
+  const date = new Date().toISOString();
+  for (let node_position = 1; node_position <= 6; node_position++) {
+    await execQuery.node.create([
+      node_level,
+      node_position,
+      parent_node_id,
+      first_node_id,
+      date,
+    ]);
+  }
+};

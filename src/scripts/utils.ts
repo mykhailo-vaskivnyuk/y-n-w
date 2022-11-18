@@ -42,6 +42,7 @@ export const copyDir = async (
     console.log('--> copying', name);
   }
   console.log('<> total:', counter, dirFrom);
+  // dir.close();
   return counter;
 };
 

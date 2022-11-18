@@ -1,5 +1,6 @@
 import { ITableNodes } from '../../db.types';
 import { TQuery } from '../../types';
+import { IQueriesNodeUser } from './user';
 
 export interface IQueriesNode {
   createInitial:TQuery<[
@@ -20,17 +21,8 @@ export interface IQueriesNode {
     ['node_id', number],
     ['addCount', number]
   ], ITableNodes>;
-  removeUserFromAll:TQuery<[
-    ['user_id', number],
-  ], ITableNodes>;
-  removeUserFromOne:TQuery<[
-    ['node_id', number],
-  ], ITableNodes>;
   removeTree: TQuery<[
     ['parent_node_id', number],
   ]>;
-  findByUserNet: TQuery<[
-    ['user_id', number],
-    ['net_id', number],
-  ], ITableNodes>;
+  user: IQueriesNodeUser;
 }

@@ -62,6 +62,7 @@ class Database implements IDatabase {
       else query[name] = queries;
 
     }
+    // dir.close();
     return query;
   }
 
