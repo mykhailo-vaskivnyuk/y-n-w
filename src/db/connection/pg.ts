@@ -12,7 +12,7 @@ class Connection implements IDatabaseConnection {
     await this.pool.connect();
   }
 
-  query<T extends any[]>(sql: string, params: T): Promise<any> {
+  query<T extends any[]>(sql: string, params: T): Promise<any[]> {
     return this.pool!
       .query(sql, params)
       .then((result) => result.rows);

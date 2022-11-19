@@ -70,22 +70,25 @@ class Database implements IDatabase {
     let moduleExport = require(filePath);
     moduleExport = moduleExport.default || moduleExport as TQueriesModule;
     if (typeof moduleExport === 'string') {
-      return this.sqlToQuery(moduleExport);
+      return this.sqlToQuery(moduleExport, filePath);
     }
     return Object
       .keys(moduleExport)
       .reduce<IQueries>((queries, key) => {
-        queries[key] = this.sqlToQuery(moduleExport[key]!);
+        queries[key] = this.sqlToQuery(
+          moduleExport[key]!, filePath + '/' + key,
+        );
         return queries;
       }, {});
   }
 
-  private sqlToQuery(sql: string): TQuery {
+  private sqlToQuery(sql: string, key: string): TQuery {
     return async (params) => {
       try {
         return await this.connection!.query(sql, params);
       } catch (e: any) {
-        logger.error(e);
+        const message = 'QUERY: ' + key + sql;
+        logger.error(e, message);
         throw new DatabaseError('DB_QUERY_ERROR');
       }
     };
