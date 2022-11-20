@@ -3,7 +3,8 @@
 import { TUserGetNetsResponse } from '../api/types/client.api.types';
 import { INetCreateResponse } from '../api/types/net.types';
 import { IUserResponse } from '../api/types/types';
-import { AppState, loggedInState, USER_STATE_MAP } from '../constants';
+import { IInitialState } from './types';
+import { AppState } from '../constants';
 import { HttpResponseError } from '../errors';
 import EventEmitter from '../event.emitter';
 import { getApi, IClientApi } from '../api/client.api';
@@ -15,7 +16,7 @@ import { getNetMethods } from './net';
 export class ClientApp extends EventEmitter {
   protected api: IClientApi | null;
   private baseUrl = '';
-  protected state: AppState = AppState.INITING;
+  private state: AppState = AppState.INITING;
   private user: IUserResponse = null;
   private net: INetCreateResponse | null = null;
   private nets: TUserGetNetsResponse[] = [];
@@ -30,7 +31,7 @@ export class ClientApp extends EventEmitter {
     this.baseUrl = process.env.API || `${window.location.origin}/api`;
   }
 
-  async init() {
+  async init(initialState: IInitialState) {
     try {
       const connection = await getHttpConnection(this.baseUrl);
       this.api = getApi(connection);
@@ -48,6 +49,8 @@ export class ClientApp extends EventEmitter {
       }
     }
     await this.readUser();
+    const { net_id: netId } = initialState;
+    netId && this.netMethods.enter(netId);
     this.setState(AppState.INITED);
   }
 
@@ -64,13 +67,8 @@ export class ClientApp extends EventEmitter {
   protected async setUser(user: IUserResponse) {
     if (this.user === user) return;
     this.user = user;
-    const {
-      user_state: userState = 'NOT_LOGGEDIN',
-      net_id: netId,
-    } = user || {};
-    if (user && USER_STATE_MAP[userState] >= loggedInState) {
-      if (netId) await this.netMethods.enter(netId);
-      else await this.netMethods.getNets();
+    if (user && user.user_state !== 'NOT_CONFIRMED') {
+      await this.netMethods.getNets();
     } else {
       await this.setNet();
       this.setNets();

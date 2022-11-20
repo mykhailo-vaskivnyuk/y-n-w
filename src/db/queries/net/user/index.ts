@@ -19,7 +19,8 @@ export interface IQueriesNetUser {
 }
 
 export const remove = `
-  DELETE FROM nets_users_data WHERE user_id = $1 AND net_id = $2
+  DELETE FROM nets_users_data
+  WHERE user_id = $1 AND net_id = $2
 `;
 
 export const createData = `
@@ -31,6 +32,6 @@ export const createData = `
 export const readData = `
   SELECT * FROM nets_users_data
   LEFT JOIN nets ON nets_users_data.net_id = nets.net_id
-  JOIN nets_data ON nets.net_id = nets_data.net_id
+  INNER JOIN nets_data ON nets.net_id = nets_data.net_id
   WHERE nets_users_data.user_id = $1 AND nets.net_id = $2
 `;

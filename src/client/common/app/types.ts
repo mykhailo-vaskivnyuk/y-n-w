@@ -18,3 +18,7 @@ export type IClientAppThis = ClientApp & {
 export type TLoginOrSignup =
   | ['login', T.ILoginParams]
   | ['signup', T.ISignupParams];
+
+export interface IInitialState {
+  net_id?: number;
+}

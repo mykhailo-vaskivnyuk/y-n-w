@@ -6,7 +6,9 @@ export const logData = (data: any, message?: string) => {
     log = data.data ?
       { ...data, data: { ...log, ...password } } :
       { ...log, ...password };
-  } else log = { ...data };
+  } else if (typeof data === 'object') {
+    log = { ...data };
+  }
   message && console.log(`${message}\n`);
   console.log(log);
 };

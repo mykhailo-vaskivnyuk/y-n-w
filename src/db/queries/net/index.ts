@@ -23,7 +23,8 @@ export const create = `
 `;
 
 export const remove = `
-  DELETE FROM nets WHERE node_id = $1
+  DELETE FROM nets
+  WHERE node_id = $1
 `;
 
 export const createData = `
