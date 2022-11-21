@@ -18,8 +18,8 @@ export class ClientApp extends EventEmitter {
   private baseUrl = '';
   private state: AppState = AppState.INITING;
   private user: IUserResponse = null;
-  private net: INetCreateResponse | null = null;
-  private nets: TUserGetNetsResponse[] = [];
+  private net: INetCreateResponse = null;
+  private nets: TUserGetNetsResponse = {};
   private error: HttpResponseError | null = null;
   account: ReturnType<typeof getAccountMethods>;
   netMethods: ReturnType<typeof getNetMethods>;
@@ -71,7 +71,7 @@ export class ClientApp extends EventEmitter {
       await this.netMethods.getNets();
     } else {
       await this.setNet();
-      this.setNets();
+      this.setNets({});
     }
     this.emit('user', user);
   }
@@ -89,7 +89,7 @@ export class ClientApp extends EventEmitter {
     this.emit('net', net);
   }
 
-  protected setNets(nets: TUserGetNetsResponse[] = []) {
+  protected setNets(nets: TUserGetNetsResponse) {
     if (this.nets === nets) return;
     this.nets = nets;
     this.emit('nets', nets);
