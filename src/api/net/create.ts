@@ -1,15 +1,14 @@
 import {
-  INetCreateParams, INetCreateResponse,
+  INetCreateParams, INetResponse,
 } from '../../client/common/api/types/net.types';
 import { THandler } from '../../router/types';
 import {
-  NetCreateResponseSchema, NetCreateParamsSchema,
+  NetResponseSchema, NetCreateParamsSchema,
 } from '../schema/net.schema';
 import { createTree } from '../utils/utils';
 
-const create: THandler<INetCreateParams, INetCreateResponse> =
-  async (context, params) => {
-    const { session } = context;
+const create: THandler<INetCreateParams, INetResponse> =
+  async ({ session }, { name }) => {
     const user_id = session.read('user_id');
 
     /* create node */
@@ -18,12 +17,18 @@ const create: THandler<INetCreateParams, INetCreateResponse> =
     const { node_id } = node!;
     session.write('node_id', node_id);
 
-    /* create tree */
+    /* create node tree */
     await createTree(node!);
 
     /* create net */
-    const { name } = params;
-    const [net] = await execQuery.net.create([node_id]);
+    const parentNetId = session.read('net_id');
+    let net;
+    if (!parentNetId) {
+      [net] = await execQuery.net.createInitial([node_id]);
+    } else {
+      [net] = await execQuery.net.createChild([parentNetId, node_id]);
+      await execQuery.net.updateCountOfNets([parentNetId, 1]);
+    }
     const { net_id } = net!;
     session.write('net_id', net_id);
 
@@ -32,10 +37,11 @@ const create: THandler<INetCreateParams, INetCreateResponse> =
 
     /* create net user data */
     await execQuery.net.user.createData([net_id, user_id!]);
+
     session.write('user_state', 'INSIDE_NET');
     return { ...net!, ...netData! };
   };
 create.paramsSchema = NetCreateParamsSchema;
-create.responseSchema = NetCreateResponseSchema;
+create.responseSchema = NetResponseSchema;
 
 export = create;

@@ -51,6 +51,7 @@ export type THandler<
   responseSchema: Q extends IObject
     ?
       | Record<keyof Q, TJoiSchema>
+      // | Record<keyof Q, TJoiSchema | TJoiSchemaArr>
       | (Record<keyof Q, TJoiSchema> | Joi.Schema)[]
     : Q extends Array<any> ? | Record<keyof Q[number], TJoiSchema> : TJoiSchema;
   allowedForUser?: PartialUserStateKeys;
@@ -58,6 +59,7 @@ export type THandler<
 
 export type IContext = IServices & { origin: string };
 export type TJoiSchema = Joi.Schema | Joi.Schema[];
+// export type TJoiSchemaArr = Record<string, TJoiSchema>[];
 export type THandlerSchema = THandler['responseSchema' | 'paramsSchema'];
 
 export interface IServices {

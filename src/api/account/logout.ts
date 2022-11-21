@@ -6,6 +6,6 @@ const logout: THandler<any, boolean> = async (context) => {
   return true;
 };
 logout.responseSchema = Joi.boolean();
-logout.allowedForUser = 'NOT_LOGGEDIN';
+logout.allowedForUser = 'NOT_CONFIRMED';
 
 export = logout;

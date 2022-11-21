@@ -35,7 +35,7 @@ export type ITableNets = {
   net_id: number;
   net_level: number;
   parent_net_id: number | null;
-  first_net_id: number | null;
+  first_net_id: number;
   count_of_nets: number;
 }
 
