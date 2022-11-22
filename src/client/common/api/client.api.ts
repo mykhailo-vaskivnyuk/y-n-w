@@ -33,13 +33,10 @@ export const getApi = (
   'health': () => fetch<string>('/health'),
 
   'net': {
-    'comeout': () => fetch<boolean>('/net/comeout'),
-
     'create': (options: P.INetCreateParams) =>
-      fetch<P.INetCreateResponse>('/net/create', options),
+      fetch<P.INetResponse>('/net/create', options),
 
-    'enter': (options: Q.TNetEnter) =>
-      fetch<P.INetCreateResponse>('/net/enter', options),
+    'getParents': () => fetch<P.INetSimpleResponse>('/net/getParents'),
 
     'leave': () => fetch<boolean>('/net/leave'),
 
@@ -49,10 +46,15 @@ export const getApi = (
 
   },
   'user': {
-    'getNets': () => fetch<Q.TUserGetNetsResponse>('/user/getNets'),
-
     'update': () => fetch<string>('/user/update'),
 
+    'net': {
+      'enter': (options: P.INetReadParams) =>
+        fetch<P.INetResponse>('/user/net/enter', options),
+
+      'getChildren': () => fetch<P.INetSimpleResponse>('/user/net/getChildren'),
+
+    },
     'read': () => fetch<P.IUserResponse>('/user/read'),
 
   },

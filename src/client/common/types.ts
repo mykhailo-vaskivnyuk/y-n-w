@@ -10,3 +10,5 @@ export interface IWsResponse {
   error: any;
   data: any;
 }
+
+export type OmitNull<T> = T extends null ? never : T;

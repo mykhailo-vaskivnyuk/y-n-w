@@ -19,7 +19,7 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   async enter(net_id: number) {
     parent.setState(AppState.LOADING);
     try {
-      const net = await parent.api.net.enter({ net_id });
+      const net = await parent.api.user.net.enter({ net_id });
       net && parent.setNet(net);
       parent.setState(AppState.READY);
       return net;
@@ -31,10 +31,10 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   async comeout() {
     parent.setState(AppState.LOADING);
     try {
-      const success = await parent.api.net.comeout();
-      success && parent.setNet(null);
+      await parent.api.user.net.enter({ net_id: null });
+      parent.setNet(null);
       parent.setState(AppState.READY);
-      return success;
+      return true;
     } catch (e: any) {
       parent.setError(e);
       throw e;
@@ -60,7 +60,11 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   async getNets() {
     parent.setState(AppState.LOADING);
     try {
-      const userNets = await parent.api.user.getNets();
+      // const { net_id: netId = null } = parent.getState().net || {};
+      // const parentNets = await parent.api.net.getParents();
+      const siblingNets = await parent.api.user.net.getChildren();
+      // const childNets = await parent.api.user.net.getChildren();
+      const userNets = { siblingNets };
       parent.setNets(userNets);
       parent.setState(AppState.READY);
     } catch (e: any) {

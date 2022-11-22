@@ -3,8 +3,9 @@ import {
   INetCreateParams, INetResponse,
 } from '../../client/common/api/types/net.types';
 import { TJoiSchema } from '../../router/types';
+import { OmitNull } from '../../client/common/types';
 import { JOI_NULL } from '../../router/constants';
-import { OmitNull } from '../../types/types';
+
 
 export const NetCreateParamsSchema = {
   name: Joi.string().required(),
@@ -23,7 +24,7 @@ export const NetResponseSchema = [
 ];
 
 export const NetReadParamsSchema = {
-  net_id: Joi.number().required(),
+  net_id: [JOI_NULL, Joi.number().required()],
 };
 
 export const NetSimpleResponseSchema = {

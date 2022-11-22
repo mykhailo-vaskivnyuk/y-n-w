@@ -1,9 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
-import { TUserGetNetsResponse } from '../api/types/client.api.types';
-import { INetCreateResponse } from '../api/types/net.types';
-import { IUserResponse } from '../api/types/types';
-import { IInitialState } from './types';
+import { INetResponse, IUserResponse } from '../api/types/types';
+import { IInitialState, IUserNets } from './types';
 import { AppState } from '../constants';
 import { HttpResponseError } from '../errors';
 import EventEmitter from '../event.emitter';
@@ -18,8 +16,8 @@ export class ClientApp extends EventEmitter {
   private baseUrl = '';
   private state: AppState = AppState.INITING;
   private user: IUserResponse = null;
-  private net: INetCreateResponse | null = null;
-  private nets: TUserGetNetsResponse[] = [];
+  private net: INetResponse = null;
+  private nets: IUserNets = { parentNets: [], siblingNets: [], childNets: []};
   private error: HttpResponseError | null = null;
   account: ReturnType<typeof getAccountMethods>;
   netMethods: ReturnType<typeof getNetMethods>;
@@ -49,8 +47,8 @@ export class ClientApp extends EventEmitter {
       }
     }
     await this.readUser();
-    const { net_id: netId } = initialState;
-    netId && this.netMethods.enter(netId);
+    // const { net_id: netId } = initialState;
+    // netId && this.netMethods.enter(netId);
     this.setState(AppState.INITED);
   }
 
@@ -71,12 +69,12 @@ export class ClientApp extends EventEmitter {
       await this.netMethods.getNets();
     } else {
       await this.setNet();
-      this.setNets();
+      this.setNets({});
     }
     this.emit('user', user);
   }
 
-  protected async setNet(net: INetCreateResponse | null = null) {
+  protected async setNet(net: INetResponse | null = null) {
     if (this.net === net) return;
     this.net = net;
     if (net) {
@@ -89,10 +87,10 @@ export class ClientApp extends EventEmitter {
     this.emit('net', net);
   }
 
-  protected setNets(nets: TUserGetNetsResponse[] = []) {
-    if (this.nets === nets) return;
-    this.nets = nets;
-    this.emit('nets', nets);
+  protected setNets(nets: Partial<IUserNets>) {
+    // if (this.nets === nets) return;
+    this.nets = { ...this.nets, ...nets };
+    this.emit('nets', this.nets);
   }
 
   protected setState(state: AppState) {

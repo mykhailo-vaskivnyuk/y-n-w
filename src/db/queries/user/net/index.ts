@@ -28,9 +28,9 @@ export const getChildren = `
   nets_users_data.user_id = $1 AND
   (
     (
-      $2 ISNULL AND nets.parent_net_id ISNULL
+      ($2 + 1) ISNULL AND nets.parent_net_id ISNULL
     ) OR (
-      $2 ISNOTNULL AND nets.parent_net_id = $2
+      ($2 + 1) NOTNULL AND nets.parent_net_id = $2
     )
   )
 `;

@@ -9,6 +9,12 @@ import {
 const read: THandler<INetReadParams, INetResponse> =
   async (context, { net_id }) => {
     const { session } = context;
+    if (!net_id) {
+      session.delete('net_id');
+      session.delete('node_id');
+      session.write('user_state', 'LOGGEDIN');
+      return null;
+    }
     const user_id = session.read('user_id');
     const [net] = await execQuery.user.net.read([user_id!, net_id]);
     if (!net) return null;
