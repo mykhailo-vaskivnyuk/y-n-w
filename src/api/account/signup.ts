@@ -16,11 +16,11 @@ const signup: THandler<ISignupParams, IUserResponse> = async (
   const token = createUnicCode(15);
   const [user] = await execQuery.user.create([email, hashedPassword]);
   const { user_id } = user!;
-  session.write('user_id', user_id);
   const user_state = 'NOT_CONFIRMED';
-  session.write('user_state', user_state);
-  await execQuery.user.createTokens([user_id, token]);
+  await execQuery.user.token.create([user_id, token]);
   await mailService.sendMail.confirm(email, origin, token);
+  session.write('user_id', user_id);
+  session.write('user_state', user_state);
   return { ...user!, user_state };
 };
 signup.paramsSchema = SignupParamsSchema;

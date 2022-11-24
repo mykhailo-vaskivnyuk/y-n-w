@@ -1,7 +1,9 @@
 import { ITableUsers, ITableUsersTokens } from '../../db.types';
 import { TQuery } from '../../types';
 import { IQueriesUserNet } from './net';
-import { IQueriesUserNode } from './node';
+import { IQueriesUserNets } from './nets/get';
+import { IQueriesUserNode } from './node/findByNet';
+import { IQueriesUserToken } from './token';
 
 export interface IQueriesUser {
   getById: TQuery<[
@@ -17,21 +19,13 @@ export interface IQueriesUser {
     ['email', string],
     ['password', string],
   ], ITableUsers>;
-  createTokens: TQuery<[
-    ['user_id', number],
-    ['confirm_token', string],
-  ]>;
-  setToken: TQuery<[
-    ['user_id', number],
-    ['confirm_token', string | null],
-    ['restore_token', string | null],
-  ]>;
-  unsetToken: TQuery<[
+  remove: TQuery<[
     ['user_id', number],
   ]>;
-  remove: TQuery;
   net:IQueriesUserNet;
+  nets: IQueriesUserNets;
   node:IQueriesUserNode;
+  token: IQueriesUserToken;
 }
 
 export const getById = `
@@ -40,7 +34,8 @@ export const getById = `
 `;
 
 export const findByEmail = `
-  SELECT users.*, users_tokens.confirm_token FROM users
+  SELECT users.*, users_tokens.confirm_token
+  FROM users
   LEFT JOIN users_tokens ON users.user_id = users_tokens.user_id
   WHERE email=$1
 `;
@@ -57,17 +52,7 @@ export const create = `
   RETURNING *
 `;
 
-export const createTokens = `
-  INSERT INTO users_tokens (user_id, confirm_token)
-  VALUES($1, $2)
-`;
-
-export const setToken = `
-  UPDATE users_tokens SET confirm_token=$2, restore_token=$3
-  WHERE user_id=$1
-`;
-
-export const unsetToken = `
-  UPDATE users_tokens SET confirm_token=NULL, restore_token=NULL
-  WHERE user_id=$1
+export const remove = `
+  DELETE FROM users
+  WHERE user_id = $1
 `;

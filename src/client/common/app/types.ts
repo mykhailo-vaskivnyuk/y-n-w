@@ -1,6 +1,6 @@
 /* eslint-disable import/no-cycle */
 import * as T from '../api/types/types';
-import { INetSimpleResponse } from '../api/types/types';
+import { INetsResponse } from '../api/types/types';
 import { AppState } from '../constants';
 import { HttpResponseError } from '../errors';
 import { getApi } from '../api/client.api';
@@ -11,20 +11,23 @@ export type IClientAppThis = ClientApp & {
   setState: (state: AppState) => void;
   setUser: (user: T.IUserResponse) => Promise<void>;
   setNet: (net: T.INetResponse) => void;
-  setNets: (nets: IUserNets) => void;
+  setAllNets: (nets: INetsResponse) => void;
+  setNets: (nets: INets) => void;
   setError: (e: HttpResponseError) => void;
 };
 
-export interface IUserNets {
-  parentNets: INetSimpleResponse;
-  siblingNets: INetSimpleResponse;
-  childNets: INetSimpleResponse;
+export interface INets {
+  parentNets: INetsResponse;
+  siblingNets: INetsResponse;
+  childNets: INetsResponse;
 }
 
 export type TLoginOrSignup =
   | ['login', T.ILoginParams]
   | ['signup', T.ISignupParams];
 
-export interface IInitialState {
-  net_id?: number;
-}
+export const INITIAL_NETS = {
+  parentNets: [],
+  siblingNets: [],
+  childNets: [],
+} as INets;

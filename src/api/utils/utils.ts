@@ -30,21 +30,11 @@ export const updateCountOfNets = async (
 };
 
 export const createTree = async (node: ITableNodes) => {
-  const {
-    node_level: parent_node_level,
-    node_id: parent_node_id,
-    first_node_id: parent_first_node_id,
-  } = node;
-  const node_level = parent_node_level + 1;
-  const first_node_id = parent_first_node_id || parent_node_id;
-  const date = new Date().toISOString();
-  for (let node_position = 1; node_position <= 6; node_position++) {
-    await execQuery.node.create([
-      node_level,
-      node_position,
-      parent_node_id,
-      first_node_id,
-      date,
-    ]);
-  }
+  const { node_level, node_id, first_node_id, } = node;
+  await execQuery.node.createTree([
+    node_level + 1,
+    node_id,
+    first_node_id,
+    new Date().toISOString(),
+  ]);
 };

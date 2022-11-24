@@ -65,7 +65,7 @@ export type ITableNodes = {
   node_id: number;
   node_level: number;
   parent_node_id: number | null;
-  first_node_id: number | null;
+  first_node_id: number;
   count_of_members: number;
   node_date: string;
   blocked: boolean;

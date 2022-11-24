@@ -3,9 +3,6 @@ import { IQueriesNet } from './queries/net';
 import { IQueriesNode } from './queries/node';
 import { IQueriesUser } from './queries/user';
 import { IQueriesSession } from './queries/session';
-import { IQueriesNodes } from './queries/nodes';
-import { IQueriesNets } from './queries/nets';
-import { IQueriesTest } from './queries/test';
 
 export interface IDatabaseConfig {
   path: string;
@@ -37,11 +34,8 @@ export interface IDatabase {
 export interface IDatabaseQueries {
   user: IQueriesUser;
   node: IQueriesNode;
-  nodes: IQueriesNodes;
   net: IQueriesNet;
-  nets: IQueriesNets;
   session: IQueriesSession;
-  test: IQueriesTest;
 }
 
 export interface IQueries {

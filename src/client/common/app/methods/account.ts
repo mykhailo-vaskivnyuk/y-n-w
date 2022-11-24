@@ -1,9 +1,9 @@
 /* eslint-disable import/no-cycle */
 import {
   IConfirmParams, ISignupParams, IUserResponse,
-} from '../api/types/types';
-import { AppState } from '../constants';
-import { IClientAppThis, TLoginOrSignup } from './types';
+} from '../../api/types/types';
+import { AppState } from '../../constants';
+import { IClientAppThis, TLoginOrSignup } from '../types';
 
 export const getAccountMethods = (parent: IClientAppThis) => ({
   async loginOrSignup(...[type, args]: TLoginOrSignup) {

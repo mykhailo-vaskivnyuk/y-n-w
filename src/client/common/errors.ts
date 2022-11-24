@@ -6,7 +6,7 @@ export const HttpResponseErrorMap = {
   409: 'Conflict',
   500: 'Internal server error',
   503: 'Service unavailable',
-};
+} as const;
 export type HttpResponseErrorCode = keyof typeof HttpResponseErrorMap;
 
 export class HttpResponseError extends Error {

@@ -1,15 +1,15 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
-import { INetResponse, IUserResponse } from '../api/types/types';
-import { IInitialState, IUserNets } from './types';
+import { INetResponse, INetsResponse, IUserResponse } from '../api/types/types';
+import { INITIAL_NETS, INets } from './types';
 import { AppState } from '../constants';
 import { HttpResponseError } from '../errors';
 import EventEmitter from '../event.emitter';
 import { getApi, IClientApi } from '../api/client.api';
-import { getAccountMethods } from './account';
+import { getAccountMethods } from './methods/account';
 import { getConnection as getHttpConnection } from '../client.http';
 import { getConnection as getWsConnection } from '../client.ws';
-import { getNetMethods } from './net';
+import { getNetMethods } from './methods/net';
 
 export class ClientApp extends EventEmitter {
   protected api: IClientApi | null;
@@ -17,7 +17,8 @@ export class ClientApp extends EventEmitter {
   private state: AppState = AppState.INITING;
   private user: IUserResponse = null;
   private net: INetResponse = null;
-  private nets: IUserNets = { parentNets: [], siblingNets: [], childNets: []};
+  private allNets: INetsResponse = [];
+  private nets: INets = INITIAL_NETS;
   private error: HttpResponseError | null = null;
   account: ReturnType<typeof getAccountMethods>;
   netMethods: ReturnType<typeof getNetMethods>;
@@ -29,7 +30,7 @@ export class ClientApp extends EventEmitter {
     this.baseUrl = process.env.API || `${window.location.origin}/api`;
   }
 
-  async init(initialState: IInitialState) {
+  async init() {
     try {
       const connection = await getHttpConnection(this.baseUrl);
       this.api = getApi(connection);
@@ -47,8 +48,6 @@ export class ClientApp extends EventEmitter {
       }
     }
     await this.readUser();
-    // const { net_id: netId } = initialState;
-    // netId && this.netMethods.enter(netId);
     this.setState(AppState.INITED);
   }
 
@@ -57,6 +56,7 @@ export class ClientApp extends EventEmitter {
       state: this.state,
       user: this.user,
       net: this.net,
+      allNets: this.allNets,
       nets: this.nets,
       error: this.error,
     };
@@ -66,10 +66,8 @@ export class ClientApp extends EventEmitter {
     if (this.user === user) return;
     this.user = user;
     if (user && user.user_state !== 'NOT_CONFIRMED') {
-      await this.netMethods.getNets();
-    } else {
-      await this.setNet();
-      this.setNets({});
+      await this.netMethods.getAllNets();
+      this.netMethods.getNets();
     }
     this.emit('user', user);
   }
@@ -79,17 +77,22 @@ export class ClientApp extends EventEmitter {
     this.net = net;
     if (net) {
       this.user!.user_state = 'INSIDE_NET';
-      await this.netMethods.getNets();
     } else if (this.user) {
       this.user!.user_state = 'LOGGEDIN';
       this.emit('user', this.user);
     }
+    this.netMethods.getNets();
     this.emit('net', net);
   }
 
-  protected setNets(nets: Partial<IUserNets>) {
-    // if (this.nets === nets) return;
-    this.nets = { ...this.nets, ...nets };
+  protected async setAllNets(nets: INetsResponse) {
+    if (this.allNets === nets) return;
+    this.allNets = nets;
+  }
+
+  protected setNets(nets: INets) {
+    if (this.nets === nets) return;
+    this.nets = nets;
     this.emit('nets', this.nets);
   }
 

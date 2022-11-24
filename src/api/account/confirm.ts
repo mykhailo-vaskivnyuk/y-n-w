@@ -13,9 +13,9 @@ const confirm: THandler<IConfirmParams, IUserResponse> = async (
   const [user] = await execQuery.user.findByToken([token]);
   if (!user) return null;
   const { user_id } = user;
-  session.write('user_id', user_id);
-  await execQuery.user.unsetToken([user_id]);
+  await execQuery.user.token.unset([user_id]);
   const user_state: UserStateKeys = 'LOGGEDIN';
+  session.write('user_id', user_id);
   session.write('user_state', user_state);
   return { ...user, user_state };
 };

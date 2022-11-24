@@ -1,5 +1,4 @@
 export const logData = (data: any, message?: string) => {
-  console.log(data)
   let log = data?.data || data;
   let password;
   if (log && typeof log === 'object') {

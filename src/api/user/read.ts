@@ -2,7 +2,7 @@ import { IUserResponse } from '../../client/common/api/types/account.types';
 import { THandler } from '../../router/types';
 import { UserResponseSchema } from '../schema/account.schema';
 
-const read: THandler<any, IUserResponse> = async (context) => {
+const read: THandler<never, IUserResponse> = async (context) => {
   const { session } = context;
   const user_id = session.read('user_id');
   if (!user_id) return null;

@@ -29,6 +29,7 @@ export class RouterError extends Error {
 
 export const HANDLER_ERROR_MAP = {
   REDIRECT: 'REDIRECT',
+  NOT_FOUND: 'NOT_FOUND',
   UNAUTHORIZED: 'USER ISN\'T AUTHORIZED',
   NOT_CONFIRMED: 'USER ISN\'T CONFIRMED',
 } as const;

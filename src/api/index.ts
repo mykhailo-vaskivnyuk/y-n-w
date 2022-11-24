@@ -1,12 +1,8 @@
 import Joi from 'joi';
 import { THandler } from '../router/types';
 
-const index: THandler<any, string> = async () => 'hello FROM merega';
-index.responseSchema = Joi.string();
-index.allowedForUser = 'NOT_LOGGEDIN';
-
-const health: THandler<any, string> = async () => 'OK';
+const health: THandler<never, string> = async () => 'API IS READY';
 health.responseSchema = Joi.string();
 health.allowedForUser = 'NOT_LOGGEDIN';
 
-export = { index, health };
+export = { health };

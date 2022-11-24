@@ -14,7 +14,7 @@ const overmail: THandler<ISignupParams, boolean> = async (
   const params = confirm_token ?
     [user_id, token, null] as const :
     [user_id, null, token] as const;
-  await execQuery.user.setToken([...params]);
+  await execQuery.user.token.set([...params]);
   const type = confirm_token ? 'confirm' : 'restore';
   await mailService.sendMail[type](email, origin, token);
   return true;

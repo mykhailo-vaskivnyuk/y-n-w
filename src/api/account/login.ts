@@ -16,10 +16,10 @@ async ({ session }, { email, password }) => {
   const verified = await verifyHash(password, user.password);
   if (!verified) return null;
   const { user_id, confirm_token } = user;
-  session.write('user_id', user_id);
   const user_state: UserStateKeys = confirm_token ?
     'NOT_CONFIRMED' :
     'LOGGEDIN';
+  session.write('user_id', user_id);
   session.write('user_state', user_state);
   return { ...user, user_state };
 };

@@ -28,19 +28,8 @@ export const getApi = (
       fetch<P.IUserResponse>('/account/signup', options),
 
   },
-  'index': () => fetch<string>('/index'),
-
   'health': () => fetch<string>('/health'),
 
-  'net': {
-    'create': (options: P.INetCreateParams) =>
-      fetch<P.INetResponse>('/net/create', options),
-
-    'getParents': () => fetch<P.INetSimpleResponse>('/net/getParents'),
-
-    'leave': () => fetch<boolean>('/net/leave'),
-
-  },
   'scripts': {
     'script.js': () => fetch<Q.TScriptsScriptjsResponse>('/scripts/script.js'),
 
@@ -49,10 +38,19 @@ export const getApi = (
     'update': () => fetch<string>('/user/update'),
 
     'net': {
+      'comeout': () => fetch<boolean>('/user/net/comeout'),
+
+      'create': (options: P.INetCreateParams) =>
+        fetch<P.INetResponse>('/user/net/create', options),
+
       'enter': (options: P.INetReadParams) =>
         fetch<P.INetResponse>('/user/net/enter', options),
 
-      'getChildren': () => fetch<P.INetSimpleResponse>('/user/net/getChildren'),
+      'leave': () => fetch<boolean>('/user/net/leave'),
+
+    },
+    'nets': {
+      'get': () => fetch<P.INetsResponse>('/user/nets/get'),
 
     },
     'read': () => fetch<P.IUserResponse>('/user/read'),

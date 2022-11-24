@@ -1,4 +1,4 @@
-import { ITableNets, ITableNetsData } from '../../../db.types';
+import { ITableNets, ITableNetsData, ITableNodes } from '../../../db.types';
 import { TQuery } from '../../../types';
 
 export interface IQueriesUserNet {
@@ -6,31 +6,29 @@ export interface IQueriesUserNet {
     ['user_id', number],
     ['net_id', number],
   ], ITableNets & ITableNetsData>;
-  getChildren: TQuery<[
+  getNodes: TQuery<[
     ['user_id', number],
-    ['parent_net_id', number | null],
-  ], ITableNetsData>;
+    ['net_id', number | null],
+  ], ITableNodes>;
 }
 
 export const read = `
-  SELECT nets_users_data.* FROM nets_users_data
+  SELECT * FROM nets_users_data
   LEFT JOIN nets ON nets_users_data.net_id = nets.net_id
   INNER JOIN nets_data ON nets.net_id = nets_data.net_id
   WHERE nets_users_data.user_id = $1 AND nets.net_id = $2
 `;
 
-export const getChildren = `
-  SELECT nets_data.*
-  FROM nets_data
-  INNER JOIN nets ON nets_data.net_id = nets.net_id
-  RIGHT JOIN nets_users_data ON nets_users_data.net_id = nets.net_id
+export const getNodes = `
+  SELECT *, nodes.count_of_members - 1 AS count_of_members
+  FROM nodes
+  LEFT JOIN nets ON nodes.first_node_id = nets.node_id
   WHERE
-  nets_users_data.user_id = $1 AND
-  (
-    (
-      ($2 + 1) ISNULL AND nets.parent_net_id ISNULL
+    user_id = $1 AND (
+      ($2 + 1) NOTNULL AND
+      nets.net_level >= (SELECT net_level FROM nets WHERE net_id = $2)
     ) OR (
-      ($2 + 1) NOTNULL AND nets.parent_net_id = $2
+      ($2 + 1) ISNULL AND true
     )
-  )
+  ORDER BY nets.net_level DESC
 `;

@@ -60,7 +60,7 @@ export class Session<T extends IObject = IObject> implements ISession<T> {
       return;
     }
     if (!this.persisted) return;
-    await execQuery.session.del([this.sessionKey]);
+    await execQuery.session.remove([this.sessionKey]);
   }
 }
 

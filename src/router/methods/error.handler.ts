@@ -10,6 +10,9 @@ const HANDLER_ERRORS_MAP = {
   REDIRECT: (e: any) => {
     throw new RouterError('REDIRECT', e.details);
   },
+  NOT_FOUND: (e: any) => {
+    throw new RouterError('CANT_FIND_ROUTE', e.details);
+  },
   UNAUTHORIZED: (e: any) => {
     throw new RouterError('UNAUTHORIZED', e.message);
   },

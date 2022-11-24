@@ -27,7 +27,5 @@ export const NetReadParamsSchema = {
   net_id: [JOI_NULL, Joi.number().required()],
 };
 
-export const NetSimpleResponseSchema = {
-  net_id: Joi.number(),
-  name: Joi.string(),
-};
+export const NetsResponseSchema =
+  NetResponseSchema[1] as Record<keyof OmitNull<INetResponse>, TJoiSchema>;
