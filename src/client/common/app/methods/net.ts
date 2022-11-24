@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
 import { INetCreateParams } from '../../api/types/net.types';
 import { INITIAL_NETS, IClientAppThis } from '../types';
@@ -75,23 +76,29 @@ export const getNetMethods = (parent: IClientAppThis) => ({
 
   getNets() {
     const { net, allNets } = parent.getState();
+    const {
+      net_id: netId = null,
+      parent_net_id: parentNetId = null,
+    } = net || {};
     const nets = { ...INITIAL_NETS };
-    if (!net) {
-      nets.childNets = allNets.filter((item) => item.parent_net_id === null);
-      parent.setNets(nets);
-      return;
-    }
-    if (net.parent_net_id !== null) {
-      nets.parentNets = allNets.filter((item) =>
-        item.first_net_id === net.first_net_id &&
-        item.net_level < net.net_level,
-      );
-    }
     nets.siblingNets = allNets
-      .filter((item) => item.parent_net_id === net.parent_net_id,
-    );
+      .filter(({ parent_net_id }) => parent_net_id === parentNetId,
+      );
+    if (!net) return parent.setNets(nets);
     nets.childNets = allNets
-      .filter((item) => item.parent_net_id === net.net_id);
+      .filter((item) => item.parent_net_id === netId);
+    let curParentNetId = parentNetId;
+    nets.parentNets = allNets
+      .reduceRight((acc, item) => {
+        if (!curParentNetId) return acc;
+        const { net_id: curNetId, parent_net_id: nextParentNetId } = item;
+        if (curNetId !== curParentNetId) return acc;
+        acc.push(item);
+
+        curParentNetId = nextParentNetId;
+        return acc;
+      }, [...nets.parentNets])
+      .reverse();
     parent.setNets(nets);
   },
 });

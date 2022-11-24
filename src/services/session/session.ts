@@ -52,15 +52,15 @@ export class Session<T extends IObject = IObject> implements ISession<T> {
   }
 
   async persist() {
-    if (this.session) {
-      const sessionValue = this.serialize();
-      if (this.persisted)
-        await execQuery.session.update([this.sessionKey, sessionValue]);
-      else await execQuery.session.create([this.sessionKey, sessionValue]);
+    if (!this.session && this.persisted) {
+      await execQuery.session.remove([this.sessionKey]);
       return;
     }
-    if (!this.persisted) return;
-    await execQuery.session.remove([this.sessionKey]);
+    if (!this.session) return;
+    const sessionValue = this.serialize();
+    if (this.persisted)
+      await execQuery.session.update([this.sessionKey, sessionValue]);
+    else await execQuery.session.create([this.sessionKey, sessionValue]);
   }
 }
 

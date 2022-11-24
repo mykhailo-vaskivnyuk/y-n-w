@@ -68,6 +68,8 @@ export class ClientApp extends EventEmitter {
     if (user && user.user_state !== 'NOT_CONFIRMED') {
       await this.netMethods.getAllNets();
       this.netMethods.getNets();
+    } else {
+      this.setNets({ ...INITIAL_NETS });
     }
     this.emit('user', user);
   }
