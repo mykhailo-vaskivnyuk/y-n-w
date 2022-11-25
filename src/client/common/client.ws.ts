@@ -2,7 +2,9 @@ import { logData, delay } from './utils';
 import { TPromiseExecutor } from '../local/imports';
 import { IWsResponse, TFetch } from './types';
 import { HttpResponseError } from './errors';
-import { CONECTION_ATTEMPT_COUNT, CONNECTION_DELAY } from './constants';
+import {
+  CONECTION_ATTEMPT_COUNT, CONNECTION_ATTEMPT_DELAY, CONNECTION_TIMEOUT,
+} from './constants';
 
 export const getConnection = async (baseUrl: string): Promise<TFetch> => {
   let requests: Map<any, number>;
@@ -26,7 +28,7 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
     const connectExecutor: TPromiseExecutor<void> = (rv, rj) => {
       const handleError = () => {
         if (attempt === 1) return rj(new HttpResponseError(503));
-        delay(CONNECTION_DELAY).then(
+        delay(CONNECTION_ATTEMPT_DELAY).then(
           () => checkConnection(attempt - 1),
         ).then(rv).catch(rj);
       };
@@ -59,11 +61,11 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
     socket.send(requestMessage);
   };
 
-  const createTrySendExecutor = (
+  const createSendWithTimeoutExecutor = (
     send: ReturnType<typeof createSendExecutor>,
   ): TPromiseExecutor<any> => (rv, rj) => {
     const handleTimeout = () => rj(new Error('Connection timeout'));
-    const timer = setTimeout(handleTimeout, 3000);
+    const timer = setTimeout(handleTimeout, CONNECTION_TIMEOUT);
     const newRv = (...args: Parameters<typeof rv>) => {
       clearTimeout(timer);
       rv(...args);
@@ -80,15 +82,8 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
     logData(request, 'request');
     const requestMessage = JSON.stringify(request);
     const sendExecutor = createSendExecutor(requestMessage);
-    const trySendExecutor = createTrySendExecutor(sendExecutor);
-    try {
-      return await new Promise(trySendExecutor);
-    } catch (e) {
-      if (e instanceof HttpResponseError) throw e;
-      socket.close();
-      await checkConnection();
-      return new Promise(sendExecutor);
-    }
+    const sendWithTimeoutExecutor = createSendWithTimeoutExecutor(sendExecutor);
+    return new Promise(sendWithTimeoutExecutor);
   };
 
   return fetch;
