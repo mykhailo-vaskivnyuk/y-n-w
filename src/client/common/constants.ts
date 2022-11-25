@@ -19,4 +19,5 @@ export type PartialUserStateKeys = keyof Pick<
 >
 export const loggedInState = USER_STATE_MAP.LOGGEDIN;
 export const CONECTION_ATTEMPT_COUNT = 3;
-export const CONNECTION_DELAY = 3000;
+export const CONNECTION_ATTEMPT_DELAY = 3000;
+export const CONNECTION_TIMEOUT = 20000;
