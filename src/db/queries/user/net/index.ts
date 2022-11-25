@@ -12,6 +12,7 @@ export interface IQueriesUserNet {
   ], ITableNodes>;
 }
 
+// refactoring
 export const read = `
   SELECT * FROM nets_users_data
   LEFT JOIN nets ON nets_users_data.net_id = nets.net_id
@@ -25,10 +26,14 @@ export const getNodes = `
   LEFT JOIN nets ON nodes.first_node_id = nets.node_id
   WHERE
     user_id = $1 AND (
-      ($2 + 1) NOTNULL AND
-      nets.net_level >= (SELECT net_level FROM nets WHERE net_id = $2)
-    ) OR (
-      ($2 + 1) ISNULL AND true
+      (
+        ($2 + 1) NOTNULL AND (
+          nets.net_id = $2 OR
+          nets.net_level > (SELECT net_level FROM nets WHERE net_id = $2)
+        )
+      ) OR (
+        ($2 + 1) ISNULL AND true
+      )
     )
   ORDER BY nets.net_level DESC
 `;

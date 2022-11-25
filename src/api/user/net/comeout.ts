@@ -9,5 +9,6 @@ const comeout: THandler<never, boolean> =
     return true;
   };
 comeout.responseSchema = Joi.boolean();
+comeout.allowedForUser = 'NOT_LOGGEDIN';
 
 export = comeout;
