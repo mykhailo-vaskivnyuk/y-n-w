@@ -24,11 +24,15 @@ export const remove = `
     SELECT nets_users_data.net_id FROM nets_users_data
     RIGHT JOIN nets ON nets.net_id = nets_users_data.net_id
     WHERE
-      user_id = $2 AND (
-        ($1 + 1) NOTNULL AND
-        nets.net_level >= (SELECT net_level FROM nets WHERE net_id = $1)
-      ) OR (
-        ($1 + 1) ISNULL AND true
+      nets_users_data.user_id = $2 AND (
+        (
+          ($1 + 1) NOTNULL AND (
+            nets.net_id = $1 OR
+            nets.net_level > (SELECT net_level FROM nets WHERE net_id = $1)
+          )
+        ) OR (
+          ($1 + 1) ISNULL AND true
+        )
       )
   )
 `;
