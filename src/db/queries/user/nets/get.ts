@@ -10,9 +10,9 @@ export interface IQueriesUserNets {
 const get = `
   SELECT * FROM nets
   INNER JOIN nets_data ON nets.net_id = nets_data.net_id
-  RIGHT JOIN nets_users_data ON
+  INNER JOIN nets_users_data ON
     nets.net_id = nets_users_data.net_id AND
-    user_id = $1    
+    user_id = $1
   ORDER BY nets.net_level
 `;
 
