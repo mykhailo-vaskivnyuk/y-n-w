@@ -79,9 +79,10 @@ export class ClientApp extends EventEmitter {
     this.net = net;
     if (net) {
       this.user!.user_state = 'INSIDE_NET';
+      this.emit('user', { ...this.user });
     } else if (this.user) {
       this.user!.user_state = 'LOGGEDIN';
-      this.emit('user', this.user);
+      this.emit('user', { ...this.user });
     }
     this.netMethods.getNets();
     this.emit('net', net);

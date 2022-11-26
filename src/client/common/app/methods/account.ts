@@ -15,6 +15,7 @@ export const getAccountMethods = (parent: IClientAppThis) => ({
       return user;
     } catch (e: any) {
       parent.setError(e);
+      throw e;
     }
   },
 
