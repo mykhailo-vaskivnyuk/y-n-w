@@ -10,7 +10,8 @@ export const USER_STATE_MAP = {
   'NOT_LOGGEDIN': 0,
   'NOT_CONFIRMED': 1,
   'LOGGEDIN': 2,
-  'INSIDE_NET': 3,
+  'INVITING': 3,
+  'INSIDE_NET': 4,
   'DEV': Infinity,
 };
 export type UserStateKeys = keyof typeof USER_STATE_MAP;

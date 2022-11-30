@@ -1,5 +1,6 @@
 const { join, resolve } = require('node:path');
 
+exports.BUILD_PATH = 'js';
 exports.backPath = './src/client';
 exports.frontPath = '../node-u-n-w-front/src/api';
 exports.backStaticPath = './public';

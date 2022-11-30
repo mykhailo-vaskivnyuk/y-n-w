@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { THandler } from '../../../router/types';
+import { THandler } from '../../router/types';
 
 const comeout: THandler<never, boolean> =
   async ({ session }) => {

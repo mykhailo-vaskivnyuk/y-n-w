@@ -64,10 +64,17 @@ export type ITableNetsUsersData = {
 export type ITableNodes = {
   node_id: number;
   node_level: number;
+  node_position: number;
   parent_node_id: number | null;
   first_node_id: number;
   count_of_members: number;
   node_date: string;
   blocked: boolean;
   changes: boolean;
+}
+
+export type ITableNodesInvites = {
+  node_id: number;
+  member_name: string | null;
+  token: string;
 }

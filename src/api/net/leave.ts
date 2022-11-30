@@ -1,6 +1,6 @@
 import Joi from 'joi';
-import { THandler } from '../../../router/types';
-import { updateCountOfMemebers } from '../../utils/utils';
+import { THandler } from '../../router/types';
+import { updateCountOfMemebers } from '../utils/utils';
 
 const leave: THandler = async ({ session }) => {
   session.delete('node_id');

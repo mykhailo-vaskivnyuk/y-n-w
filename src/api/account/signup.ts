@@ -19,6 +19,10 @@ const signup: THandler<ISignupParams, IUserResponse> = async (
   const user_state = 'NOT_CONFIRMED';
   await execQuery.user.token.create([user_id, token]);
   await mailService.sendMail.confirm(email, origin, token);
+
+  // const user_state = 'LOGGEDIN';
+  // await execQuery.user.token.create([user_id, null]);
+
   session.write('user_id', user_id);
   session.write('user_state', user_state);
   return { ...user!, user_state };

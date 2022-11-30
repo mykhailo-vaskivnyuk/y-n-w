@@ -1,4 +1,4 @@
-const { BUILD_PATH } = require('../../../js/constants/constants');
+const { BUILD_PATH } = require('./constants');
 const { rmDir } = require('./utils');
 
 const removeJs = async () => {

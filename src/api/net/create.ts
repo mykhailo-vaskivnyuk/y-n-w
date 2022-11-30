@@ -1,11 +1,11 @@
 import {
   INetCreateParams, INetResponse,
-} from '../../../client/common/api/types/net.types';
-import { THandler } from '../../../router/types';
+} from '../../client/common/api/types/net.types';
+import { THandler } from '../../router/types';
 import {
   NetResponseSchema, NetCreateParamsSchema,
-} from '../../schema/net.schema';
-import { createTree } from '../../utils/utils';
+} from '../schema/net.schema';
+import { createTree } from '../utils/utils';
 
 const create: THandler<INetCreateParams, INetResponse> =
   async ({ session }, { name }) => {

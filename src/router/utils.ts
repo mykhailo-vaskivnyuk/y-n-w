@@ -93,5 +93,6 @@ const getSchemaType = (schema: Joi.Schema) => {
 const findPredefinedSchema = (
   apiTypes: Record<string, TJoiSchema>,
   schema: THandlerSchema,
-) => Object.keys(apiTypes)
+) => Object
+  .keys(apiTypes)
   .find((key) => apiTypes[key] === schema);

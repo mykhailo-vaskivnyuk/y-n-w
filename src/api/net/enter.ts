@@ -1,11 +1,11 @@
-import { THandler } from '../../../router/types';
+import { THandler } from '../../router/types';
 import {
   INetReadParams, INetResponse
-} from '../../../client/common/api/types/net.types';
+} from '../../client/common/api/types/net.types';
 import {
   NetResponseSchema, NetReadParamsSchema,
-} from '../../schema/net.schema';
-import { HandlerError } from '../../../router/errors';
+} from '../schema/net.schema';
+import { HandlerError } from '../../router/errors';
 
 const read: THandler<INetReadParams, INetResponse> =
   async ({ session }, { net_id }) => {
