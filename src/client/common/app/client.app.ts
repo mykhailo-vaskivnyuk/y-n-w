@@ -7,7 +7,7 @@ import {
 import { INITIAL_NETS, INets } from './types';
 import { AppStatus } from '../constants';
 import { HttpResponseError } from '../errors';
-import EventEmitter from '../event.emitter';
+import { EventEmitter } from '../event.emitter';
 import { getApi, IClientApi } from '../api/client.api';
 import { getAccountMethods } from './methods/account';
 import { getConnection as getHttpConnection } from '../client.http';
@@ -91,6 +91,8 @@ export class ClientApp extends EventEmitter {
   protected async setNet(net: INetResponse | null = null) {
     if (this.net === net) return;
     this.net = net;
+    this.setCircle([]);
+    this.setTree([]);
     this.netView = undefined;
     this.member = undefined;
     if (net) {
@@ -101,10 +103,6 @@ export class ClientApp extends EventEmitter {
     } else if (this.user) {
       this.user!.user_state = 'LOGGEDIN';
       this.emit('user', { ...this.user });
-    }
-    if (!net) {
-      this.setCircle([]);
-      this.setTree([]);
     }
     this.netMethods.getNets();
     this.emit('net', net);
