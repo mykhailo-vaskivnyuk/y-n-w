@@ -1,11 +1,11 @@
 import Joi from 'joi';
 import {
+  IMemberResponse,
   INetCreateParams, INetResponse,
 } from '../../client/common/api/types/net.types';
 import { TJoiSchema } from '../../router/types';
 import { OmitNull } from '../../client/common/types';
 import { JOI_NULL } from '../../router/constants';
-
 
 export const NetCreateParamsSchema = {
   name: Joi.string().required(),
@@ -29,3 +29,13 @@ export const NetReadParamsSchema = {
 
 export const NetsResponseSchema =
   NetResponseSchema[1] as Record<keyof OmitNull<INetResponse>, TJoiSchema>;
+
+export const MemberResponseSchema = {
+  node_id: Joi.number(),
+  name: [Joi.string(), JOI_NULL],
+  user_state: Joi.string(),
+  member_name: [Joi.string(), JOI_NULL],
+  token: [Joi.string(), JOI_NULL],
+} as Record<keyof IMemberResponse, TJoiSchema>;
+
+export const NetViewResponseSchema = { ...MemberResponseSchema };

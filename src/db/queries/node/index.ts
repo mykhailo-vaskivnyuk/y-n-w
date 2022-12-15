@@ -9,13 +9,6 @@ export interface IQueriesNode {
   setFirstNodeId: TQuery<[
     ['node_id', number],
   ], ITableNodes>;
-  create: TQuery<[
-    ['node_level', number],
-    ['node_position', number],
-    ['parent_node_id', number],
-    ['first_node_id', number],
-    ['node_date', string],
-  ]>;
   remove: TQuery<[
     ['node_id', number],
   ]>;
@@ -37,7 +30,8 @@ export interface IQueriesNode {
 export const createInitial = `
   INSERT INTO nodes (
     count_of_members,
-    node_date, user_id
+    node_date,
+    user_id
   )
   VALUES (1, $1, $2)
   RETURNING *
@@ -48,18 +42,6 @@ export const setFirstNodeId = `
   SET first_node_id = $1
   WHERE node_id = $1
   RETURNING *
-`;
-
-export const create = `
-  INSERT INTO nodes (
-    node_level,
-    node_position,
-    parent_node_id,
-    first_node_id,
-    node_date,
-    user_id
-  )
-  VALUES ($1, $2, $3, $4, $5, NULL)
 `;
 
 export const remove = `

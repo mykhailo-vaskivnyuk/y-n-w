@@ -2,6 +2,8 @@ import { ITableNets, ITableNetsData } from '../../db.types';
 import { TQuery } from '../../types';
 import { IQueriesNetUser } from './user';
 import { IQueriesNetNodes } from './nodes/removeUser';
+import { IQueriesNetCircle } from './circle';
+import { IQueriesNetTree } from './tree';
 
 export interface IQueriesNet {
   createInitial: TQuery<[
@@ -26,7 +28,9 @@ export interface IQueriesNet {
     ['addCount', number],
   ], ITableNets>
   user: IQueriesNetUser;
-  nodes: IQueriesNetNodes
+  nodes: IQueriesNetNodes;
+  circle: IQueriesNetCircle;
+  tree: IQueriesNetTree;
 }
 
 export const createInitial = `

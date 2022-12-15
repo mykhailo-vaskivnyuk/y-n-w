@@ -1,18 +1,20 @@
 /* eslint-disable import/no-cycle */
 import * as T from '../api/types/types';
-import { INetsResponse } from '../api/types/types';
-import { AppState } from '../constants';
+import { INetViewResponse, INetsResponse } from '../api/types/types';
+import { AppStatus } from '../constants';
 import { HttpResponseError } from '../errors';
 import { getApi } from '../api/client.api';
 import { ClientApp } from './client.app';
 
 export type IClientAppThis = ClientApp & {
   api: ReturnType<typeof getApi>;
-  setState: (state: AppState) => void;
+  setStatus: (status: AppStatus) => void;
   setUser: (user: T.IUserResponse) => Promise<void>;
   setNet: (net: T.INetResponse) => void;
   setAllNets: (nets: INetsResponse) => void;
   setNets: (nets: INets) => void;
+  setCircle: (circle: INetViewResponse) => void;
+  setTree: (tree: INetViewResponse) => void;
   setError: (e: HttpResponseError) => void;
 };
 

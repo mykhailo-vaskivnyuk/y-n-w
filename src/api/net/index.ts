@@ -1,18 +1,18 @@
-import { INetCircleResponse } from '../../client/common/api/types/net.types';
+import { INetViewResponse } from '../../client/common/api/types/net.types';
 import { THandler } from '../../router/types';
-import { NetCircleResponseSchema } from '../schema/net.schema';
+import { NetViewResponseSchema } from '../schema/net.schema';
 
-export const getCircle: THandler<never, INetCircleResponse> =
+export const getCircle: THandler<never, INetViewResponse> =
   async ({ session }) => {
     const node_id = session.read('node_id')!;
     return await execQuery.net.circle.get([node_id]);
   };
-getCircle.responseSchema = NetCircleResponseSchema;
+getCircle.responseSchema = NetViewResponseSchema;
 
 
-export const getTree: THandler<never, INetCircleResponse> =
+export const getTree: THandler<never, INetViewResponse> =
   async ({ session }) => {
     const node_id = session.read('node_id')!;
     return await execQuery.net.tree.get([node_id]);
   };
-getTree.responseSchema = NetCircleResponseSchema;
+getTree.responseSchema = NetViewResponseSchema;

@@ -7,14 +7,24 @@ import {
 } from './constants';
 
 export const getConnection = async (baseUrl: string): Promise<TFetch> => {
-  let requests: Map<any, number>;
+  let requests: Map<number, (response: IWsResponse) => void>;
   let socket: WebSocket;
   const createSocket = () => {
-    requests = new Map<any, number>();
+    requests = new Map();
     socket = new WebSocket(baseUrl);
   };
   let id = 0;
   const getId = () => ++id % 100;
+
+  function handleResponseMessage({ data: message }: MessageEvent) {
+    const response = JSON.parse(message) as IWsResponse;
+    logData(response, 'response');
+    const { requestId: reqId } = response;
+    const handleResponse = requests.get(reqId);
+    if (!handleResponse) return;
+    requests.delete(reqId);
+    handleResponse(response);
+  }
 
   const checkConnection = async (attempt = CONECTION_ATTEMPT_COUNT) => {
     !socket && createSocket();
@@ -35,36 +45,32 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
       const handleOpen = () => rv();
       socket.addEventListener('error', handleError);
       socket.addEventListener('open', handleOpen);
+      socket.addEventListener('message', handleResponseMessage);
     };
 
     return new Promise<void>(connectExecutor);
   };
 
   const getResponseHandler = (...[rv, rj]: Parameters<TPromiseExecutor<any>>) =>
-    function handler({ data: message }: MessageEvent) {
-      const response = JSON.parse(message) as IWsResponse;
-      logData(response, 'response');
-      const { requestId: reqId, status, data: resData } = response;
-      if (reqId && reqId !== requests.get(handler)) return;
-      socket.removeEventListener('message', handler);
-      requests.delete(handler);
-      status !== 200 && rj(new HttpResponseError(status));
-      rv(resData);
+    (response: IWsResponse) => {
+      const { data, status } = response;
+      if (status === 200) return rv(data);
+      rj(new HttpResponseError(status));
     };
 
   const createSendExecutor = (
     requestMessage: string,
   ): TPromiseExecutor<void> => (rv, rj) => {
-    const handlerResponse = getResponseHandler(rv, rj);
-    requests.set(handlerResponse, id);
-    socket.addEventListener('message', handlerResponse);
+    const handleResponse = getResponseHandler(rv, rj);
+    requests.set(id, handleResponse);
     socket.send(requestMessage);
   };
 
   const createSendWithTimeoutExecutor = (
-    send: ReturnType<typeof createSendExecutor>,
+    requestMessage: string,
   ): TPromiseExecutor<any> => (rv, rj) => {
-    const handleTimeout = () => rj(new Error('Connection timeout'));
+    const send = createSendExecutor(requestMessage);
+    const handleTimeout = () => rj(new HttpResponseError(503));
     const timer = setTimeout(handleTimeout, CONNECTION_TIMEOUT);
     const newRv = (...args: Parameters<typeof rv>) => {
       clearTimeout(timer);
@@ -81,8 +87,9 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
     const request = { requestId, pathname, data };
     logData(request, 'request');
     const requestMessage = JSON.stringify(request);
-    const sendExecutor = createSendExecutor(requestMessage);
-    const sendWithTimeoutExecutor = createSendWithTimeoutExecutor(sendExecutor);
+    const sendWithTimeoutExecutor = createSendWithTimeoutExecutor(
+      requestMessage,
+    );
     return new Promise(sendWithTimeoutExecutor);
   };
 

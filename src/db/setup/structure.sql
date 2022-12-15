@@ -93,6 +93,19 @@ CREATE TABLE public.nets_users_data (
 ALTER TABLE public.nets_users_data OWNER TO merega;
 
 --
+-- TOC entry
+-- Name: nodes_invites; Type: TABLE; Schema: public; Owner: merega
+--
+
+CREATE TABLE public.nodes_invites (
+    node_id bigint NOT NULL,
+    member_name character varying(50) DEFAULT NULL::character varying,
+    token character varying(255) NOT NULL
+);
+
+ALTER TABLE public.nodes_invites OWNER TO merega;
+
+--
 -- TOC entry 213 (class 1259 OID 25097)
 -- Name: nodes; Type: TABLE; Schema: public; Owner: merega
 --
@@ -241,6 +254,15 @@ ALTER TABLE ONLY public.nodes
 
 
 --
+-- TOC entry
+-- Name: nodes pk_nodes_invites; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.nodes_invites
+    ADD CONSTRAINT pk_nodes_invites PRIMARY KEY (node_id),
+    ADD CONSTRAINT uk_nodes_invites_token UNIQUE (token);
+
+--
 -- TOC entry 3228 (class 2606 OID 25134)
 -- Name: sessions pk_sessions; Type: CONSTRAINT; Schema: public; Owner: merega
 --
@@ -336,6 +358,15 @@ ALTER TABLE ONLY public.nets_users_data
 
 ALTER TABLE ONLY public.nodes
     ADD CONSTRAINT fk_nodes_user FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+
+--
+-- TOC entry 3240 (class 2606 OID 25162)
+-- Name: nodes fk_nodes_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.nodes_invites
+    ADD CONSTRAINT fk_nodes_invites_node FOREIGN KEY (node_id) REFERENCES public.nodes(node_id);
 
 
 --

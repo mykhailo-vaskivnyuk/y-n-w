@@ -1,8 +1,11 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
-import { INetResponse, INetsResponse, IUserResponse } from '../api/types/types';
+import {
+  INetViewResponse, INetResponse,
+  INetsResponse, IUserResponse, NetViewKeys, IMemberResponse,
+} from '../api/types/types';
 import { INITIAL_NETS, INets } from './types';
-import { AppState } from '../constants';
+import { AppStatus } from '../constants';
 import { HttpResponseError } from '../errors';
 import EventEmitter from '../event.emitter';
 import { getApi, IClientApi } from '../api/client.api';
@@ -12,14 +15,21 @@ import { getConnection as getWsConnection } from '../client.ws';
 import { getNetMethods } from './methods/net';
 
 export class ClientApp extends EventEmitter {
-  protected api: IClientApi | null;
   private baseUrl = '';
-  private state: AppState = AppState.INITING;
+  protected api: IClientApi | null;
+
+  private status: AppStatus = AppStatus.INITING;
+  private error: HttpResponseError | null = null;
+
   private user: IUserResponse = null;
-  private net: INetResponse = null;
   private allNets: INetsResponse = [];
   private nets: INets = INITIAL_NETS;
-  private error: HttpResponseError | null = null;
+  private net: INetResponse = null;
+  private circle: INetViewResponse = [];
+  private tree: INetViewResponse = [];
+  private netView?: NetViewKeys;
+  private member?: IMemberResponse;
+
   account: ReturnType<typeof getAccountMethods>;
   netMethods: ReturnType<typeof getNetMethods>;
 
@@ -28,6 +38,21 @@ export class ClientApp extends EventEmitter {
     this.account = getAccountMethods(this as any);
     this.netMethods = getNetMethods(this as any);
     this.baseUrl = process.env.API || `${window.location.origin}/api`;
+  }
+
+  getState() {
+    return {
+      status: this.status,
+      error: this.error,
+      user: this.user,
+      net: this.net,
+      circle: this.circle,
+      tree: this.tree,
+      allNets: this.allNets,
+      nets: this.nets,
+      netView: this.netView,
+      member: this.member,
+    };
   }
 
   async init() {
@@ -48,18 +73,7 @@ export class ClientApp extends EventEmitter {
       }
     }
     await this.readUser();
-    this.setState(AppState.INITED);
-  }
-
-  getState() {
-    return {
-      state: this.state,
-      user: this.user,
-      net: this.net,
-      allNets: this.allNets,
-      nets: this.nets,
-      error: this.error,
-    };
+    this.setStatus(AppStatus.INITED);
   }
 
   protected async setUser(user: IUserResponse) {
@@ -77,12 +91,20 @@ export class ClientApp extends EventEmitter {
   protected async setNet(net: INetResponse | null = null) {
     if (this.net === net) return;
     this.net = net;
+    this.netView = undefined;
+    this.member = undefined;
     if (net) {
       this.user!.user_state = 'INSIDE_NET';
+      await this.netMethods.getCircle();
+      await this.netMethods.getTree();
       this.emit('user', { ...this.user });
     } else if (this.user) {
       this.user!.user_state = 'LOGGEDIN';
       this.emit('user', { ...this.user });
+    }
+    if (!net) {
+      this.setCircle([]);
+      this.setTree([]);
     }
     this.netMethods.getNets();
     this.emit('net', net);
@@ -99,37 +121,53 @@ export class ClientApp extends EventEmitter {
     this.emit('nets', this.nets);
   }
 
-  protected setState(state: AppState) {
-    if (state === AppState.ERROR) {
-      this.state = state;
+  protected setCircle(circle: INetViewResponse) {
+    if (this.circle === circle) return;
+    this.circle = circle;
+  }
+
+  protected setTree(tree: INetViewResponse) {
+    if (this.tree === tree) return;
+    this.tree = tree;
+  }
+
+  protected setStatus(status: AppStatus) {
+    if (status === AppStatus.ERROR) {
+      this.status = status;
       this.emit('error', this.error);
-      return this.emit('statechanged', this.state);
+      return this.emit('statuschanged', this.status);
     }
     this.error = null;
-    if (state === AppState.INITED) {
-      this.state = AppState.READY;
-      return this.emit('statechanged', this.state);
+    if (status === AppStatus.INITED) {
+      this.status = AppStatus.READY;
+      return this.emit('statuschanged', this.status);
     }
-    if (this.state === AppState.INITING) return;
-    this.state = state;
-    return this.emit('statechanged', this.state);
+    if (this.status === AppStatus.INITING) return;
+    this.status = status;
+    return this.emit('statuschanged', this.status);
   }
 
   protected setError(e: HttpResponseError) {
     this.error = e;
-    this.setState(AppState.ERROR);
+    this.setStatus(AppStatus.ERROR);
   }
 
   private async readUser() {
-    this.setState(AppState.LOADING);
+    this.setStatus(AppStatus.LOADING);
     try {
       const user = await this.api!.user.read();
       await this.setUser(user);
-      this.setState(AppState.READY);
+      this.setStatus(AppStatus.READY);
       return user;
     } catch (e: any) {
       this.setError(e);
     }
+  }
+
+  async getMember(netView: NetViewKeys, nodeId: number) {
+    this.netView = netView;
+    this.member = this.tree.find((item) => item.node_id === Number(nodeId));
+    return this.member;
   }
 }
 

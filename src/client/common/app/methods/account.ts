@@ -2,16 +2,16 @@
 import {
   IConfirmParams, ISignupParams, IUserResponse,
 } from '../../api/types/types';
-import { AppState } from '../../constants';
+import { AppStatus } from '../../constants';
 import { IClientAppThis, TLoginOrSignup } from '../types';
 
 export const getAccountMethods = (parent: IClientAppThis) => ({
   async loginOrSignup(...[type, args]: TLoginOrSignup) {
-    parent.setState(AppState.LOADING);
+    parent.setStatus(AppStatus.LOADING);
     try {
       const user = await parent.api.account[type](args as any);
       user && await parent.setUser(user);
-      parent.setState(AppState.READY);
+      parent.setStatus(AppStatus.READY);
       return user;
     } catch (e: any) {
       parent.setError(e);
@@ -20,11 +20,11 @@ export const getAccountMethods = (parent: IClientAppThis) => ({
   },
 
   async logoutOrRemove(type: 'logout' | 'remove') {
-    parent.setState(AppState.LOADING);
+    parent.setStatus(AppStatus.LOADING);
     try {
       const success = await parent.api.account[type]();
       success && await parent.setUser(null);
-      parent.setState(AppState.READY);
+      parent.setStatus(AppStatus.READY);
       return success;
     } catch (e: any) {
       parent.setError(e);
@@ -33,10 +33,10 @@ export const getAccountMethods = (parent: IClientAppThis) => ({
   },
 
   async overmail(args: ISignupParams) {
-    parent.setState(AppState.LOADING);
+    parent.setStatus(AppStatus.LOADING);
     try {
       const success = await parent.api.account.overmail(args);
-      parent.setState(AppState.READY);
+      parent.setStatus(AppStatus.READY);
       return success;
     } catch (e: any) {
       parent.setError(e);
@@ -46,11 +46,11 @@ export const getAccountMethods = (parent: IClientAppThis) => ({
   async loginOverLink(
     type: 'confirm' | 'restore', args: IConfirmParams,
   ): Promise<IUserResponse> {
-    parent.setState(AppState.LOADING);
+    parent.setStatus(AppStatus.LOADING);
     try {
       const user = await parent.api.account[type](args);
       user && await parent.setUser(user);
-      parent.setState(AppState.READY);
+      parent.setStatus(AppStatus.READY);
       return user;
     } catch (e: any) {
       parent.setError(e);

@@ -2,18 +2,18 @@
 /* eslint-disable import/no-cycle */
 import { INetCreateParams } from '../../api/types/net.types';
 import { INITIAL_NETS, IClientAppThis } from '../types';
-import { AppState } from '../../constants';
+import { AppStatus } from '../../constants';
 
 export const getNetMethods = (parent: IClientAppThis) => ({
   async create(args: INetCreateParams) {
-    parent.setState(AppState.LOADING);
+    parent.setStatus(AppStatus.LOADING);
     try {
-      const net = await parent.api.user.net.create(args);
+      const net = await parent.api.net.create(args);
       if (net) {
         this.getAllNets();
-        parent.setNet(net);
+        await parent.setNet(net);
       }
-      parent.setState(AppState.READY);
+      parent.setStatus(AppStatus.READY);
       return net;
     } catch (e: any) {
       parent.setError(e);
@@ -21,11 +21,11 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   },
 
   async enter(net_id: number) {
-    parent.setState(AppState.LOADING);
+    parent.setStatus(AppStatus.LOADING);
     try {
-      const net = await parent.api.user.net.enter({ net_id });
-      net && parent.setNet(net);
-      parent.setState(AppState.READY);
+      const net = await parent.api.net.enter({ net_id });
+      net && await parent.setNet(net);
+      parent.setStatus(AppStatus.READY);
       return net;
     } catch (e: any) {
       parent.setError(e);
@@ -33,12 +33,12 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   },
 
   async comeout() {
-    parent.setState(AppState.LOADING);
+    parent.setStatus(AppStatus.LOADING);
     try {
-      const success = await parent.api.user.net.comeout();
+      const success = await parent.api.net.comeout();
       if (success) {
-        parent.setNet(null);
-        parent.setState(AppState.READY);
+        await parent.setNet(null);
+        parent.setStatus(AppStatus.READY);
       }
       return success;
     } catch (e: any) {
@@ -48,14 +48,14 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   },
 
   async leave() {
-    parent.setState(AppState.LOADING);
+    parent.setStatus(AppStatus.LOADING);
     try {
-      const success = await parent.api.user.net.leave();
+      const success = await parent.api.net.leave();
       if (success) {
         await this.getAllNets();
-        parent.setNet(null);
+        await parent.setNet(null);
       }
-      parent.setState(AppState.READY);
+      parent.setStatus(AppStatus.READY);
       return success;
     } catch (e: any) {
       parent.setError(e);
@@ -63,12 +63,34 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     }
   },
 
+  async getCircle() {
+    parent.setStatus(AppStatus.LOADING);
+    try {
+      const circle = await parent.api.net.getCircle();
+      parent.setCircle(circle);
+      parent.setStatus(AppStatus.READY);
+    } catch (e: any) {
+      parent.setError(e);
+    }
+  },
+
+  async getTree() {
+    parent.setStatus(AppStatus.LOADING);
+    try {
+      const circle = await parent.api.net.getTree();
+      parent.setTree(circle);
+      parent.setStatus(AppStatus.READY);
+    } catch (e: any) {
+      parent.setError(e);
+    }
+  },
+
   async getAllNets() {
-    parent.setState(AppState.LOADING);
+    parent.setStatus(AppStatus.LOADING);
     try {
       const nets = await parent.api.user.nets.get();
       parent.setAllNets(nets);
-      parent.setState(AppState.READY);
+      parent.setStatus(AppStatus.READY);
     } catch (e: any) {
       parent.setError(e);
     }
@@ -94,7 +116,6 @@ export const getNetMethods = (parent: IClientAppThis) => ({
         const { net_id: curNetId, parent_net_id: nextParentNetId } = item;
         if (curNetId !== curParentNetId) return acc;
         acc.push(item);
-
         curParentNetId = nextParentNetId;
         return acc;
       }, [...nets.parentNets])

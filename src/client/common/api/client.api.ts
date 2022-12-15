@@ -7,8 +7,6 @@ export type IClientApi = ReturnType<typeof getApi>;
 export const getApi = (
   fetch: <T>(pathname: string, options?: Record<string, any>) => Promise<T>
 ) => ({
-  'health': () => fetch<string>('/health'),
-
   'account': {
     'confirm': (options: P.IConfirmParams) =>
       fetch<P.IUserResponse>('/account/confirm', options),
@@ -30,6 +28,8 @@ export const getApi = (
       fetch<P.IUserResponse>('/account/signup', options),
 
   },
+  'health': () => fetch<string>('/health'),
+
   'net': {
     'comeout': () => fetch<boolean>('/net/comeout'),
 
@@ -39,9 +39,9 @@ export const getApi = (
     'enter': (options: P.INetReadParams) =>
       fetch<P.INetResponse>('/net/enter', options),
 
-    'getCircle': () => fetch<P.INetCircleResponse>('/net/getCircle'),
+    'getCircle': () => fetch<P.INetViewResponse>('/net/getCircle'),
 
-    'getTree': () => fetch<P.INetCircleResponse>('/net/getTree'),
+    'getTree': () => fetch<P.INetViewResponse>('/net/getTree'),
 
     'leave': () => fetch<boolean>('/net/leave'),
 
@@ -53,11 +53,11 @@ export const getApi = (
   'user': {
     'update': () => fetch<string>('/user/update'),
 
-    'read': () => fetch<P.IUserResponse>('/user/read'),
-
     'nets': {
       'get': () => fetch<P.INetsResponse>('/user/nets/get'),
 
     },
+    'read': () => fetch<P.IUserResponse>('/user/read'),
+
   },
 });
