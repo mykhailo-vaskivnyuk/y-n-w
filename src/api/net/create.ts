@@ -1,10 +1,10 @@
 import {
   INetCreateParams, INetResponse,
-} from '../../client/common/api/types/net.types';
+} from '../../client/common/api/types/types';
 import { THandler } from '../../router/types';
 import {
   NetResponseSchema, NetCreateParamsSchema,
-} from '../schema/net.schema';
+} from '../schema/schema';
 import { createTree } from '../utils/utils';
 
 const create: THandler<INetCreateParams, INetResponse> =

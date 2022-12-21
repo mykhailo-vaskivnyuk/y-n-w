@@ -1,8 +1,7 @@
 import Joi from 'joi';
 import {
-  IMemberResponse,
-  INetCreateParams, INetResponse,
-} from '../../client/common/api/types/net.types';
+  IMemberResponse, INetCreateParams, INetResponse,
+} from '../../client/common/api/types/types';
 import { TJoiSchema } from '../../router/types';
 import { OmitNull } from '../../client/common/types';
 import { JOI_NULL } from '../../router/constants';

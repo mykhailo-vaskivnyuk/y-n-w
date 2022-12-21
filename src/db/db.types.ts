@@ -3,9 +3,10 @@ export const TABLES_MAP = {
   NETS: 'nets',
   NODES: 'nodes',
   USERS: 'users',
-  USERS_TOKENS: 'users_tokens',
   NETS_DATA: 'nets_data',
   NETS_USERS_DATA: 'nets_users_data',
+  USERS_NODES_INVITES: 'users_nodes_invites',
+  USERS_TOKENS: 'users_tokens',
   SESSIONS: 'sessions',
 };
 
@@ -43,14 +44,8 @@ export type ITableNetsData = {
   net_id: number;
   name: string;
   goal: string | null;
-  resource_name_1: string | null;
-  resource_link_1: string | null;
-  resource_name_2: string | null;
-  resource_link_2: string | null;
-  resource_name_3: string | null;
-  resource_link_3: string | null;
-  resource_name_4: string | null;
-  resource_link_4: string | null;
+  resource_name: string | null;
+  resource_link: string | null;
 }
 
 export type ITableNetsUsersData = {
@@ -73,8 +68,8 @@ export type ITableNodes = {
   changes: boolean;
 }
 
-export type ITableNodesInvites = {
+export type ITableUsersNodesInvites = {
   node_id: number;
-  member_name: string | null;
+  member_name: string;
   token: string;
 }

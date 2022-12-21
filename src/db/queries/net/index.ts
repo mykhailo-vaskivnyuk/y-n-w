@@ -4,6 +4,7 @@ import { IQueriesNetUser } from './user';
 import { IQueriesNetNodes } from './nodes/removeUser';
 import { IQueriesNetCircle } from './circle';
 import { IQueriesNetTree } from './tree';
+import { IQueriesNetFind } from './find';
 
 export interface IQueriesNet {
   createInitial: TQuery<[
@@ -31,6 +32,7 @@ export interface IQueriesNet {
   nodes: IQueriesNetNodes;
   circle: IQueriesNetCircle;
   tree: IQueriesNetTree;
+  find: IQueriesNetFind;
 }
 
 export const createInitial = `

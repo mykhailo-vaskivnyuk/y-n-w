@@ -1,13 +1,13 @@
 import { THandler } from '../../router/types';
 import {
-  IConfirmParams, IUserResponse,
-} from '../../client/common/api/types/account.types';
+  ITokenParams, IUserResponse,
+} from '../../client/common/api/types/types';
 import { UserStateKeys } from '../../client/common/constants';
 import {
-  ConfirmParamsSchema, UserResponseSchema,
-} from '../schema/account.schema';
+  TokenParamsSchema, UserResponseSchema,
+} from '../schema/schema';
 
-const confirm: THandler<IConfirmParams, IUserResponse> = async (
+const confirm: THandler<ITokenParams, IUserResponse> = async (
   { session }, { token },
 ) => {
   const [user] = await execQuery.user.findByToken([token]);
@@ -19,7 +19,7 @@ const confirm: THandler<IConfirmParams, IUserResponse> = async (
   session.write('user_state', user_state);
   return { ...user, user_state };
 };
-confirm.paramsSchema = ConfirmParamsSchema;
+confirm.paramsSchema = TokenParamsSchema;
 confirm.responseSchema = UserResponseSchema;
 confirm.allowedForUser = 'NOT_LOGGEDIN';
 

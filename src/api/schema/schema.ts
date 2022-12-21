@@ -1,4 +1,4 @@
-import * as accountSchema from './account.schema';
-import * as netSchema from './net.schema';
-
-export = { ...accountSchema, ...netSchema };
+export * from './common.schema';
+export * from './account.schema';
+export * from './net.schema';
+export * from './member.schema';

@@ -1,6 +1,8 @@
 /* eslint-disable import/no-cycle */
 import * as T from '../api/types/types';
-import { INetViewResponse, INetsResponse } from '../api/types/types';
+import {
+  INetViewResponse, INetsResponse, NetViewKeys,
+} from '../api/types/types';
 import { AppStatus } from '../constants';
 import { HttpResponseError } from '../errors';
 import { getApi } from '../api/client.api';
@@ -9,13 +11,15 @@ import { ClientApp } from './client.app';
 export type IClientAppThis = ClientApp & {
   api: ReturnType<typeof getApi>;
   setStatus: (status: AppStatus) => void;
+  setError: (e: HttpResponseError) => void;
   setUser: (user: T.IUserResponse) => Promise<void>;
   setNet: (net: T.INetResponse) => void;
   setAllNets: (nets: INetsResponse) => void;
   setNets: (nets: INets) => void;
   setCircle: (circle: INetViewResponse) => void;
   setTree: (tree: INetViewResponse) => void;
-  setError: (e: HttpResponseError) => void;
+  setNetView: (netView?: NetViewKeys) => void;
+  setMemberPosition: (memberPosition?: number) => void;
 };
 
 export interface INets {

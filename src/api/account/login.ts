@@ -1,11 +1,11 @@
 import {
   ILoginParams, IUserResponse,
-} from '../../client/common/api/types/account.types';
+} from '../../client/common/api/types/types';
 import { THandler } from '../../router/types';
 import { UserStateKeys } from '../../client/common/constants';
 import {
   LoginParamsSchema, UserResponseSchema,
-} from '../schema/account.schema';
+} from '../schema/schema';
 import { verifyHash } from '../../utils/crypto';
 
 const login: THandler<ILoginParams, IUserResponse> =

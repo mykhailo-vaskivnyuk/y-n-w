@@ -48,14 +48,8 @@ CREATE TABLE public.nets_data (
     net_id bigint NOT NULL,
     name character varying(50) NOT NULL,
     goal text DEFAULT NULL::character varying,
-    resource_name_1 character varying(50) DEFAULT NULL::character varying,
-    resource_link_1 character varying(255) DEFAULT NULL::character varying,
-    resource_name_2 character varying(50) DEFAULT NULL::character varying,
-    resource_link_2 character varying(255) DEFAULT NULL::character varying,
-    resource_name_3 character varying(50) DEFAULT NULL::character varying,
-    resource_link_3 character varying(255) DEFAULT NULL::character varying,
-    resource_name_4 character varying(50) DEFAULT NULL::character varying,
-    resource_link_4 character varying(255) DEFAULT NULL::character varying
+    resource_name character varying(50) DEFAULT NULL::character varying,
+    resource_link character varying(255) DEFAULT NULL::character varying
 );
 
 
@@ -94,16 +88,17 @@ ALTER TABLE public.nets_users_data OWNER TO merega;
 
 --
 -- TOC entry
--- Name: nodes_invites; Type: TABLE; Schema: public; Owner: merega
+-- Name: users_nodes_invites; Type: TABLE; Schema: public; Owner: merega
 --
 
-CREATE TABLE public.nodes_invites (
+CREATE TABLE public.users_nodes_invites (
     node_id bigint NOT NULL,
-    member_name character varying(50) DEFAULT NULL::character varying,
+    user_id bigint NOT NULL,
+    member_name character varying(50) NOT NULL,
     token character varying(255) NOT NULL
 );
 
-ALTER TABLE public.nodes_invites OWNER TO merega;
+ALTER TABLE public.users_nodes_invites OWNER TO merega;
 
 --
 -- TOC entry 213 (class 1259 OID 25097)
@@ -255,12 +250,12 @@ ALTER TABLE ONLY public.nodes
 
 --
 -- TOC entry
--- Name: nodes pk_nodes_invites; Type: CONSTRAINT; Schema: public; Owner: merega
+-- Name: nodes pk_users_nodes_invites; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
-ALTER TABLE ONLY public.nodes_invites
-    ADD CONSTRAINT pk_nodes_invites PRIMARY KEY (node_id),
-    ADD CONSTRAINT uk_nodes_invites_token UNIQUE (token);
+ALTER TABLE ONLY public.users_nodes_invites
+    ADD CONSTRAINT pk_users_nodes_invites PRIMARY KEY (node_id),
+    ADD CONSTRAINT uk_users_nodes_invites_token UNIQUE (token);
 
 --
 -- TOC entry 3228 (class 2606 OID 25134)
@@ -365,8 +360,9 @@ ALTER TABLE ONLY public.nodes
 -- Name: nodes fk_nodes_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
-ALTER TABLE ONLY public.nodes_invites
-    ADD CONSTRAINT fk_nodes_invites_node FOREIGN KEY (node_id) REFERENCES public.nodes(node_id);
+ALTER TABLE ONLY public.users_nodes_invites
+    ADD CONSTRAINT fk_users_nodes_invites_node FOREIGN KEY (node_id) REFERENCES public.nodes(node_id),
+    ADD CONSTRAINT fk_users_nodes_invites_user FOREIGN KEY (user_id) REFERENCES public.users(user_id);
 
 
 --

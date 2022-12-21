@@ -1,5 +1,6 @@
 import { ITableNodes } from '../../db.types';
 import { TQuery } from '../../types';
+import { IQueriesNodeUser } from './user';
 
 export interface IQueriesNode {
   createInitial: TQuery<[
@@ -25,6 +26,7 @@ export interface IQueriesNode {
   removeTree: TQuery<[
     ['parent_node_id', number],
   ]>;
+  user: IQueriesNodeUser;
 }
 
 export const createInitial = `

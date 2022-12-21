@@ -11,9 +11,8 @@ export interface IQueriesUserNode {
 const findByNet = `
   SELECT nodes.* FROM nodes
   INNER JOIN nets ON
-    nodes.node_id = nets.node_id OR
-    nodes.node_id = nodes.first_node_id
-  WHERE user_id = $1 AND net_id = $2
+    nets.node_id = nodes.first_node_id
+  WHERE nodes.user_id = $1 AND nets.net_id = $2
 `;
 
 export default findByNet;

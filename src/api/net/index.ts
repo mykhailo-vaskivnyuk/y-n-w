@@ -1,6 +1,6 @@
-import { INetViewResponse } from '../../client/common/api/types/net.types';
+import { INetViewResponse } from '../../client/common/api/types/types';
 import { THandler } from '../../router/types';
-import { NetViewResponseSchema } from '../schema/net.schema';
+import { NetViewResponseSchema } from '../schema/schema';
 
 export const getCircle: THandler<never, INetViewResponse> =
   async ({ session }) => {

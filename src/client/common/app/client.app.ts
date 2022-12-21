@@ -2,7 +2,7 @@
 /* eslint-disable import/no-cycle */
 import {
   INetViewResponse, INetResponse,
-  INetsResponse, IUserResponse, NetViewKeys, IMemberResponse,
+  INetsResponse, IUserResponse, NetViewKeys,
 } from '../api/types/types';
 import { INITIAL_NETS, INets } from './types';
 import { AppStatus } from '../constants';
@@ -10,9 +10,10 @@ import { HttpResponseError } from '../errors';
 import { EventEmitter } from '../event.emitter';
 import { getApi, IClientApi } from '../api/client.api';
 import { getAccountMethods } from './methods/account';
+import { getNetMethods } from './methods/net';
+import { getMemberMethods } from './methods/member';
 import { getConnection as getHttpConnection } from '../client.http';
 import { getConnection as getWsConnection } from '../client.ws';
-import { getNetMethods } from './methods/net';
 
 export class ClientApp extends EventEmitter {
   private baseUrl = '';
@@ -28,15 +29,17 @@ export class ClientApp extends EventEmitter {
   private circle: INetViewResponse = [];
   private tree: INetViewResponse = [];
   private netView?: NetViewKeys;
-  private member?: IMemberResponse;
+  private memberPosition?: number;
 
   account: ReturnType<typeof getAccountMethods>;
   netMethods: ReturnType<typeof getNetMethods>;
+  member: ReturnType<typeof getMemberMethods>;
 
   constructor() {
     super();
     this.account = getAccountMethods(this as any);
     this.netMethods = getNetMethods(this as any);
+    this.member = getMemberMethods(this as any);
     this.baseUrl = process.env.API || `${window.location.origin}/api`;
   }
 
@@ -51,7 +54,7 @@ export class ClientApp extends EventEmitter {
       allNets: this.allNets,
       nets: this.nets,
       netView: this.netView,
-      member: this.member,
+      memberPosition: this.memberPosition,
     };
   }
 
@@ -93,8 +96,8 @@ export class ClientApp extends EventEmitter {
     this.net = net;
     this.setCircle([]);
     this.setTree([]);
-    this.netView = undefined;
-    this.member = undefined;
+    this.setNetView();
+    this.setMemberPosition();
     if (net) {
       this.user!.user_state = 'INSIDE_NET';
       await this.netMethods.getCircle();
@@ -122,11 +125,21 @@ export class ClientApp extends EventEmitter {
   protected setCircle(circle: INetViewResponse) {
     if (this.circle === circle) return;
     this.circle = circle;
+    this.emit('circle', circle);
+  }
+
+  protected setNetView(netView?: NetViewKeys) {
+    this.netView = netView;
+  }
+
+  protected setMemberPosition(memberPosition?: number) {
+    this.memberPosition = memberPosition;
   }
 
   protected setTree(tree: INetViewResponse) {
     if (this.tree === tree) return;
     this.tree = tree;
+    this.emit('tree', tree);
   }
 
   protected setStatus(status: AppStatus) {
@@ -160,12 +173,6 @@ export class ClientApp extends EventEmitter {
     } catch (e: any) {
       this.setError(e);
     }
-  }
-
-  async getMember(netView: NetViewKeys, nodeId: number) {
-    this.netView = netView;
-    this.member = this.tree.find((item) => item.node_id === Number(nodeId));
-    return this.member;
   }
 }
 

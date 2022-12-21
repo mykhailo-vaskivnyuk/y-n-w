@@ -1,13 +1,13 @@
 import { THandler } from '../../router/types';
 import {
   INetReadParams, INetResponse
-} from '../../client/common/api/types/net.types';
+} from '../../client/common/api/types/types';
 import {
   NetResponseSchema, NetReadParamsSchema,
-} from '../schema/net.schema';
+} from '../schema/schema';
 import { HandlerError } from '../../router/errors';
 
-const read: THandler<INetReadParams, INetResponse> =
+const enter: THandler<INetReadParams, INetResponse> =
   async ({ session }, { net_id }) => {
     const user_id = session.read('user_id')!;
     const [net] = await execQuery.user.net.read([user_id, net_id]);
@@ -19,7 +19,7 @@ const read: THandler<INetReadParams, INetResponse> =
     session.write('user_state', 'INSIDE_NET');
     return net;
   };
-read.paramsSchema = NetReadParamsSchema;
-read.responseSchema = NetResponseSchema;
+enter.paramsSchema = NetReadParamsSchema;
+enter.responseSchema = NetResponseSchema;
 
-export = read;
+export = enter;

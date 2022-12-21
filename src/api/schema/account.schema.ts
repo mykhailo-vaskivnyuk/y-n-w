@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { IUserResponse } from '../../client/common/api/types/account.types';
+import { IUserResponse } from '../../client/common/api/types/types';
 import { TJoiSchema } from '../../router/types';
 import { OmitNull } from '../../client/common/types';
 import { JOI_NULL } from '../../router/constants';
@@ -23,8 +23,4 @@ export const SignupParamsSchema = {
 export const LoginParamsSchema = {
   ...SignupParamsSchema,
   password: Joi.string().required(),
-};
-
-export const ConfirmParamsSchema = {
-  token: Joi.string(),
 };
