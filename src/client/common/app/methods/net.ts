@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
 import { INetCreateParams, ITokenParams } from '../../api/types/types';
-import { INITIAL_NETS, IClientAppThis } from '../types';
+import { INITIAL_NETS, IClientAppThis, IMember } from '../types';
 import { AppStatus } from '../../constants';
 
 export const getNetMethods = (parent: IClientAppThis) => ({
@@ -65,7 +65,14 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   async getCircle() {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const circle = await parent.api.net.getCircle();
+      const result = await parent.api.net.getCircle();
+      const circle: IMember[] = result.map((member, memberPosition) => {
+        const memberStatus = parent.member.getStatus(member);
+        const memberName = parent
+          .member
+          .getName('circle', member, memberPosition);
+        return { ...member, member_name: memberName, memberStatus };
+      });
       parent.setCircle(circle);
       parent.setStatus(AppStatus.READY);
     } catch (e: any) {
@@ -76,7 +83,14 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   async getTree() {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const tree = await parent.api.net.getTree();
+      const result = await parent.api.net.getTree();
+      const tree: IMember[] = result.map((member, memberPosition) => {
+        const memberStatus = parent.member.getStatus(member);
+        const memberName = parent
+          .member
+          .getName('tree', member, memberPosition);
+        return { ...member, member_name: memberName, memberStatus };
+      });
       parent.setTree(tree);
       parent.setStatus(AppStatus.READY);
     } catch (e: any) {

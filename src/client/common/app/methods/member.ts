@@ -1,25 +1,56 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
-import { NetViewKeys } from '../../api/types/net.types';
-import { IMemberInviteParams } from '../../api/types/member.types';
-import { TMemberInviteCancel } from '../../api/types/client.api.types';
+import {
+  NetViewKeys, IMemberInviteParams,
+  MemberStatusKeys, IMemberResponse,
+} from '../../api/types/types';
 import { IClientAppThis } from '../types';
 import { AppStatus } from '../../constants';
 
 export const getMemberMethods = (parent: IClientAppThis) => ({
   async find(netView: NetViewKeys, nodeId: number) {
     const { [netView]: netViewData } = parent.getState();
-    parent.setNetView(netView);
     const memberPosition = netViewData
-      .findIndex((item) => item.node_id === Number(nodeId));
-    parent.setMemberPosition(memberPosition > -1 ? memberPosition : undefined);
+      .findIndex((item) => item.node_id === nodeId);
+    const member = netViewData[memberPosition];
+    parent.setMember(member);
+    if (member) parent.setNetView(netView);
   },
 
-  async inviteCreate(args: IMemberInviteParams) {
+  getStatus(member?: IMemberResponse) {
+    let memberStatus: MemberStatusKeys = 'UNAVAILABLE';
+    if (!member) return memberStatus;
+    memberStatus = 'EMPTY';
+    const { name, token } = member;
+    if (name) {
+      if (token) memberStatus = 'CONNECTED';
+      else memberStatus = 'ACTIVE';
+    } else if (token) memberStatus = 'INVITED';
+    return memberStatus;
+  },
+
+  getName(
+    netView: NetViewKeys, member: IMemberResponse, memberPosition: number,
+  ) {
+    const position = netView === 'tree' ?
+      memberPosition + 1 :
+      memberPosition && memberPosition + 1;
+    const { name, member_name: memberName } = member;
+    return name || memberName || `member ${position}`;
+  },
+
+  async inviteCreate(args: Pick<IMemberInviteParams, 'member_name'>) {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const token = await parent.api.member.invite.create(args);
-      if (token) await parent.netMethods.getTree();
+      const { netView, memberData } = parent.getState();
+      const token = await parent.api.member.invite.create({
+        ...memberData!,
+        ...args,
+      });
+      if (token) {
+        await parent.netMethods.getTree();
+        await this.find(netView!, memberData!.node_id);
+      }
       parent.setStatus(AppStatus.READY);
       return token;
     } catch (e: any) {
@@ -27,15 +58,53 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  async inviteCancel(args: TMemberInviteCancel) {
+  async inviteCancel() {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const success = await parent.api.member.invite.cancel(args);
-      if (success) await parent.netMethods.getTree();
+      const { netView, memberData } = parent.getState();
+      const success = await parent.api.member.invite.cancel(memberData!);
+      if (success) {
+        await parent.netMethods.getTree();
+        await this.find(netView!, memberData!.node_id);
+      }
       parent.setStatus(AppStatus.READY);
       return success;
     } catch (e: any) {
       parent.setError(e);
+    }
+  },
+
+  async inviteConfirm() {
+    parent.setStatus(AppStatus.LOADING);
+    try {
+      const { netView, memberData } = parent.getState();
+      const success = await parent.api.member.invite.confirm(memberData!);
+      if (success) {
+        await parent.netMethods.getTree();
+        await this.find(netView!, memberData!.node_id);
+      }
+      parent.setStatus(AppStatus.READY);
+      return success;
+    } catch (e: any) {
+      parent.setError(e);
+      throw e;
+    }
+  },
+
+  async inviteRefuse() {
+    parent.setStatus(AppStatus.LOADING);
+    try {
+      const { netView, memberData } = parent.getState();
+      const success = await parent.api.member.invite.refuse(memberData!);
+      if (success) {
+        await parent.netMethods.getTree();
+        await this.find(netView!, memberData!.node_id);
+      }
+      parent.setStatus(AppStatus.READY);
+      return success;
+    } catch (e: any) {
+      parent.setError(e);
+      throw e;
     }
   },
 });

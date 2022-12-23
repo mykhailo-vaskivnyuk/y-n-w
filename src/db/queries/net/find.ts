@@ -1,15 +1,15 @@
-import { ITableNets, ITableNetsUsersData, ITableNodes } from '../../db.types';
+import { ITableNets, ITableNodes } from '../../db.types';
 import { TQuery } from '../../types';
 
 export interface IQueriesNetFind {
   byToken: TQuery<[
     ['token', string],
     ['user_id', number],
-  ], ITableNets & ITableNodes & ITableNetsUsersData>;
+  ], ITableNets & ITableNodes & { user_exists: number | null }>;
 }
 
 export const byToken = `
-  SELECT nets.net_id, nodes.*, nets_users_data.user_id
+  SELECT nets.net_id, nodes.*, nets_users_data.user_id AS user_exists
   FROM nodes
   JOIN users_nodes_invites ON
     nodes.node_id = users_nodes_invites.node_id

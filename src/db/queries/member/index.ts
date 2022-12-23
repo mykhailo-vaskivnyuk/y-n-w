@@ -1,29 +1,31 @@
-import { ITableUsersNodesInvites } from '../../db.types';
+import {
+  ITableNets, ITableNodes, ITableUsersNodesInvites,
+} from '../../db.types';
 import { TQuery } from '../../types';
 
 export interface IQueriesMember {
   find: TQuery<[
     ['user_node_id', number],
     ['member_node_id', number],
-  ], ITableUsersNodesInvites>;
+  ], ITableUsersNodesInvites & ITableNodes & ITableNets>;
   inviteCreate: TQuery<[
     ['node_id', number],
     ['user_id', number],
     ['member_name', string],
     ['token', string],
   ]>;
-  inviteCancel: TQuery<[
+  inviteRemove: TQuery<[
     ['node_id', number],
   ]>;
 }
 
 export const find = `
-  SELECT users_nodes_invites.node_id
+  SELECT users_nodes_invites.*, nodes.*, nets.net_id
   FROM nodes
-  LEFT JOIN users
-     ON nodes.user_id = users.user_id
-  LEFT JOIN users_nodes_invites
-    ON users_nodes_invites.node_id = nodes.node_id
+  JOIN nets ON
+    nets.node_id = nodes.first_node_id
+  LEFT JOIN users_nodes_invites ON
+    users_nodes_invites.node_id = nodes.node_id
   WHERE nodes.parent_node_id = $1 AND nodes.node_id = $2
 `;
 
@@ -37,7 +39,7 @@ export const inviteCreate = `
   VALUES ($1, $2, $3, $4)
 `;
 
-export const inviteCancel = `
+export const inviteRemove = `
   DELETE FROM users_nodes_invites
   WHERE node_id = $1
 `;

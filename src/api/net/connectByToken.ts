@@ -16,8 +16,8 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken | null> =
     const [result] = await execQuery.net.find.byToken([token, user_id]);
     if (!result) return null;
 
-    const { net_id, user_id: user_id_exists, ...node } = result;
-    if (user_id_exists) return { net_id, error: 'already connected' };
+    const { net_id, user_exists, ...node } = result;
+    if (user_exists) return { net_id, error: 'already connected' };
 
     const { node_id } = node;
 

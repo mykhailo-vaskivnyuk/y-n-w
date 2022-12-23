@@ -1,10 +1,9 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
 import {
-  INetViewResponse, INetResponse,
-  INetsResponse, IUserResponse, NetViewKeys,
+  INetResponse, INetsResponse, IUserResponse, NetViewKeys,
 } from '../api/types/types';
-import { INITIAL_NETS, INets } from './types';
+import { INITIAL_NETS, INets, IMember } from './types';
 import { AppStatus } from '../constants';
 import { HttpResponseError } from '../errors';
 import { EventEmitter } from '../event.emitter';
@@ -26,10 +25,10 @@ export class ClientApp extends EventEmitter {
   private allNets: INetsResponse = [];
   private nets: INets = INITIAL_NETS;
   private net: INetResponse = null;
-  private circle: INetViewResponse = [];
-  private tree: INetViewResponse = [];
+  private circle: IMember[] = [];
+  private tree: IMember[] = [];
   private netView?: NetViewKeys;
-  private memberPosition?: number;
+  private memberData?: IMember;
 
   account: ReturnType<typeof getAccountMethods>;
   netMethods: ReturnType<typeof getNetMethods>;
@@ -54,7 +53,7 @@ export class ClientApp extends EventEmitter {
       allNets: this.allNets,
       nets: this.nets,
       netView: this.netView,
-      memberPosition: this.memberPosition,
+      memberData: this.memberData,
     };
   }
 
@@ -97,7 +96,7 @@ export class ClientApp extends EventEmitter {
     this.setCircle([]);
     this.setTree([]);
     this.setNetView();
-    this.setMemberPosition();
+    this.setMember();
     if (net) {
       this.user!.user_state = 'INSIDE_NET';
       await this.netMethods.getCircle();
@@ -122,7 +121,7 @@ export class ClientApp extends EventEmitter {
     this.emit('nets', this.nets);
   }
 
-  protected setCircle(circle: INetViewResponse) {
+  protected setCircle(circle: IMember[]) {
     if (this.circle === circle) return;
     this.circle = circle;
     this.emit('circle', circle);
@@ -132,11 +131,11 @@ export class ClientApp extends EventEmitter {
     this.netView = netView;
   }
 
-  protected setMemberPosition(memberPosition?: number) {
-    this.memberPosition = memberPosition;
+  setMember(memberData?: IMember) {
+    this.memberData = memberData;
   }
 
-  protected setTree(tree: INetViewResponse) {
+  protected setTree(tree: IMember[]) {
     if (this.tree === tree) return;
     this.tree = tree;
     this.emit('tree', tree);

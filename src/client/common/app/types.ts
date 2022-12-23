@@ -2,6 +2,7 @@
 import * as T from '../api/types/types';
 import {
   INetViewResponse, INetsResponse, NetViewKeys,
+  IMemberResponse, MemberStatusKeys,
 } from '../api/types/types';
 import { AppStatus } from '../constants';
 import { HttpResponseError } from '../errors';
@@ -37,3 +38,8 @@ export const INITIAL_NETS = {
   siblingNets: [],
   childNets: [],
 } as INets;
+
+export type IMember = Omit<IMemberResponse, 'member_name'> & {
+  member_name: string;
+  memberStatus: MemberStatusKeys;
+};

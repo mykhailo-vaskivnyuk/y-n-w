@@ -66,6 +66,7 @@ export type ITableNodes = {
   node_date: string;
   blocked: boolean;
   changes: boolean;
+  user_id: number | null;
 }
 
 export type ITableUsersNodesInvites = {
