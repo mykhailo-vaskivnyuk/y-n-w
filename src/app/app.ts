@@ -70,7 +70,7 @@ export default class App {
   }
 
   private async setRouter() {
-    const { router } = this.config;
+    const { router, env } = this.config;
     const execQuery = this.db?.getQueries();
     if (!execQuery)
       throw new AppError('INIT_ERROR', 'DB is not INITIALIZED');
@@ -78,6 +78,7 @@ export default class App {
       logger,
       execQuery,
       console,
+      env,
     };
     const Router = loadModule(__dirname, router.path, context);
     this.router = await new Router(router).init();

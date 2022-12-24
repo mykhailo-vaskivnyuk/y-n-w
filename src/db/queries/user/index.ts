@@ -42,7 +42,7 @@ export const findByEmail = `
 
 export const findByToken = `
   SELECT * FROM users
-  LEFT JOIN users_tokens ON users.user_id = users_tokens.user_id
+  JOIN users_tokens ON users.user_id = users_tokens.user_id
   WHERE confirm_token=$1 OR restore_token=$1
 `;
 

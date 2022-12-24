@@ -19,16 +19,19 @@ export interface IRouterContext {
   execQuery: IDatabaseQueries;
   logger: ILogger;
   console?: typeof console;
+  env?: IConfig['env'];
 }
 
 export interface IGlobalMixins {
   execQuery: IDatabaseQueries;
   logger: ILogger;
   mailService: IMailService;
+  env: IConfig['env'];
 }
 
 declare global {
   const execQuery: IDatabaseQueries;
   const logger: ILogger;
   const mailService: IMailService;
+  const env: IConfig['env'];
 }

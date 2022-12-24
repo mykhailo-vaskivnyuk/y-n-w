@@ -21,5 +21,6 @@ export interface ICleanedEnv {
   STATIC_UNAVAILABLE: boolean;
   API_UNAVAILABLE: boolean;
   EXIT_ON_ERROR: boolean;
+  MAIL_CONFIRM_OFF: boolean;
 }
 export type CleanedEnvKeys = keyof ICleanedEnv;

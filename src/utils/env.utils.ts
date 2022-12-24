@@ -12,6 +12,7 @@ export const getEnv = () => {
     STATIC_UNAVAILABLE = false,
     API_UNAVAILABLE = false,
     EXIT_ON_ERROR = false,
+    MAIL_CONFIRM_OFF = false,
   } = env as Record<CleanedEnvKeys, any>;
 
   const cleanedEnvObj: ICleanedEnv = {
@@ -24,6 +25,7 @@ export const getEnv = () => {
     STATIC_UNAVAILABLE,
     API_UNAVAILABLE,
     EXIT_ON_ERROR,
+    MAIL_CONFIRM_OFF,
   };
 
   return cleanedEnvObj;
