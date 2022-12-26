@@ -1,5 +1,5 @@
 import { ITableUsers } from '../../../local/imports';
-import { UserStatusKeys } from '../../constants';
+import { UserStatusKeys } from './user.types';
 
 export type IUserResponse =
   | null

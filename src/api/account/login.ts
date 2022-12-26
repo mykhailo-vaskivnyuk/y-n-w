@@ -1,8 +1,7 @@
 import {
-  ILoginParams, IUserResponse,
+  ILoginParams, IUserResponse, UserStatusKeys,
 } from '../../client/common/api/types/types';
 import { THandler } from '../../router/types';
-import { UserStatusKeys } from '../../client/common/constants';
 import {
   LoginParamsSchema, UserResponseSchema,
 } from '../schema/schema';

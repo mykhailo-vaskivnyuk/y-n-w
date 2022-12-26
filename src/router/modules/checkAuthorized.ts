@@ -1,5 +1,7 @@
 import { TInputModule } from '../types';
-import { loggedInState, USER_STATUS_MAP } from '../../client/common/constants';
+import {
+  loggedInState, USER_STATUS_MAP,
+} from '../../client/common/api/types/types';
 import { HandlerError } from '../errors';
 
 const validateInput: TInputModule = () =>

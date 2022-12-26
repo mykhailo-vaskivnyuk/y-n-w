@@ -1,8 +1,7 @@
 import { THandler } from '../../router/types';
 import {
-  ITokenParams, IUserResponse,
+  ITokenParams, IUserResponse, UserStatusKeys,
 } from '../../client/common/api/types/types';
-import { UserStatusKeys } from '../../client/common/constants';
 import {
   TokenParamsSchema, UserResponseSchema,
 } from '../schema/schema';

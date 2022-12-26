@@ -8,7 +8,7 @@ import { ITableNets, ITableNodes, ITableUsers } from '../db/db.types';
 import { IMailService } from '../services/mail/types';
 import {
   PartialUserStatusKeys, UserStatusKeys,
-} from '../client/common/constants';
+} from '../client/common/api/types/types';
 import {
   TInputModulesKeys, TOutputModulesKeys, TServicesKeys,
 } from './constants';
@@ -51,7 +51,6 @@ export type THandler<
   responseSchema: Q extends IObject
     ?
       | Record<keyof Q, TJoiSchema>
-      // | Record<keyof Q, TJoiSchema | TJoiSchemaArr>
       | (Record<keyof Q, TJoiSchema> | Joi.Schema)[]
     : Q extends Array<any> ? | Record<keyof Q[number], TJoiSchema> : TJoiSchema;
   allowedForUser?: PartialUserStatusKeys;
@@ -59,7 +58,6 @@ export type THandler<
 
 export type IContext = IServices & { origin: string };
 export type TJoiSchema = Joi.Schema | Joi.Schema[];
-// export type TJoiSchemaArr = Record<string, TJoiSchema>[];
 export type THandlerSchema = THandler['responseSchema' | 'paramsSchema'];
 
 export interface IServices {

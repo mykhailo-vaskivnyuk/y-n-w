@@ -1,8 +1,7 @@
 import {
-  ISignupParams, IUserResponse,
+  ISignupParams, IUserResponse, UserStatusKeys,
 } from '../../client/common/api/types/types';
 import { THandler } from '../../router/types';
-import { UserStatusKeys } from '../../client/common/constants';
 import {
   SignupParamsSchema, UserResponseSchema,
 } from '../schema/schema';
