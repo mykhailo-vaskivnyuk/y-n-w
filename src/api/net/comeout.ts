@@ -5,7 +5,7 @@ const comeout: THandler<never, boolean> =
   async ({ session }) => {
     session.delete('net_id');
     session.delete('node_id');
-    session.write('user_state', 'LOGGEDIN');
+    session.write('user_status', 'LOGGEDIN');
     return true;
   };
 comeout.responseSchema = Joi.boolean();

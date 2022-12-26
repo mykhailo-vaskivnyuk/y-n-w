@@ -81,7 +81,7 @@ export class ClientApp extends EventEmitter {
   protected async setUser(user: IUserResponse) {
     if (this.user === user) return;
     this.user = user;
-    if (user && user.user_state !== 'NOT_CONFIRMED') {
+    if (user && user.user_status !== 'NOT_CONFIRMED') {
       await this.netMethods.getAllNets();
       this.netMethods.getNets();
     } else {
@@ -98,12 +98,12 @@ export class ClientApp extends EventEmitter {
     this.setNetView();
     this.setMember();
     if (net) {
-      this.user!.user_state = 'INSIDE_NET';
+      this.user!.user_status = 'INSIDE_NET';
       await this.netMethods.getCircle();
       await this.netMethods.getTree();
       this.emit('user', { ...this.user });
     } else if (this.user) {
-      this.user!.user_state = 'LOGGEDIN';
+      this.user!.user_status = 'LOGGEDIN';
       this.emit('user', { ...this.user });
     }
     this.netMethods.getNets();

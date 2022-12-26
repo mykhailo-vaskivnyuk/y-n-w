@@ -1,10 +1,10 @@
 import { ITableUsers } from '../../../local/imports';
-import { UserStateKeys } from '../../constants';
+import { UserStatusKeys } from '../../constants';
 
 export type IUserResponse =
   | null
   | Omit<ITableUsers, 'user_id' | 'password'> & {
-      user_state: UserStateKeys;
+      user_status: UserStatusKeys;
     };
 
 export type ISignupParams = {

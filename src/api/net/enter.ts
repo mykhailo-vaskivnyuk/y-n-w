@@ -16,7 +16,7 @@ const enter: THandler<INetReadParams, INetResponse> =
     const { node_id } = node!;
     session.write('net_id', net_id);
     session.write('node_id', node_id);
-    session.write('user_state', 'INSIDE_NET');
+    session.write('user_status', 'INSIDE_NET');
     return net;
   };
 enter.paramsSchema = NetReadParamsSchema;

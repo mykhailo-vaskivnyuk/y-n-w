@@ -12,7 +12,7 @@ const leave: THandler = async ({ session }) => {
   for (const node of nodes) await updateCountOfMemebers(node!, -1);
   session.delete('net_id');
   session.delete('node_id');
-  session.write('user_state', 'LOGGEDIN');
+  session.write('user_status', 'LOGGEDIN');
   return true;
 };
 leave.responseSchema = Joi.boolean();

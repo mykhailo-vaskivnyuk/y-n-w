@@ -2,7 +2,7 @@ import { THandler } from '../../router/types';
 import {
   ITokenParams, IUserResponse,
 } from '../../client/common/api/types/types';
-import { UserStateKeys } from '../../client/common/constants';
+import { UserStatusKeys } from '../../client/common/constants';
 import {
   TokenParamsSchema, UserResponseSchema,
 } from '../schema/schema';
@@ -14,10 +14,10 @@ const confirm: THandler<ITokenParams, IUserResponse> = async (
   if (!user) return null;
   const { user_id } = user;
   await execQuery.user.token.remove([user_id]);
-  const user_state: UserStateKeys = 'LOGGEDIN';
+  const user_status: UserStatusKeys = 'LOGGEDIN';
   session.write('user_id', user_id);
-  session.write('user_state', user_state);
-  return { ...user, user_state };
+  session.write('user_status', user_status);
+  return { ...user, user_status };
 };
 confirm.paramsSchema = TokenParamsSchema;
 confirm.responseSchema = UserResponseSchema;

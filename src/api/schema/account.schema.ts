@@ -11,7 +11,7 @@ export const UserResponseSchema = [
     name: [Joi.string(), JOI_NULL],
     mobile: [Joi.string(), JOI_NULL],
     net_name: [Joi.string(), JOI_NULL],
-    user_state: Joi.string(),
+    user_status: Joi.string(),
     net_id: Joi.number(),
   } as Record<keyof OmitNull<IUserResponse>, TJoiSchema>,
 ];

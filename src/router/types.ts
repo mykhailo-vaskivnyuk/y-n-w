@@ -7,7 +7,7 @@ import {
 import { ITableNets, ITableNodes, ITableUsers } from '../db/db.types';
 import { IMailService } from '../services/mail/types';
 import {
-  PartialUserStateKeys, UserStateKeys,
+  PartialUserStatusKeys, UserStatusKeys,
 } from '../client/common/constants';
 import {
   TInputModulesKeys, TOutputModulesKeys, TServicesKeys,
@@ -54,7 +54,7 @@ export type THandler<
       // | Record<keyof Q, TJoiSchema | TJoiSchemaArr>
       | (Record<keyof Q, TJoiSchema> | Joi.Schema)[]
     : Q extends Array<any> ? | Record<keyof Q[number], TJoiSchema> : TJoiSchema;
-  allowedForUser?: PartialUserStateKeys;
+  allowedForUser?: PartialUserStatusKeys;
 };
 
 export type IContext = IServices & { origin: string };
@@ -71,7 +71,7 @@ export type ISessionContent = Partial<{
   user_id: ITableUsers['user_id'];
   node_id: ITableNodes['node_id'];
   net_id: ITableNets['net_id'];
-  user_state: UserStateKeys;
+  user_status: UserStatusKeys;
 }>;
 
 export type TInputModule<T = any> = (config: T) =>

@@ -32,7 +32,7 @@ export const NetsResponseSchema =
 export const MemberResponseSchema = {
   node_id: Joi.number(),
   name: [Joi.string(), JOI_NULL],
-  user_state: Joi.string(),
+  user_status: Joi.string(),
   member_name: [Joi.string(), JOI_NULL],
   token: [Joi.string(), JOI_NULL],
 } as Record<keyof IMemberResponse, TJoiSchema>;

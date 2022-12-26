@@ -40,7 +40,7 @@ const create: THandler<INetCreateParams, INetResponse> =
     /* create net user data */
     await execQuery.net.user.createData([net_id, user_id!]);
 
-    session.write('user_state', 'INSIDE_NET');
+    session.write('user_status', 'INSIDE_NET');
     return { ...net!, ...netData! };
   };
 create.paramsSchema = NetCreateParamsSchema;
