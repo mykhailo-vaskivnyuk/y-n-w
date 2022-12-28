@@ -9,7 +9,10 @@ export interface IQueriesNetFind {
 }
 
 export const byToken = `
-  SELECT nets.net_id, nodes.*, nets_users_data.user_id AS user_exists
+  SELECT
+    nets.net_id,
+    nodes.*,
+    nets_users_data.user_id AS user_exists
   FROM nodes
   JOIN users_nodes_invites ON
     nodes.node_id = users_nodes_invites.node_id

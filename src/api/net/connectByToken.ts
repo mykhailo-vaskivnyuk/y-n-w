@@ -13,10 +13,10 @@ type INetConnectByToken = {
 const connectByToken: THandler<ITokenParams, INetConnectByToken> =
   async ({ session }, { token }) => {
     const user_id = session.read('user_id')!;
-    const [result] = await execQuery.net.find.byToken([token, user_id]);
-    if (!result) return null;
+    const [net] = await execQuery.net.find.byToken([token, user_id]);
+    if (!net) return null;
 
-    const { net_id, user_exists, ...node } = result;
+    const { net_id, user_exists, ...node } = net;
     if (user_exists) return { net_id, error: 'already connected' };
 
     const { node_id } = node;

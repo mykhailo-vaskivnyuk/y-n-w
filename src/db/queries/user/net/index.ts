@@ -9,7 +9,10 @@ export interface IQueriesUserNet {
   find: TQuery<[
     ['user_id', number],
     ['net_id', number],
-  ], ITableNodes & ITableUsersNodesInvites>
+  ],
+    ITableNets &
+    ITableNodes &
+    ITableUsersNodesInvites>
   read: TQuery<[
     ['user_id', number],
     ['net_id', number],
@@ -31,8 +34,10 @@ export interface IQueriesUserNet {
 }
 
 export const find = `
-  SELECT nodes.node_id, users_nodes_invites.token
+  SELECT nets.net_level, nodes.node_id, users_nodes_invites.token
   FROM nets_users_data
+  INNER JOIN nets ON
+    nets.net_id = nets_users_data.net_id
   INNER JOIN nodes ON
     nodes.user_id = nets_users_data.user_id 
   LEFT JOIN users_nodes_invites ON

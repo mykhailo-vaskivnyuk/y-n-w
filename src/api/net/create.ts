@@ -1,18 +1,24 @@
 import {
   INetCreateParams, INetResponse,
 } from '../../client/common/api/types/types';
+import { MAX_NET_LEVEL } from '../../client/common/api/constants';
 import { HandlerError } from '../../router/errors';
 import { THandler } from '../../router/types';
 import { NetResponseSchema, NetCreateParamsSchema } from '../schema/schema';
-import { findUserNet } from '../utils/net.utils';
+import { findUserNet, getNetUserStatus } from '../utils/net.utils';
 import { createTree } from '../utils/utils';
 
 const create: THandler<INetCreateParams, INetResponse> =
   async ({ session }, { net_id: parentNetId, name }) => {
     const user_id = session.read('user_id')!;
     const parentNet = await findUserNet(user_id, parentNetId);
-    if (parentNetId && !parentNet) throw new HandlerError('NOT_FOUND');
-    if (parentNet?.token) return null;
+    if (parentNetId) {
+      if (!parentNet) throw new HandlerError('NOT_FOUND');
+      const user_status = getNetUserStatus(parentNet);
+      if (user_status === 'INVITING') return null;
+      const { net_level } = parentNet;
+      if (net_level >= MAX_NET_LEVEL) return null;
+    }
 
     /* create node */
     const date = new Date().toISOString();
