@@ -8,9 +8,9 @@ import { TokenParamsSchema } from '../schema/schema';
 type INetConnectByToken = {
   net_id: number;
   error?: 'already connected';
-}
+} | null
 
-const connectByToken: THandler<ITokenParams, INetConnectByToken | null> =
+const connectByToken: THandler<ITokenParams, INetConnectByToken> =
   async ({ session }, { token }) => {
     const user_id = session.read('user_id')!;
     const [result] = await execQuery.net.find.byToken([token, user_id]);

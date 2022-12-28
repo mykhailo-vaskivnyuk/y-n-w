@@ -1,10 +1,9 @@
 import Joi, { ObjectSchema } from 'joi';
 import { IObject } from '../types/types';
 import {
-  IOperation, TOperationResponse,
-  IParams,
+  IOperation, TOperationResponse, IParams,
 } from '../types/operation.types';
-import { ITableNets, ITableNodes, ITableUsers } from '../db/db.types';
+import { ITableUsers } from '../db/db.types';
 import { IMailService } from '../services/mail/types';
 import {
   PartialUserStatusKeys, UserStatusKeys,
@@ -50,15 +49,20 @@ export type THandler<
   schema?: ObjectSchema<T>;
   responseSchema: Q extends IObject
     ?
-      | Record<keyof Q, TJoiSchema>
-      | (Record<keyof Q, TJoiSchema> | Joi.Schema)[]
-    : Q extends Array<any> ? | Record<keyof Q[number], TJoiSchema> : TJoiSchema;
+      | TObjectSchema<Q>
+      | (TObjectSchema<Q> | Joi.Schema)[]
+    : Q extends Array<IObject> ? | TObjectSchema<Q[number]> : TJoiSchema;
   allowedForUser?: PartialUserStatusKeys;
 };
 
-export type IContext = IServices & { origin: string };
+export type TObjectSchema<T extends IObject> = {
+  [K in keyof T]: T[K] extends IObject ? TObjectSchema<T[K]> : TJoiSchema;
+}
+export type TArraySchema<T extends Array<any>> = TObjectSchema<T[number]>;
 export type TJoiSchema = Joi.Schema | Joi.Schema[];
 export type THandlerSchema = THandler['responseSchema' | 'paramsSchema'];
+
+export type IContext = IServices & { origin: string };
 
 export interface IServices {
   session: Session<ISessionContent>;
@@ -67,8 +71,6 @@ export interface IServices {
 
 export type ISessionContent = Partial<{
   user_id: ITableUsers['user_id'];
-  node_id: ITableNodes['node_id'];
-  net_id: ITableNets['net_id'];
   user_status: UserStatusKeys;
 }>;
 

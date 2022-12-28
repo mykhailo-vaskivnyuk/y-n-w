@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Writable } from 'node:stream';
 import Joi from 'joi';
 import { IRoutes, TJoiSchema, THandler, THandlerSchema } from './types';
@@ -25,7 +26,7 @@ export const getTypeName = (
   const schema = type === 'params' ?
     handler.paramsSchema :
     handler.responseSchema;
-  const types = getTypes(schema);
+  const types = getTypes(apiTypes, schema);
   if (!types) return '';
 
   const predefinedSchema = findPredefinedSchema(apiTypes, schema);
@@ -44,17 +45,39 @@ export const getTypeName = (
 export const outputSchemaToSchema = (
   schema: THandler['responseSchema'],
 ): TJoiSchema => {
+  if (isJoiSchema(schema)) return schema;
   if (Array.isArray(schema)) {
     return schema.map((item) => outputSchemaToSchema(item) as Joi.Schema);
   }
-  return isJoiSchema(schema) ? schema : Joi.object(schema);
+
+  const resultSchema = { ...schema };
+  for (const key in resultSchema) {
+    if (isJoiSchema(resultSchema[key])) continue;
+    Object.assign(resultSchema, {
+      [key]: outputSchemaToSchema(
+        resultSchema[key] as THandler['responseSchema'],
+      ),
+    });
+  }
+  return Joi.object(resultSchema);
 };
 
+const findPredefinedSchema = (
+  apiTypes: Record<string, TJoiSchema>,
+  schema: THandlerSchema,
+) => Object
+  .keys(apiTypes)
+  .find((key) => apiTypes[key] === schema);
+
 const getTypes = (
+  apiTypes: Record<string, TJoiSchema>,
   schema?: THandlerSchema,
-  indent = ''
+  indent = '',
 ): string => {
   if (!schema) return '';
+
+  const predefinedSchema = findPredefinedSchema(apiTypes, schema);
+  if (predefinedSchema) return 'P.I' + predefinedSchema.replace('Schema', '');
 
   if (isJoiSchema(schema)) {
     let type = schema.type || '';
@@ -65,15 +88,15 @@ const getTypes = (
 
   if (Array.isArray(schema)) {
     return schema
-      .map((item) => getTypes(item, indent))
+      .map((item) => getTypes(apiTypes, item, indent))
       .join(' | ');
   }
 
   const schemaEntries = Object.entries(schema);
   const types = schemaEntries
     .map(([key, item]) => {
-      const types = getTypes(item, indent);
-      !(item as any)._flags?.presence && (key += '?');
+      const types = getTypes(apiTypes, item, indent + '  ');
+      isJoiSchema(item) && !(item as any)._flags?.presence && (key += '?');
       return tpl.strTypes(indent, key, types);
     });
   return '{' + types.join('') + '\n' + indent + '}';
@@ -89,10 +112,3 @@ const getSchemaType = (schema: Joi.Schema) => {
   const [type] = [...schemaValuesSet.values()];
   return `${type}`;
 };
-
-const findPredefinedSchema = (
-  apiTypes: Record<string, TJoiSchema>,
-  schema: THandlerSchema,
-) => Object
-  .keys(apiTypes)
-  .find((key) => apiTypes[key] === schema);

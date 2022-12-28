@@ -42,8 +42,9 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
   async inviteCreate(args: Pick<IMemberInviteParams, 'member_name'>) {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const { netView, memberData } = parent.getState();
+      const { net, netView, memberData } = parent.getState();
       const token = await parent.api.member.invite.create({
+        ...net!,
         ...memberData!,
         ...args,
       });
@@ -61,8 +62,9 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
   async inviteCancel() {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const { netView, memberData } = parent.getState();
-      const success = await parent.api.member.invite.cancel(memberData!);
+      const { net, netView, memberData } = parent.getState();
+      const success = await parent.api.member.invite
+        .cancel({ ...net!, ...memberData! });
       if (success) {
         await parent.netMethods.getTree();
         await this.find(netView!, memberData!.node_id);
@@ -77,8 +79,9 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
   async inviteConfirm() {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const { netView, memberData } = parent.getState();
-      const success = await parent.api.member.invite.confirm(memberData!);
+      const { net, netView, memberData } = parent.getState();
+      const success = await parent.api.member.invite
+        .confirm({ ...net!, ...memberData! });
       if (success) {
         await parent.netMethods.getTree();
         await this.find(netView!, memberData!.node_id);
@@ -94,8 +97,9 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
   async inviteRefuse() {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const { netView, memberData } = parent.getState();
-      const success = await parent.api.member.invite.refuse(memberData!);
+      const { net, netView, memberData } = parent.getState();
+      const success = await parent.api.member.invite
+        .refuse({ ...net!, ...memberData! });
       if (success) {
         await parent.netMethods.getTree();
         await this.find(netView!, memberData!.node_id);

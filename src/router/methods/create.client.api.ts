@@ -32,6 +32,7 @@ export const createClientApi = (config: IRouterConfig, routes: IRoutes) => {
     const apiTypesPath = path.resolve(config.apiPath, 'schema/schema.js');
     const apiTypes = require(apiTypesPath) as Record<string, TJoiSchema>;
     apiStream.write(tpl.strGetApi(typesFileNameBase));
+    typesStream.write(tpl.tplImport);
     createJs(apiTypes, apiStream, typesStream)(routes);
     apiStream.write(');\n');
     apiStream.close();

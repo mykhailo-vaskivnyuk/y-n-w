@@ -1,18 +1,27 @@
-import { INetViewResponse } from '../../client/common/api/types/types';
+import {
+  INetReadParams, INetViewResponse,
+} from '../../client/common/api/types/types';
 import { THandler } from '../../router/types';
-import { NetViewResponseSchema } from '../schema/schema';
+import { NetReadParamsSchema, NetViewResponseSchema } from '../schema/schema';
+import { HandlerError } from '../../router/errors';
+import { findUserNet } from '../utils/net.utils';
 
-export const getCircle: THandler<never, INetViewResponse> =
-  async ({ session }) => {
-    const node_id = session.read('node_id')!;
-    return await execQuery.net.circle.get([node_id]);
+export const getCircle: THandler<INetReadParams, INetViewResponse> =
+  async ({ session }, { net_id }) => {
+    const user_id = session.read('user_id')!;
+    const net = await findUserNet(user_id, net_id);
+    if (!net) throw new HandlerError('NOT_FOUND');
+    return await execQuery.net.circle.get([net.node_id]);
   };
+getCircle.paramsSchema = NetReadParamsSchema;
 getCircle.responseSchema = NetViewResponseSchema;
 
-
-export const getTree: THandler<never, INetViewResponse> =
-  async ({ session }) => {
-    const node_id = session.read('node_id')!;
-    return await execQuery.net.tree.get([node_id]);
+export const getTree: THandler<INetReadParams, INetViewResponse> =
+  async ({ session }, { net_id }) => {
+    const user_id = session.read('user_id')!;
+    const net = await findUserNet(user_id, net_id);
+    if (!net) throw new HandlerError('NOT_FOUND');
+    return await execQuery.net.tree.get([net.node_id]);
   };
+getTree.paramsSchema = NetReadParamsSchema;
 getTree.responseSchema = NetViewResponseSchema;

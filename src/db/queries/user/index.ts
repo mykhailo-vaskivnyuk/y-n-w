@@ -2,7 +2,6 @@ import { ITableUsers, ITableUsersTokens } from '../../db.types';
 import { TQuery } from '../../types';
 import { IQueriesUserNet } from './net';
 import { IQueriesUserNets } from './nets/get';
-import { IQueriesUserNode } from './node/findByNet';
 import { IQueriesUserToken } from './token';
 
 export interface IQueriesUser {
@@ -24,7 +23,6 @@ export interface IQueriesUser {
   ]>;
   net:IQueriesUserNet;
   nets: IQueriesUserNets;
-  node:IQueriesUserNode;
   token: IQueriesUserToken;
 }
 

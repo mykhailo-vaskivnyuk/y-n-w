@@ -47,8 +47,6 @@ export const getApi = (
     },
   },
   'net': {
-    'comeout': () => fetch<boolean>('/net/comeout'),
-
     'connectByToken': (options: P.ITokenParams) =>
       fetch<Q.TNetConnectByTokenResponse>('/net/connectByToken', options),
 
@@ -58,15 +56,22 @@ export const getApi = (
     'enter': (options: P.INetReadParams) =>
       fetch<P.INetResponse>('/net/enter', options),
 
-    'getCircle': () => fetch<P.INetViewResponse>('/net/getCircle'),
+    'getCircle': (options: P.INetReadParams) =>
+      fetch<P.INetViewResponse>('/net/getCircle', options),
 
-    'getTree': () => fetch<P.INetViewResponse>('/net/getTree'),
+    'getTree': (options: P.INetReadParams) =>
+      fetch<P.INetViewResponse>('/net/getTree', options),
 
-    'leave': () => fetch<boolean>('/net/leave'),
+    'leave': (options: P.INetReadParams) =>
+      fetch<boolean>('/net/leave', options),
 
   },
   'scripts': {
     'script.js': () => fetch<Q.TScriptsScriptjsResponse>('/scripts/script.js'),
+
+  },
+  'test': {
+    'data': () => fetch<Q.TTestDataResponse>('/test/data'),
 
   },
   'user': {

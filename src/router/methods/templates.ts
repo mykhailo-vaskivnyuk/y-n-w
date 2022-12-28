@@ -1,6 +1,6 @@
 import { format } from 'node:util';
 
-const tplImport = 'import * as P from \'./types\';\n';
+export const tplImport = 'import * as P from \'./types\';\n\n';
 const tplGetApi =
 `/* eslint-disable max-len */
 import * as P from './types/types';
@@ -17,7 +17,6 @@ const tplMethodNoTypes = '() => fetch<%s>(\'%s\'),\n';
 const tplExportTypes = 'export type %s = %s;\n';
 const tplTypes = '\n%s  %s: %s;';
 
-export const strImport = (typeName: string) => format(tplImport, typeName);
 export const strGetApi = (fileName: string) => format(tplGetApi, fileName);
 export const strKey = (
   indent: string,

@@ -1,13 +1,18 @@
 import Joi from 'joi';
+import { IMemberConfirmParams } from '../../../client/common/api/types/types';
+import { HandlerError } from '../../../router/errors';
 import { THandler } from '../../../router/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../utils/member.utils';
+import { findUserNet } from '../../utils/net.utils';
 
-const cancel: THandler<{ node_id: number }, boolean> = async (
-  { session }, { node_id }
+const cancel: THandler<IMemberConfirmParams, boolean> = async (
+  { session }, { net_id, node_id }
 ) => {
-  const user_node_id = session.read('node_id')!;
-  const [member] = await execQuery.member.find([user_node_id, node_id]);
+  const user_id = session.read('user_id')!;
+  const net = await findUserNet(user_id, net_id);
+  if (!net) throw new HandlerError('NOT_FOUND');
+  const [member] = await execQuery.member.find([net.node_id, node_id]);
   if (!member) return false; // bad request
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'INVITED') return false; // bad request

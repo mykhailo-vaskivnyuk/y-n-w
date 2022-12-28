@@ -38,6 +38,7 @@ export type ITableNets = {
   parent_net_id: number | null;
   first_net_id: number;
   count_of_nets: number;
+  node_id: number;
 }
 
 export type ITableNetsData = {
@@ -71,6 +72,7 @@ export type ITableNodes = {
 
 export type ITableUsersNodesInvites = {
   node_id: number;
+  user_id: number;
   member_name: string;
   token: string;
 }

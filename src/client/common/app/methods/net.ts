@@ -5,14 +5,16 @@ import { INITIAL_NETS, IClientAppThis, IMember } from '../types';
 import { AppStatus } from '../../constants';
 
 export const getNetMethods = (parent: IClientAppThis) => ({
-  async create(args: INetCreateParams) {
+  async create(args: Omit<INetCreateParams, 'net_id'>) {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const net = await parent.api.net.create(args);
-      if (net) {
-        this.getAllNets();
-        await parent.setNet(net);
-      }
+      const { net: parentNet } = parent.getState();
+      const net = await parent.api.net.create({
+        net_id: null,
+        ...parentNet,
+        ...args,
+      });
+      if (net) this.getAllNets();
       parent.setStatus(AppStatus.READY);
       return net;
     } catch (e: any) {
@@ -36,10 +38,9 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   async comeout() {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const success = await parent.api.net.comeout();
-      if (success) await parent.setNet(null);
+      parent.setNet(null);
       parent.setStatus(AppStatus.READY);
-      return success;
+      return true;
     } catch (e: any) {
       parent.setError(e);
       throw e;
@@ -49,7 +50,8 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   async leave() {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const success = await parent.api.net.leave();
+      const { net } = parent.getState();
+      const success = await parent.api.net.leave(net!);
       if (success) {
         await this.getAllNets();
         await parent.setNet(null);
@@ -65,7 +67,8 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   async getCircle() {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const result = await parent.api.net.getCircle();
+      const { net } = parent.getState();
+      const result = await parent.api.net.getCircle(net!);
       const circle: IMember[] = result.map((member, memberPosition) => {
         const memberStatus = parent.member.getStatus(member);
         const memberName = parent
@@ -83,7 +86,8 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   async getTree() {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const result = await parent.api.net.getTree();
+      const { net } = parent.getState();
+      const result = await parent.api.net.getTree(net!);
       const tree: IMember[] = result.map((member, memberPosition) => {
         const memberStatus = parent.member.getStatus(member);
         const memberName = parent

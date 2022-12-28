@@ -14,7 +14,8 @@ export interface IObject {
   [key: string | number | symbol]:
     | TPrimitiv
     | IObject
-    | (TPrimitiv | IObject)[]
+    | TPrimitiv[]
+    | IObject[]
     | Readable;
 }
 

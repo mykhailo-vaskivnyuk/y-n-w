@@ -9,5 +9,5 @@ export const USER_STATUS_MAP = {
 export type UserStatusKeys = keyof typeof USER_STATUS_MAP;
 export type PartialUserStatusKeys = keyof Pick<typeof USER_STATUS_MAP,
   | 'NOT_LOGGEDIN'
-  | 'NOT_CONFIRMED'>
+  | 'NOT_CONFIRMED'>;
 export const loggedInState = USER_STATUS_MAP.LOGGEDIN;
