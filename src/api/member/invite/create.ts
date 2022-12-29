@@ -4,8 +4,8 @@ import { THandler } from '../../../router/types';
 import { IMemberInviteParams } from '../../../client/common/api/types/types';
 import { MemberInviteParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../utils/member.utils';
-import { createUnicCode } from '../../../utils/crypto';
 import { findUserNet, getNetUserStatus } from '../../utils/net.utils';
+import { createUnicCode } from '../../../utils/crypto';
 import { HandlerError } from '../../../router/errors';
 
 const create: THandler<IMemberInviteParams, string | null> = async (

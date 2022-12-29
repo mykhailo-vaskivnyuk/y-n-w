@@ -12,7 +12,8 @@ const leave: THandler<INetReadParams> = async ({ session }, { net_id }) => {
   if (!net) throw new HandlerError('NOT_FOUND');
   const nodes = await execQuery.user.net.getNodes([user_id!, net_id!]);
   await execQuery.net.nodes.removeUser([net_id!, user_id!]);
-  await execQuery.user.net.removeInvites([net_id!, user_id!]);
+  await execQuery.user.members.removeInvites([net_id!, user_id!]);
+  await execQuery.user.members.removeData([null, user_id!]);
   await execQuery.net.user.remove([net_id!, user_id!]);
   for (const node of nodes) await updateCountOfMemebers(node!, -1);
   return true;

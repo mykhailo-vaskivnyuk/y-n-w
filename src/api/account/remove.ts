@@ -7,6 +7,8 @@ const remove: THandler = async ({ session }) => {
   await session.clear();
   const nodes = await execQuery.user.net.getNodes([user_id!, null]);
   await execQuery.net.nodes.removeUser([null, user_id!]);
+  await execQuery.user.members.removeInvites([null, user_id!]);
+  await execQuery.user.members.removeData([null, user_id!]);
   await execQuery.user.remove([user_id!]);
   for (const node of nodes) await updateCountOfMemebers(node!, -1);
   return true;

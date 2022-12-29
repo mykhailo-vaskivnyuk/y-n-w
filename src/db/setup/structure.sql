@@ -87,7 +87,7 @@ CREATE TABLE public.nets_users_data (
 ALTER TABLE public.nets_users_data OWNER TO merega;
 
 --
--- TOC entry
+--
 -- Name: users_nodes_invites; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -99,6 +99,20 @@ CREATE TABLE public.users_nodes_invites (
 );
 
 ALTER TABLE public.users_nodes_invites OWNER TO merega;
+
+--
+--
+-- Name: users_members; Type: TABLE; Schema: public; Owner: merega
+--
+
+CREATE TABLE public.users_members (
+    user_id bigint NOT NULL,
+    node_id bigint NOT NULL,
+    dislike bit(1) DEFAULT '0'::"bit" NOT NULL
+);
+
+
+ALTER TABLE public.users_members OWNER TO merega;
 
 --
 -- TOC entry 213 (class 1259 OID 25097)
@@ -175,8 +189,7 @@ CREATE TABLE public.users (
     email character varying(50) NOT NULL,
     name character varying(50) DEFAULT NULL::character varying,
     mobile character varying(255) DEFAULT NULL::character varying,
-    password character varying(255) DEFAULT NULL::character varying,
-    net_name character varying(50) DEFAULT NULL::character varying
+    password character varying(255) DEFAULT NULL::character varying
 );
 
 
@@ -249,13 +262,23 @@ ALTER TABLE ONLY public.nodes
 
 
 --
--- TOC entry
--- Name: nodes pk_users_nodes_invites; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+-- Name: users_nodes_invites pk_users_nodes_invites; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.users_nodes_invites
-    ADD CONSTRAINT pk_users_nodes_invites PRIMARY KEY (node_id),
-    ADD CONSTRAINT uk_users_nodes_invites_token UNIQUE (token);
+    ADD CONSTRAINT pk_users_nodes_invites PRIMARY KEY (node_id);
+--  ADD CONSTRAINT uk_users_nodes_invites_token UNIQUE (token);
+
+
+--
+--
+-- Name: users_members pk_users_members; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.users_members
+    ADD CONSTRAINT pk_users_members PRIMARY KEY (user_id, node_id);
+
 
 --
 -- TOC entry 3228 (class 2606 OID 25134)
@@ -309,6 +332,12 @@ ALTER TABLE ONLY public.nets
 
 CREATE UNIQUE INDEX users_email_idx ON public.users USING btree (email);
 
+--
+--
+-- Name: users_nodes_invites_token_idx; Type: INDEX; Schema: public; Owner: merega
+--
+
+CREATE UNIQUE INDEX users_nodes_invites_token_idx ON public.users_nodes_invites USING btree (token);
 
 --
 -- TOC entry 3237 (class 2606 OID 25142)
@@ -356,13 +385,25 @@ ALTER TABLE ONLY public.nodes
 
 
 --
--- TOC entry 3240 (class 2606 OID 25162)
--- Name: nodes fk_nodes_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
+--
+-- Name: users_nodes_invites fk_users_nodes_invites_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
+-- Name: users_nodes_invites fk_users_nodes_invites_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.users_nodes_invites
     ADD CONSTRAINT fk_users_nodes_invites_node FOREIGN KEY (node_id) REFERENCES public.nodes(node_id),
     ADD CONSTRAINT fk_users_nodes_invites_user FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+
+--
+--
+-- Name: users_members fk_users_members_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
+-- Name: users_members fk_users_members_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.users_members
+    ADD CONSTRAINT fk_users_members_user FOREIGN KEY (user_id) REFERENCES public.users(user_id),
+    ADD CONSTRAINT fk_users_members_node FOREIGN KEY (node_id) REFERENCES public.nodes(node_id);
 
 
 --

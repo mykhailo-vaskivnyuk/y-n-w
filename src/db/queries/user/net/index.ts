@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { DbRecordOrNull } from '../../../../client/common/types';
 import {
   ITableNets, ITableNetsData, ITableNetsUsersData,
@@ -27,10 +28,6 @@ export interface IQueriesUserNet {
     ['user_id', number],
     ['net_id', number | null],
   ], ITableNodes>;
-  removeInvites: TQuery<[
-    ['net_id', number | null],
-    ['user_id', number],
-  ]>;
 }
 
 export const find = `
@@ -76,24 +73,4 @@ export const getNodes = `
       )
     )
   ORDER BY nets.net_level DESC
-`;
-
-export const removeInvites = `
-  DELETE FROM users_nodes_invites
-  WHERE user_id = $2 AND node_id IN (
-    SELECT nodes.node_id
-    FROM nodes
-    LEFT JOIN nets ON nodes.first_node_id = nets.node_id
-    WHERE
-      nodes.user_id = $1 AND (
-        (
-          ($2 + 1) NOTNULL AND (
-            nets.net_id = $2 OR
-            nets.net_level > (SELECT net_level FROM nets WHERE net_id = $2)
-          )
-        ) OR (
-          ($2 + 1) ISNULL AND true
-        )
-      )
-  )
 `;

@@ -1,11 +1,11 @@
 import Joi from 'joi';
 import { THandler } from '../../../router/types';
+import { IMemberConfirmParams } from '../../../client/common/api/types/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { updateCountOfMemebers } from '../../utils/utils';
 import { getMemberStatus } from '../../utils/member.utils';
-import { IMemberConfirmParams } from '../../../client/common/api/types/types';
-import { HandlerError } from '../../../router/errors';
 import { findUserNet } from '../../utils/net.utils';
+import { HandlerError } from '../../../router/errors';
 
 const refuse: THandler<IMemberConfirmParams, boolean> = async (
   { session }, { net_id, node_id }

@@ -31,6 +31,16 @@ export const getApi = (
   'health': () => fetch<string>('/health'),
 
   'member': {
+    'data': {
+      'dislike': {
+        'set': (options: P.IMemberConfirmParams) =>
+          fetch<boolean>('/member/data/dislike/set', options),
+
+        'unSet': (options: P.IMemberConfirmParams) =>
+          fetch<boolean>('/member/data/dislike/unSet', options),
+
+      },
+    },
     'invite': {
       'cancel': (options: P.IMemberConfirmParams) =>
         fetch<boolean>('/member/invite/cancel', options),

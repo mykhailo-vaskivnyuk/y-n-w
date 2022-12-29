@@ -2,6 +2,7 @@ import {
   ITableNets, ITableNodes, ITableUsersNodesInvites,
 } from '../../db.types';
 import { TQuery } from '../../types';
+import { IQueriesMemberData } from './data';
 
 export interface IQueriesMember {
   find: TQuery<[
@@ -17,6 +18,7 @@ export interface IQueriesMember {
   inviteRemove: TQuery<[
     ['node_id', number],
   ]>;
+  data: IQueriesMemberData;
 }
 
 export const find = `
