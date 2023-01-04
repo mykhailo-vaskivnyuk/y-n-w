@@ -13,7 +13,10 @@ export const getCircle: THandler<INetReadParams, INetViewResponse> =
     if (!net) throw new HandlerError('NOT_FOUND');
     const user_status = getNetUserStatus(net);
     if (user_status !== 'INSIDE_NET') return [];
-    return await execQuery.net.circle.get([net.node_id]);
+    if (!net.parent_node_id) return [];
+    const circle = await execQuery.net.circle
+      .get([user_id, net.node_id, net.parent_node_id]);
+    return circle;
   };
 getCircle.paramsSchema = NetReadParamsSchema;
 getCircle.responseSchema = NetViewResponseSchema;
@@ -25,7 +28,7 @@ export const getTree: THandler<INetReadParams, INetViewResponse> =
     if (!net) throw new HandlerError('NOT_FOUND');
     const user_status = getNetUserStatus(net);
     if (user_status !== 'INSIDE_NET') return [];
-    return await execQuery.net.tree.get([net.node_id]);
+    return await execQuery.net.tree.get([user_id, net.node_id]);
   };
 getTree.paramsSchema = NetReadParamsSchema;
 getTree.responseSchema = NetViewResponseSchema;

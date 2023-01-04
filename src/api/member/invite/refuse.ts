@@ -13,7 +13,7 @@ const refuse: THandler<IMemberConfirmParams, boolean> = async (
   const user_id = session.read('user_id')!;
   const net = await findUserNet(user_id, net_id);
   if (!net) throw new HandlerError('NOT_FOUND');
-  const [member] = await execQuery.member.find([net.node_id, node_id]);
+  const [member] = await execQuery.member.findInTree([net.node_id, node_id]);
   if (!member) return false; // bad request
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'CONNECTED') return false; // bad request

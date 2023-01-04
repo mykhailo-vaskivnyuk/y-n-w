@@ -2,7 +2,7 @@
 import * as T from '../api/types/types';
 import {
   INetViewResponse, INetsResponse, NetViewKeys,
-  IMemberResponse, MemberStatusKeys,
+  IMemberResponse, MemberStatusKeys, IUserNetDataResponse,
 } from '../api/types/types';
 import { AppStatus } from '../constants';
 import { HttpResponseError } from '../errors';
@@ -14,7 +14,8 @@ export type IClientAppThis = ClientApp & {
   setStatus: (status: AppStatus) => void;
   setError: (e: HttpResponseError) => void;
   setUser: (user: T.IUserResponse) => Promise<void>;
-  setNet: (net: T.INetResponse) => void;
+  setUserNetData: (userNetData: IUserNetDataResponse) => void;
+  setNet: (net: T.INetResponse) => Promise<void>;
   setAllNets: (nets: INetsResponse) => void;
   setNets: (nets: INets) => void;
   setCircle: (circle: INetViewResponse) => void;

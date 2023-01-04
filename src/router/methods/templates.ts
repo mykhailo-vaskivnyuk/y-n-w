@@ -2,7 +2,8 @@ import { format } from 'node:util';
 
 export const tplImport = 'import * as P from \'./types\';\n\n';
 const tplGetApi =
-`/* eslint-disable max-len */
+`/* eslint-disable max-lines */
+/* eslint-disable max-len */
 import * as P from './types/types';
 import * as Q from './types/%s';
 

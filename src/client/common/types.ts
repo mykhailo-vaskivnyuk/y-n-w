@@ -4,8 +4,11 @@ export type TFetch = <T>(
   pathname: string, options?: Record<string, any>,
 ) => Promise<T>;
 
+export type TOnChatMessage = null | ((data: any) => void);
+
 export interface IWsResponse {
-  requestId: number;
+  requestId?: number;
+  chatId?: number;
   status: HttpResponseErrorCode | 200;
   error: any;
   data: any;

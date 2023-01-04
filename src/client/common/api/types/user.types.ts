@@ -1,3 +1,8 @@
+import {
+  ITableNodes, ITableUsersMembers, ITableUsersNodesInvites,
+} from '../../../local/imports';
+import { DbRecordOrNull } from '../../types';
+
 export const USER_STATUS_MAP = {
   'NOT_LOGGEDIN': 0,
   'NOT_CONFIRMED': 1,
@@ -11,3 +16,9 @@ export type PartialUserStatusKeys = keyof Pick<typeof USER_STATUS_MAP,
   | 'NOT_LOGGEDIN'
   | 'NOT_CONFIRMED'>;
 export const loggedInState = USER_STATUS_MAP.LOGGEDIN;
+
+export type IUserNetDataResponse =
+  Pick<ITableNodes, 'node_id' | 'parent_node_id'> &
+  DbRecordOrNull<Pick<ITableUsersNodesInvites, 'token'>> &
+  DbRecordOrNull<Pick<ITableUsersMembers, 'vote'>> &
+  { vote_count: number };

@@ -82,13 +82,12 @@ class Database implements IDatabase {
       }, {});
   }
 
-  private sqlToQuery(sql: string, key: string): TQuery {
+  private sqlToQuery(sql: string, pathname: string): TQuery {
     return async (params) => {
       try {
         return await this.connection!.query(sql, params);
       } catch (e: any) {
-        const message = 'QUERY: ' + key + sql;
-        logger.error(e, message);
+        logger.error(e, 'QUERY: ', pathname, sql, '\n', 'PARAMS: ', params);
         throw new DatabaseError('DB_QUERY_ERROR');
       }
     };

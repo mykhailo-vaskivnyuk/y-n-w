@@ -1,9 +1,10 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
 import {
-  INetResponse, INetsResponse, IUserResponse, NetViewKeys,
+  INetResponse, INetsResponse, IUserNetDataResponse, IUserResponse, NetViewKeys,
 } from '../api/types/types';
 import { INITIAL_NETS, INets, IMember } from './types';
+import { TOnChatMessage } from '../types';
 import { AppStatus } from '../constants';
 import { HttpResponseError } from '../errors';
 import { EventEmitter } from '../event.emitter';
@@ -17,11 +18,13 @@ import { getConnection as getWsConnection } from '../client.ws';
 export class ClientApp extends EventEmitter {
   private baseUrl = '';
   protected api: IClientApi | null;
+  setOnChatMessage?: (onChatMessage: TOnChatMessage) => void;
 
   private status: AppStatus = AppStatus.INITING;
   private error: HttpResponseError | null = null;
 
   private user: IUserResponse = null;
+  private userNetData: IUserNetDataResponse | null = null;
   private allNets: INetsResponse = [];
   private nets: INets = INITIAL_NETS;
   private net: INetResponse = null;
@@ -47,6 +50,7 @@ export class ClientApp extends EventEmitter {
       status: this.status,
       error: this.error,
       user: this.user,
+      userNetData: this.userNetData,
       net: this.net,
       circle: this.circle,
       tree: this.tree,
@@ -67,9 +71,10 @@ export class ClientApp extends EventEmitter {
       if (e.statusCode !== 503) return this.setError(e);
       try {
         const baseUrl = this.baseUrl.replace('http', 'ws');
-        const connection = await getWsConnection(baseUrl);
+        const { connection, setOnChatMessage } = await getWsConnection(baseUrl);
         this.api = getApi(connection);
         await this.api.health();
+        this.setOnChatMessage = setOnChatMessage;
       } catch (err: any) {
         return this.setError(err);
       }
@@ -93,12 +98,16 @@ export class ClientApp extends EventEmitter {
   protected async setNet(net: INetResponse | null = null) {
     if (this.net === net) return;
     this.net = net;
+    this.setUserNetData();
     this.setCircle([]);
     this.setTree([]);
     this.setNetView();
     this.setMember();
     if (net) {
-      this.user!.user_status = 'INSIDE_NET';
+      await this.netMethods.getUserData(net.net_id);
+      this.user!.user_status = this.userNetData!.token ?
+        'INVITING' :
+        'INSIDE_NET';
       await this.netMethods.getCircle();
       await this.netMethods.getTree();
       this.emit('user', { ...this.user });
@@ -110,7 +119,14 @@ export class ClientApp extends EventEmitter {
     this.emit('net', net);
   }
 
-  protected async setAllNets(nets: INetsResponse) {
+  protected setUserNetData(
+    userNetData: IUserNetDataResponse | null = null,
+  ) {
+    if (this.userNetData === userNetData) return;
+    this.userNetData = userNetData;
+  }
+
+  protected setAllNets(nets: INetsResponse) {
     if (this.allNets === nets) return;
     this.allNets = nets;
   }

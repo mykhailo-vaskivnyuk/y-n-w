@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Server, WebSocket } from 'ws';
 import { IInputConnection, IRequest } from '../types';
 import { IWsConfig, IWsServer } from './types';
@@ -7,6 +8,8 @@ import { ServerError } from '../errors';
 import { getLog } from './methods/utils';
 import { getSessionKey } from '../utils';
 import { handleError } from './methods/handle.error';
+
+const chats = new Map<number, WebSocket[]>();
 
 class WsConnection implements IInputConnection {
   private config: IWsConfig;
@@ -63,8 +66,9 @@ class WsConnection implements IInputConnection {
         data,
       };
       const responseMessage = JSON.stringify(response);
-      logger.info(getLog(pathname, 'OK'));
       connection.send(responseMessage, { binary: false });
+      logger.info(getLog(pathname, 'OK'));
+      this.sendChatMessage(data, connection);
     } catch (e) {
       handleError(e, options, connection);
       throw e;
@@ -92,6 +96,39 @@ class WsConnection implements IInputConnection {
     options.pathname = pathname;
     const data = { params } as IOperation['data'];
     return { options, names, data };
+  }
+
+  private sendChatMessage(data: TOperationResponse, curConnection: WebSocket) {
+    const connections = this.getChatConnections(data, curConnection);
+    if (!connections) return;
+    const chatResponse = {
+      status: 200,
+      error: null,
+      data,
+    };
+    const chatResponseMessage = JSON.stringify(chatResponse);
+    for (const connection of connections) {
+      // if (connection === curConnection) continue;
+      connection.send(chatResponseMessage, { binary: false });
+    }
+  }
+
+  private getChatConnections(
+    data: TOperationResponse, connection: WebSocket
+  ): WebSocket[] | null {
+    const { chatId } = data as { chatId: number } || {};
+    if (!chatId) return null;
+    let chat = chats.get(chatId);
+    let client: WebSocket;
+    if (!chat) {
+      client = connection;
+      chat =  [client];
+      chats.set(chatId, chat);
+    } else {
+      const clientExists = chat.includes(connection);
+      if (!clientExists) chat.push(connection);
+    }
+    return chat;
   }
 }
 

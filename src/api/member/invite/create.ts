@@ -16,7 +16,7 @@ const create: THandler<IMemberInviteParams, string | null> = async (
   const user_status = getNetUserStatus(net);
   if (user_status !== 'INSIDE_NET') return null;
   if (!net) throw new HandlerError('NOT_FOUND');
-  const [member] = await execQuery.member.find([net.node_id, node_id]);
+  const [member] = await execQuery.member.findInTree([net.node_id, node_id]);
   if (!member) return null; // bad request
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'EMPTY') return null; // bad request

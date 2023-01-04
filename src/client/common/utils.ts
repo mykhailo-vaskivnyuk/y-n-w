@@ -9,8 +9,7 @@ export const logData = (data: any, message?: string) => {
   } else if (typeof data === 'object') {
     log = { ...data };
   }
-  message && console.log(`\n${message}\n`);
-  console.log(log);
+  console.log(`\n${message || ''}`, log);
 };
 
 export const delay = (time: number) =>

@@ -78,7 +78,9 @@ export type ITableUsersNodesInvites = {
 }
 
 export type ITableUsersMembers = {
+  parent_node_id: number;
   user_id: number;
-  node_id: number;
+  member_id: number;
   dislike: boolean;
+  vote: boolean;
 }

@@ -6,8 +6,11 @@ import {
 } from '../../api/types/types';
 import { IClientAppThis } from '../types';
 import { AppStatus } from '../../constants';
+import { getMemberDataMethods } from './memberData';
 
 export const getMemberMethods = (parent: IClientAppThis) => ({
+  data: getMemberDataMethods(parent),
+
   async find(netView: NetViewKeys, nodeId: number) {
     const { [netView]: netViewData } = parent.getState();
     const memberPosition = netViewData

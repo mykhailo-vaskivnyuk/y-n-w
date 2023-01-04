@@ -1,6 +1,8 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
-import { INetCreateParams, ITokenParams } from '../../api/types/types';
+import {
+  INetCreateParams, ITokenParams, NetViewKeys,
+} from '../../api/types/types';
 import { INITIAL_NETS, IClientAppThis, IMember } from '../types';
 import { AppStatus } from '../../constants';
 
@@ -30,7 +32,20 @@ export const getNetMethods = (parent: IClientAppThis) => ({
       parent.setStatus(AppStatus.READY);
       return net;
     } catch (e: any) {
-      await parent.setNet(null);
+      await parent.setNet();
+      parent.setError(e);
+    }
+  },
+
+  async getUserData(net_id: number) {
+    parent.setStatus(AppStatus.LOADING);
+    try {
+      const userNetData = await parent.api.user.net.getData({ net_id });
+      await parent.setUserNetData(userNetData);
+      parent.setStatus(AppStatus.READY);
+      return userNetData;
+    } catch (e: any) {
+      await parent.setUserNetData();
       parent.setError(e);
     }
   },
@@ -38,7 +53,7 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   async comeout() {
     parent.setStatus(AppStatus.LOADING);
     try {
-      parent.setNet(null);
+      parent.setNet();
       parent.setStatus(AppStatus.READY);
       return true;
     } catch (e: any) {
@@ -54,7 +69,7 @@ export const getNetMethods = (parent: IClientAppThis) => ({
       const success = await parent.api.net.leave(net!);
       if (success) {
         await this.getAllNets();
-        await parent.setNet(null);
+        await parent.setNet();
       }
       parent.setStatus(AppStatus.READY);
       return success;
@@ -100,6 +115,10 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     } catch (e: any) {
       parent.setError(e);
     }
+  },
+
+  setView(netView: NetViewKeys) {
+    parent.setNetView(netView);
   },
 
   async getAllNets() {
@@ -152,5 +171,24 @@ export const getNetMethods = (parent: IClientAppThis) => ({
       parent.setError(e);
       throw e;
     }
-  }
+  },
+
+  async sendTreeMessage(message: string) {
+    parent.setStatus(AppStatus.LOADING);
+    try {
+      const { net, userNetData } = parent.getState();
+      console.log('SEND MESSAGE', userNetData);
+      const { node_id: chatId } = userNetData!;
+      let success = false;
+      if (chatId) {
+        await parent.api.net.chat
+          .send({ net_id: net!.net_id, chatId, message });
+        success = true;
+      }
+      parent.setStatus(AppStatus.READY);
+      return success;
+    } catch (e: any) {
+      parent.setError(e);
+    }
+  },
 });

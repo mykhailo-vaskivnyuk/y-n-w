@@ -78,9 +78,9 @@ ALTER TABLE public.nets ALTER COLUMN net_id ADD GENERATED ALWAYS AS IDENTITY (
 CREATE TABLE public.nets_users_data (
     net_id bigint NOT NULL,
     user_id bigint NOT NULL,
-    email_show bit(1) DEFAULT '0'::"bit" NOT NULL,
-    name_show bit(1) DEFAULT '0'::"bit" NOT NULL,
-    mobile_show bit(1) DEFAULT '0'::"bit" NOT NULL
+    email_show boolean NOT NULL DEFAULT false,
+    name_show boolean NOT NULL DEFAULT false,
+    mobile_show boolean NOT NULL DEFAULT false
 );
 
 
@@ -106,9 +106,11 @@ ALTER TABLE public.users_nodes_invites OWNER TO merega;
 --
 
 CREATE TABLE public.users_members (
+    parent_node_id bigint NOT NULL,
     user_id bigint NOT NULL,
-    node_id bigint NOT NULL,
-    dislike bit(1) DEFAULT '0'::"bit" NOT NULL
+    member_id bigint NOT NULL,
+    dislike boolean NOT NULL DEFAULT false,
+    vote boolean NOT NULL DEFAULT false
 );
 
 
@@ -127,8 +129,8 @@ CREATE TABLE public.nodes (
     first_node_id bigint,
     count_of_members integer DEFAULT 0 NOT NULL,
     node_date timestamp without time zone NOT NULL,
-    blocked bit(1) DEFAULT '0'::"bit" NOT NULL,
-    changes bit(1) DEFAULT '0'::"bit" NOT NULL,
+    blocked boolean DEFAULT false NOT NULL,
+    changes boolean DEFAULT false NOT NULL,
     user_id bigint
 );
 
@@ -277,7 +279,7 @@ ALTER TABLE ONLY public.users_nodes_invites
 --
 
 ALTER TABLE ONLY public.users_members
-    ADD CONSTRAINT pk_users_members PRIMARY KEY (user_id, node_id);
+    ADD CONSTRAINT pk_users_members PRIMARY KEY (parent_node_id, user_id, member_id);
 
 
 --
@@ -397,13 +399,15 @@ ALTER TABLE ONLY public.users_nodes_invites
 
 --
 --
+-- Name: users_members fk_users_members_parent_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
 -- Name: users_members fk_users_members_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
--- Name: users_members fk_users_members_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
+-- Name: users_members fk_users_members_member; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.users_members
-    ADD CONSTRAINT fk_users_members_user FOREIGN KEY (user_id) REFERENCES public.users(user_id),
-    ADD CONSTRAINT fk_users_members_node FOREIGN KEY (node_id) REFERENCES public.nodes(node_id);
+    ADD CONSTRAINT fk_users_members_parent_node FOREIGN KEY (parent_node_id) REFERENCES public.nodes(node_id),
+    ADD CONSTRAINT fk_users_members_user FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE,
+    ADD CONSTRAINT fk_users_members_member FOREIGN KEY (member_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
 
 
 --

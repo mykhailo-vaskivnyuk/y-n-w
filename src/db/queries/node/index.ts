@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ITableNodes } from '../../db.types';
 import { TQuery } from '../../types';
 import { IQueriesNodeUser } from './user';
@@ -25,6 +26,13 @@ export interface IQueriesNode {
   ]>;
   removeTree: TQuery<[
     ['parent_node_id', number],
+  ]>;
+  get: TQuery<[
+    ['node_id', number],
+  ], ITableNodes>;
+  change: TQuery<[
+    ['node_id', number],
+    ['parent_node_id', number | null],
   ]>;
   user: IQueriesNodeUser;
 }
@@ -79,4 +87,16 @@ export const createTree = `
 export const removeTree = `
   DELETE FROM nodes
   WHERE parent_node_id = $1
+`;
+
+export const get = `
+    SELECT *
+    FROM nodes
+    WHERE node_id = $1
+`;
+
+export const change = `
+  UPDATE nodes
+  SET parent_node_id = $2
+  WHERE node_id = $1
 `;

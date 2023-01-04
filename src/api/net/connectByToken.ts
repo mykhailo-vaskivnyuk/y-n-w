@@ -4,10 +4,11 @@ import { ITokenParams } from '../../client/common/api/types/types';
 import { JOI_NULL } from '../../router/constants';
 import { createTree, updateCountOfMemebers } from '../utils/utils';
 import { TokenParamsSchema } from '../schema/schema';
+import { findUserNet } from '../utils/net.utils';
 
 type INetConnectByToken = {
   net_id: number;
-  error?: 'already connected';
+  error?: 'already connected' | 'not parent net member';
 } | null
 
 const connectByToken: THandler<ITokenParams, INetConnectByToken> =
@@ -16,8 +17,13 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
     const [net] = await execQuery.net.find.byToken([token, user_id]);
     if (!net) return null;
 
-    const { net_id, user_exists, ...node } = net;
+    const { net_id, parent_net_id, user_exists, ...node } = net;
     if (user_exists) return { net_id, error: 'already connected' };
+
+    if (parent_net_id) {
+      const parentNet = await findUserNet(user_id, parent_net_id);
+      if (!parentNet) return { net_id, error: 'not parent net member' };
+    }
 
     const { node_id } = node;
 

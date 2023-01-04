@@ -1,4 +1,7 @@
 /* eslint-disable max-lines */
+import {
+  IUserNetDataResponse,
+} from '../../../../client/common/api/types/types';
 import { DbRecordOrNull } from '../../../../client/common/types';
 import {
   ITableNets, ITableNetsData, ITableNetsUsersData,
@@ -28,10 +31,18 @@ export interface IQueriesUserNet {
     ['user_id', number],
     ['net_id', number | null],
   ], ITableNodes>;
+  getData: TQuery<[
+    ['user_id', number],
+    ['net_id', number],
+  ], IUserNetDataResponse>
 }
 
 export const find = `
-  SELECT nets.net_level, nodes.node_id, users_nodes_invites.token
+  SELECT
+    nets.net_level,
+    nodes.node_id,
+    nodes.parent_node_id,
+    users_nodes_invites.token
   FROM nets_users_data
   INNER JOIN nets ON
     nets.net_id = nets_users_data.net_id
@@ -73,4 +84,39 @@ export const getNodes = `
       )
     )
   ORDER BY nets.net_level DESC
+`;
+
+export const getData = `
+  SELECT
+    nodes.node_id,
+    nodes.parent_node_id,
+    users_nodes_invites.token,
+    users_members.vote,
+    SUM (
+      CASE
+        WHEN um.vote = true THEN 1
+        ELSE 0
+      END
+    ) AS vote_count
+  FROM nets
+  INNER JOIN nets_users_data ON
+    nets_users_data.net_id = nets.net_id AND
+    nets_users_data.user_id = $1
+  INNER JOIN nodes ON
+    nodes.user_id = nets_users_data.user_id AND
+    nodes.first_node_id = nets.node_id
+  LEFT JOIN users_nodes_invites ON
+    users_nodes_invites.node_id = nodes.node_id
+  LEFT JOIN users_members ON
+    users_members.user_id = nodes.user_id AND
+    users_members.member_id = nodes.user_id
+  LEFT JOIN users_members as um ON
+    um.member_id = nodes.user_id AND
+    um.parent_node_id = nodes.parent_node_id
+  WHERE nets.net_id = $2
+  GROUP BY
+    nodes.node_id,
+    nodes.parent_node_id,
+    users_nodes_invites.token,
+    users_members.vote
 `;

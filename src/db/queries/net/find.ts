@@ -11,6 +11,7 @@ export interface IQueriesNetFind {
 export const byToken = `
   SELECT
     nets.net_id,
+    nets.parent_net_id,
     nodes.*,
     nets_users_data.user_id AS user_exists
   FROM nodes

@@ -33,6 +33,9 @@ export const MemberResponseSchema = {
   name: [Joi.string(), JOI_NULL],
   member_name: [Joi.string(), JOI_NULL],
   token: [Joi.string(), JOI_NULL],
+  dislike: [Joi.boolean(), JOI_NULL],
+  vote: [Joi.boolean(), JOI_NULL],
+  vote_count: Joi.number(),
 } as Record<keyof IMemberResponse, TJoiSchema>;
 
 export const NetViewResponseSchema = { ...MemberResponseSchema };

@@ -1,12 +1,21 @@
+/* eslint-disable max-lines */
 import { logData, delay } from './utils';
 import { TPromiseExecutor } from '../local/imports';
-import { IWsResponse, TFetch } from './types';
+import { IWsResponse, TFetch, TOnChatMessage } from './types';
 import { HttpResponseError } from './errors';
 import {
   CONECTION_ATTEMPT_COUNT, CONNECTION_ATTEMPT_DELAY, CONNECTION_TIMEOUT,
 } from './constants';
 
-export const getConnection = async (baseUrl: string): Promise<TFetch> => {
+interface IGetConnectionReturn {
+  connection: TFetch;
+  setOnChatMessage: (onChatMessage: TOnChatMessage) => void;
+}
+
+export const getConnection = async (
+  baseUrl: string,
+): Promise<IGetConnectionReturn> => {
+  let onChatMessage: null | ((data: any) => void) = null;
   let requests: Map<number, (response: IWsResponse) => void>;
   let socket: WebSocket;
   const createSocket = () => {
@@ -18,8 +27,15 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
 
   function handleResponseMessage({ data: message }: MessageEvent) {
     const response = JSON.parse(message) as IWsResponse;
-    logData(response, 'response');
-    const { requestId: reqId } = response;
+    logData(response, 'RES');
+    const { requestId: reqId, data } = response;
+    if (!reqId) {
+      if (data?.chatId && onChatMessage) {
+        console.log(response);
+        onChatMessage(data);
+      }
+      return;
+    }
     const handleResponse = requests.get(reqId);
     if (!handleResponse) return;
     requests.delete(reqId);
@@ -79,13 +95,14 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
     send(newRv, rj);
   };
 
-  const fetch = async (
-    pathname: string, data: Record<string, any> = {},
+  const connection = async (
+    pathname: string,
+    data: Record<string, any> = {},
   ): Promise<any> => {
     await checkConnection();
     const requestId = getId();
     const request = { requestId, pathname, data };
-    logData(request, 'request');
+    logData(request, 'REQ');
     const requestMessage = JSON.stringify(request);
     const sendWithTimeoutExecutor = createSendWithTimeoutExecutor(
       requestMessage,
@@ -93,5 +110,10 @@ export const getConnection = async (baseUrl: string): Promise<TFetch> => {
     return new Promise(sendWithTimeoutExecutor);
   };
 
-  return fetch;
+  const setOnChatMessage = (cb: null | ((data: any) => void) = null) => {
+    // console.log('CALLBACK', cb);
+    onChatMessage = cb;
+  };
+
+  return { connection, setOnChatMessage };
 };
