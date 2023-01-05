@@ -7,9 +7,9 @@ import { HandlerError } from '../../router/errors';
 import { findUserNet, getNetUserStatus } from '../utils/net.utils';
 
 export const getCircle: THandler<INetReadParams, INetViewResponse> =
-  async ({ session }, { net_id }) => {
+  async ({ session }, { net_node_id }) => {
     const user_id = session.read('user_id')!;
-    const net = await findUserNet(user_id, net_id);
+    const net = await findUserNet(user_id, net_node_id);
     if (!net) throw new HandlerError('NOT_FOUND');
     const user_status = getNetUserStatus(net);
     if (user_status !== 'INSIDE_NET') return [];
@@ -22,9 +22,9 @@ getCircle.paramsSchema = NetReadParamsSchema;
 getCircle.responseSchema = NetViewResponseSchema;
 
 export const getTree: THandler<INetReadParams, INetViewResponse> =
-  async ({ session }, { net_id }) => {
+  async ({ session }, { net_node_id }) => {
     const user_id = session.read('user_id')!;
-    const net = await findUserNet(user_id, net_id);
+    const net = await findUserNet(user_id, net_node_id);
     if (!net) throw new HandlerError('NOT_FOUND');
     const user_status = getNetUserStatus(net);
     if (user_status !== 'INSIDE_NET') return [];

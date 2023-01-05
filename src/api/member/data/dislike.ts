@@ -7,10 +7,10 @@ import { arrangeNodes, checkDislike, findUserNet } from '../../utils/net.utils';
 import { HandlerError } from '../../../router/errors';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
-  { session }, { net_id, node_id }
+  { session }, { net_node_id, node_id }
 ) => {
   const user_id = session.read('user_id')!;
-  const net = await findUserNet(user_id, net_id);
+  const net = await findUserNet(user_id, net_node_id);
   if (!net) throw new HandlerError('NOT_FOUND');
   let parent_node_id = net.node_id;
   let [member] = await execQuery.member
@@ -33,10 +33,10 @@ set.paramsSchema = MemberConfirmParamsSchema;
 set.responseSchema = Joi.boolean();
 
 export const unSet: THandler<IMemberConfirmParams, boolean> = async (
-  { session }, { net_id, node_id }
+  { session }, { net_node_id, node_id }
 ) => {
   const user_id = session.read('user_id')!;
-  const net = await findUserNet(user_id, net_id);
+  const net = await findUserNet(user_id, net_node_id);
   if (!net) throw new HandlerError('NOT_FOUND');
   let parent_node_id = net.node_id;
   let [member] = await execQuery.member.findInTree([net.node_id, node_id]);

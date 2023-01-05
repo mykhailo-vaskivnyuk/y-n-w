@@ -23,7 +23,7 @@ export interface IQueriesMemberData {
   ]>;
   remove: TQuery<[
     ['user_id', number],
-    ['net_id', number | null],
+    ['net_node_id', number | null],
   ]>;
   removeFromCircle: TQuery<[
     ['user_id', number],
@@ -36,7 +36,8 @@ export interface IQueriesMemberData {
 }
 
 export const setDislike = `
-  INSERT INTO users_members AS um (parent_node_id, user_id, member_id, dislike)
+  INSERT INTO users_members AS um (
+    parent_node_id, user_id, member_id, dislike)
   VALUES ($1, $2, $3, true)
   ON CONFLICT (parent_node_id, user_id, member_id)
   DO UPDATE
@@ -73,24 +74,30 @@ export const remove = `
     ) AND 
     parent_node_id in (
       SELECT nodes.parent_node_id
-      FROM nodes
-      LEFT JOIN nets ON nodes.first_node_id = nets.node_id
+      FROM nets_users_data
+      INNER JOIN nodes ON
+        nodes.node_id = nets_users_data.node_id
       WHERE
-        nodes.user_id = $1 AND (
-          (
-            ($2 + 1) NOTNULL AND (
-              nets.net_id = $2 OR
-              nets.net_level > (SELECT net_level FROM nets WHERE net_id = $2)
-            )
-          ) OR (
-            ($2 + 1) ISNULL AND true
-          )
+        nets_users_data.user_id = $1 AND ((
+          ($2 + 1) NOTNULL AND
+          nets.first_net_id = $2 AND
+          nets.net_level >= (SELECT net_level FROM nets WHERE net_node_id = $2)
+          ) OR ($2 + 1) ISNULL AND true
         )
       ORDER BY nets.net_level DESC
     )
 `;
 
 export const removeFromCircle = `
+  DELETE FROM users_members
+  WHERE (
+      user_id = $1 OR
+      member_id = $1
+    ) AND 
+    parent_node_id = $2
+`;
+
+export const removeFromTree = `
   DELETE FROM users_members
   WHERE (
       user_id = $1 OR

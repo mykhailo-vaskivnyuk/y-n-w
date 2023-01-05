@@ -9,10 +9,10 @@ import { createUnicCode } from '../../../utils/crypto';
 import { HandlerError } from '../../../router/errors';
 
 const create: THandler<IMemberInviteParams, string | null> = async (
-  { session }, { net_id, node_id, member_name },
+  { session }, { net_node_id, node_id, member_name },
 ) => {
   const user_id = session.read('user_id')!;
-  const net = await findUserNet(user_id, net_id);
+  const net = await findUserNet(user_id, net_node_id);
   const user_status = getNetUserStatus(net);
   if (user_status !== 'INSIDE_NET') return null;
   if (!net) throw new HandlerError('NOT_FOUND');

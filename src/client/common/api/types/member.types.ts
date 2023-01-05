@@ -16,7 +16,7 @@ export type MemberStatusKeys = keyof typeof MEMBER_STATUS_MAP;
 export const MEMBER_STATUS_ENUM = getEnumFromMap(MEMBER_STATUS_MAP);
 
 export type IMemberInviteParams = {
-  net_id: number;
+  net_node_id: number;
   node_id: number;
   member_name: string;
 };

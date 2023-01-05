@@ -3,8 +3,7 @@ import { TQuery } from '../../../types';
 export interface IQueriesUserToken {
   create: TQuery<[
     ['user_id', number],
-    ['confirm_token', string | null],
-    ['restore_token', string | null],
+    ['token', string],
   ]>;
   remove: TQuery<[
     ['user_id', number],
@@ -12,8 +11,12 @@ export interface IQueriesUserToken {
 }
 
 export const create = `
-  INSERT INTO users_tokens (user_id, confirm_token, restore_token)
-  VALUES($1, $2, $3)
+  INSERT INTO users_tokens (user_id, token)
+  VALUES ($1, $2)
+  ON CONFLICT (user_id)
+  DO UPDATE
+    SET token = EXCLUDED.token
+    WHERE users_tokens.user_id = $1 
 `;
 
 export const remove = `

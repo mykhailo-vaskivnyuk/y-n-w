@@ -5,7 +5,7 @@ import { findUserNet, getNetUserStatus } from '../utils/net.utils';
 import { JOI_NULL } from '../../router/constants';
 
 type INetChatSend = {
-  net_id: number;
+  net_node_id: number;
   chatId: number;
   message: string;
 }
@@ -16,9 +16,9 @@ type INetChatResponse = {
 } | null;
 
 export const send: THandler<INetChatSend, INetChatResponse> =
-  async ({ session }, { net_id, chatId, message }) => {
+  async ({ session }, { net_node_id, chatId, message }) => {
     const user_id = session.read('user_id')!;
-    const net = await findUserNet(user_id, net_id);
+    const net = await findUserNet(user_id, net_node_id);
     if (!net) throw new HandlerError('NOT_FOUND');
     const { node_id, parent_node_id } = net;
     const user_status = getNetUserStatus(net);
@@ -28,7 +28,7 @@ export const send: THandler<INetChatSend, INetChatResponse> =
     return { chatId, message };
   };
 send.paramsSchema = {
-  net_id: Joi.number().required(),
+  net_node_id: Joi.number().required(),
   chatId: Joi.number().required(),
   message: Joi.string().required(),
 };

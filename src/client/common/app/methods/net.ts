@@ -7,12 +7,12 @@ import { INITIAL_NETS, IClientAppThis, IMember } from '../types';
 import { AppStatus } from '../../constants';
 
 export const getNetMethods = (parent: IClientAppThis) => ({
-  async create(args: Omit<INetCreateParams, 'net_id'>) {
+  async create(args: Omit<INetCreateParams, 'net_node_id'>) {
     parent.setStatus(AppStatus.LOADING);
     try {
       const { net: parentNet } = parent.getState();
       const net = await parent.api.net.create({
-        net_id: null,
+        net_node_id: null,
         ...parentNet,
         ...args,
       });
@@ -24,10 +24,10 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  async enter(net_id: number) {
+  async enter(net_node_id: number) {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const net = await parent.api.net.enter({ net_id });
+      const net = await parent.api.net.enter({ net_node_id });
       await parent.setNet(net);
       parent.setStatus(AppStatus.READY);
       return net;
@@ -37,10 +37,10 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  async getUserData(net_id: number) {
+  async getUserData(net_node_id: number) {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const userNetData = await parent.api.user.net.getData({ net_id });
+      const userNetData = await parent.api.user.net.getData({ net_node_id });
       await parent.setUserNetData(userNetData);
       parent.setStatus(AppStatus.READY);
       return userNetData;
@@ -135,7 +135,7 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   getNets() {
     const { net, allNets } = parent.getState();
     const {
-      net_id: netId = null,
+      net_node_id: netId = null,
       parent_net_id: parentNetId = null,
     } = net || {};
     const nets = { ...INITIAL_NETS };
@@ -149,7 +149,7 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     nets.parentNets = allNets
       .reduceRight((acc, item) => {
         if (!curParentNetId) return acc;
-        const { net_id: curNetId, parent_net_id: nextParentNetId } = item;
+        const { net_node_id: curNetId, parent_net_id: nextParentNetId } = item;
         if (curNetId !== curParentNetId) return acc;
         acc.push(item);
         curParentNetId = nextParentNetId;
@@ -182,7 +182,7 @@ export const getNetMethods = (parent: IClientAppThis) => ({
       let success = false;
       if (chatId) {
         await parent.api.net.chat
-          .send({ net_id: net!.net_id, chatId, message });
+          .send({ net_node_id: net!.net_node_id, chatId, message });
         success = true;
       }
       parent.setStatus(AppStatus.READY);

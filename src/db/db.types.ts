@@ -1,15 +1,33 @@
 /* eslint-disable max-lines */
 export const TABLES_MAP = {
-  NETS: 'nets',
   NODES: 'nodes',
+  NETS: 'nets',
   USERS: 'users',
   NETS_DATA: 'nets_data',
   NETS_USERS_DATA: 'nets_users_data',
+  USERS_TOKENS: 'users_tokens',
   USERS_NODES_INVITES: 'users_nodes_invites',
   USERS_MEMBERS: 'users_members',
-  USERS_TOKENS: 'users_tokens',
   SESSIONS: 'sessions',
 };
+
+export type ITableNodes = {
+  node_id: number;
+  node_level: number;
+  node_position: number;
+  parent_node_id: number | null;
+  net_node_id: number;
+  count_of_members: number;
+  updated: string;
+}
+
+export type ITableNets = {
+  net_node_id: number;
+  net_level: number;
+  parent_net_id: number | null;
+  first_net_id: number;
+  count_of_nets: number;
+}
 
 export type ITableUsers = {
   user_id: number;
@@ -17,32 +35,11 @@ export type ITableUsers = {
   name: string | null;
   mobile: string | null;
   password: string | null;
-}
-
-export type ITableUsersTokens = {
-  user_id: number;
-  confirm_token: string | null;
-  invite_token: string | null;
-  restore_token: string | null;
-}
-
-export type ITableSessions = {
-  session_id: number;
-  session_key: string;
-  session_value: string;
-}
-
-export type ITableNets = {
-  net_id: number;
-  net_level: number;
-  parent_net_id: number | null;
-  first_net_id: number;
-  count_of_nets: number;
-  node_id: number;
+  confirmed: boolean;
 }
 
 export type ITableNetsData = {
-  net_id: number;
+  net_node_id: number;
   name: string;
   goal: string | null;
   resource_name: string | null;
@@ -50,24 +47,17 @@ export type ITableNetsData = {
 }
 
 export type ITableNetsUsersData = {
-  net_id: number;
+  node_id: number;
+  net_node_id: number;
   user_id: number;
   email_show: boolean;
   name_show: boolean;
   mobile_show: boolean;
 }
 
-export type ITableNodes = {
-  node_id: number;
-  node_level: number;
-  node_position: number;
-  parent_node_id: number | null;
-  first_node_id: number;
-  count_of_members: number;
-  node_date: string;
-  blocked: boolean;
-  changes: boolean;
-  user_id: number | null;
+export type ITableUsersTokens = {
+  user_id: number;
+  token: string;
 }
 
 export type ITableUsersNodesInvites = {
@@ -83,4 +73,12 @@ export type ITableUsersMembers = {
   member_id: number;
   dislike: boolean;
   vote: boolean;
+}
+
+export type ITableSessions = {
+  session_id: number;
+  user_id: number;
+  session_key: string;
+  session_value: string;
+  updated: string;
 }

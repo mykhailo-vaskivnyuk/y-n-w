@@ -21,12 +21,14 @@ export const get = `
     users_members.dislike,
     users_members.vote
   FROM nodes
+  LEFT JOIN nets_users_data AS members ON
+    members.node_id = nodes.node_id
   LEFT JOIN users_members ON
     users_members.parent_node_id = $2 AND
     users_members.user_id = $1 AND
-    users_members.member_id = nodes.user_id
+    users_members.member_id = members.user_id
   LEFT JOIN users
-    ON nodes.user_id = users.user_id
+    ON users.user_id = members.user_id
   LEFT JOIN users_nodes_invites
     ON users_nodes_invites.node_id = nodes.node_id
   WHERE 
@@ -35,8 +37,7 @@ export const get = `
 `;
 
 export const getNodes = `
-  SELECT 
-    nodes.*
+  SELECT *
   FROM nodes
   WHERE nodes.parent_node_id = $1
   ORDER BY nodes.node_position

@@ -7,7 +7,7 @@ import { TokenParamsSchema } from '../schema/schema';
 import { findUserNet } from '../utils/net.utils';
 
 type INetConnectByToken = {
-  net_id: number;
+  net_node_id: number;
   error?: 'already connected' | 'not parent net member';
 } | null
 
@@ -17,15 +17,14 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
     const [net] = await execQuery.net.find.byToken([token, user_id]);
     if (!net) return null;
 
-    const { net_id, parent_net_id, user_exists, ...node } = net;
-    if (user_exists) return { net_id, error: 'already connected' };
+    const { parent_net_id, user_exists, ...node } = net;
+    const { net_node_id, node_id } = node;
+    if (user_exists) return { net_node_id, error: 'already connected' };
 
     if (parent_net_id) {
       const parentNet = await findUserNet(user_id, parent_net_id);
-      if (!parentNet) return { net_id, error: 'not parent net member' };
+      if (!parentNet) return { net_node_id, error: 'not parent net member' };
     }
-
-    const { node_id } = node;
 
     /* connect user to node */
     await execQuery.node.user.connect([node_id, user_id]);
@@ -35,13 +34,13 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
     await createTree(node);
 
     /* create net user data */
-    await execQuery.net.user.createData([net_id, user_id]);
+    await execQuery.net.user.createData([net_node_id, user_id]);
 
-    return { net_id };
+    return { net_node_id };
   };
 connectByToken.paramsSchema = TokenParamsSchema;
 connectByToken.responseSchema = [JOI_NULL, {
-  net_id: Joi.number().required(),
+  net_node_id: Joi.number().required(),
   error: Joi.string(),
 }];
 

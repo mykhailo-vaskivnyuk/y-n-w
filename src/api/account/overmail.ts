@@ -10,12 +10,9 @@ const overmail: THandler<ISignupParams, boolean> = async (
   const [user] = await execQuery.user.findByEmail([email]);
   if (!user) return false;
   const token = createUnicCode(15);
-  const { user_id, confirm_token } = user;
-  const params = confirm_token ?
-    [token, null] as const :
-    [null, token] as const;
-  await execQuery.user.token.create([user_id, ...params]);
-  const type = confirm_token ? 'confirm' : 'restore';
+  const { user_id, confirmed } = user;
+  await execQuery.user.token.create([user_id, token]);
+  const type = confirmed ? 'restore' : 'confirm';
   await mailService.sendMail[type](email, origin, token);
   return true;
 };

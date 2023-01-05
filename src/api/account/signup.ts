@@ -19,7 +19,7 @@ const signup: THandler<ISignupParams, IUserResponse> = async (
   let user_status: UserStatusKeys = 'NOT_CONFIRMED';
   if (env.MAIL_CONFIRM_OFF) user_status = 'LOGGEDIN';
   else {
-    await execQuery.user.token.create([user_id, token, null]);
+    await execQuery.user.token.create([user_id, token]);
     await mailService.sendMail.confirm(email, origin, token);
   }
   session.write('user_id', user_id);

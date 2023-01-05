@@ -34,20 +34,22 @@ export const get = `
       END
     ) AS vote_count
   FROM nodes
+  LEFT JOIN nets_users_data AS members ON
+    members.node_id = nodes.node_id
   LEFT JOIN users_members ON
     users_members.parent_node_id = $3 AND
     users_members.user_id = $1 AND
-    users_members.member_id = nodes.user_id
+    users_members.member_id = members.user_id
   LEFT JOIN users ON
-    nodes.user_id = users.user_id
+    users.user_id = members.user_id
   LEFT JOIN users_nodes_invites ON
     users_nodes_invites.node_id = nodes.node_id
   LEFT JOIN users_members AS votes ON
     votes.parent_node_id = $3 AND
-    votes.member_id = nodes.user_id
+    votes.member_id = members.user_id
   WHERE
-    nodes.node_id = $3 OR (
-      nodes.node_id <> $2 AND 
+    nodes.node_id <> $2 AND (
+      nodes.node_id = $3 OR
       nodes.parent_node_id = $3
     )
   GROUP BY
@@ -62,7 +64,7 @@ export const get = `
 export const getDislikes = `
   SELECT
     nodes.node_id,
-    nodes.user_id,
+    members.user_id,
     SUM (
       CASE
         WHEN users_members.dislike = true THEN 1
@@ -70,23 +72,29 @@ export const getDislikes = `
       END
     ) AS dislike_count
   FROM nodes
+  INNER JOIN nets_users_data AS members ON
+    members.user_id = users_members.member_id
   LEFT JOIN users_members ON
     users_members.parent_node_id = $1 AND
-    users_members.member_id = nodes.user_id
+    users_members.member_id = members.user_id
   LEFT JOIN users_nodes_invites ON
     users_nodes_invites.node_id = nodes.node_id
   WHERE
-    nodes.user_id NOTNULL AND
+    (
+      nodes.parent_node_id = $1 OR
+      nodes.node_id = $1
+    ) AND
     users_nodes_invites.token ISNULL
   GROUP BY
     nodes.node_id,
-    nodes.user_id
-  ORDER BY DESC dislike_count
+    members.user_id
+  ORDER BY dislike_count DESC
 `;
 
 export const getVotes = `
   SELECT
     nodes.node_id,
+    members.user_id,
     SUM (
       CASE
         WHEN users_members.vote = true THEN 1
@@ -94,17 +102,18 @@ export const getVotes = `
       END
     ) AS vote_count
   FROM nodes
-  INNER JOIN users_members ON
-    users_members.parent_node_id = nodes.parent_node_id AND
-    users_members.member_id = nodes.user_id
+  INNER JOIN nets_users_data AS members ON
+    members.node_id = nodes.node_id
+  LEFT JOIN users_members ON
+    users_members.parent_node_id = $1 AND
+    users_members.member_id = members.user_id
   LEFT JOIN users_nodes_invites ON
     users_nodes_invites.node_id = nodes.node_id
   WHERE
-    nodes.user_id NOTNULL AND
     nodes.parent_node_id = $1 AND
     users_nodes_invites.token ISNULL
   GROUP BY
     nodes.node_id,
-    nodes.user_id
-  ORDER BY DESC vote_count
+    members.user_id
+  ORDER BY vote_count DESC
 `;

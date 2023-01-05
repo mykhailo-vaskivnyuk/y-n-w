@@ -104,7 +104,7 @@ export class ClientApp extends EventEmitter {
     this.setNetView();
     this.setMember();
     if (net) {
-      await this.netMethods.getUserData(net.net_id);
+      await this.netMethods.getUserData(net.net_node_id);
       this.user!.user_status = this.userNetData!.token ?
         'INVITING' :
         'INSIDE_NET';

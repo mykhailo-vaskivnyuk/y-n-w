@@ -5,11 +5,10 @@ import { IQueriesNodeUser } from './user';
 
 export interface IQueriesNode {
   createInitial: TQuery<[
-    ['node_date', string],
     ['user_id', number],
   ], ITableNodes>;
-  setFirstNodeId: TQuery<[
-    ['node_id', number],
+  setNetNodeId: TQuery<[
+    ['net_node_id', number],
   ], ITableNodes>;
   remove: TQuery<[
     ['node_id', number],
@@ -21,8 +20,7 @@ export interface IQueriesNode {
   createTree: TQuery<[
     ['node_level', number],
     ['parent_node_id', number],
-    ['first_node_id', number],
-    ['node_date', string],
+    ['net_node_id', number],
   ]>;
   removeTree: TQuery<[
     ['parent_node_id', number],
@@ -39,17 +37,15 @@ export interface IQueriesNode {
 
 export const createInitial = `
   INSERT INTO nodes (
-    count_of_members,
-    node_date,
-    user_id
+    count_of_members, user_id
   )
-  VALUES (1, $1, $2)
+  VALUES (1, $1)
   RETURNING *
 `;
 
-export const setFirstNodeId = `
+export const setNetNodeId = `
   UPDATE nodes
-  SET first_node_id = $1
+  SET net_node_id = $1
   WHERE node_id = $1
   RETURNING *
 `;
@@ -68,20 +64,18 @@ export const updateCountOfMembers = `
 
 export const createTree = `
   INSERT INTO nodes (
-    node_level,
     node_position,
+    node_level,
     parent_node_id,
-    first_node_id,
-    node_date,
-    user_id
+    net_node_id,
   )
   VALUES
-    ($1, 1, $2, $3, $4, NULL),
-    ($1, 2, $2, $3, $4, NULL),
-    ($1, 3, $2, $3, $4, NULL),
-    ($1, 4, $2, $3, $4, NULL),
-    ($1, 5, $2, $3, $4, NULL),
-    ($1, 6, $2, $3, $4, NULL)
+    (1, $1, $2, $3),
+    (2, $1, $2, $3),
+    (3, $1, $2, $3),
+    (4, $1, $2, $3),
+    (5, $1, $2, $3),
+    (6, $1, $2, $3)
 `;
 
 export const removeTree = `
@@ -90,9 +84,9 @@ export const removeTree = `
 `;
 
 export const get = `
-    SELECT *
-    FROM nodes
-    WHERE node_id = $1
+  SELECT *
+  FROM nodes
+  WHERE node_id = $1
 `;
 
 export const change = `

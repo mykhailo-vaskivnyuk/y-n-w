@@ -7,10 +7,10 @@ import { findUserNet } from '../../utils/net.utils';
 import { HandlerError } from '../../../router/errors';
 
 const cancel: THandler<IMemberConfirmParams, boolean> = async (
-  { session }, { net_id, node_id }
+  { session }, { net_node_id, node_id }
 ) => {
   const user_id = session.read('user_id')!;
-  const net = await findUserNet(user_id, net_id);
+  const net = await findUserNet(user_id, net_node_id);
   if (!net) throw new HandlerError('NOT_FOUND');
   const [member] = await execQuery.member.findInTree([net.node_id, node_id]);
   if (!member) return false; // bad request

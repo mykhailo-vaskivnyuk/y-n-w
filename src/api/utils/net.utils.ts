@@ -5,10 +5,10 @@ import { ITableNodes, ITableUsersNodesInvites } from '../../db/db.types';
 import { updateCountOfMemebers } from './utils';
 
 export const findUserNet = async (
-  user_id: number, net_id?: number | null,
+  user_id: number, net_node_id?: number | null,
 ) => {
-  if (!net_id) return;
-  const [net] = await execQuery.user.net.find([user_id, net_id]);
+  if (!net_node_id) return;
+  const [net] = await execQuery.user.net.find([user_id, net_node_id]);
   return net;
 };
 
@@ -19,12 +19,14 @@ export const getNetUserStatus = (
   return invite?.token ? 'INVITING' : 'INSIDE_NET';
 };
 
-export const removeNetUser = async (user_id: number, net_id: number | null) => {
-  const nodes = await execQuery.user.net.getNodes([user_id, net_id]);
-  await execQuery.net.nodes.removeUser([net_id, user_id]);
-  await execQuery.user.members.removeInvites([net_id, user_id]);
-  await execQuery.member.data.remove([user_id, net_id]);
-  await execQuery.net.user.remove([net_id, user_id]);
+export const removeNetUser = async (
+  user_id: number, net_node_id: number | null,
+) => {
+  const nodes = await execQuery.user.net.getNodes([user_id, net_node_id]);
+  await execQuery.net.nodes.removeUser([net_node_id, user_id]);
+  await execQuery.user.members.removeInvites([user_id, net_node_id]);
+  await execQuery.member.data.remove([user_id, net_node_id]);
+  await execQuery.net.user.remove([net_node_id, user_id]);
   for (const node of nodes) await updateCountOfMemebers(node, -1);
   return nodes;
 };
@@ -32,16 +34,21 @@ export const removeNetUser = async (user_id: number, net_id: number | null) => {
 export const voteNetUser = async (node_id: number, parent_node_id: number) => {
   const [parent_user] = await execQuery.member.get([parent_node_id]);
   if (parent_user) {
-    const { user_id, parent_node_id, net_id } = parent_user;
-    await execQuery.user.members.removeInvites([net_id, user_id]);
+    const { user_id, parent_node_id, net_node_id } = parent_user;
+    await execQuery.user.members.removeInvites([net_node_id, user_id]);
     await execQuery.member.data.removeFromCircle([user_id, parent_node_id]);
   }
   const [user] = await execQuery.member.get([node_id]);
-  const { user_id, net_id } = user!;
-  await execQuery.user.members.removeInvites([net_id, user_id]);
+  const { user_id, net_node_id } = user!;
+  await execQuery.user.members.removeInvites([net_node_id, user_id]);
   await execQuery.member.data.removeFromCircle([user_id, node_id]);
-  await execQuery.member.change([user_id, parent_node_id]);
-  parent_user && await execQuery.member.change([parent_user.user_id, node_id]);
+  await execQuery.member.change([
+    node_id,
+    parent_node_id,
+    user_id,
+    parent_user?.user_id || null,
+    net_node_id,
+  ]);
 };
 
 export const checkDislike = async (

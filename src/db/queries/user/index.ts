@@ -13,7 +13,7 @@ export interface IQueriesUser {
     ['email', string],
   ], ITableUsers & ITableUsersTokens>;
   findByToken: TQuery<[
-    ['confirm_token', string],
+    ['token', string],
   ], ITableUsers>;
   create: TQuery<[
     ['email', string],
@@ -30,25 +30,27 @@ export interface IQueriesUser {
 
 export const getById = `
   SELECT * FROM users
-  WHERE user_id=$1;
+  WHERE user_id = $1;
 `;
 
 export const findByEmail = `
-  SELECT users.*, users_tokens.confirm_token
+  SELECT *, users.user_id
   FROM users
-  LEFT JOIN users_tokens ON users.user_id = users_tokens.user_id
-  WHERE email=$1
+  LEFT JOIN users_tokens ON
+    users.user_id = users_tokens.user_id
+  WHERE email = $1
 `;
 
 export const findByToken = `
   SELECT * FROM users
-  JOIN users_tokens ON users.user_id = users_tokens.user_id
-  WHERE confirm_token=$1 OR restore_token=$1
+  JOIN users_tokens ON
+    users.user_id = users_tokens.user_id
+  WHERE token = $1
 `;
 
 export const create = `
   INSERT INTO users (email, password)
-  VALUES($1, $2)
+  VALUES ($1, $2)
   RETURNING *
 `;
 

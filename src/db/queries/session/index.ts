@@ -1,35 +1,40 @@
+import { ITableSessions } from '../../db.types';
 import { TQuery } from '../../types';
 
 export interface IQueriesSession {
   read: TQuery<[
-    ['key', string]],
-    { session_value: string }>;
-  create: TQuery<[
     ['key', string],
-    ['value', string]]>;
+  ], ITableSessions>;
+  create: TQuery<[
+    ['user_id', number],
+    ['key', string],
+    ['value', string],
+  ]>;
   update: TQuery<[
     ['key', string],
-    ['value', string]]>;
+    ['value', string],
+  ]>;
   remove: TQuery<[
-    ['key', string]]>;
+    ['key', string],
+  ]>;
 }
 
 export const read = `
-  SELECT session_value FROM sessions
+  SELECT *
+  FROM sessions
   WHERE session_key = $1
 `;
 
 export const create = `
   INSERT INTO sessions (
-    session_key,
-    session_value
+    user_id, session_key, session_value
   )
-  VALUES ($1, $2)
+  VALUES ($1, $2, $3)
 `;
 
 export const update = `
   UPDATE sessions
-  SET session_value = $2
+  SET session_value = $2, updated = now()
   WHERE session_key = $1
 `;
 

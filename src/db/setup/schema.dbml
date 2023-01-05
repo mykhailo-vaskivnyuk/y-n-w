@@ -1,35 +1,83 @@
-Table "nets" {
-  "net_id" bigint [primary key, not null]
-  "net_level" integer [not null, default: 0]
-  "parent_net_id" bigint
-  "first_net_id" bigint [not null]
-  "count_of_nets" integer [not null, default: 1]
-  "node_id" bigint [not null]
-  Indexes {
-    node_id [unique, name: "uk_nets_node"]
-  }
-}
-
 Table "nodes" {
   "node_id" bigint [primary key, not null]
   "node_level" integer [not null, default: 0]
   "node_position" integer [not null, default: 0]
   "parent_node_id" bigint
-  "first_node_id" bigint [not null]
+  "net_node_id" bigint [not null]
   "count_of_members" integer [not null, default: 0]
-  "node_date" timestamp [not null]
-  "blocked" boolean [not null, default: false]
-  "changes" boolean [not null, default: false]
-  "user_id" bigint
+  "updated" timestamp [not null, default: 'now()']
+  Indexes {
+    (node_id, net_node_id) [unique, name: "uk_nodes_node_net_node"]
+  }
+}
+
+Table "nets" {
+  "net_node_id" bigint [primary key, not null]
+  "net_level" integer [not null, default: 0]
+  "parent_net_id" bigint
+  "first_net_id" bigint [not null]
+  "count_of_nets" integer [not null, default: 1]
+}
+
+Table "users" {
+  "user_id" bigint [primary key, not null]
+  "email" "character varying(50)" [not null]
+  "name" "character varying(50)" [default: NULL]
+  "mobile" "character varying(50)" [default: NULL]
+  "password" "character varying(50)" [default: NULL]
+  "confirmed" boolean [not null, default: false]
+  Indexes {
+    email [type: btree, unique, name: "users_email_idx"]
+  }
+}
+
+Table "nets_data" {
+  "net_node_id" bigint [primary key, not null]
+  "name" "character varying(50)" [not null]
+  "goal" text [default: NULL]
+  "resource_name" "character varying(50)" [default: NULL]
+  "resource_link" "character varying(255)" [default: NULL]
+}
+
+Table "nets_users_data" {
+  "node_id" bigint [primary key, not null]
+  "net_node_id" bigint [not null]
+  "user_id" bigint [not null]
+  "email_show" boolean [not null, default: false]
+  "name_show" boolean [not null, default: false]
+  "mobile_show" boolean [not null, default: false]
+  Indexes {
+    (user_id, net_node_id) [unique, name: "uk_nets_users_data_user_net_node"]
+  }
+}
+
+Table "nets_users_data_tmp" {
+  "node_id" bigint [not null]
+  "net_node_id" bigint [not null]
+  "user_id" bigint [not null]
+  "email_show" boolean [not null, default: false]
+  "name_show" boolean [not null, default: false]
+  "mobile_show" boolean [not null, default: false]
+  Indexes {
+    (user_id, net_node_id) [pk]
+  }
+}
+
+Table "users_tokens" {
+  "user_id" bigint [primary key, not null]
+  "token" "character varying(255)" [not null]
+  Indexes {
+    token [type: btree, unique, name: "uk_users_tokens_token_idx"]
+  }
 }
 
 Table "users_nodes_invites" {
-  "node_id" bigint [primary key, not null]
   "user_id" bigint [not null]
+  "node_id" bigint [primary key, not null]
   "member_name" "character varying(50)" [not null]
   "token" "character varying(255)" [not null]
   Indexes {
-    token [unique, name: "uk_nodes_invites_token"]
+    token [type: btree, unique, name: "uk_users_nodes_invites_token_idx"]
   }
 }
 
@@ -38,62 +86,28 @@ Table "users_members" {
   "user_id" bigint [not null]
   "member_id" bigint [not null]
   "dislike" boolean [not null, default: false]
+  "vote" boolean [not null, default: false]
   Indexes {
     (parent_node_id, user_id, member_id) [pk]
   }
 }
 
-Table "users" {
-  "user_id" bigint [primary key, not null]
-  "email" "character varying(50)" [not null]
-  "name" "character varying(50)" [default: NULL]
-  "mobile" "character varying(255)" [default: NULL]
-  "password" "character varying(255)" [default: NULL]
-  Indexes {
-    email [type: btree, unique, name: "users_email_idx"]
-  }
-}
-
-Table "users_tokens" {
-  "user_id" bigint [primary key, not null]
-  "confirm_token" "character varying(255)"
-  "restore_token" "character varying(255)" [default: NULL]
-}
-
-Table "nets_data" {
-  "net_id" bigint [primary key, not null]
-  "name" "character varying(50)" [not null]
-  "goal" text [default: NULL]
-  "resource_name" "character varying(50)" [default: NULL]
-  "resource_link" "character varying(255)" [default: NULL]
-
-}
-
-Table "nets_users_data" {
-  "net_id" bigint [not null]
-  "user_id" bigint [not null]
-  "email_show" boolean [not null, default: false]
-  "name_show" boolean [not null, default: false]
-  "mobile_show" boolean [not null, default: false]
-  Indexes {
-    (net_id, user_id) [pk]
-  }
-}
-
 Table "sessions" {
   "session_id" bigint [primary key, not null]
+  "user_id" bigint [not null]
   "session_key" "character varying(255)" [not null]
   "session_value" "character varying(255)" [not null]
+  "updated" timestamp [not null, default: 'now()']
 }
 
-Ref "fk_nets_data_net":"nets"."net_id" - "nets_data"."net_id" [delete: cascade]
-Ref "fk_nets_users_data_net":"nets"."net_id" < "nets_users_data"."net_id"
+Ref "fk_nets_node":"nodes"."node_id" - "nets"."net_node_id"
+Ref "fk_nets_data_net_node":"nets"."net_node_id" - "nets_data"."net_node_id" [delete: cascade]
+Ref "fk_nets_users_data_node_net_node":"nodes".(node_id, net_node_id) - "nets_users_data".(node_id, net_node_id)
 Ref "fk_nets_users_data_user":"users"."user_id" < "nets_users_data"."user_id" [delete: cascade]
-Ref "fk_nets_node":"nodes"."node_id" - "nets"."node_id"
 Ref "fk_users_nodes_invites_node":"nodes"."node_id" - "users_nodes_invites"."node_id"
 Ref "fk_users_nodes_invites_user":"users"."user_id" < "users_nodes_invites"."user_id" [delete: cascade]
-Ref "fk_nodes_user":"users"."user_id" < "nodes"."user_id"
 Ref "fk_users_tokens_user":"users"."user_id" < "users_tokens"."user_id" [delete: cascade]
 Ref "fk_users_members_parent_node":"nodes"."node_id" < "users_members"."parent_node_id"
 Ref "fk_users_members_user":"users"."user_id" < "users_members"."user_id" [delete: cascade]
 Ref "fk_users_members_member":"users"."user_id" < "users_members"."member_id" [delete: cascade]
+Ref "fk_sessions_user":"users"."user_id" < "sessions"."user_id" [delete: cascade]

@@ -31,12 +31,7 @@ export const updateCountOfNets = async (
 };
 
 export const createTree = async (node: ITableNodes) => {
-  const { node_level, node_id, first_node_id, } = node;
+  const { node_level, node_id, net_node_id, } = node;
   if (node_level >= MAX_NODE_LEVEL) return;
-  await execQuery.node.createTree([
-    node_level + 1,
-    node_id,
-    first_node_id,
-    new Date().toISOString(),
-  ]);
+  await execQuery.node.createTree([node_level + 1, node_id, net_node_id]);
 };
