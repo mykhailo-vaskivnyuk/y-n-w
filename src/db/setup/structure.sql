@@ -98,7 +98,7 @@ CREATE TABLE public.nodes (
     node_level integer DEFAULT 0 NOT NULL,
     node_position integer DEFAULT 0 NOT NULL,
     parent_node_id bigint,
-    net_node_id bigint NOT NULL,
+    net_node_id bigint,
     count_of_members integer DEFAULT 0 NOT NULL,
     updated timestamp without time zone DEFAULT now() NOT NULL
 );
@@ -162,7 +162,7 @@ CREATE TABLE public.users (
     email character varying(50) NOT NULL,
     name character varying(50) DEFAULT NULL::character varying,
     mobile character varying(50) DEFAULT NULL::character varying,
-    password character varying(50) DEFAULT NULL::character varying,
+    password character varying(255) DEFAULT NULL::character varying,
     confirmed boolean DEFAULT false NOT NULL
 );
 

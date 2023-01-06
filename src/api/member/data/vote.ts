@@ -4,14 +4,12 @@ import { IMemberConfirmParams } from '../../../client/common/api/types/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../utils/member.utils';
 import { findUserNet } from '../../utils/net.utils';
-import { HandlerError } from '../../../router/errors';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
   { session }, { net_node_id, node_id }
 ) => {
   const user_id = session.read('user_id')!;
-  const net = await findUserNet(user_id, net_node_id);
-  if (!net) throw new HandlerError('NOT_FOUND');
+  const [net] = await findUserNet(user_id, net_node_id);
   if (!net.parent_node_id) return false; // bad request
   const [member] = await execQuery.member
     .findInCircle([net.parent_node_id, node_id]);
@@ -31,8 +29,7 @@ export const unSet: THandler<IMemberConfirmParams, boolean> = async (
   { session }, { net_node_id, node_id }
 ) => {
   const user_id = session.read('user_id')!;
-  const net = await findUserNet(user_id, net_node_id);
-  if (!net) throw new HandlerError('NOT_FOUND');
+  const [net] = await findUserNet(user_id, net_node_id);
   if (!net.parent_node_id) return false; // bad request
   const [member] = await execQuery.member
     .findInCircle([net.parent_node_id, node_id]);

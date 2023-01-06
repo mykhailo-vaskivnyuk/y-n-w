@@ -1,22 +1,16 @@
 /* eslint-disable max-lines */
-import { UserStatusKeys } from '../../client/common/api/types/types';
-import { DbRecordOrNull } from '../../client/common/types';
-import { ITableNodes, ITableUsersNodesInvites } from '../../db/db.types';
+import { ITableNodes } from '../../db/db.types';
+import { HandlerError } from '../../router/errors';
 import { updateCountOfMemebers } from './utils';
 
 export const findUserNet = async (
-  user_id: number, net_node_id?: number | null,
+  user_id: number, net_node_id: number,
 ) => {
-  if (!net_node_id) return;
-  const [net] = await execQuery.user.net.find([user_id, net_node_id]);
-  return net;
-};
-
-export const getNetUserStatus = (
-  invite?: DbRecordOrNull<ITableUsersNodesInvites>,
-): UserStatusKeys => {
-  if (!invite) return 'LOGGEDIN';
-  return invite?.token ? 'INVITING' : 'INSIDE_NET';
+  const [net = null] = await execQuery.user.net.find([user_id, net_node_id]);
+  if (!net) throw new HandlerError('NOT_FOUND');
+  const { token } = net;
+  const userNetStatus = token ? 'INVITING' : 'INSIDE_NET';
+  return [net, userNetStatus] as const;
 };
 
 export const removeNetUser = async (

@@ -24,7 +24,7 @@ export const get = `
     users_members.dislike,
     users_members.vote,
     CASE
-      WHEN users_nodes_invites.token ISNULL THEN users.email
+      WHEN nodes_invites.token ISNULL THEN users.email
       ELSE null
     END AS name,
     SUM (
@@ -42,8 +42,8 @@ export const get = `
     users_members.member_id = members.user_id
   LEFT JOIN users ON
     users.user_id = members.user_id
-  LEFT JOIN users_nodes_invites ON
-    users_nodes_invites.node_id = nodes.node_id
+  LEFT JOIN nodes_invites ON
+    nodes_invites.node_id = nodes.node_id
   LEFT JOIN users_members AS votes ON
     votes.parent_node_id = $3 AND
     votes.member_id = members.user_id
@@ -56,7 +56,7 @@ export const get = `
     nodes.node_id,
     users_members.dislike,
     users_members.vote,
-    users_nodes_invites.token,
+    nodes_invites.token,
     users.email
   ORDER BY nodes.node_level, nodes.node_position
 `;
@@ -77,14 +77,14 @@ export const getDislikes = `
   LEFT JOIN users_members ON
     users_members.parent_node_id = $1 AND
     users_members.member_id = members.user_id
-  LEFT JOIN users_nodes_invites ON
-    users_nodes_invites.node_id = nodes.node_id
+  LEFT JOIN nodes_invites ON
+    nodes_invites.node_id = nodes.node_id
   WHERE
     (
       nodes.parent_node_id = $1 OR
       nodes.node_id = $1
     ) AND
-    users_nodes_invites.token ISNULL
+    nodes_invites.token ISNULL
   GROUP BY
     nodes.node_id,
     members.user_id
@@ -107,11 +107,11 @@ export const getVotes = `
   LEFT JOIN users_members ON
     users_members.parent_node_id = $1 AND
     users_members.member_id = members.user_id
-  LEFT JOIN users_nodes_invites ON
-    users_nodes_invites.node_id = nodes.node_id
+  LEFT JOIN nodes_invites ON
+    nodes_invites.node_id = nodes.node_id
   WHERE
     nodes.parent_node_id = $1 AND
-    users_nodes_invites.token ISNULL
+    nodes_invites.token ISNULL
   GROUP BY
     nodes.node_id,
     members.user_id

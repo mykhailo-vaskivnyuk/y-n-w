@@ -21,8 +21,8 @@ export interface IQueriesMember {
     ITableNodes &
     ITableNets>;
   inviteCreate: TQuery<[
+    ['parent_node_id', number],
     ['node_id', number],
-    ['user_id', number],
     ['member_name', string],
     ['token', string],
   ]>;
@@ -63,18 +63,18 @@ export interface IQueriesMember {
 }
 
 export const findInTree = `
-  SELECT users_nodes_invites.*, nodes.*
+  SELECT nodes_invites.*, nodes.*
   FROM nodes
-  LEFT JOIN users_nodes_invites ON
-    users_nodes_invites.node_id = nodes.node_id
+  LEFT JOIN nodes_invites ON
+    nodes_invites.node_id = nodes.node_id
   WHERE nodes.parent_node_id = $1 AND nodes.node_id = $2
 `;
 
 export const findInCircle = `
-  SELECT users_nodes_invites.*, nodes.*
+  SELECT nodes_invites.*, nodes.*
   FROM nodes
-  LEFT JOIN users_nodes_invites ON
-    users_nodes_invites.node_id = nodes.node_id
+  LEFT JOIN nodes_invites ON
+    nodes_invites.node_id = nodes.node_id
   WHERE
     nodes.node_id = $2 AND (
       nodes.parent_node_id = $1 OR
@@ -83,14 +83,14 @@ export const findInCircle = `
 `;
 
 export const inviteCreate = `
-  INSERT INTO users_nodes_invites (
-    node_id, user_id, member_name, token
+  INSERT INTO nodes_invites (
+    parent_node_id, node_id, member_name, token
   )
   VALUES ($1, $2, $3, $4)
 `;
 
 export const inviteRemove = `
-  DELETE FROM users_nodes_invites
+  DELETE FROM nodes_invites
   WHERE node_id = $1
 `;
 

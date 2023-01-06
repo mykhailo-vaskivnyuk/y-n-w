@@ -22,7 +22,7 @@ export interface IQueriesNet {
     ['name', string],
   ], ITableNetsData>;
   updateCountOfNets: TQuery<[
-    ['parent_net_id', number],
+    ['net_node_id', number | null],
     ['addCount', number],
   ], ITableNets>
   user: IQueriesNetUser;

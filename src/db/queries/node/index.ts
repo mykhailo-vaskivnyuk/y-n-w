@@ -1,11 +1,9 @@
 /* eslint-disable max-lines */
 import { ITableNodes } from '../../db.types';
 import { TQuery } from '../../types';
-import { IQueriesNodeUser } from './user';
 
 export interface IQueriesNode {
   createInitial: TQuery<[
-    ['user_id', number],
   ], ITableNodes>;
   setNetNodeId: TQuery<[
     ['net_node_id', number],
@@ -32,14 +30,13 @@ export interface IQueriesNode {
     ['node_id', number],
     ['parent_node_id', number | null],
   ]>;
-  user: IQueriesNodeUser;
 }
 
 export const createInitial = `
   INSERT INTO nodes (
-    count_of_members, user_id
+    count_of_members
   )
-  VALUES (1, $1)
+  VALUES (1)
   RETURNING *
 `;
 
@@ -64,10 +61,7 @@ export const updateCountOfMembers = `
 
 export const createTree = `
   INSERT INTO nodes (
-    node_position,
-    node_level,
-    parent_node_id,
-    net_node_id,
+    node_position, node_level, parent_node_id, net_node_id
   )
   VALUES
     (1, $1, $2, $3),

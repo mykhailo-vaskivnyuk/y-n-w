@@ -9,8 +9,8 @@ export interface IQueriesUserMembers {
 }
 
 export const removeInvites = `
-  DELETE FROM users_nodes_invites
-  WHERE users_nodes_invites.node_id IN (
+  DELETE FROM nodes_invites
+  WHERE nodes_invites.node_id IN (
     SELECT node_id
     FROM nodes
     INNER JOIN nets_users_data ON

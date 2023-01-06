@@ -14,7 +14,7 @@ export interface IQueriesUserNets {
 }
 
 const get = `
-  SELECT nets.*, nets_data.name, nodes.node_id
+  SELECT nets_users_data.node_id, nets.*, nets_data.name 
   FROM nets_users_data
   INNER JOIN nets ON
     nets.net_node_id = nets_users_data.net_node_id

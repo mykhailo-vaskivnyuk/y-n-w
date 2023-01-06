@@ -11,8 +11,9 @@ const confirm: THandler<ITokenParams, IUserResponse> = async (
 ) => {
   const [user] = await execQuery.user.findByToken([token]);
   if (!user) return null;
-  const { user_id } = user;
+  const { user_id, confirmed } = user;
   await execQuery.user.token.remove([user_id]);
+  !confirmed && await execQuery.user.confirm([user_id]);
   const user_status: UserStatusKeys = 'LOGGEDIN';
   session.write('user_id', user_id);
   session.write('user_status', user_status);

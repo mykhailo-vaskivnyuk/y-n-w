@@ -1,4 +1,4 @@
-import { ITableUsers, ITableUsersTokens } from '../../db.types';
+import { ITableUsers } from '../../db.types';
 import { TQuery } from '../../types';
 import { IQueriesUserMembers } from './members';
 import { IQueriesUserNet } from './net';
@@ -11,13 +11,16 @@ export interface IQueriesUser {
   ], ITableUsers>;
   findByEmail: TQuery<[
     ['email', string],
-  ], ITableUsers & ITableUsersTokens>;
+  ], ITableUsers>;
   findByToken: TQuery<[
     ['token', string],
   ], ITableUsers>;
   create: TQuery<[
     ['email', string],
     ['password', string],
+  ], ITableUsers>;
+  confirm: TQuery<[
+    ['user_id', number],
   ], ITableUsers>;
   remove: TQuery<[
     ['user_id', number],
@@ -34,7 +37,7 @@ export const getById = `
 `;
 
 export const findByEmail = `
-  SELECT *, users.user_id
+  SELECT users.*
   FROM users
   LEFT JOIN users_tokens ON
     users.user_id = users_tokens.user_id
@@ -49,9 +52,17 @@ export const findByToken = `
 `;
 
 export const create = `
-  INSERT INTO users (email, password)
+  INSERT INTO users (
+    email, password
+  )
   VALUES ($1, $2)
   RETURNING *
+`;
+
+export const confirm = `
+  UPDATE users
+  SET confirmed = true
+  WHERE user_id = $1
 `;
 
 export const remove = `

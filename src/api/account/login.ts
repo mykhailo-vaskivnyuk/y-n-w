@@ -11,13 +11,13 @@ const login: THandler<ILoginParams, IUserResponse> =
 async ({ session }, { email, password }) => {
   const [user] = await execQuery.user.findByEmail([email]);
   if (!user) return null;
-  if (!user.password) return null;
-  const verified = await verifyHash(password, user.password);
+  const { user_id, password: savedPassword, confirmed } = user;
+  if (!savedPassword) return null;
+  const verified = await verifyHash(password, savedPassword);
   if (!verified) return null;
-  const { user_id, token } = user;
-  const user_status: UserStatusKeys = token ?
-    'NOT_CONFIRMED' :
-    'LOGGEDIN';
+  const user_status: UserStatusKeys = confirmed ?
+    'LOGGEDIN' :
+    'NOT_CONFIRMED';
   session.write('user_id', user_id);
   session.write('user_status', user_status);
   return { ...user, user_status };

@@ -5,8 +5,8 @@ export const TABLES_MAP = {
   USERS: 'users',
   NETS_DATA: 'nets_data',
   NETS_USERS_DATA: 'nets_users_data',
+  NODES_INVITES: 'nodes_invites',
   USERS_TOKENS: 'users_tokens',
-  USERS_NODES_INVITES: 'users_nodes_invites',
   USERS_MEMBERS: 'users_members',
   SESSIONS: 'sessions',
 };
@@ -61,8 +61,8 @@ export type ITableUsersTokens = {
 }
 
 export type ITableUsersNodesInvites = {
+  parent_node_id: number;
   node_id: number;
-  user_id: number;
   member_name: string;
   token: string;
 }
