@@ -400,11 +400,11 @@ CREATE UNIQUE INDEX users_tokens_token_idx ON public.users_tokens USING btree (t
 
 --
 -- TOC entry 4270 (class 2606 OID 21437)
--- Name: nets_data fk_nets_data_net_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
+-- Name: nets_data fk_nets_data_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.nets_data
-    ADD CONSTRAINT fk_nets_data_net_node FOREIGN KEY (net_node_id) REFERENCES public.nets(net_node_id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_nets_data_node FOREIGN KEY (net_node_id) REFERENCES public.nodes(node_id) ON DELETE CASCADE;
 
 
 --

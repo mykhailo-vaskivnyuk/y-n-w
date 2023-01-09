@@ -157,8 +157,9 @@ export const remove = `
 
 export const change = `
   UPDATE nets_users_data_tmp
-  SET node_id = CASE WHEN user_id = $3 THEN $2 ELSE $1 END
-  WHERE usere_id IN ($1, $2) AND net_node_id = $5
+  SET
+    node_id = CASE WHEN user_id = $3 THEN $2 ELSE $1 END
+  WHERE user_id IN ($3, $4) AND net_node_id = $5
 `;
 
 export const moveFromTmp = `

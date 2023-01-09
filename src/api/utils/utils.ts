@@ -7,6 +7,7 @@ export const tightenNodes = async (node_id: number) => {
     user_id,
     count_of_members,
     parent_node_id,
+    node_position,
   } = node;
   if (user_id) return false;
   if (!count_of_members) {
@@ -25,10 +26,13 @@ export const tightenNodes = async (node_id: number) => {
     node_id: childNodeId } = nodeWithMaxCount;
   if (childCount !== count_of_members) return false;
   logger.fatal('CHANGE', childNodeId, node_id);
-  await execQuery.node.change([childNodeId, parent_node_id]);
+  await execQuery.node.change([childNodeId, parent_node_id, node_position]);
   await execQuery.node.removeTree([node_id]);
-  !parent_node_id && await execQuery.node.changeNetNode([childNodeId, node_id]);
-  // await execQuery.net.changeNetNode([hildNodeId, node_id]);
+  if (!parent_node_id) {
+    await execQuery.node.changeNetNode([childNodeId, node_id]);
+    await execQuery.net.changeNetNode([childNodeId, node_id]);
+    await execQuery.net.changeDataNetNode([childNodeId, node_id]);
+  }
   // await execQuery.node.remove([node_id]);
   logger.fatal('SUCCESS');
   return true;

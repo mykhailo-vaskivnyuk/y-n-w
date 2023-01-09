@@ -20,7 +20,15 @@ export interface IQueriesNet {
   updateCountOfNets: TQuery<[
     ['net_node_id', number | null],
     ['addCount', number],
-  ], ITableNets>
+  ], ITableNets>;
+  changeNetNode: TQuery<[
+    ['new_net_node', number],
+    ['cur_net_node', number],
+  ]>;
+  changeDataNetNode: TQuery<[
+    ['new_net_node', number],
+    ['cur_net_node', number],
+  ]>;
   user: IQueriesNetUser;
   circle: IQueriesNetCircle;
   tree: IQueriesNetTree;
@@ -65,4 +73,16 @@ export const updateCountOfNets = `
   SET count_of_nets = count_of_nets + $2
   WHERE net_node_id = $1
   RETURNING *
+`;
+
+export const changeNetNode = `
+  UPDATE nets
+  SET net_node_id = $1, first_net_id = $1
+  WHERE net_node_id = $2
+`;
+
+export const changeDataNetNode = `
+  UPDATE nets_data
+  SET net_node_id = $1
+  WHERE net_node_id = $2
 `;

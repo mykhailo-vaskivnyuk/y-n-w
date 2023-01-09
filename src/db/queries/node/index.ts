@@ -32,10 +32,11 @@ export interface IQueriesNode {
   change: TQuery<[
     ['node_id', number],
     ['new_parent_node_id', number | null],
+    ['node_position', number],
   ]>;
   changeNetNode: TQuery<[
     ['new_net_node_id', number],
-    ['prev_net_node_id', number],
+    ['cur_net_node_id', number],
   ]>;
 }
 
@@ -94,7 +95,10 @@ export const get = `
 
 export const change = `
   UPDATE nodes
-  SET parent_node_id = $2
+  SET
+    parent_node_id = $2,
+    node_position = $3,
+    node_level = node_level - 1
   WHERE node_id = $1
 `;
 
