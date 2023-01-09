@@ -84,12 +84,12 @@ Table "nodes_invites" {
 
 Table "users_members" {
   "parent_node_id" bigint [not null]
-  "node_id" bigint [not null]
+  "user_id" bigint [not null]
   "member_id" bigint [not null]
   "dislike" boolean [not null, default: false]
   "vote" boolean [not null, default: false]
   Indexes {
-    (parent_node_id, node_id, member_id) [pk]
+    (parent_node_id, user_id, member_id) [pk]
   }
 }
 
@@ -101,7 +101,7 @@ Table "sessions" {
   "updated" timestamp [not null, default: 'now()']
 }
 
-Ref "fk_nets_node":"nodes"."node_id" - "nets"."net_node_id"
+Ref "fk_nets_node":"nodes"."node_id" - "nets"."net_node_id" [delete: cascade]
 Ref "fk_nets_data_net_node":"nets"."net_node_id" - "nets_data"."net_node_id" [delete: cascade]
 Ref "fk_nets_users_data_node_net_node":"nodes".(node_id, net_node_id) - "nets_users_data".(node_id, net_node_id)
 Ref "fk_nets_users_data_user":"users"."user_id" < "nets_users_data"."user_id" [delete: cascade]
@@ -109,6 +109,6 @@ Ref "fk_nodes_invites_node_parent_node":"nodes".(node_id, parent_node_id) - "nod
 Ref "fk_nodes_invites_parent_user_node":"nets_users_data"."node_id" < "nodes_invites"."parent_node_id" [delete: cascade]
 Ref "fk_users_tokens_user":"users"."user_id" < "users_tokens"."user_id" [delete: cascade]
 Ref "fk_users_members_parent_node":"nodes"."node_id" < "users_members"."parent_node_id"
-Ref "fk_users_members_user_node":"nets_users_data"."node_id" < "users_members"."node_id" [delete: cascade]
+Ref "fk_users_members_user":"users"."user_id" < "users_members"."user_id" [delete: cascade]
 Ref "fk_users_members_member":"users"."user_id" < "users_members"."member_id" [delete: cascade]
 Ref "fk_sessions_user":"users"."user_id" < "sessions"."user_id" [delete: cascade]

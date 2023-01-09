@@ -1,12 +1,13 @@
 import {
   ITableUsers, ITableUsersNodesInvites,
-  getEnumFromMap, ITableUsersMembers,
+  getEnumFromMap, ITableUsersMembers, ITableNetsUsersData, ITableNodes,
 } from '../../../local/imports';
 import { DbRecordOrNull } from '../../types';
 
 export const MEMBER_STATUS_MAP = {
   UNAVAILABLE: 'unavailable',
   EMPTY: 'empty',
+  FREE: 'free',
   INVITED: 'invited',
   CONNECTED: 'connected',
   ACTIVE: 'active',
@@ -23,9 +24,11 @@ export type IMemberInviteParams = {
 
 export type IMemberConfirmParams = Omit<IMemberInviteParams, 'member_name'>;
 
-export type IMemberResponse = { node_id: number; vote_count: number } &
-  Pick<ITableUsers, 'name'> &
-  DbRecordOrNull<Omit<ITableUsersNodesInvites, 'node_id' | 'user_id'>> &
+export type IMemberResponse = { vote_count: number } &
+  Pick<ITableNodes, 'node_id' | 'count_of_members'> &
+  DbRecordOrNull<Pick<ITableUsers, 'name'>> &
+  DbRecordOrNull<Pick<ITableNetsUsersData, 'confirmed'>> &
+  DbRecordOrNull<Pick<ITableUsersNodesInvites, 'token' | 'member_name'>> &
   DbRecordOrNull<
     Omit<ITableUsersMembers, 'parent_node_id' | 'user_id'| 'member_id'>
   >;

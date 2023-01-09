@@ -4,7 +4,6 @@ import { IMemberConfirmParams } from '../../../client/common/api/types/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../utils/member.utils';
 import { arrangeNodes, checkDislike, findUserNet } from '../../utils/net.utils';
-import { HandlerError } from '../../../router/errors';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
   { session }, { net_node_id, node_id }
@@ -23,9 +22,9 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'ACTIVE') return false; // bad request
   await execQuery.member.data
-    .setDislike([parent_node_id, user_id, member.user_id]);
-  const nodesToArrange = await checkDislike(parent_node_id);
-  await arrangeNodes(nodesToArrange);
+    .setDislike([parent_node_id, user_id, member.user_id!]);
+  // const nodesToArrange = await checkDislike(parent_node_id);
+  await arrangeNodes([parent_node_id]);
   return true;
 };
 set.paramsSchema = MemberConfirmParamsSchema;
@@ -47,7 +46,7 @@ export const unSet: THandler<IMemberConfirmParams, boolean> = async (
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'ACTIVE') return false; // bad request
   await execQuery.member.data
-    .unsetDislike([parent_node_id, user_id, member.user_id]);
+    .unsetDislike([parent_node_id, user_id, member.user_id!]);
   return true;
 };
 unSet.paramsSchema = MemberConfirmParamsSchema;

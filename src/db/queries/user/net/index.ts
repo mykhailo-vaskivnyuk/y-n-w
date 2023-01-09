@@ -4,7 +4,7 @@ import {
 } from '../../../../client/common/api/types/types';
 import { DbRecordOrNull } from '../../../../client/common/types';
 import {
-  ITableNets, ITableNetsData, ITableNodes, ITableUsersNodesInvites,
+  ITableNets, ITableNetsData, ITableNetsUsersData, ITableNodes,
 } from '../../../db.types';
 import { TQuery } from '../../../types';
 
@@ -15,19 +15,24 @@ export interface IQueriesUserNet {
   ],
     ITableNets &
     ITableNodes &
-    DbRecordOrNull<ITableUsersNodesInvites>>
+    ITableNetsUsersData>
   read: TQuery<[
     ['user_id', number],
     ['net_node_id', number],
   ],
     ITableNets &
     ITableNetsData &
-    DbRecordOrNull<ITableUsersNodesInvites>
+    ITableNetsUsersData
   >;
   getNodes: TQuery<[
     ['user_id', number],
     ['net_node_id', number | null],
-  ], ITableNodes>;
+  ],
+    ITableNodes &
+    DbRecordOrNull<
+      Pick<ITableNetsUsersData, 'confirmed'>
+    >
+  >;
   getData: TQuery<[
     ['user_id', number],
     ['net_node_id', number],
@@ -36,16 +41,14 @@ export interface IQueriesUserNet {
 
 export const find = `
   SELECT
-    nets.net_level,
-    nodes.node_id, nodes.parent_node_id,
-    nodes_invites.token
+    nodes.*,
+    nets_users_data.confirmed,
+    nets.net_level
   FROM nets_users_data
   INNER JOIN nets ON
     nets.net_node_id = nets_users_data.net_node_id
   INNER JOIN nodes ON
     nodes.node_id = nets_users_data.node_id 
-  LEFT JOIN nodes_invites ON
-    nodes_invites.node_id = nets_users_data.node_id
   WHERE
     nets_users_data.user_id = $1 AND
     nets_users_data.net_node_id = $2
@@ -55,7 +58,7 @@ export const read = `
   SELECT
     nets.*,
     nets_data.*,
-    nodes_invites.token
+    nets_users_data.confirmed
   FROM nets_users_data
   INNER JOIN nets ON
     nets.net_node_id = nets_users_data.net_node_id
@@ -63,8 +66,6 @@ export const read = `
     nets_data.net_node_id = nets.net_node_id
   INNER JOIN nodes ON
     nodes.node_id = nets_users_data.node_id
-  LEFT JOIN nodes_invites ON
-    nodes_invites.node_id = nets_users_data.node_id
   WHERE
     nets_users_data.user_id = $1 AND
     nets_users_data.net_node_id = $2
@@ -73,7 +74,7 @@ export const read = `
 export const getNodes = `
   SELECT
     nodes.*,
-    nodes.count_of_members - 1 AS count_of_members
+    nets_users_data.confirmed
   FROM nets_users_data
   INNER JOIN nets ON
     nets.net_node_id = nets_users_data.net_node_id
@@ -83,8 +84,8 @@ export const getNodes = `
     nets_users_data.user_id = $1 AND ((
       ($2 + 1) NOTNULL AND 
       nets.first_net_id = $2 AND
-      nets.net_level >= (SELECT net_level FROM nets WHERE net_node_id = $2)) OR 
-      ($2 + 1) ISNULL
+      nets.net_level >= (SELECT net_level FROM nets WHERE net_node_id = $2)
+      ) OR ($2 + 1) ISNULL
     )
   ORDER BY nets.net_level DESC
 `;
@@ -93,7 +94,7 @@ export const getData = `
   SELECT
     nodes.node_id,
     nodes.parent_node_id,
-    nodes_invites.token,
+    nets_users_data.confirmed,
     users_members.vote,
     SUM (
       CASE
@@ -106,8 +107,6 @@ export const getData = `
     nets.net_node_id = nets_users_data.net_node_id
   INNER JOIN nodes ON
     nodes.node_id = nets_users_data.node_id
-  LEFT JOIN nodes_invites ON
-    nodes_invites.node_id = nets_users_data.node_id
   LEFT JOIN users_members ON
     users_members.user_id = nets_users_data.user_id AND
     users_members.member_id = nets_users_data.user_id
@@ -120,6 +119,6 @@ export const getData = `
   GROUP BY
     nodes.node_id,
     nodes.parent_node_id,
-    nodes_invites.token,
+    nets_users_data.confirmed,
     users_members.vote
 `;

@@ -2,7 +2,6 @@ import Joi from 'joi';
 import { THandler } from '../../router/types';
 import { ITokenParams } from '../../client/common/api/types/types';
 import { JOI_NULL } from '../../router/constants';
-import { createTree, updateCountOfMemebers } from '../utils/utils';
 import { TokenParamsSchema } from '../schema/schema';
 
 type INetConnectByToken = {
@@ -22,16 +21,15 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
     if (user_exists) return { net_node_id, error: 'already connected' };
 
     if (parent_net_id) {
-      const parentNet = await execQuery.user.net.find([user_id, parent_net_id]);
+      const [parentNet] = await execQuery.user.net
+        .find([user_id, parent_net_id]);
       if (!parentNet) return { net_node_id, error: 'not parent net member' };
     }
 
+    /* remove token */
+    await execQuery.member.inviteRemove([node_id]);
     /* connect user to node + create net user data */
-    await execQuery.net.user.createData([node_id, user_id]);
-    await updateCountOfMemebers(node);
-
-    /* create node tree */
-    await createTree(node);
+    await execQuery.net.user.connect([node_id, user_id]);
 
     return { net_node_id };
   };

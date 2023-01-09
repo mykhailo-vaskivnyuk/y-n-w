@@ -1,5 +1,5 @@
 import {
-  ITableNodes, ITableUsersMembers, ITableUsersNodesInvites,
+  ITableNetsUsersData, ITableNodes, ITableUsersMembers,
 } from '../../../local/imports';
 import { DbRecordOrNull } from '../../types';
 
@@ -19,6 +19,6 @@ export const loggedInState = USER_STATUS_MAP.LOGGEDIN;
 
 export type IUserNetDataResponse =
   Pick<ITableNodes, 'node_id' | 'parent_node_id'> &
-  DbRecordOrNull<Pick<ITableUsersNodesInvites, 'token'>> &
+  DbRecordOrNull<Pick<ITableNetsUsersData, 'confirmed'>> &
   DbRecordOrNull<Pick<ITableUsersMembers, 'vote'>> &
   { vote_count: number };

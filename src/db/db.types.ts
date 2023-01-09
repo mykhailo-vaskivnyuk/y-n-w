@@ -53,6 +53,7 @@ export type ITableNetsUsersData = {
   email_show: boolean;
   name_show: boolean;
   mobile_show: boolean;
+  confirmed: boolean;
 }
 
 export type ITableUsersTokens = {
@@ -62,7 +63,7 @@ export type ITableUsersTokens = {
 
 export type ITableUsersNodesInvites = {
   parent_node_id: number;
-  node_id: number;
+  user_id: number;
   member_name: string;
   token: string;
 }

@@ -21,10 +21,12 @@ export interface IQueriesNetCircle {
 export const get = `
   SELECT
     nodes.node_id,
+    nodes.count_of_members,
     users_members.dislike,
     users_members.vote,
+    members.confirmed,
     CASE
-      WHEN nodes_invites.token ISNULL THEN users.email
+      WHEN members.confirmed = true THEN users.email
       ELSE null
     END AS name,
     SUM (
@@ -42,8 +44,6 @@ export const get = `
     users_members.member_id = members.user_id
   LEFT JOIN users ON
     users.user_id = members.user_id
-  LEFT JOIN nodes_invites ON
-    nodes_invites.node_id = nodes.node_id
   LEFT JOIN users_members AS votes ON
     votes.parent_node_id = $3 AND
     votes.member_id = members.user_id
@@ -54,9 +54,10 @@ export const get = `
     )
   GROUP BY
     nodes.node_id,
+    nodes.count_of_members,
     users_members.dislike,
     users_members.vote,
-    nodes_invites.token,
+    members.confirmed,
     users.email
   ORDER BY nodes.node_level, nodes.node_position
 `;
@@ -73,18 +74,16 @@ export const getDislikes = `
     ) AS dislike_count
   FROM nodes
   INNER JOIN nets_users_data AS members ON
-    members.user_id = users_members.member_id
+    members.node_id = nodes.node_id
   LEFT JOIN users_members ON
     users_members.parent_node_id = $1 AND
     users_members.member_id = members.user_id
-  LEFT JOIN nodes_invites ON
-    nodes_invites.node_id = nodes.node_id
   WHERE
     (
       nodes.parent_node_id = $1 OR
       nodes.node_id = $1
     ) AND
-    nodes_invites.token ISNULL
+    members.confirmed = true
   GROUP BY
     nodes.node_id,
     members.user_id
@@ -94,6 +93,7 @@ export const getDislikes = `
 export const getVotes = `
   SELECT
     nodes.node_id,
+    nodes.count_of_members,
     members.user_id,
     SUM (
       CASE
@@ -107,11 +107,9 @@ export const getVotes = `
   LEFT JOIN users_members ON
     users_members.parent_node_id = $1 AND
     users_members.member_id = members.user_id
-  LEFT JOIN nodes_invites ON
-    nodes_invites.node_id = nodes.node_id
   WHERE
     nodes.parent_node_id = $1 AND
-    nodes_invites.token ISNULL
+    members.confirmed = true
   GROUP BY
     nodes.node_id,
     members.user_id

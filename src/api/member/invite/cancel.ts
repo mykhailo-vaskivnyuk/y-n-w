@@ -10,7 +10,8 @@ const cancel: THandler<IMemberConfirmParams, boolean> = async (
 ) => {
   const user_id = session.read('user_id')!;
   const [net] = await findUserNet(user_id, net_node_id);
-  const [member] = await execQuery.member.findInTree([net.node_id, node_id]);
+  const { node_id: parent_node_id } = net!;
+  const [member] = await execQuery.member.findInTree([parent_node_id, node_id]);
   if (!member) return false; // bad request
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'INVITED') return false; // bad request

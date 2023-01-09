@@ -10,6 +10,7 @@ const leave: THandler<INetReadParams> = async (
   const user_id = session.read('user_id')!;
   await findUserNet(user_id, net_node_id);
   const nodesToArrange = await removeNetUser(user_id, net_node_id);
+  // logger.fatal(nodesToArrange);
   await arrangeNodes(nodesToArrange);
   return true;
 };

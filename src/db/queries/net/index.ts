@@ -1,7 +1,6 @@
 import { ITableNets, ITableNetsData } from '../../db.types';
 import { TQuery } from '../../types';
 import { IQueriesNetUser } from './user';
-import { IQueriesNetNodes } from './nodes/removeUser';
 import { IQueriesNetCircle } from './circle';
 import { IQueriesNetTree } from './tree';
 import { IQueriesNetFind } from './find';
@@ -14,9 +13,6 @@ export interface IQueriesNet {
     ['net_node_id', number],
     ['parent_net_id', number],
   ], ITableNets>;
-  remove: TQuery<[
-    ['net_node_id', number],
-  ]>;
   createData: TQuery<[
     ['net_node_id', number],
     ['name', string],
@@ -26,7 +22,6 @@ export interface IQueriesNet {
     ['addCount', number],
   ], ITableNets>
   user: IQueriesNetUser;
-  nodes: IQueriesNetNodes;
   circle: IQueriesNetCircle;
   tree: IQueriesNetTree;
   find: IQueriesNetFind;
@@ -54,12 +49,6 @@ export const createChild = `
     first_net_id
   FROM nets
   WHERE net_node_id = $2
-  RETURNING *
-`;
-
-export const remove = `
-  DELETE FROM nets
-  WHERE net_node_id = $1
   RETURNING *
 `;
 

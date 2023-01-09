@@ -8,6 +8,8 @@ export type IClientApi = ReturnType<typeof getApi>;
 export const getApi = (
   fetch: <T>(pathname: string, options?: Record<string, any>) => Promise<T>
 ) => ({
+  'health': () => fetch<string>('/health'),
+
   'account': {
     'confirm': (options: P.ITokenParams) =>
       fetch<P.IUserResponse>('/account/confirm', options),
@@ -29,8 +31,6 @@ export const getApi = (
       fetch<P.IUserResponse>('/account/signup', options),
 
   },
-  'health': () => fetch<string>('/health'),
-
   'member': {
     'data': {
       'dislike': {
@@ -101,6 +101,8 @@ export const getApi = (
   'user': {
     'update': () => fetch<string>('/user/update'),
 
+    'read': () => fetch<P.IUserResponse>('/user/read'),
+
     'net': {
       'getData': (options: P.INetReadParams) =>
         fetch<P.IUserNetDataResponse>('/user/net/getData', options),
@@ -110,7 +112,5 @@ export const getApi = (
       'get': () => fetch<P.INetsResponse>('/user/nets/get'),
 
     },
-    'read': () => fetch<P.IUserResponse>('/user/read'),
-
   },
 });

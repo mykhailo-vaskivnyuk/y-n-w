@@ -23,9 +23,13 @@ export const getTree: THandler<INetReadParams, INetViewResponse> =
   async ({ session }, { net_node_id }) => {
     const user_id = session.read('user_id')!;
     const [net, user_status] = await findUserNet(user_id, net_node_id);
+    // logger.fatal(net, user_status);
     if (user_status !== 'INSIDE_NET') return [];
     const { node_id } = net;
-    return await execQuery.net.tree.get([user_id, node_id]);
+    logger.fatal(net);
+    const tree = await execQuery.net.tree.get([user_id, node_id]);
+    logger.fatal(tree);
+    return tree;
   };
 getTree.paramsSchema = NetReadParamsSchema;
 getTree.responseSchema = NetViewResponseSchema;

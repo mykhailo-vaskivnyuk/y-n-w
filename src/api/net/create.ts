@@ -32,7 +32,7 @@ const create: THandler<INetCreateParams, INetResponse> =
       [net] = await execQuery.net.createInitial([net_node_id]);
     } else {
       [net] = await execQuery.net.createChild([net_node_id, parentNetId]);
-      await updateCountOfNets(net!, 1);
+      await updateCountOfNets(parentNetId, 1);
     }
 
     /* create net data */

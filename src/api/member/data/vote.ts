@@ -19,7 +19,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
   if (memberStatus !== 'ACTIVE') return false; // bad request
   await execQuery.member.data.unsetVote([net.parent_node_id, user_id]);
   await execQuery.member.data
-    .setVote([net.parent_node_id, user_id, member.user_id]);
+    .setVote([net.parent_node_id, user_id, member.user_id!]);
   return true;
 };
 set.paramsSchema = MemberConfirmParamsSchema;

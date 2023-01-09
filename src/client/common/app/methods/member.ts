@@ -20,16 +20,14 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
     if (member) parent.setNetView(netView);
   },
 
-  getStatus(member?: IMemberResponse) {
-    let memberStatus: MemberStatusKeys = 'UNAVAILABLE';
-    if (!member) return memberStatus;
-    memberStatus = 'EMPTY';
-    const { name, token } = member;
-    if (name) {
-      if (token) memberStatus = 'CONNECTED';
-      else memberStatus = 'ACTIVE';
-    } else if (token) memberStatus = 'INVITED';
-    return memberStatus;
+  getStatus(member?: IMemberResponse): MemberStatusKeys {
+    if (!member) return 'UNAVAILABLE';
+    const { count_of_members: countOfMembers, confirmed, token } = member;
+    if (confirmed === true) return 'ACTIVE';
+    if (confirmed === false) return 'CONNECTED';
+    if (token) return 'INVITED';
+    if (countOfMembers) return 'FREE';
+    return 'EMPTY';
   },
 
   getName(

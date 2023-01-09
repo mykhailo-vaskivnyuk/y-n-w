@@ -1,6 +1,5 @@
 import { ITableUsers } from '../../db.types';
 import { TQuery } from '../../types';
-import { IQueriesUserMembers } from './members';
 import { IQueriesUserNet } from './net';
 import { IQueriesUserNets } from './nets/get';
 import { IQueriesUserToken } from './token';
@@ -28,7 +27,6 @@ export interface IQueriesUser {
   net: IQueriesUserNet;
   nets: IQueriesUserNets;
   token: IQueriesUserToken;
-  members: IQueriesUserMembers;
 }
 
 export const getById = `

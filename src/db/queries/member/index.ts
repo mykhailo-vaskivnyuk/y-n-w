@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
+import { DbRecordOrNull } from '../../../client/common/types';
 import {
-  ITableNets, ITableNodes, ITableUsersNodesInvites,
+  ITableNetsUsersData, ITableNodes, ITableUsersNodesInvites,
 } from '../../db.types';
 import { TQuery } from '../../types';
 import { IQueriesMemberData } from './data';
@@ -10,16 +11,18 @@ export interface IQueriesMember {
     ['user_node_id', number],
     ['member_node_id', number],
   ],
-    ITableUsersNodesInvites &
     ITableNodes &
-    ITableNets>;
+    DbRecordOrNull<Pick<ITableUsersNodesInvites, 'token'>> &
+    DbRecordOrNull<Pick<ITableNetsUsersData, 'user_id' | 'confirmed'>>
+  >;
   findInCircle: TQuery<[
     ['parent_node_id', number | null],
     ['member_node_id', number],
   ],
-    ITableUsersNodesInvites &
-    ITableNodes &
-    ITableNets>;
+  ITableNodes &
+  DbRecordOrNull<Pick<ITableUsersNodesInvites, 'token'>> &
+  DbRecordOrNull<Pick<ITableNetsUsersData, 'user_id' | 'confirmed'>>
+>;
   inviteCreate: TQuery<[
     ['parent_node_id', number],
     ['node_id', number],
@@ -29,20 +32,28 @@ export interface IQueriesMember {
   inviteRemove: TQuery<[
     ['node_id', number],
   ]>;
+  inviteConfirm: TQuery<[
+    ['node_id', number],
+  ]>;
   get: TQuery<[
     ['node_id', number],
+  ],
+    { user_id: number } &
+    ITableNodes
+  >;
+  getConnected: TQuery<[
+    ['parent_node_id', number],
   ], {
-    user_id: number,
-    parent_node_id: number | null,
-    net_node_id: number,
+    user_id: number;
+    node_id: number;
   }>;
   moveToTmp: TQuery<[
-    ['node_id_1', number],
-    ['node_id_2', number],
+    ['node_id', number],
+    ['parent_node_id', number],
   ]>;
   remove: TQuery<[
-    ['node_id_1', number],
-    ['node_id_2', number],
+    ['node_id', number],
+    ['parent_node_id', number],
   ]>;
   change: TQuery<[
     ['node_id', number],
@@ -52,27 +63,37 @@ export interface IQueriesMember {
     ['net_node_id', number],
   ]>;
   moveFromTmp: TQuery<[
-    ['node_id_1', number],
-    ['node_id_2', number],
+    ['node_id', number],
+    ['parent_node_id', number],
   ]>;
   removeFromTmp: TQuery<[
-    ['node_id_1', number],
-    ['node_id_2', number],
+    ['node_id', number],
+    ['parent_node_id', number],
   ]>;
   data: IQueriesMemberData;
 }
 
 export const findInTree = `
-  SELECT nodes_invites.*, nodes.*
+  SELECT
+    nodes_invites.*,
+    nodes.*,
+    nets_users_data.user_id, nets_users_data.confirmed
   FROM nodes
+  LEFT JOIN nets_users_data ON
+    nets_users_data.node_id = nodes.node_id
   LEFT JOIN nodes_invites ON
     nodes_invites.node_id = nodes.node_id
   WHERE nodes.parent_node_id = $1 AND nodes.node_id = $2
 `;
 
 export const findInCircle = `
-  SELECT nodes_invites.*, nodes.*
+  SELECT
+    nodes_invites.*,
+    nodes.*,
+    nets_users_data.user_id, nets_users_data.confirmed
   FROM nodes
+  LEFT JOIN nets_users_data ON
+    nets_users_data.node_id = nodes.node_id
   LEFT JOIN nodes_invites ON
     nodes_invites.node_id = nodes.node_id
   WHERE
@@ -94,15 +115,33 @@ export const inviteRemove = `
   WHERE node_id = $1
 `;
 
+export const inviteConfirm = `
+  UPDATE nets_users_data
+  SET confirmed = true
+  WHERE node_id = $1
+`;
+
 export const get = `
   SELECT
     nets_users_data.user_id,
+    nodes.node_id,
     nodes.parent_node_id,
     nodes.net_node_id
   FROM nodes
   INNER JOIN nets_users_data ON
     nets_users_data.node_id = nodes.node_id
   WHERE nodes.node_id = $1
+`;
+
+export const getConnected = `
+  SELECT
+    nets_users_data.user_id
+  FROM nodes
+  INNER JOIN nets_users_data ON
+    nets_users_data.node_id = nodes.node_id
+  WHERE
+    nodes.parent_node_id = $1 AND
+    nets_users_data.confirmed = false
 `;
 
 export const moveToTmp = `

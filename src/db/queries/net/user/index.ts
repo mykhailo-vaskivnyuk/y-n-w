@@ -1,8 +1,13 @@
 import { ITableNetsUsersData } from '../../../db.types';
 import { TQuery } from '../../../types';
+import { userNetAndItsSubnets } from '../../../utils';
 
 export interface IQueriesNetUser {
   createData: TQuery<[
+    ['node_id', number],
+    ['user_id', number],
+  ], ITableNetsUsersData>;
+  connect: TQuery<[
     ['node_id', number],
     ['user_id', number],
   ], ITableNetsUsersData>;
@@ -13,6 +18,16 @@ export interface IQueriesNetUser {
 }
 
 export const createData = `
+  INSERT INTO nets_users_data (
+    node_id, net_node_id, user_id, confirmed
+  )
+  SELECT $1, net_node_id, $2, true
+  FROM nodes
+  WHERE node_id = $1
+  RETURNING *
+`;
+
+export const connect = `
   INSERT INTO nets_users_data (
     node_id, net_node_id, user_id
   )
@@ -25,15 +40,10 @@ export const createData = `
 export const remove = `
   DELETE FROM nets_users_data
   WHERE user_id = $2 AND net_node_id IN (
-    SELECT net_node_id
+    SELECT nets_users_data.net_node_id
     FROM nets_users_data
-    INNER JOIN net ON
+    INNER JOIN nets ON
       nets.net_node_id = nets_users_data.net_node_id
-    WHERE
-      nets_users_data.user_id = $2 AND ((
-        ($1 + 1) NOTNULL AND
-        nets.first_net_id = $1 AND
-        nets.net_level >= (SELECT net_level FROM nets WHERE net_node_id = $1)
-      ) OR ($1 + 1) ISNULL)
-    )
+    WHERE ${userNetAndItsSubnets()}
+  )
 `;
