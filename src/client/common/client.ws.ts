@@ -29,7 +29,7 @@ export const getConnection = async (
     const response = JSON.parse(message) as IWsResponse;
     logData(response, 'RES');
     const { requestId: reqId, data } = response;
-    if (!reqId) {
+    if (reqId === undefined) {
       if (data?.chatId && onChatMessage) {
         console.log(response);
         onChatMessage(data);

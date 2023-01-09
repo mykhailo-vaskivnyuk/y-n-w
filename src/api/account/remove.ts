@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { THandler } from '../../router/types';
-import { arrangeNodes, removeNetUser } from '../utils/net.utils';
+import { removeNetUser } from '../utils/net.utils';
+import { arrangeNodes } from '../utils/utils';
 
 const remove: THandler = async ({ session }) => {
   const user_id = session.read('user_id');

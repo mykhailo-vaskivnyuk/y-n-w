@@ -4,8 +4,8 @@ import {
 import { MAX_NET_LEVEL } from '../../client/common/api/constants';
 import { THandler } from '../../router/types';
 import { NetResponseSchema, NetCreateParamsSchema } from '../schema/schema';
-import { findUserNet } from '../utils/net.utils';
-import { createTree, updateCountOfNets } from '../utils/utils';
+import { findUserNet, updateCountOfNets } from '../utils/net.utils';
+import { createTree } from '../utils/nodes.utils';
 
 const create: THandler<INetCreateParams, INetResponse> =
   async ({ session }, { net_node_id: parentNetId, name }) => {

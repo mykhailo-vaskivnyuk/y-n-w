@@ -4,7 +4,7 @@ import { THandler } from '../../../router/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../utils/member.utils';
 import { findUserNet } from '../../utils/net.utils';
-import { createTree, updateCountOfMembers } from '../../utils/utils';
+import { createTree, updateCountOfMembers } from '../../utils/nodes.utils';
 
 const confirm: THandler<IMemberConfirmParams, boolean> = async (
   { session }, { net_node_id, node_id }

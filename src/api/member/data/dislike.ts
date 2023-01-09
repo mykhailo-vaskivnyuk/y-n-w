@@ -3,7 +3,8 @@ import { THandler } from '../../../router/types';
 import { IMemberConfirmParams } from '../../../client/common/api/types/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../utils/member.utils';
-import { arrangeNodes, checkDislike, findUserNet } from '../../utils/net.utils';
+import { findUserNet } from '../../utils/net.utils';
+import { arrangeNodes } from '../../utils/utils';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
   { session }, { net_node_id, node_id }
