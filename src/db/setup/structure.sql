@@ -422,7 +422,9 @@ ALTER TABLE ONLY public.nets
 --
 
 ALTER TABLE ONLY public.nets_users_data
-    ADD CONSTRAINT fk_nets_users_data_node_net_node FOREIGN KEY (node_id, net_node_id) REFERENCES public.nodes(node_id, net_node_id);
+    ADD CONSTRAINT fk_nets_users_data_node_net_node FOREIGN KEY (node_id, net_node_id) REFERENCES public.nodes(node_id, net_node_id)
+        ON UPDATE CASCADE;
+        -- ON DELETE CASCADE;
 
 
 --
@@ -440,7 +442,8 @@ ALTER TABLE ONLY public.nets_users_data
 --
 
 ALTER TABLE ONLY public.nodes_invites
-    ADD CONSTRAINT fk_nodes_invites_node_parent_node FOREIGN KEY (node_id, parent_node_id) REFERENCES public.nodes(node_id, parent_node_id);
+    ADD CONSTRAINT fk_nodes_invites_node_parent_node FOREIGN KEY (node_id, parent_node_id) REFERENCES public.nodes(node_id, parent_node_id)
+        ON UPDATE CASCADE;
 
 
 --

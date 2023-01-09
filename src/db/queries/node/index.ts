@@ -27,11 +27,15 @@ export interface IQueriesNode {
     ['node_id', number],
   ],
     ITableNodes &
-    Pick<ITableNetsUsersData, 'user_id' | 'confirmed'>
+    Pick<ITableNetsUsersData, 'user_id'>
   >;
   change: TQuery<[
     ['node_id', number],
-    ['parent_node_id', number | null],
+    ['new_parent_node_id', number | null],
+  ]>;
+  changeNetNode: TQuery<[
+    ['new_net_node_id', number],
+    ['prev_net_node_id', number],
   ]>;
 }
 
@@ -93,3 +97,15 @@ export const change = `
   SET parent_node_id = $2
   WHERE node_id = $1
 `;
+
+export const changeNetNode = `
+  UPDATE nodes
+  SET net_node_id = $1
+  WHERE net_node_id = $2
+`;
+
+// export const change = `
+//   UPDATE nets_users_data
+//   SET node_id = $2
+//   WHERE node_id = $1
+// `;

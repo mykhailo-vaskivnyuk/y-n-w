@@ -26,9 +26,9 @@ export const getTree: THandler<INetReadParams, INetViewResponse> =
     // logger.fatal(net, user_status);
     if (user_status !== 'INSIDE_NET') return [];
     const { node_id } = net;
-    logger.fatal(net);
+    // logger.fatal(net);
     const tree = await execQuery.net.tree.get([user_id, node_id]);
-    logger.fatal(tree);
+    // logger.fatal(tree);
     return tree;
   };
 getTree.paramsSchema = NetReadParamsSchema;

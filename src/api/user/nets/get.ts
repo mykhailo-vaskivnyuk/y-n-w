@@ -4,7 +4,9 @@ import { NetsResponseSchema } from '../../schema/schema';
 
 const get: THandler<never, INetsResponse> = async ({ session }) => {
   const user_id = session.read('user_id');
-  return await execQuery.user.nets.get([user_id!]);
+  const nets = await execQuery.user.nets.get([user_id!]);
+  logger.fatal('NETS', nets);
+  return nets;
 };
 get.responseSchema = NetsResponseSchema;
 
