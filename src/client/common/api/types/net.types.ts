@@ -13,6 +13,7 @@ export type INetResponse = null | (
   Pick<ITableNetsUsersData, 'node_id'>
 );
 export type INetsResponse = OmitNull<INetResponse>[];
+export type INetEnterParams = { net_node_id: number };
 export type INetReadParams = { node_id: number };
 export type INetViewResponse = IMemberResponse[];
 export const NET_VIEW_MAP = ['tree', 'circle'] as const;

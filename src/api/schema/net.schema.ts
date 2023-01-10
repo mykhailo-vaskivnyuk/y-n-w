@@ -6,6 +6,7 @@ import { TJoiSchema } from '../../router/types';
 import { OmitNull } from '../../client/common/types';
 import { JOI_NULL } from '../../router/constants';
 
+export const NetEnterParamsSchema = { net_node_id: Joi.number().required() };
 export const NetReadParamsSchema = { node_id: Joi.number().required() };
 
 export const NetCreateParamsSchema = {

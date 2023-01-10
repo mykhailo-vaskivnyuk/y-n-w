@@ -7,12 +7,12 @@ import { INITIAL_NETS, IClientAppThis, IMember } from '../types';
 import { AppStatus } from '../../constants';
 
 export const getNetMethods = (parent: IClientAppThis) => ({
-  async create(args: Omit<INetCreateParams, 'net_node_id'>) {
+  async create(args: Omit<INetCreateParams, 'node_id'>) {
     parent.setStatus(AppStatus.LOADING);
     try {
       const { net: parentNet } = parent.getState();
       const net = await parent.api.net.create({
-        net_node_id: null,
+        node_id: null,
         ...parentNet,
         ...args,
       });
@@ -37,10 +37,10 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  async getUserData(net_node_id: number) {
+  async getUserData(node_id: number) {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const userNetData = await parent.api.user.net.getData({ net_node_id });
+      const userNetData = await parent.api.user.net.getData({ node_id });
       await parent.setUserNetData(userNetData);
       parent.setStatus(AppStatus.READY);
       return userNetData;
@@ -182,7 +182,7 @@ export const getNetMethods = (parent: IClientAppThis) => ({
       let success = false;
       if (chatId) {
         await parent.api.net.chat
-          .send({ net_node_id: net!.net_node_id, chatId, message });
+          .send({ node_id: net!.node_id, chatId, message });
         success = true;
       }
       parent.setStatus(AppStatus.READY);

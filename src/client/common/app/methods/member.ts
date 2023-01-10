@@ -45,9 +45,9 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
     try {
       const { net, netView, memberData } = parent.getState();
       const token = await parent.api.member.invite.create({
-        ...net!,
-        ...memberData!,
         ...args,
+        member_node_id: memberData!.node_id,
+        ...net!,
       });
       if (token) {
         await parent.netMethods.getTree();
@@ -65,7 +65,7 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
     try {
       const { net, netView, memberData } = parent.getState();
       const success = await parent.api.member.invite
-        .cancel({ ...net!, ...memberData! });
+        .cancel({ member_node_id: memberData!.node_id, ...net! });
       if (success) {
         await parent.netMethods.getTree();
         await this.find(netView!, memberData!.node_id);
@@ -82,7 +82,7 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
     try {
       const { net, netView, memberData } = parent.getState();
       const success = await parent.api.member.invite
-        .confirm({ ...net!, ...memberData! });
+        .confirm({ member_node_id: memberData!.node_id, ...net! });
       if (success) {
         await parent.netMethods.getTree();
         await this.find(netView!, memberData!.node_id);
@@ -100,7 +100,7 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
     try {
       const { net, netView, memberData } = parent.getState();
       const success = await parent.api.member.invite
-        .refuse({ ...net!, ...memberData! });
+        .refuse({ member_node_id: memberData!.node_id, ...net! });
       if (success) {
         await parent.netMethods.getTree();
         await this.find(netView!, memberData!.node_id);

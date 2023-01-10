@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
 import { IClientAppThis } from '../types';
 import { AppStatus } from '../../constants';
@@ -9,9 +8,8 @@ export const getMemberDataMethods = (parent: IClientAppThis) => ({
     try {
       const { net, netView } = parent.getState();
       const success = await parent.api.member.data.dislike
-        .set({ ...net!, node_id: nodeId });
+        .set({ ...net!, member_node_id: nodeId });
       if (success) {
-        // await parent.netMethods.getUserData(net!.net_id);
         netView === 'tree' && await parent.netMethods.getTree();
         netView === 'circle' && await parent.netMethods.getCircle();
       }
@@ -27,9 +25,8 @@ export const getMemberDataMethods = (parent: IClientAppThis) => ({
     try {
       const { net, netView } = parent.getState();
       const success = await parent.api.member.data.dislike
-        .unSet({ ...net!, node_id: nodeId });
+        .unSet({ ...net!, member_node_id: nodeId });
       if (success) {
-        // await parent.netMethods.getUserData(net!.net_id);
         netView === 'tree' && await parent.netMethods.getTree();
         netView === 'circle' && await parent.netMethods.getCircle();
       }
@@ -45,7 +42,7 @@ export const getMemberDataMethods = (parent: IClientAppThis) => ({
     try {
       const { net } = parent.getState();
       const success = await parent.api.member.data.vote
-        .set({ ...net!, node_id: nodeId });
+        .set({ ...net!, member_node_id: nodeId });
       if (success) {
         await parent.netMethods.getUserData(net!.net_node_id);
         await parent.netMethods.getCircle();
@@ -62,7 +59,7 @@ export const getMemberDataMethods = (parent: IClientAppThis) => ({
     try {
       const { net } = parent.getState();
       const success = await parent.api.member.data.vote
-        .unSet({ ...net!, node_id: nodeId });
+        .unSet({ ...net!, member_node_id: nodeId });
       if (success) {
         await parent.netMethods.getUserData(net!.net_node_id);
         await parent.netMethods.getCircle();

@@ -77,7 +77,7 @@ export const getApi = (
     'create': (options: P.INetCreateParams) =>
       fetch<P.INetResponse>('/net/create', options),
 
-    'enter': (options: P.INetReadParams) =>
+    'enter': (options: P.INetEnterParams) =>
       fetch<P.INetResponse>('/net/enter', options),
 
     'getCircle': (options: P.INetReadParams) =>
