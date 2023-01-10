@@ -3,6 +3,7 @@ import {
   IUserNetDataResponse,
 } from '../../../../client/common/api/types/types';
 import { DbRecordOrNull } from '../../../../client/common/types';
+import { IUserNet } from '../../../../router/types';
 import {
   ITableNets, ITableNetsData, ITableNetsUsersData, ITableNodes,
 } from '../../../db.types';
@@ -11,14 +12,11 @@ import { TQuery } from '../../../types';
 export interface IQueriesUserNet {
   find: TQuery<[
     ['user_id', number],
-    ['net_node_id', number],
-  ],
-    ITableNets &
-    ITableNodes &
-    ITableNetsUsersData>
+    ['node_id', number],
+  ], IUserNet>
   read: TQuery<[
     ['user_id', number],
-    ['net_node_id', number],
+    ['node_id', number],
   ],
     ITableNets &
     ITableNetsData &
@@ -51,13 +49,14 @@ export const find = `
     nodes.node_id = nets_users_data.node_id 
   WHERE
     nets_users_data.user_id = $1 AND
-    nets_users_data.net_node_id = $2
+    nets_users_data.node_id = $2
 `;
 
 export const read = `
   SELECT
     nets.*,
     nets_data.*,
+    nets_users_data.node_id,
     nets_users_data.confirmed
   FROM nets_users_data
   INNER JOIN nets ON
@@ -68,7 +67,7 @@ export const read = `
     nodes.node_id = nets_users_data.node_id
   WHERE
     nets_users_data.user_id = $1 AND
-    nets_users_data.net_node_id = $2
+    nets_users_data.node_id = $2
 `;
 
 export const getNodes = `

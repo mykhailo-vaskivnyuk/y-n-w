@@ -4,45 +4,45 @@ import {
 import { MAX_NET_LEVEL } from '../../client/common/api/constants';
 import { THandler } from '../../router/types';
 import { NetResponseSchema, NetCreateParamsSchema } from '../schema/schema';
-import { findUserNet, updateCountOfNets } from '../utils/net.utils';
+import { updateCountOfNets } from '../utils/net.utils';
 import { createTree } from '../utils/nodes.utils';
 
-const create: THandler<INetCreateParams, INetResponse> =
-  async ({ session }, { net_node_id: parentNetId, name }) => {
-    const user_id = session.read('user_id')!;
-    const [parentNet, user_status] = parentNetId ?
-      await findUserNet(user_id, parentNetId) : [];
-    if (parentNet) {
-      if (user_status !== 'INSIDE_NET') return null;
-      const { net_level } = parentNet;
-      if (net_level >= MAX_NET_LEVEL) return null;
-    }
+const create: THandler<INetCreateParams, INetResponse> = async (
+  { session, userNet, userNetStatus },
+  { node_id: parentNetNodeId, name },
+) => {
+  if (userNet) {
+    if (userNetStatus !== 'INSIDE_NET') return null;
+    const { net_level } = userNet;
+    if (net_level >= MAX_NET_LEVEL) return null;
+  }
 
-    /* create node */
-    let [node] = await execQuery.node.createInitial([]);
-    const { node_id: net_node_id } = node!;
-    [node] = await execQuery.node.setNetNodeId([net_node_id]);
+  /* create node */
+  let [node] = await execQuery.node.createInitial([]);
+  const { node_id: net_node_id } = node!;
+  [node] = await execQuery.node.setNetNodeId([net_node_id]);
 
-    /* create node tree */
-    await createTree(node!);
+  /* create node tree */
+  await createTree(node!);
 
-    /* create net */
-    let net;
-    if (!parentNetId) {
-      [net] = await execQuery.net.createInitial([net_node_id]);
-    } else {
-      [net] = await execQuery.net.createChild([net_node_id, parentNetId]);
-      await updateCountOfNets(parentNetId, 1);
-    }
+  /* create net */
+  let net;
+  if (!parentNetNodeId) {
+    [net] = await execQuery.net.createInitial([net_node_id]);
+  } else {
+    [net] = await execQuery.net.createChild([net_node_id, parentNetNodeId]);
+    await updateCountOfNets(parentNetNodeId, 1);
+  }
 
-    /* create net data */
-    const [netData] = await execQuery.net.createData([net_node_id, name]);
+  /* create net data */
+  const [netData] = await execQuery.net.createData([net_node_id, name]);
 
-    /* create net user data */
-    await execQuery.net.user.createData([net_node_id, user_id!]);
+  /* create net user data */
+  const user_id = session.read('user_id')!;
+  await execQuery.net.user.createData([net_node_id, user_id!]);
 
-    return { ...net!, ...netData! };
-  };
+  return { ...net!, ...netData! };
+};
 create.paramsSchema = NetCreateParamsSchema;
 create.responseSchema = NetResponseSchema;
 

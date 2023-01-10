@@ -4,9 +4,15 @@ import {
   ITableNetsUsersData, ITableNodes, ITableUsersNodesInvites,
 } from '../../db.types';
 import { TQuery } from '../../types';
+import { userNetAndItsSubnets } from '../../utils';
 import { IQueriesMemberData } from './data';
+import { IQueriesMemberInvite } from './invite';
 
 export interface IQueriesMember {
+  remove: TQuery<[
+    ['user_id', number],
+    ['net_node_id', number | null],
+  ]>;
   findInTree: TQuery<[
     ['user_node_id', number],
     ['member_node_id', number],
@@ -19,22 +25,10 @@ export interface IQueriesMember {
     ['parent_node_id', number | null],
     ['member_node_id', number],
   ],
-  ITableNodes &
-  DbRecordOrNull<Pick<ITableUsersNodesInvites, 'token'>> &
-  DbRecordOrNull<Pick<ITableNetsUsersData, 'user_id' | 'confirmed'>>
->;
-  inviteCreate: TQuery<[
-    ['parent_node_id', number],
-    ['node_id', number],
-    ['member_name', string],
-    ['token', string],
-  ]>;
-  inviteRemove: TQuery<[
-    ['node_id', number],
-  ]>;
-  inviteConfirm: TQuery<[
-    ['node_id', number],
-  ]>;
+    ITableNodes &
+    DbRecordOrNull<Pick<ITableUsersNodesInvites, 'token'>> &
+    DbRecordOrNull<Pick<ITableNetsUsersData, 'user_id' | 'confirmed'>>
+  >;
   get: TQuery<[
     ['node_id', number],
   ],
@@ -51,7 +45,7 @@ export interface IQueriesMember {
     ['node_id', number],
     ['parent_node_id', number],
   ]>;
-  remove: TQuery<[
+  removeVoted: TQuery<[
     ['node_id', number],
     ['parent_node_id', number],
   ]>;
@@ -71,7 +65,19 @@ export interface IQueriesMember {
     ['parent_node_id', number],
   ]>;
   data: IQueriesMemberData;
+  invite: IQueriesMemberInvite;
 }
+
+export const remove = `
+  DELETE FROM nets_users_data
+  WHERE user_id = $2 AND net_node_id IN (
+    SELECT nets_users_data.net_node_id
+    FROM nets_users_data
+    INNER JOIN nets ON
+      nets.net_node_id = nets_users_data.net_node_id
+    WHERE ${userNetAndItsSubnets()}
+  )
+`;
 
 export const findInTree = `
   SELECT
@@ -103,24 +109,6 @@ export const findInCircle = `
     )
 `;
 
-export const inviteCreate = `
-  INSERT INTO nodes_invites (
-    parent_node_id, node_id, member_name, token
-  )
-  VALUES ($1, $2, $3, $4)
-`;
-
-export const inviteRemove = `
-  DELETE FROM nodes_invites
-  WHERE node_id = $1
-`;
-
-export const inviteConfirm = `
-  UPDATE nets_users_data
-  SET confirmed = true
-  WHERE node_id = $1
-`;
-
 export const get = `
   SELECT
     nets_users_data.user_id,
@@ -150,7 +138,7 @@ export const moveToTmp = `
   WHERE node_id IN ($1, $2)
 `;
 
-export const remove = `
+export const removeVoted = `
   DELETE FROM nets_users_data
   WHERE node_id IN ($1, $2)
 `;

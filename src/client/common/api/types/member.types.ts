@@ -17,8 +17,8 @@ export type MemberStatusKeys = keyof typeof MEMBER_STATUS_MAP;
 export const MEMBER_STATUS_ENUM = getEnumFromMap(MEMBER_STATUS_MAP);
 
 export type IMemberInviteParams = {
-  net_node_id: number;
   node_id: number;
+  member_node_id: number;
   member_name: string;
 };
 
@@ -32,14 +32,3 @@ export type IMemberResponse = { vote_count: number } &
   DbRecordOrNull<
     Omit<ITableUsersMembers, 'parent_node_id' | 'user_id'| 'member_id'>
   >;
-
-export type IMemberDislikes = {
-  node_id: number;
-  user_id: number;
-  dislike_count: number;
-};
-
-export type IMemberVotes = {
-  node_id: number;
-  vote_count: number;
-};

@@ -3,7 +3,7 @@ import { IObject } from '../types/types';
 import {
   IOperation, TOperationResponse, IParams,
 } from '../types/operation.types';
-import { ITableUsers } from '../db/db.types';
+import { ITableNodes, ITableUsers } from '../db/db.types';
 import { IMailService } from '../services/mail/types';
 import {
   PartialUserStatusKeys, UserStatusKeys,
@@ -62,7 +62,16 @@ export type TArraySchema<T extends Array<any>> = TObjectSchema<T[number]>;
 export type TJoiSchema = Joi.Schema | Joi.Schema[];
 export type THandlerSchema = THandler['responseSchema' | 'paramsSchema'];
 
-export type IContext = IServices & { origin: string };
+export type IContext = IServices & {
+  origin: string;
+  userNet?: IUserNet;
+  userNetStatus?: UserStatusKeys;
+};
+
+export type IUserNet = ITableNodes & {
+  confirmed: boolean;
+  net_level: number;
+}
 
 export interface IServices {
   session: Session<ISessionContent>;

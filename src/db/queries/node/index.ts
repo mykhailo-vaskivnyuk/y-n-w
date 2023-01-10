@@ -107,9 +107,3 @@ export const changeNetNode = `
   SET net_node_id = $1
   WHERE net_node_id = $2
 `;
-
-// export const change = `
-//   UPDATE nets_users_data
-//   SET node_id = $2
-//   WHERE node_id = $1
-// `;

@@ -5,8 +5,8 @@ import {
 } from '../../client/common/api/types/types';
 
 export const MemberConfirmParamsSchema = {
-  net_node_id: Joi.number().required(),
   node_id: Joi.number().required(),
+  member_node_id: Joi.number().required(),
 } as Record<keyof IMemberConfirmParams, TJoiSchema>;
 
 export const MemberInviteParamsSchema = {

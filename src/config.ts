@@ -1,4 +1,3 @@
-
 import { resolve } from 'node:path';
 import { IConfig } from './types/config.types';
 import { BUILD_PATH } from './constants/constants';
@@ -53,6 +52,7 @@ const config: IConfig = {
       'checkAuthorized',
       'getStream',
       'validateInput',
+      'setUserNet',
     ],
     outputModules: ['validateOutput'],
     modulesConfig: {

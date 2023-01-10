@@ -1,6 +1,5 @@
 import { ITableNetsUsersData } from '../../../db.types';
 import { TQuery } from '../../../types';
-import { userNetAndItsSubnets } from '../../../utils';
 
 export interface IQueriesNetUser {
   createData: TQuery<[
@@ -11,10 +10,6 @@ export interface IQueriesNetUser {
     ['node_id', number],
     ['user_id', number],
   ], ITableNetsUsersData>;
-  remove: TQuery<[
-    ['net_node_id', number | null],
-    ['user_id', number],
-  ]>;
 }
 
 export const createData = `
@@ -35,15 +30,4 @@ export const connect = `
   FROM nodes
   WHERE node_id = $1
   RETURNING *
-`;
-
-export const remove = `
-  DELETE FROM nets_users_data
-  WHERE user_id = $2 AND net_node_id IN (
-    SELECT nets_users_data.net_node_id
-    FROM nets_users_data
-    INNER JOIN nets ON
-      nets.net_node_id = nets_users_data.net_node_id
-    WHERE ${userNetAndItsSubnets()}
-  )
 `;

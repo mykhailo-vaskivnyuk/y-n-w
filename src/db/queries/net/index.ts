@@ -1,3 +1,5 @@
+import { OmitNull } from '../../../client/common/types';
+import { INetResponse } from '../../../client/common/api/types/types';
 import { ITableNets, ITableNetsData } from '../../db.types';
 import { TQuery } from '../../types';
 import { IQueriesNetUser } from './user';
@@ -8,11 +10,11 @@ import { IQueriesNetFind } from './find';
 export interface IQueriesNet {
   createInitial: TQuery<[
     ['net_node_id', number],
-  ], ITableNets>;
+  ], OmitNull<INetResponse>>;
   createChild: TQuery<[
     ['net_node_id', number],
     ['parent_net_id', number],
-  ], ITableNets>;
+  ], OmitNull<INetResponse>>;
   createData: TQuery<[
     ['net_node_id', number],
     ['name', string],
@@ -40,7 +42,7 @@ export const createInitial = `
     net_node_id, first_net_id
   )
   VALUES ($1, $1)
-  RETURNING *
+  RETURNING *, net_node_id as node_id
 `;
 
 export const createChild = `
@@ -57,7 +59,7 @@ export const createChild = `
     first_net_id
   FROM nets
   WHERE net_node_id = $2
-  RETURNING *
+  RETURNING *, net_node_id as node_id
 `;
 
 export const createData = `

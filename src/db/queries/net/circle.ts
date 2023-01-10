@@ -1,7 +1,6 @@
 /* eslint-disable max-lines */
-import {
-  IMemberDislikes, IMemberResponse, IMemberVotes,
-} from '../../../client/common/api/types/types';
+import { IMemberDislikes, IMemberVotes } from '../../../api/types';
+import { IMemberResponse } from '../../../client/common/api/types/types';
 import { TQuery } from '../../types';
 
 export interface IQueriesNetCircle {

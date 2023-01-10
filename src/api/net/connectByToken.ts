@@ -27,7 +27,7 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
     }
 
     /* remove token */
-    await execQuery.member.inviteRemove([node_id]);
+    await execQuery.member.invite.remove([node_id]);
     /* connect user to node + create net user data */
     await execQuery.net.user.connect([node_id, user_id]);
 

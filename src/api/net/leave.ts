@@ -2,16 +2,15 @@ import Joi from 'joi';
 import { INetReadParams } from '../../client/common/api/types/types';
 import { THandler } from '../../router/types';
 import { NetReadParamsSchema } from '../schema/schema';
-import { findUserNet, removeNetUser } from '../utils/net.utils';
+import { removeNetUser } from '../utils/net.utils';
 import { arrangeNodes } from '../utils/utils';
 
 const leave: THandler<INetReadParams> = async (
-  { session }, { net_node_id },
+  { session, userNet },
 ) => {
   const user_id = session.read('user_id')!;
-  await findUserNet(user_id, net_node_id);
+  const { net_node_id } = userNet!;
   const nodesToArrange = await removeNetUser(user_id, net_node_id);
-  logger.fatal('TO ARRANGE', nodesToArrange);
   await arrangeNodes(nodesToArrange);
   return true;
 };

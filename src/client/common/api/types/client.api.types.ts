@@ -2,7 +2,7 @@ import * as P from './types';
 
 export type TMemberInviteCreateResponse = string | null;
 export type TNetChatSend = {
-  net_node_id: number;
+  node_id: number;
   chatId: number;
   message: string;
 };

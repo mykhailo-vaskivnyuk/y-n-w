@@ -1,16 +1,18 @@
 /* eslint-disable max-lines */
+import { UserStatusKeys } from '../../client/common/api/types/user.types';
 import { ITableNodes } from '../../db/db.types';
 import { HandlerError } from '../../router/errors';
+import { IUserNet } from '../../router/types';
 import { updateCountOfMembers } from './nodes.utils';
 
 export const findUserNet = async (
-  user_id: number, net_node_id: number,
-) => {
-  const [net] = await execQuery.user.net.find([user_id, net_node_id]);
-  if (!net) throw new HandlerError('NOT_FOUND');
-  const { confirmed } = net;
+  user_id: number, user_node_id: number,
+): Promise<readonly [IUserNet, UserStatusKeys]> => {
+  const [userNet] = await execQuery.user.net.find([user_id, user_node_id]);
+  if (!userNet) throw new HandlerError('NOT_FOUND');
+  const { confirmed } = userNet;
   const userNetStatus = confirmed ? 'INSIDE_NET' : 'INVITING';
-  return [net, userNetStatus] as const;
+  return [userNet, userNetStatus];
 };
 
 export const updateCountOfNets = async (
@@ -37,7 +39,7 @@ export const removeNetUser = async (
   const nodes = await execQuery.user.net.getNodes([user_id, net_node_id]);
   await execQuery.member.data.remove([user_id, net_node_id]);
   if (userConfirmed) for (const node of nodes) await removeConnected(node);
-  await execQuery.net.user.remove([net_node_id, user_id]);
+  await execQuery.member.remove([user_id, net_node_id]);
   for (const { node_id, confirmed } of nodes)
     confirmed && await updateCountOfMembers(node_id, -1);
   const nodesToArrange = nodes.map(({ node_id }) => node_id);
@@ -50,7 +52,7 @@ export const refuseNetUser = async (
   member_id: number, net_node_id: number,
 ) => {
   await execQuery.member.data.remove([member_id, net_node_id]);
-  await execQuery.net.user.remove([net_node_id, member_id]);
+  await execQuery.member.remove([member_id, net_node_id]);
 };
 
 export const checkDislikes = async (
@@ -90,7 +92,7 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
   await removeConnected(user!);
   await execQuery.member.data.removeFromTree([user_id, node_id]);
   await execQuery.member.moveToTmp([node_id, parent_node_id]);
-  await execQuery.member.remove([node_id, parent_node_id]);
+  await execQuery.member.removeVoted([node_id, parent_node_id]);
   await execQuery.member.change([
     node_id,
     parent_node_id,
