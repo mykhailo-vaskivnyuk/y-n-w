@@ -13,10 +13,11 @@ export interface IOperation {
   data: {
     stream?: { type?: ReqMimeTypesKeys; content: Readable };
     params: IParams;
-    node_id?: number | null;
   };
 }
-export type IParams = Record<string, TPrimitiv | IObject>;
+export type IParams = Record<string, TPrimitiv | IObject> & {
+  node_id?: number | null;
+};
 
 export type TOperationResponse =
   | TPrimitiv

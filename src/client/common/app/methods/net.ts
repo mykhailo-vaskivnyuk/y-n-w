@@ -37,10 +37,10 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  async getUserData(node_id: number) {
+  async getUserData(net_node_id: number) {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const userNetData = await parent.api.user.net.getData({ node_id });
+      const userNetData = await parent.api.user.net.getData({ net_node_id });
       await parent.setUserNetData(userNetData);
       parent.setStatus(AppStatus.READY);
       return userNetData;

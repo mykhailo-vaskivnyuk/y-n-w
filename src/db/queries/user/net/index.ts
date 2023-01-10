@@ -16,7 +16,7 @@ export interface IQueriesUserNet {
   ], IUserNet>
   read: TQuery<[
     ['user_id', number],
-    ['node_id', number],
+    ['net_node_id', number],
   ],
     ITableNets &
     ITableNetsData &
@@ -67,7 +67,7 @@ export const read = `
     nodes.node_id = nets_users_data.node_id
   WHERE
     nets_users_data.user_id = $1 AND
-    nets_users_data.node_id = $2
+    nets_users_data.net_node_id = $2
 `;
 
 export const getNodes = `

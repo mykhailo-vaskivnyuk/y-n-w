@@ -102,7 +102,7 @@ export const getApi = (
     'update': () => fetch<string>('/user/update'),
 
     'net': {
-      'getData': (options: P.INetReadParams) =>
+      'getData': (options: P.INetEnterParams) =>
         fetch<P.IUserNetDataResponse>('/user/net/getData', options),
 
     },
