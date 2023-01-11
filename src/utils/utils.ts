@@ -15,3 +15,7 @@ export const getEnumFromMap =
 
 export const createPathResolve = (basePath: string) =>
   (path: string) => resolve(basePath, path);
+
+export const isNumberNotNull = (
+  value: number | null,
+): value is number => Boolean(value);

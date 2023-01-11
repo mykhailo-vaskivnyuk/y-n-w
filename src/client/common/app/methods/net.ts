@@ -173,20 +173,20 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  async sendTreeMessage(message: string) {
+  async sendMessage(message: string, netView: NetViewKeys) {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const { net, userNetData } = parent.getState();
-      console.log('SEND MESSAGE', userNetData);
-      const { node_id: chatId } = userNetData!;
-      let success = false;
-      if (chatId) {
+      const { userNetData } = parent.getState();
+      const { node_id: nodeId, parent_node_id: parentNodeId } = userNetData!;
+      if (netView === 'tree') {
         await parent.api.net.chat
-          .send({ node_id: net!.node_id, chatId, message });
-        success = true;
+          .send({ node_id: nodeId, chatId: nodeId, message });
+      } else if (parentNodeId) {
+        await parent.api.net.chat
+          .send({ node_id: nodeId, chatId: parentNodeId, message });
       }
       parent.setStatus(AppStatus.READY);
-      return success;
+      return true;
     } catch (e: any) {
       parent.setError(e);
     }

@@ -1,5 +1,5 @@
 export interface IMemberDislikes {
-  node_id: number;
+  net_node_id: number;
   user_id: number;
   dislike_count: number;
 }

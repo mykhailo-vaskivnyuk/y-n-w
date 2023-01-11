@@ -4,7 +4,7 @@ import {
   ITableNetsUsersData, ITableNodes, ITableUsersNodesInvites,
 } from '../../db.types';
 import { TQuery } from '../../types';
-import { userNetAndItsSubnets } from '../../utils';
+import { userInNetAndItsSubnets } from '../../utils';
 import { IQueriesMemberData } from './data';
 import { IQueriesMemberInvite } from './invite';
 
@@ -70,12 +70,12 @@ export interface IQueriesMember {
 
 export const remove = `
   DELETE FROM nets_users_data
-  WHERE user_id = $2 AND net_node_id IN (
+  WHERE user_id = $1 AND net_node_id IN (
     SELECT nets_users_data.net_node_id
     FROM nets_users_data
     INNER JOIN nets ON
       nets.net_node_id = nets_users_data.net_node_id
-    WHERE ${userNetAndItsSubnets()}
+    WHERE ${userInNetAndItsSubnets()}
   )
 `;
 
@@ -133,8 +133,8 @@ export const getConnected = `
 `;
 
 export const moveToTmp = `
-  INSERT INTO nets_users_data_tmp *
-  SELECT FROM nets_users_data
+  INSERT INTO nets_users_data_tmp
+  SELECT * FROM nets_users_data
   WHERE node_id IN ($1, $2)
 `;
 
@@ -146,13 +146,13 @@ export const removeVoted = `
 export const change = `
   UPDATE nets_users_data_tmp
   SET
-    node_id = CASE WHEN user_id = $3 THEN $2 ELSE $1 END
+    node_id = CASE WHEN user_id = $3 THEN +$2 ELSE +$1 END
   WHERE user_id IN ($3, $4) AND net_node_id = $5
 `;
 
 export const moveFromTmp = `
   INSERT INTO nets_users_data 
-  SELECT FROM nets_users_data_tmp
+  SELECT * FROM nets_users_data_tmp
   WHERE node_id IN ($1, $2)
 `;
 

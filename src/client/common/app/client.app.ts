@@ -98,11 +98,6 @@ export class ClientApp extends EventEmitter {
   protected async setNet(net: INetResponse | null = null) {
     if (this.net === net) return;
     this.net = net;
-    this.setUserNetData();
-    this.setCircle([]);
-    this.setTree([]);
-    this.setNetView();
-    this.setMember();
     if (net) {
       await this.netMethods.getUserData(net.net_node_id);
       this.user!.user_status = this.userNetData!.confirmed ?
@@ -111,9 +106,16 @@ export class ClientApp extends EventEmitter {
       await this.netMethods.getCircle();
       await this.netMethods.getTree();
       this.emit('user', { ...this.user });
-    } else if (this.user) {
-      this.user!.user_status = 'LOGGEDIN';
-      this.emit('user', { ...this.user });
+    } else {
+      this.setUserNetData();
+      this.setCircle();
+      this.setTree();
+      this.setNetView();
+      this.setMember();
+      if (this.user) {
+        this.user!.user_status = 'LOGGEDIN';
+        this.emit('user', { ...this.user });
+      }
     }
     this.netMethods.getNets();
     this.emit('net', net);
@@ -137,7 +139,7 @@ export class ClientApp extends EventEmitter {
     this.emit('nets', this.nets);
   }
 
-  protected setCircle(circle: IMember[]) {
+  protected setCircle(circle: IMember[] = []) {
     if (this.circle === circle) return;
     this.circle = circle;
     this.emit('circle', circle);
@@ -151,7 +153,7 @@ export class ClientApp extends EventEmitter {
     this.memberData = memberData;
   }
 
-  protected setTree(tree: IMember[]) {
+  protected setTree(tree: IMember[] = []) {
     if (this.tree === tree) return;
     this.tree = tree;
     this.emit('tree', tree);

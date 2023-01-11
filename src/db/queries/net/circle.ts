@@ -63,7 +63,7 @@ export const get = `
 
 export const getDislikes = `
   SELECT
-    nodes.node_id,
+    nodes.net_node_id,
     members.user_id,
     SUM (
       CASE
@@ -84,7 +84,7 @@ export const getDislikes = `
     ) AND
     members.confirmed = true
   GROUP BY
-    nodes.node_id,
+    nodes.net_node_id,
     members.user_id
   ORDER BY dislike_count DESC
 `;

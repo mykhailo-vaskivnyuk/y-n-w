@@ -8,10 +8,11 @@ import { updateCountOfNets } from '../utils/net.utils';
 import { createTree } from '../utils/nodes.utils';
 
 const create: THandler<INetCreateParams, INetResponse> = async (
-  { session, userNet, userNetStatus },
-  { node_id: parentNetNodeId, name },
+  { session, userNet, userNetStatus }, {  name },
 ) => {
+  let parentNetNodeId: number | undefined;
   if (userNet) {
+    parentNetNodeId = userNet.net_node_id;
     if (userNetStatus !== 'INSIDE_NET') return null;
     const { net_level } = userNet;
     if (net_level >= MAX_NET_LEVEL) return null;
@@ -27,11 +28,11 @@ const create: THandler<INetCreateParams, INetResponse> = async (
 
   /* create net */
   let net;
-  if (!parentNetNodeId) {
-    [net] = await execQuery.net.createInitial([net_node_id]);
-  } else {
+  if (parentNetNodeId) {
     [net] = await execQuery.net.createChild([net_node_id, parentNetNodeId]);
-    await updateCountOfNets(parentNetNodeId, 1);
+    await updateCountOfNets(parentNetNodeId);
+  } else {
+    [net] = await execQuery.net.createInitial([net_node_id]);
   }
 
   /* create net data */

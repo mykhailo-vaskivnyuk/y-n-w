@@ -1,9 +1,10 @@
 /* eslint-disable max-lines */
 import { UserStatusKeys } from '../../client/common/api/types/user.types';
 import { ITableNodes } from '../../db/db.types';
-import { HandlerError } from '../../router/errors';
 import { IUserNet } from '../../router/types';
+import { HandlerError } from '../../router/errors';
 import { updateCountOfMembers } from './nodes.utils';
+import { isNumberNotNull } from '../../utils/utils';
 
 export const findUserNet = async (
   user_id: number, user_node_id: number,
@@ -34,18 +35,20 @@ const removeConnected = async (parent_node: ITableNodes) => {
 };
 
 export const removeNetUser = async (
-  user_id: number, net_node_id: number | null, userConfirmed = true,
+  user_id: number, net_node_id: number | null,
 ) => {
   const nodes = await execQuery.user.net.getNodes([user_id, net_node_id]);
   await execQuery.member.data.remove([user_id, net_node_id]);
-  if (userConfirmed) for (const node of nodes) await removeConnected(node);
+  for (const { confirmed, ...node } of nodes)
+    confirmed && await removeConnected(node);
   await execQuery.member.remove([user_id, net_node_id]);
   for (const { node_id, confirmed } of nodes)
     confirmed && await updateCountOfMembers(node_id, -1);
   const nodesToArrange = nodes.map(({ node_id }) => node_id);
-  const { parent_node_id } = nodes[0]!;
-  parent_node_id && nodesToArrange.unshift(parent_node_id);
-  return nodesToArrange;
+  const parentNodesToArrange = nodes
+    .map(({ parent_node_id }) => parent_node_id)
+    .filter<number>(isNumberNotNull);
+  return [...parentNodesToArrange, ...nodesToArrange];
 };
 
 export const refuseNetUser = async (
@@ -65,8 +68,8 @@ export const checkDislikes = async (
   const { dislike_count } = memberWithMaxDislikes!;
   const disliked = Math.ceil(dislike_count / (count - dislike_count)) > 1;
   if (!disliked) return [];
-  const { user_id, node_id } = memberWithMaxDislikes!;
-  const nodesToArrange = await removeNetUser(user_id, node_id);
+  const { user_id, net_node_id } = memberWithMaxDislikes!;
+  const nodesToArrange = await removeNetUser(user_id, net_node_id);
   return nodesToArrange;
 };
 
@@ -74,30 +77,35 @@ export const checkVotes = async (parent_node_id: number) => {
   const members = await execQuery.net.circle.getVotes([parent_node_id]);
   const count = members.length;
   if (!count) return null;
-  const voteMember = members.find(({ vote_count }) => vote_count === count);
-  if (!voteMember) return;
-  const { node_id } = voteMember;
+  const memberWithMaxVotes = members[0];
+  const { vote_count } = memberWithMaxVotes!;
+  const isVoted = +vote_count === count;
+  if (!isVoted) return;
+  const { node_id } = memberWithMaxVotes!;
   await voteNetUser(node_id, parent_node_id);
 };
 
 export const voteNetUser = async (node_id: number, parent_node_id: number) => {
-  const [parent_user] = await execQuery.member.get([parent_node_id]);
-  if (parent_user) {
-    const { user_id, parent_node_id } = parent_user;
-    await removeConnected(parent_user);
+  const [parent_member] = await execQuery.member.get([parent_node_id]);
+
+  if (parent_member) {
+    const { user_id, parent_node_id } = parent_member;
+    await removeConnected(parent_member);
     await execQuery.member.data.removeFromCircle([user_id, parent_node_id]);
   }
-  const [user] = await execQuery.member.get([node_id]);
-  const { user_id, net_node_id } = user!;
-  await removeConnected(user!);
+
+  const [member] = await execQuery.member.get([node_id]);
+  const { user_id, net_node_id } = member!;
+  await removeConnected(member!);
   await execQuery.member.data.removeFromTree([user_id, node_id]);
+
   await execQuery.member.moveToTmp([node_id, parent_node_id]);
   await execQuery.member.removeVoted([node_id, parent_node_id]);
   await execQuery.member.change([
     node_id,
     parent_node_id,
     user_id,
-    parent_user?.user_id || null,
+    parent_member?.user_id || null,
     net_node_id,
   ]);
   await execQuery.member.moveFromTmp([node_id, parent_node_id]);

@@ -3,6 +3,7 @@ import { THandler } from '../../../router/types';
 import { IMemberConfirmParams } from '../../../client/common/api/types/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../utils/member.utils';
+import { checkVotes } from '../../utils/net.utils';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
   { session, userNet }, { member_node_id }
@@ -19,6 +20,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
   await execQuery.member.data.unsetVote([parent_node_id, user_id]);
   await execQuery.member.data
     .setVote([parent_node_id, user_id, member.user_id!]);
+  await checkVotes(parent_node_id);
   return true;
 };
 set.paramsSchema = MemberConfirmParamsSchema;

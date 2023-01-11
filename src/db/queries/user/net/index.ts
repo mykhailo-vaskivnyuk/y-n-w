@@ -8,6 +8,7 @@ import {
   ITableNets, ITableNetsData, ITableNetsUsersData, ITableNodes,
 } from '../../../db.types';
 import { TQuery } from '../../../types';
+import { userInNetAndItsSubnets } from '../../../utils';
 
 export interface IQueriesUserNet {
   find: TQuery<[
@@ -79,13 +80,7 @@ export const getNodes = `
     nets.net_node_id = nets_users_data.net_node_id
   INNER JOIN nodes ON
     nodes.node_id = nets_users_data.node_id
-  WHERE
-    nets_users_data.user_id = $1 AND ((
-      ($2 + 1) NOTNULL AND 
-      nets.first_net_id = $2 AND
-      nets.net_level >= (SELECT net_level FROM nets WHERE net_node_id = $2)
-      ) OR ($2 + 1) ISNULL
-    )
+  WHERE ${userInNetAndItsSubnets()}
   ORDER BY nets.net_level DESC
 `;
 

@@ -43,11 +43,7 @@ export const getMemberDataMethods = (parent: IClientAppThis) => ({
       const { net } = parent.getState();
       const success = await parent.api.member.data.vote
         .set({ ...net!, member_node_id: nodeId });
-      if (success) {
-        await parent.netMethods.getUserData(net!.net_node_id);
-        await parent.netMethods.getCircle();
-      }
-      parent.setStatus(AppStatus.READY);
+      if (success) await parent.netMethods.enter(net!.net_node_id);
       return success;
     } catch (e: any) {
       parent.setError(e);
