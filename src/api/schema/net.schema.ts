@@ -31,6 +31,7 @@ export const NetsResponseSchema =
 
 export const MemberResponseSchema = {
   node_id: Joi.number().required(),
+  count_of_members: Joi.number().required(),
   name: [Joi.string(), JOI_NULL],
   confirmed: [Joi.boolean(), JOI_NULL],
   token: [Joi.string(), JOI_NULL],
