@@ -110,7 +110,7 @@ class WsConnection implements IInputConnection {
         return connection.terminate();
       }
       connection.isAlive = false;
-      logger.fatal('PING');
+      // logger.fatal('PING');
       connection.ping();
     });
     const interval = setInterval(sendPing, 5000);
@@ -118,7 +118,7 @@ class WsConnection implements IInputConnection {
   }
 
   private handlePong(this: IWsConnection) {
-    logger.fatal('PONG');
+    // logger.fatal('PONG');
     this.isAlive = true;
   }
 

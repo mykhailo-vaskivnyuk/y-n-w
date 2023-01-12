@@ -11,6 +11,7 @@
 
 ## DB
 
+- order db types
 - create additional indexes
 - create DB check algorithm and procedure
 - use `UPSERT` to write `sessions`
@@ -19,6 +20,8 @@
 - ? verify types of queries' results, use `::type` operator
 
 ## ENDPOINTS
+
+- combine `getMemberStatus()` on backend with `app.member.getStatus()` on frontend
 
 ## CONNECTION
 

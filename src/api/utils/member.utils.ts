@@ -1,14 +1,7 @@
 import { MemberStatusKeys } from '../../client/common/api/types/types';
-import { DbRecordOrNull } from '../../client/common/types';
-import {
-  ITableNetsUsersData, ITableNodes, ITableUsersNodesInvites,
-} from '../../db/db.types';
+import { INodeWithUser } from '../../db/types/types';
 
-export const getMemberStatus = (member:
-    ITableNodes &
-    DbRecordOrNull<Pick<ITableNetsUsersData, 'confirmed'>> &
-    DbRecordOrNull<Pick<ITableUsersNodesInvites, 'token'>>
-): MemberStatusKeys => {
+export const getMemberStatus = (member: INodeWithUser): MemberStatusKeys => {
   const { count_of_members, confirmed, token } = member;
   if (confirmed === true) return 'ACTIVE';
   if (confirmed === false) return 'CONNECTED';

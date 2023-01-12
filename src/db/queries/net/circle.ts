@@ -92,7 +92,6 @@ export const getDislikes = `
 export const getVotes = `
   SELECT
     nodes.node_id::int,
-    nodes.count_of_members,
     members.user_id::int,
     SUM (
       CASE
@@ -111,7 +110,6 @@ export const getVotes = `
     members.confirmed = true
   GROUP BY
     nodes.node_id,
-    nodes.count_of_members,
     members.user_id
   ORDER BY vote_count DESC
 `;

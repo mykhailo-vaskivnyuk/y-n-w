@@ -13,7 +13,7 @@ export const getTypeNameFromPathname = (pathname: string) => 'T' + pathname
   .replace('/', '')
   .replace(/\./g, '')
   .split('/')
-  .map((part) => part[0]?.toUpperCase() + part.slice(1))
+  .map((part) => (part[0] || '').toUpperCase() + part.slice(1))
   .join('');
 
 export const getTypeName = (

@@ -1,9 +1,7 @@
 /* eslint-disable max-lines */
-import { DbRecordOrNull } from '../../../client/common/types';
-import {
-  ITableNetsUsersData, ITableNodes, ITableUsersNodesInvites,
-} from '../../db.types';
+import { ITableNodes } from '../../db.types';
 import { TQuery } from '../../types';
+import { INodeWithUser } from '../../types/types';
 import { userInNetAndItsSubnets } from '../../utils';
 import { IQueriesMemberData } from './data';
 import { IQueriesMemberInvite } from './invite';
@@ -16,19 +14,11 @@ export interface IQueriesMember {
   findInTree: TQuery<[
     ['user_node_id', number],
     ['member_node_id', number],
-  ],
-    ITableNodes &
-    DbRecordOrNull<Pick<ITableUsersNodesInvites, 'token'>> &
-    DbRecordOrNull<Pick<ITableNetsUsersData, 'user_id' | 'confirmed'>>
-  >;
+  ], INodeWithUser>;
   findInCircle: TQuery<[
     ['parent_node_id', number | null],
     ['member_node_id', number],
-  ],
-    ITableNodes &
-    DbRecordOrNull<Pick<ITableUsersNodesInvites, 'token'>> &
-    DbRecordOrNull<Pick<ITableNetsUsersData, 'user_id' | 'confirmed'>>
-  >;
+  ], INodeWithUser>;
   get: TQuery<[
     ['node_id', number],
   ],

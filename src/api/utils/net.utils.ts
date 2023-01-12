@@ -44,9 +44,9 @@ export const removeNetUser = async (
   await execQuery.member.remove([user_id, net_node_id]);
   for (const { node_id, confirmed } of nodes)
     confirmed && await updateCountOfMembers(node_id, -1);
-  const nodesToArrange = nodes.map(({ node_id }) => node_id);
+  const nodesToArrange = nodes.map(({ node_id: v }) => v);
   const parentNodesToArrange = nodes
-    .map(({ parent_node_id }) => parent_node_id)
+    .map(({ parent_node_id: v }) => v)
     .filter<number>(isNumberNotNull);
   return [...parentNodesToArrange, ...nodesToArrange];
 };
@@ -64,7 +64,7 @@ export const checkDislikes = async (
   const members = await execQuery.net.circle.getDislikes([parent_node_id]);
   const count = members.length;
   if (!count) return [];
-  const memberWithMaxDislikes = members[0];
+  const [memberWithMaxDislikes] = members;
   const { dislike_count } = memberWithMaxDislikes!;
   const disliked = Math.ceil(dislike_count / (count - dislike_count)) > 1;
   if (!disliked) return [];
@@ -77,7 +77,7 @@ export const checkVotes = async (parent_node_id: number) => {
   const members = await execQuery.net.circle.getVotes([parent_node_id]);
   const count = members.length;
   if (!count) return null;
-  const memberWithMaxVotes = members[0];
+  const [memberWithMaxVotes] = members;
   const { vote_count } = memberWithMaxVotes!;
   const isVoted = vote_count === count;
   if (!isVoted) return;
@@ -88,10 +88,11 @@ export const checkVotes = async (parent_node_id: number) => {
 export const voteNetUser = async (node_id: number, parent_node_id: number) => {
   const [parent_member] = await execQuery.member.get([parent_node_id]);
 
+  const { user_id: parentUserId = null } = parent_member || {};
   if (parent_member) {
-    const { user_id, parent_node_id } = parent_member;
     await removeConnected(parent_member);
-    await execQuery.member.data.removeFromCircle([user_id, parent_node_id]);
+    await execQuery.member.data
+      .removeFromCircle([parentUserId!, parent_node_id]);
   }
 
   const [member] = await execQuery.member.get([node_id]);
@@ -105,9 +106,10 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
     node_id,
     parent_node_id,
     user_id,
-    parent_member?.user_id || null,
+    parentUserId,
     net_node_id,
   ]);
   await execQuery.member.moveFromTmp([node_id, parent_node_id]);
   await execQuery.member.removeFromTmp([node_id, parent_node_id]);
+  !parentUserId && await execQuery.node.updateCountOfMembers([node_id, -1]);
 };
