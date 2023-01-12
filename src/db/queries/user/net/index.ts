@@ -41,6 +41,9 @@ export interface IQueriesUserNet {
 export const find = `
   SELECT
     nodes.*,
+    nodes.node_id::int,
+    nodes.parent_node_id::int,
+    nodes.net_node_id::int,
     nets_users_data.confirmed,
     nets.net_level
   FROM nets_users_data

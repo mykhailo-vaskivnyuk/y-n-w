@@ -91,15 +91,15 @@ export const getDislikes = `
 
 export const getVotes = `
   SELECT
-    nodes.node_id,
+    nodes.node_id::int,
     nodes.count_of_members,
-    members.user_id,
+    members.user_id::int,
     SUM (
       CASE
         WHEN users_members.vote = true THEN 1
         ELSE 0
       END
-    ) AS vote_count
+    )::int AS vote_count
   FROM nodes
   INNER JOIN nets_users_data AS members ON
     members.node_id = nodes.node_id
@@ -111,6 +111,7 @@ export const getVotes = `
     members.confirmed = true
   GROUP BY
     nodes.node_id,
+    nodes.count_of_members,
     members.user_id
   ORDER BY vote_count DESC
 `;

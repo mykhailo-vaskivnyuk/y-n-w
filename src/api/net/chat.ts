@@ -17,7 +17,7 @@ export const send: THandler<INetChatSend, INetChatResponse> =
   async ({ userNet, userNetStatus }, { node_id, chatId, message }) => {
     const { parent_node_id } = userNet!;
     if (userNetStatus !== 'INSIDE_NET') return null;
-    if (chatId !== +(parent_node_id || 0) && chatId !== +node_id) return null;
+    if (chatId !== parent_node_id && chatId !== node_id) return null;
     return { chatId, message };
   };
 send.paramsSchema = {

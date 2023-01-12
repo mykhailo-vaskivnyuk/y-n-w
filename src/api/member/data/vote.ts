@@ -13,7 +13,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
   const [member] = await execQuery.member
     .findInCircle([parent_node_id, member_node_id]);
   if (!member) return false; // bad request
-  if (+parent_node_id === member_node_id) return false; // bad request
+  if (parent_node_id === member_node_id) return false; // bad request
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'ACTIVE') return false; // bad request
   const user_id = session.read('user_id')!;
