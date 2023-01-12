@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { Server, WebSocket } from 'ws';
 import { IInputConnection, IRequest } from '../types';
-import { IWsConfig, IWsServer } from './types';
+import { IWsConfig, IWsConnection, IWsServer } from './types';
 import { IOperation, TOperationResponse } from '../../types/operation.types';
 import { IHttpServer } from '../http/types';
 import { ServerError } from '../errors';
@@ -21,6 +21,7 @@ class WsConnection implements IInputConnection {
     this.config = config;
     this.server = new Server({ server });
     this.server.on('connection', this.handleConnection.bind(this));
+    this.doPings();
   }
 
   onOperation(fn: (operation: IOperation) => Promise<TOperationResponse>) {
@@ -43,11 +44,15 @@ class WsConnection implements IInputConnection {
     throw e;
   }
 
-  private handleConnection(connection: WebSocket, req: IRequest) {
+  private handleConnection(connection: IWsConnection, req: IRequest) {
+    connection.isAlive = true;
     const options = this.getRequestParams(req);
-    const handleRequest = async (message: Buffer) =>
-      await this.handleRequest(message, options, connection);
-    connection.on('message', handleRequest);
+    const handleMessage = (message: Buffer) => this
+      .handleRequest(message, options, connection);
+    connection
+      .on('message', handleMessage)
+      .on('pong', this.handlePong)
+      .on('close', () => logger.fatal('ON CLOSE'));
   }
 
   private async handleRequest(
@@ -96,6 +101,25 @@ class WsConnection implements IInputConnection {
     options.pathname = pathname;
     const data = { params } as IOperation['data'];
     return { options, names, data };
+  }
+
+  private doPings() {
+    const sendPing = () => this.server.clients.forEach((connection) => {
+      if (connection.isAlive === false) {
+        logger.fatal('CLOSE');
+        return connection.terminate();
+      }
+      connection.isAlive = false;
+      logger.fatal('PING');
+      connection.ping();
+    });
+    const interval = setInterval(sendPing, 5000);
+    this.server.on('close', () => clearInterval(interval));
+  }
+
+  private handlePong(this: IWsConnection) {
+    logger.fatal('PONG');
+    this.isAlive = true;
   }
 
   private sendChatMessage(data: TOperationResponse, curConnection: WebSocket) {
