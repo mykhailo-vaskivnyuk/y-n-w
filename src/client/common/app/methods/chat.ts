@@ -12,7 +12,6 @@ export const getChatMethods = (parent: IClientAppThis) => ({
     parent.setStatus(AppStatus.LOADING);
     const { allNets } = parent.getState();
     const promosies = [];
-    let chatId: number;
 
     for (const net of allNets) {
       const {
@@ -22,37 +21,30 @@ export const getChatMethods = (parent: IClientAppThis) => ({
       } = net;
       const req = { node_id: nodeId };
 
-      chatId = -netNodeId;
-      promosies.push(parent.api.chat.sendMessage({ ...req, chatId }));
       promosies.push(parent.api.chat
-        .getMessages({ ...req, chatId })
-        .then((messages) => parent.setAllMessages(messages))
+          .sendMessage({ ...req, chatId: -netNodeId }));
+      promosies.push(parent.api.chat
+        .getMessages({ ...req, chatId: -netNodeId })
+        .then((messages) => parent.setAllMessages(-netNodeId, messages))
       );
 
-      chatId = nodeId;
-      promosies.push(parent.api.chat.sendMessage({ ...req, chatId }));
+      promosies.push(parent.api.chat.sendMessage({ ...req, chatId: nodeId }));
       promosies.push(parent.api.chat
-        .getMessages({ ...req, chatId })
-        .then((messages) => parent.setAllMessages(messages))
+        .getMessages({ ...req, chatId: nodeId })
+        .then((messages) => parent.setAllMessages(nodeId, messages))
       );
 
       if (!parentNodeId) continue;
-      chatId = parentNodeId;
-      promosies.push(parent.api.chat.sendMessage({ ...req, chatId }));
+      
       promosies.push(parent.api.chat
-        .getMessages({ ...req, chatId })
-        .then((messages) => parent.setAllMessages(messages))
+          .sendMessage({ ...req, chatId: parentNodeId }));
+      promosies.push(parent.api.chat
+        .getMessages({ ...req, chatId: parentNodeId })
+        .then((messages) => parent.setAllMessages(parentNodeId, messages))
       );
     }
     try {
-      // const [, netMessages, , treeMessages, ,circleMessages] =
       await Promise.all(promosies);
-        // console.log('SIZE', parent.getState().messages.size)
-        // parent.setAllMessages(netMessages)
-        // parent.setAllMessages(treeMessages)
-        // parent.setAllMessages(circleMessages)
-      // console.log(netMessages, treeMessages, circleMessages);
-      // console.log(parent.getState().messages)
       parent.setStatus(AppStatus.READY);
     } catch (e: any) {
       parent.setError(e);
@@ -66,7 +58,7 @@ export const getChatMethods = (parent: IClientAppThis) => ({
     try {
       const messages = await parent.api.chat
         .getMessages({ node_id: nodeId, chatId, index });
-      parent.setAllMessages(messages);
+      parent.setAllMessages(chatId, messages);
       parent.setStatus(AppStatus.READY);
     } catch (e: any) {
       parent.setError(e);

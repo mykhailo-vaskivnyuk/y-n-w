@@ -84,6 +84,8 @@ const config: IConfig = {
     },
     ws: {
       path: resolvePath('server/ws/ws'),
+      modulesPath: resolvePath('server/ws/modules'),
+      resModules: ['sendResponse', 'sendChatMessages'],
     },
   },
 };

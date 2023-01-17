@@ -1,34 +1,31 @@
 import {
-  IChatResponseMessage, IChatSendMessage,
+  IChatGetMessages, IChatMessage, IChatSendMessage,
 } from '../../client/common/api/types/types';
-import { OmitNull } from '../../client/common/types';
 import {
   MAX_CHAT_MESSAGE_COUNT, MAX_CHAT_MESSAGE_INDEX,
 } from '../../constants/constants';
 
 export class ChatService {
-  private messages = new Map<number, OmitNull<IChatResponseMessage>[]>();
+  private messages = new Map<number, IChatMessage[]>();
 
   addMessage(user_id: number, messageData: IChatSendMessage) {
     const { chatId, message } = messageData;
     const chatMessages = this.messages.get(chatId);
-    let responseMessage;
-    if (!message) {
-      responseMessage = { ...messageData, user_id, index: 0 };
-    } else if (chatMessages) {
+    if (!message) return { chatId, user_id, index: 0 };
+    let index: number;
+    if (chatMessages) {
       const { index: lastIndex } = chatMessages.at(-1)!;
-      const nextIndex = (lastIndex % MAX_CHAT_MESSAGE_INDEX) + 1;
-      responseMessage = { ...messageData, user_id, index: nextIndex };
-      chatMessages.push(responseMessage);
+      index = (lastIndex % MAX_CHAT_MESSAGE_INDEX) + 1;
+      chatMessages.push({ user_id, index, message });
       chatMessages.length > MAX_CHAT_MESSAGE_COUNT && chatMessages.shift();
     } else {
-      responseMessage = { ...messageData, user_id, index: 1 };
-      this.messages.set(chatId, [responseMessage]);
+      index = 1;
+      this.messages.set(chatId, [{ user_id, index, message }]);
     }
-    return responseMessage;
+    return { chatId, user_id, index, message };
   }
 
-  getMessages(chatId: number, index = 1) {
+  getMessages({ chatId, index = 1 }: IChatGetMessages) {
     const chatMessages = this.messages.get(chatId);
     if (!chatMessages) return [];
     const { index: lastIndex } = chatMessages.at(-1)!;

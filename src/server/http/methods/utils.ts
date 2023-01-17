@@ -69,12 +69,8 @@ export const runReqModules = async (
 
 export const runResModules = async (
   res: IResponse,
-  resModules: ReturnType<THttpResModule>[],
   body: string | Readable,
+  resModules: ReturnType<THttpResModule>[],
 ) => {
-  for (const module of resModules) {
-    const next = await module(res, body);
-    if (!next) return false;
-  }
-  return true;
+  for (const module of resModules) await module(res, body);
 };

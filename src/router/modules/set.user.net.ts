@@ -1,6 +1,7 @@
 import { TInputModule } from '../types';
-import { findUserNet } from '../../api/utils/net.utils';
+import { USER_STATUS_MAP } from '../../client/common/api/types/types';
 import { HandlerError } from '../errors';
+import { findUserNet } from '../../api/utils/net.utils';
 
 const setUserNet: TInputModule = () =>
   async ({ ...operation }, context, handler) => {
@@ -13,7 +14,8 @@ const setUserNet: TInputModule = () =>
     if (user_status !== 'LOGGEDIN') return operation;
     const [userNet, userNetStatus] = await findUserNet(user_id, node_id);
     if (!userNet) throw new HandlerError('NOT_FOUND');
-    if (handler.allowedForNetUser === 'INVITING')
+    const allowedForNetUser = handler.allowedForNetUser || 'INSIDE_NET';
+    if (USER_STATUS_MAP[userNetStatus] < USER_STATUS_MAP[allowedForNetUser])
       throw new HandlerError('FORBIDDEN');
     context.userNet = userNet;
     context.userNetStatus = userNetStatus;

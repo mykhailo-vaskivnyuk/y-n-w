@@ -25,7 +25,7 @@ export type IClientAppThis = ClientApp & {
   setMemberPosition: (memberPosition?: number) => void;
   setMessage: (message: OmitNull<IChatResponseMessage>) => void;
   setAllMessages: (
-    chatId: number, messages: OmitNull<IChatResponseMessage>, isNet?: boolean,
+    chatId: number, messages: OmitNull<IChatResponseMessage>,
   ) => void;
 };
 

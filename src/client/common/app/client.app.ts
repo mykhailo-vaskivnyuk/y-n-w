@@ -202,10 +202,8 @@ export class ClientApp extends EventEmitter {
     this.emit('message', chatId);
   }
 
-  protected setAllMessages(messages: IChatGetMessagesResponse) {
+  protected setAllMessages(chatId: number, messages: IChatGetMessagesResponse) {
     if (!messages.length) return;
-    const [firstMessage] = messages;
-    const { chatId } = firstMessage!;
     let chatMessages: IChatMessage[] = messages.map(
       ({ user_id, message, index }) => ({ user_id, message, index })
     );

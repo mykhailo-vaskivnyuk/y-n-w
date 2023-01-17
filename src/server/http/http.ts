@@ -88,7 +88,7 @@ class HttpConnection implements IInputConnection {
         () => logger.info({ ...params, password }, getLog(req, 'OK')),
       );
 
-      await runResModules(res, this.resModules, response);
+      await runResModules(res, response, this.resModules);
     } catch (e) {
       handleError(e, req, res);
     }
