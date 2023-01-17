@@ -73,6 +73,9 @@ const OPERATION_ERRORS_MAP: Partial<
   NOT_CONFIRMED: (details: TRouterErrorDetails) => {
     throw new ServerError('FORBIDDEN', details);
   },
+  FORBIDDEN: (details: TRouterErrorDetails) => {
+    throw new ServerError('FORBIDDEN', details);
+  },
 };
 
 export const handleOperationError = (e: any): never => {

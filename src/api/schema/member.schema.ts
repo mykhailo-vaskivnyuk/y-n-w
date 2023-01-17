@@ -5,11 +5,11 @@ import {
 import { TJoiSchema } from '../../router/types';
 
 export const MemberConfirmParamsSchema = {
-  node_id: Joi.number(),
-  member_node_id: Joi.number(),
+  node_id: Joi.number().required(),
+  member_node_id: Joi.number().required(),
 } as Record<keyof IMemberConfirmParams, TJoiSchema>;
 
 export const MemberInviteParamsSchema = {
   ...MemberConfirmParamsSchema,
-  member_name: Joi.string(),
+  member_name: Joi.string().required(),
 } as Record<keyof IMemberInviteParams, TJoiSchema>;

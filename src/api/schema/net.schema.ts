@@ -11,7 +11,7 @@ export const NetReadParamsSchema = { node_id: Joi.number().required() };
 
 export const NetCreateParamsSchema = {
   node_id: [Joi.number(), JOI_NULL],
-  name: Joi.string(),
+  name: Joi.string().required(),
 } as Record<keyof INetCreateParams, TJoiSchema>;
 
 export const NetResponseSchema = [JOI_NULL, {

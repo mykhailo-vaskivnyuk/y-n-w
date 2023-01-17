@@ -1,9 +1,8 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
 import {
-  IChatMessage,
-  IChatResponseMessage,
-  INetResponse, INetsResponse, IUserNetDataResponse, IUserResponse, NetViewKeys,
+  IChatGetMessagesResponse, IChatMessage, IChatResponseMessage, INetResponse,
+  INetsResponse, IUserNetDataResponse, IUserResponse, NetViewKeys,
 } from '../api/types/types';
 import { INITIAL_NETS, INets, IMember } from './types';
 import { OmitNull } from '../types';
@@ -189,40 +188,35 @@ export class ClientApp extends EventEmitter {
     this.setStatus(AppStatus.ERROR);
   }
 
-  protected async setMessage(message: OmitNull<IChatResponseMessage>) {
-    const { chatId, ...rest } = message;
-    if (!rest.message) return;
+  protected async setMessage(messageData: OmitNull<IChatResponseMessage>) {
+    const { chatId, ...message } = messageData;
+    if (!message.message) return;
     const chatMessages = this.messages.get(chatId);
     if (chatMessages) {
       const lastMessage = chatMessages.at(-1);
       const { index = 0 } = lastMessage || {};
-      if (rest.index > index + 1)
+      if (message.index > index + 1)
         await this.chat.getMessages(chatId, index + 1);
-      chatMessages.push(rest);
-
-    } else  this.messages.set(chatId, [rest]);
-    console.log('ALL MESS', this.messages)
+      chatMessages.push(message as IChatMessage);
+    } else  this.messages.set(chatId, [message as IChatMessage]);
     this.emit('message', chatId);
   }
 
-  protected setAllMessages(messages: OmitNull<IChatResponseMessage>[]) {
+  protected setAllMessages(messages: IChatGetMessagesResponse) {
     if (!messages.length) return;
     const [firstMessage] = messages;
     const { chatId } = firstMessage!;
-    console.log('set mess', chatId)
     let chatMessages: IChatMessage[] = messages.map(
       ({ user_id, message, index }) => ({ user_id, message, index })
     );
     const curChatMessages = this.messages.get(chatId);
     console.log(chatId, this.messages.size, curChatMessages?.length);
     if (curChatMessages) {
-      console.log('NOT HERE')
       chatMessages = [...curChatMessages, ...chatMessages]
-        .sort(({ index: a }, { index: b }) => a - b)  
+        .sort(({ index: a }, { index: b }) => a - b)
         .filter(({ index }, i, arr) => index !== arr[i + 1]?.index);
     }
     this.messages.set(chatId, [...chatMessages]);
-    console.log(this.messages)
   }
 
   private async readUser() {

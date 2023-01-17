@@ -1,5 +1,5 @@
 import Joi from 'joi';
 
 export const TokenParamsSchema = {
-  token: Joi.string(),
+  token: Joi.string().required(),
 };

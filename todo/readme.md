@@ -22,6 +22,7 @@
 ## ENDPOINTS
 
 - combine `getMemberStatus()` on backend with `app.member.getStatus()` on frontend
+- add metadata `handler.allowedForNetUser` and error type `HandlerError('FORBIDDEN')`
 
 ## CONNECTION
 

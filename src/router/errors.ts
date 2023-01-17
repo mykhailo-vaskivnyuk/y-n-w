@@ -11,6 +11,7 @@ export const ROUTER_ERROR_MAP = {
   REDIRECT: 'REDIRECT',
   UNAUTHORIZED: 'USER ISN\'T AUTHORIZED',
   NOT_CONFIRMED: 'USER ISN\'T CONFIRMED',
+  FORBIDDEN: 'USER ISN\'T INSIDE NET OR MEMBER PARENT NET',
 } as const;
 export type RouterErrorCode = keyof typeof ROUTER_ERROR_MAP;
 export type TRouterErrorDetails = RouterError['details'];
@@ -32,6 +33,7 @@ export const HANDLER_ERROR_MAP = {
   NOT_FOUND: 'NOT_FOUND',
   UNAUTHORIZED: 'USER ISN\'T AUTHORIZED',
   NOT_CONFIRMED: 'USER ISN\'T CONFIRMED',
+  FORBIDDEN: 'USER ISN\'T INSIDE NET OR MEMBER PARENT NET',
 } as const;
 export type HandlerErrorCode = keyof typeof HANDLER_ERROR_MAP;
 

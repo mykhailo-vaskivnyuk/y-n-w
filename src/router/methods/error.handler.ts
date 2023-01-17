@@ -19,6 +19,9 @@ const HANDLER_ERRORS_MAP = {
   NOT_CONFIRMED: (e: any) => {
     throw new RouterError('NOT_CONFIRMED', e.message);
   },
+  FORBIDDEN: (e: any) => {
+    throw new RouterError('FORBIDDEN', e.message);
+  },
 };
 
 const ROUTER_ERRORS_MAP = {

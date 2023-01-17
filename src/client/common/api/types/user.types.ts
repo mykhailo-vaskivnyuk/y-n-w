@@ -12,9 +12,12 @@ export const USER_STATUS_MAP = {
   'DEV': Infinity,
 };
 export type UserStatusKeys = keyof typeof USER_STATUS_MAP;
-export type PartialUserStatusKeys = keyof Pick<typeof USER_STATUS_MAP,
-  | 'NOT_LOGGEDIN'
-  | 'NOT_CONFIRMED'>;
+export type PartialUserStatusKeys = Extract<UserStatusKeys,
+  'NOT_LOGGEDIN' | 'NOT_CONFIRMED'
+>;
+export type PartialUserNetStatusKeys = Extract<UserStatusKeys,
+  'INVITING'
+>;
 export const loggedInState = USER_STATUS_MAP.LOGGEDIN;
 
 export type IUserNetDataResponse =

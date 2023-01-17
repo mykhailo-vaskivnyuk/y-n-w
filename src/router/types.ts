@@ -5,7 +5,7 @@ import {
 } from '../types/operation.types';
 import { ITableNodes, ITableUsers } from '../db/db.types';
 import {
-  PartialUserStatusKeys, UserStatusKeys,
+  PartialUserNetStatusKeys, PartialUserStatusKeys, UserStatusKeys,
 } from '../client/common/api/types/types';
 import { IMailService } from '../services/mail/types';
 import { ChatService } from '../services/chat/chat';
@@ -54,6 +54,7 @@ export type THandler<
       | (TObjectSchema<Q> | Joi.Schema)[]
     : Q extends Array<IObject> ? | TObjectSchema<Q[number]> : TJoiSchema;
   allowedForUser?: PartialUserStatusKeys;
+  allowedForNetUser?: PartialUserNetStatusKeys;
 };
 
 export type TObjectSchema<T extends IObject> = {
@@ -86,9 +87,9 @@ export interface IServices {
 }
 
 export type TInputModule<T = any> = (config: T) =>
-  (operation: IOperation, context: IContext, handler?: THandler) =>
+  (operation: IOperation, context: IContext, handler: THandler) =>
     Promise<IOperation>;
 
 export type TOutputModule<T = any> = (config?: T) =>
-(response: TOperationResponse, context: IContext, handler?: THandler) =>
-  Promise<TOperationResponse>;
+  (response: TOperationResponse, context: IContext, handler: THandler) =>
+    Promise<TOperationResponse>;

@@ -8,14 +8,13 @@ import { updateCountOfNets } from '../utils/net.utils';
 import { createTree } from '../utils/nodes.utils';
 
 const create: THandler<INetCreateParams, INetResponse> = async (
-  { session, userNet, userNetStatus }, {  name },
+  { session, userNet }, {  name },
 ) => {
   let parentNetNodeId: number | undefined;
   if (userNet) {
-    parentNetNodeId = userNet.net_node_id;
-    if (userNetStatus !== 'INSIDE_NET') return null;
     const { net_level } = userNet;
     if (net_level >= MAX_NET_LEVEL) return null;
+    parentNetNodeId = userNet.net_node_id;
   }
 
   /* create node */

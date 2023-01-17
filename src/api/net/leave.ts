@@ -16,5 +16,6 @@ const leave: THandler<INetReadParams> = async (
 };
 leave.paramsSchema = NetReadParamsSchema;
 leave.responseSchema = Joi.boolean();
+leave.allowedForNetUser = 'INVITING';
 
 export = leave;
