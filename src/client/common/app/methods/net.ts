@@ -5,6 +5,7 @@ import {
 } from '../../api/types/types';
 import { INITIAL_NETS, IClientAppThis, IMember } from '../types';
 import { AppStatus } from '../../constants';
+import { getMemberStatus } from '../../api/utils';
 
 export const getNetMethods = (parent: IClientAppThis) => ({
   async create(args: Omit<INetCreateParams, 'node_id'>) {
@@ -85,7 +86,7 @@ export const getNetMethods = (parent: IClientAppThis) => ({
       const { net } = parent.getState();
       const result = await parent.api.net.getCircle(net!);
       const circle: IMember[] = result.map((member, memberPosition) => {
-        const memberStatus = parent.member.getStatus(member);
+        const memberStatus = getMemberStatus(member);
         const memberName = parent
           .member
           .getName('circle', member, memberPosition);
@@ -104,7 +105,7 @@ export const getNetMethods = (parent: IClientAppThis) => ({
       const { net } = parent.getState();
       const result = await parent.api.net.getTree(net!);
       const tree: IMember[] = result.map((member, memberPosition) => {
-        const memberStatus = parent.member.getStatus(member);
+        const memberStatus = getMemberStatus(member);
         const memberName = parent
           .member
           .getName('tree', member, memberPosition);
@@ -118,18 +119,14 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   },
 
   setView(netView: NetViewKeys) {
+    console.log('SET NET VIEW', netView)
     parent.setNetView(netView);
   },
 
   async getAllNets() {
-    parent.setStatus(AppStatus.LOADING);
-    try {
-      const nets = await parent.api.user.nets.get();
-      parent.setAllNets(nets);
-      parent.setStatus(AppStatus.READY);
-    } catch (e: any) {
-      parent.setError(e);
-    }
+    const nets = await parent.api.user.nets.get();
+    parent.setAllNets(nets);
+    await parent.chat.connectAll();
   },
 
   getNets() {
@@ -170,25 +167,6 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     } catch (e: any) {
       parent.setError(e);
       throw e;
-    }
-  },
-
-  async sendMessage(message: string, netView: NetViewKeys) {
-    parent.setStatus(AppStatus.LOADING);
-    try {
-      const { userNetData } = parent.getState();
-      const { node_id: nodeId, parent_node_id: parentNodeId } = userNetData!;
-      if (netView === 'tree') {
-        await parent.api.net.chat
-          .send({ node_id: nodeId, chatId: nodeId, message });
-      } else if (parentNodeId) {
-        await parent.api.net.chat
-          .send({ node_id: nodeId, chatId: parentNodeId, message });
-      }
-      parent.setStatus(AppStatus.READY);
-      return true;
-    } catch (e: any) {
-      parent.setError(e);
     }
   },
 });

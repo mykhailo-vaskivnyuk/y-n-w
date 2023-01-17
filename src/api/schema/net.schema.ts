@@ -11,29 +11,29 @@ export const NetReadParamsSchema = { node_id: Joi.number().required() };
 
 export const NetCreateParamsSchema = {
   node_id: [Joi.number(), JOI_NULL],
-  name: Joi.string().required(),
+  name: Joi.string(),
 } as Record<keyof INetCreateParams, TJoiSchema>;
 
-export const NetResponseSchema = [JOI_NULL,
-  {
-    net_node_id: Joi.number(),
-    net_level: Joi.number(),
-    parent_net_id: [Joi.number(), JOI_NULL],
-    first_net_id: Joi.number(),
-    count_of_nets: Joi.number(),
-    name: Joi.string(),
-    node_id: Joi.number(),
-  } as Record<keyof OmitNull<INetResponse>, TJoiSchema>,
-];
+export const NetResponseSchema = [JOI_NULL, {
+  net_node_id: Joi.number(),
+  net_level: Joi.number(),
+  parent_net_id: [Joi.number(), JOI_NULL],
+  first_net_id: Joi.number(),
+  count_of_nets: Joi.number(),
+  name: Joi.string(),
+  node_id: Joi.number(),
+  parent_node_id: [Joi.number(), JOI_NULL],
+} as Record<keyof OmitNull<INetResponse>, TJoiSchema>];
 
 export const NetsResponseSchema =
   NetResponseSchema[1] as Record<keyof OmitNull<INetResponse>, TJoiSchema>;
 
 export const MemberResponseSchema = {
-  node_id: Joi.number().required(),
-  count_of_members: Joi.number().required(),
+  node_id: Joi.number(),
+  count_of_members: Joi.number(),
   name: [Joi.string(), JOI_NULL],
   confirmed: [Joi.boolean(), JOI_NULL],
+  user_id: [Joi.number(), JOI_NULL],
   token: [Joi.string(), JOI_NULL],
   member_name: [Joi.string(), JOI_NULL],
   dislike: [Joi.boolean(), JOI_NULL],

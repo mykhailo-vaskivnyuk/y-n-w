@@ -2,7 +2,7 @@ import Joi from 'joi';
 import { THandler } from '../../../router/types';
 import { IMemberConfirmParams } from '../../../client/common/api/types/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
-import { getMemberStatus } from '../../utils/member.utils';
+import { getMemberStatus } from '../../../client/common/api/utils';
 import { checkVotes } from '../../utils/net.utils';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (

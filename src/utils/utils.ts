@@ -18,4 +18,4 @@ export const createPathResolve = (basePath: string) =>
 
 export const isNumberNotNull = (
   value: number | null,
-): value is number => Boolean(value);
+): value is number => value !== null;

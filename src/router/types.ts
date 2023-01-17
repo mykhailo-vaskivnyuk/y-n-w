@@ -4,10 +4,11 @@ import {
   IOperation, TOperationResponse, IParams,
 } from '../types/operation.types';
 import { ITableNodes, ITableUsers } from '../db/db.types';
-import { IMailService } from '../services/mail/types';
 import {
   PartialUserStatusKeys, UserStatusKeys,
 } from '../client/common/api/types/types';
+import { IMailService } from '../services/mail/types';
+import { ChatService } from '../services/chat/chat';
 import {
   TInputModulesKeys, TOutputModulesKeys, TServicesKeys,
 } from './constants';
@@ -24,9 +25,9 @@ export interface IRouterConfig {
   outputModules: TOutputModulesKeys[];
   modulesConfig: {
     [key in
+      | TServicesKeys
       | TInputModulesKeys
       | TOutputModulesKeys
-      | TServicesKeys
     ]?: Record<string, any>;
   };
 }
@@ -62,7 +63,8 @@ export type TArraySchema<T extends Array<any>> = TObjectSchema<T[number]>;
 export type TJoiSchema = Joi.Schema | Joi.Schema[];
 export type THandlerSchema = THandler['responseSchema' | 'paramsSchema'];
 
-export type IContext = IServices & {
+export type IContext = {
+  session: Session<ISessionContent>;
   origin: string;
   userNet?: IUserNet;
   userNetStatus?: UserStatusKeys;
@@ -73,15 +75,15 @@ export type IUserNet = ITableNodes & {
   net_level: number;
 }
 
-export interface IServices {
-  session: Session<ISessionContent>;
-  sendMail: IMailService;
-}
-
 export type ISessionContent = Partial<{
   user_id: ITableUsers['user_id'];
   user_status: UserStatusKeys;
 }>;
+
+export interface IServices {
+  mailService?: IMailService,
+  chatService?: ChatService,
+}
 
 export type TInputModule<T = any> = (config: T) =>
   (operation: IOperation, context: IContext, handler?: THandler) =>

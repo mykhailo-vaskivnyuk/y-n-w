@@ -16,6 +16,7 @@ export const get = `
   SELECT 
     nodes.node_id,
     nodes.count_of_members,
+    users.user_id,
     users.email as name,
     members.confirmed,
     nodes_invites.member_name,

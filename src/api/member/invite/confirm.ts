@@ -2,7 +2,7 @@ import Joi from 'joi';
 import { IMemberConfirmParams } from '../../../client/common/api/types/types';
 import { THandler } from '../../../router/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
-import { getMemberStatus } from '../../utils/member.utils';
+import { getMemberStatus } from '../../../client/common/api/utils';
 import { createTree, updateCountOfMembers } from '../../utils/nodes.utils';
 
 const confirm: THandler<IMemberConfirmParams, boolean> = async (

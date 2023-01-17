@@ -15,11 +15,11 @@ export const OUTPUT_MODULES_MAP = {
 export type TOutputModulesKeys = keyof typeof OUTPUT_MODULES_MAP;
 
 export const SERVICES_MAP = {
-  mailService: 'send.mail.js',
+  mailService: 'mail/mail.js',
+  chatService: 'chat/chat.js',
 };
 export type TServicesKeys = keyof typeof SERVICES_MAP;
 
 export const SIMPLE_TYPES = ['boolean', 'string', 'number'];
 export const JOI_NULL = Joi.any().equal(null);
-
 export const EXCLUDE_ROUTES = ['types', 'utils', 'schema'];

@@ -29,6 +29,14 @@ export const getApi = (
       fetch<P.IUserResponse>('/account/signup', options),
 
   },
+  'chat': {
+    'sendMessage': (options: P.IChatSendMessage) =>
+      fetch<P.IChatResponseMessage>('/chat/sendMessage', options),
+
+    'getMessages': (options: P.IChatGetMessages) =>
+      fetch<P.IChatGetMessagesResponse>('/chat/getMessages', options),
+
+  },
   'health': () => fetch<string>('/health'),
 
   'member': {
@@ -66,11 +74,6 @@ export const getApi = (
     },
   },
   'net': {
-    'chat': {
-      'send': (options: Q.TNetChatSend) =>
-        fetch<Q.TNetChatSendResponse>('/net/chat/send', options),
-
-    },
     'connectByToken': (options: P.ITokenParams) =>
       fetch<Q.TNetConnectByTokenResponse>('/net/connectByToken', options),
 

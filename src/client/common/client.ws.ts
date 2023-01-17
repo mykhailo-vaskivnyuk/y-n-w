@@ -1,21 +1,18 @@
 /* eslint-disable max-lines */
 import { logData, delay } from './utils';
 import { TPromiseExecutor } from '../local/imports';
-import { IWsResponse, TFetch, TOnChatMessage } from './types';
-import { HttpResponseError } from './errors';
+import { IWsResponse, TFetch } from './types';
+import { IChatResponseMessage } from './api/types/chat.types';
 import {
   CONECTION_ATTEMPT_COUNT, CONNECTION_ATTEMPT_DELAY, CONNECTION_TIMEOUT,
 } from './constants';
+import { HttpResponseError } from './errors';
 
-interface IGetConnectionReturn {
-  connection: TFetch;
-  setOnChatMessage: (onChatMessage: TOnChatMessage) => void;
-}
+const CHATS = new Set<number>();
 
-export const getConnection = async (
-  baseUrl: string,
-): Promise<IGetConnectionReturn> => {
-  let onChatMessage: null | ((data: any) => void) = null;
+export const getConnection = (
+  baseUrl: string, onChatMessage?: (message: IChatResponseMessage) => void,
+): TFetch => {
   let requests: Map<number, (response: IWsResponse) => void>;
   let socket: WebSocket;
   const createSocket = () => {
@@ -24,14 +21,23 @@ export const getConnection = async (
   };
   let id = 0;
   const getId = () => ++id % 100;
+  let pingTimeout: NodeJS.Timeout;
 
-  function handleResponseMessage({ data: message }: MessageEvent) {
+  function handleResponseMessage(
+    this: WebSocket, { data: message }: MessageEvent,
+  ) {
+    // console.log(message);
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    if (message === 'ping') return health.call(this);
+
     const response = JSON.parse(message) as IWsResponse;
     logData(response, 'RES');
     const { requestId: reqId, data } = response;
     if (reqId === undefined) {
-      if (data?.chatId && onChatMessage) {
-        console.log(response);
+      const { chatId } = data || {};
+      if (chatId && onChatMessage) {
+        console.log('CHAT MESS', data);
+        CHATS.add(chatId);
         onChatMessage(data);
       }
       return;
@@ -52,20 +58,44 @@ export const getConnection = async (
     ) createSocket();
 
     const connectExecutor: TPromiseExecutor<void> = (rv, rj) => {
+
       const handleError = () => {
         if (attempt === 1) return rj(new HttpResponseError(503));
         delay(CONNECTION_ATTEMPT_DELAY).then(
           () => checkConnection(attempt - 1),
         ).then(rv).catch(rj);
       };
-      const handleOpen = () => rv();
+      function handleOpen(this: WebSocket) {
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        health.call(this);
+        // send empty messages in order to connect to chats
+        for (const chatId of CHATS.values()) {
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
+          connection('/net/chat/send', { chatId });
+        }
+        rv();
+      };
+
       socket.addEventListener('error', handleError);
       socket.addEventListener('open', handleOpen);
       socket.addEventListener('message', handleResponseMessage);
+      socket.addEventListener('close', () => {
+        console.log('CLOSE');
+        clearTimeout(pingTimeout);
+      });
     };
 
     return new Promise<void>(connectExecutor);
   };
+
+  function health(this: WebSocket) {
+    // console.log('HEALTH');
+    clearTimeout(pingTimeout);
+    pingTimeout = setTimeout(() => {
+      this.close();
+      checkConnection();
+    }, 5000 + 2000);
+  }
 
   const getResponseHandler = (...[rv, rj]: Parameters<TPromiseExecutor<any>>) =>
     (response: IWsResponse) => {
@@ -95,10 +125,10 @@ export const getConnection = async (
     send(newRv, rj);
   };
 
-  const connection = async (
+  async function connection(
     pathname: string,
     data: Record<string, any> = {},
-  ): Promise<any> => {
+  ): Promise<any> {
     await checkConnection();
     const requestId = getId();
     const request = { requestId, pathname, data };
@@ -110,10 +140,5 @@ export const getConnection = async (
     return new Promise(sendWithTimeoutExecutor);
   };
 
-  const setOnChatMessage = (cb: null | ((data: any) => void) = null) => {
-    // console.log('CALLBACK', cb);
-    onChatMessage = cb;
-  };
-
-  return { connection, setOnChatMessage };
+  return connection;
 };

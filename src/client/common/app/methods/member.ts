@@ -1,8 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
 import {
-  NetViewKeys, IMemberInviteParams,
-  MemberStatusKeys, IMemberResponse,
+  NetViewKeys, IMemberInviteParams, IMemberResponse,
 } from '../../api/types/types';
 import { IClientAppThis } from '../types';
 import { AppStatus } from '../../constants';
@@ -18,16 +17,6 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
     const member = netViewData[memberPosition];
     parent.setMember(member);
     if (member) parent.setNetView(netView);
-  },
-
-  getStatus(member?: IMemberResponse): MemberStatusKeys {
-    if (!member) return 'UNAVAILABLE';
-    const { count_of_members: countOfMembers, confirmed, token } = member;
-    if (confirmed === true) return 'ACTIVE';
-    if (confirmed === false) return 'CONNECTED';
-    if (token) return 'INVITED';
-    if (countOfMembers) return 'FREE';
-    return 'EMPTY';
   },
 
   getName(

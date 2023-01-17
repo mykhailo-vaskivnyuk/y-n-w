@@ -4,15 +4,13 @@ import { TJoiSchema } from '../../router/types';
 import { OmitNull } from '../../client/common/types';
 import { JOI_NULL } from '../../router/constants';
 
-export const UserResponseSchema = [
-  JOI_NULL,
-  {
-    email: Joi.string(),
-    name: [Joi.string(), JOI_NULL],
-    mobile: [Joi.string(), JOI_NULL],
-    user_status: Joi.string(),
-  } as Record<keyof OmitNull<IUserResponse>, TJoiSchema>,
-];
+export const UserResponseSchema = [JOI_NULL, {
+  user_id: Joi.number(),
+  email: Joi.string(),
+  name: [Joi.string(), JOI_NULL],
+  mobile: [Joi.string(), JOI_NULL],
+  user_status: Joi.string(),
+} as Record<keyof OmitNull<IUserResponse>, TJoiSchema>];
 
 export const SignupParamsSchema = {
   email: Joi.string().required().email(),

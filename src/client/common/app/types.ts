@@ -2,9 +2,10 @@
 import * as T from '../api/types/types';
 import {
   INetViewResponse, INetsResponse, NetViewKeys,
-  IMemberResponse, MemberStatusKeys, IUserNetDataResponse,
+  IMemberResponse, IUserNetDataResponse, IChatResponseMessage,
 } from '../api/types/types';
-import { AppStatus } from '../constants';
+import { OmitNull } from '../types';
+import { AppStatus, MemberStatusKeys } from '../constants';
 import { HttpResponseError } from '../errors';
 import { getApi } from '../api/client.api';
 import { ClientApp } from './client.app';
@@ -22,6 +23,10 @@ export type IClientAppThis = ClientApp & {
   setTree: (tree: INetViewResponse) => void;
   setNetView: (netView?: NetViewKeys) => void;
   setMemberPosition: (memberPosition?: number) => void;
+  setMessage: (message: OmitNull<IChatResponseMessage>) => void;
+  setAllMessages: (
+    chatId: number, messages: OmitNull<IChatResponseMessage>, isNet?: boolean,
+  ) => void;
 };
 
 export interface INets {
