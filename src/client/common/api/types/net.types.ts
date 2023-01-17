@@ -1,5 +1,5 @@
 import {
-  ITableNets, ITableNetsData, ITableNetsUsersData,
+  ITableNets, ITableNetsData, ITableNodes,
 } from '../../../local/imports';
 import { OmitNull } from '../../types';
 import { IMemberResponse } from './member.types';
@@ -10,7 +10,7 @@ export type INetCreateParams  =
 export type INetResponse = null | (
   ITableNets &
   Pick<ITableNetsData, 'name'> &
-  Pick<ITableNetsUsersData, 'node_id'>
+  Pick<ITableNodes, 'node_id' | 'parent_node_id'>
 );
 export type INetsResponse = OmitNull<INetResponse>[];
 export type INetEnterParams = { net_node_id: number };

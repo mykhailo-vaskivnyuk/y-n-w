@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
-import { IMemberDislikes, IMemberVotes } from '../../../api/types';
 import { IMemberResponse } from '../../../client/common/api/types/types';
 import { TQuery } from '../../types';
+import { IMemberDislikes, IMemberVotes } from '../../types/types';
 
 export interface IQueriesNetCircle {
   get: TQuery<[
@@ -21,9 +21,10 @@ export const get = `
   SELECT
     nodes.node_id,
     nodes.count_of_members,
+    members.user_id,
+    members.confirmed,
     users_members.dislike,
     users_members.vote,
-    members.confirmed,
     CASE
       WHEN members.confirmed = true THEN users.email
       ELSE null
@@ -57,13 +58,14 @@ export const get = `
     users_members.dislike,
     users_members.vote,
     members.confirmed,
+    members.user_id,
     users.email
   ORDER BY nodes.node_level, nodes.node_position
 `;
 
 export const getDislikes = `
   SELECT
-    nodes.net_node_id,
+    members.net_node_id,
     members.user_id,
     SUM (
       CASE
@@ -84,15 +86,14 @@ export const getDislikes = `
     ) AND
     members.confirmed = true
   GROUP BY
-    nodes.net_node_id,
+    members.net_node_id,
     members.user_id
   ORDER BY dislike_count DESC
 `;
 
 export const getVotes = `
   SELECT
-    nodes.node_id::int,
-    members.user_id::int,
+    members.node_id::int,
     SUM (
       CASE
         WHEN users_members.vote = true THEN 1
@@ -109,7 +110,6 @@ export const getVotes = `
     nodes.parent_node_id = $1 AND
     members.confirmed = true
   GROUP BY
-    nodes.node_id,
-    members.user_id
+    members.node_id
   ORDER BY vote_count DESC
 `;

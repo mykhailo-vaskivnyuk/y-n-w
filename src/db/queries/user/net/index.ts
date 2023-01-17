@@ -1,12 +1,10 @@
 /* eslint-disable max-lines */
 import {
-  IUserNetDataResponse,
+  INetResponse, IUserNetDataResponse,
 } from '../../../../client/common/api/types/types';
-import { DbRecordOrNull } from '../../../../client/common/types';
+import { DbRecordOrNull, OmitNull } from '../../../../client/common/types';
 import { IUserNet } from '../../../../router/types';
-import {
-  ITableNets, ITableNetsData, ITableNetsUsersData, ITableNodes,
-} from '../../../db.types';
+import { ITableNetsUsersData, ITableNodes } from '../../../db.types';
 import { TQuery } from '../../../types';
 import { userInNetAndItsSubnets } from '../../../utils';
 
@@ -18,11 +16,7 @@ export interface IQueriesUserNet {
   read: TQuery<[
     ['user_id', number],
     ['net_node_id', number],
-  ],
-    ITableNets &
-    ITableNetsData &
-    ITableNetsUsersData
-  >;
+  ], OmitNull<INetResponse>>;
   getNodes: TQuery<[
     ['user_id', number],
     ['net_node_id', number | null],
@@ -60,6 +54,7 @@ export const read = `
   SELECT
     nets.*,
     nets_data.*,
+    nodes.parent_node_id,
     nets_users_data.node_id,
     nets_users_data.confirmed
   FROM nets_users_data
