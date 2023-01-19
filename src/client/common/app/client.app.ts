@@ -202,12 +202,12 @@ export class ClientApp extends EventEmitter {
   protected setAllMessages(chatId: number, messages: T.IChatMessage[]) {
     if (!messages.length) return;
     const curChatMessages = this.messages.get(chatId);
-    let chatMessages: IChatMessage[] = []
+    let chatMessages: IChatMessage[];
     if (curChatMessages) {
       chatMessages = [...curChatMessages, ...messages]
         .sort(({ index: a }, { index: b }) => a - b)
         .filter(({ index }, i, arr) => index !== arr[i + 1]?.index);
-    }
+    } else chatMessages = [...messages];
     this.messages.set(chatId, chatMessages);
     this.emit('message', chatId);
   }

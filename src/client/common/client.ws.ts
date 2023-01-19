@@ -88,7 +88,7 @@ class WsConnection {
   async fetch(
     pathname: string,
     data: Record<string, any> = {},
-    doLog?: boolean,
+    doLog = true,
   ): Promise<any> {
     const requestId = this.getId();
     const request = { requestId, pathname, data };
@@ -124,7 +124,7 @@ class WsConnection {
 
       const handleOpen = () => {
         this.health();
-        for (const chatId of this.chats.values())
+        for (const chatId of this.chats)
           this.fetch('/net/chat/send', { chatId }, false);
         rv();
       };
