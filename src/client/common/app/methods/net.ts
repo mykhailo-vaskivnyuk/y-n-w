@@ -1,14 +1,12 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
-import {
-  INetCreateParams, ITokenParams, NetViewKeys,
-} from '../../api/types/types';
+import * as T from '../../api/types/types';
 import { INITIAL_NETS, IClientAppThis, IMember } from '../types';
 import { AppStatus } from '../../constants';
 import { getMemberStatus } from '../../api/utils';
 
 export const getNetMethods = (parent: IClientAppThis) => ({
-  async create(args: Omit<INetCreateParams, 'node_id'>) {
+  async create(args: Omit<T.INetCreateParams, 'node_id'>) {
     parent.setStatus(AppStatus.LOADING);
     try {
       const { net: parentNet } = parent.getState();
@@ -118,8 +116,7 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  setView(netView: NetViewKeys) {
-    console.log('SET NET VIEW', netView)
+  setView(netView: T.NetViewKeys) {
     parent.setNetView(netView);
   },
 
@@ -156,7 +153,7 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     parent.setNets(nets);
   },
 
-  async connectByInvite(args: ITokenParams) {
+  async connectByInvite(args: T.ITokenParams) {
     parent.setStatus(AppStatus.LOADING);
     try {
       const result = await parent.api.net.connectByToken(args);

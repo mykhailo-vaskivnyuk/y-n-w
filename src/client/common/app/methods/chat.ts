@@ -1,61 +1,48 @@
-/* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
-import { IChatResponseMessage, NetViewKeys } from '../../api/types/types';
+import* as T from '../../api/types/types';
 import { IClientAppThis } from '../types';
 import { AppStatus } from '../../constants';
 
 export const getChatMethods = (parent: IClientAppThis) => ({
   async connectAll() {
-
-    console.log('CONNECT ALL');
-
     parent.setStatus(AppStatus.LOADING);
-    const { allNets } = parent.getState();
-    const promosies = [];
+    try {
+      const { allNets } = parent.getState();
+      let promisies: Promise<any>[] = [];
 
-    for (const net of allNets) {
-      const {
+      for (const {
         net_node_id: netNodeId,
         node_id: nodeId,
         parent_node_id: parentNodeId,
-      } = net;
-      const req = { node_id: nodeId };
+        } of allNets
+      ) {
+        promisies = promisies
+          .concat(this.getPromisies(nodeId, -netNodeId))
+          .concat(this.getPromisies(nodeId, -nodeId))
+          .concat(parentNodeId ? this.getPromisies(nodeId, parentNodeId) : []); 
+      }
 
-      promosies.push(parent.api.chat
-          .sendMessage({ ...req, chatId: -netNodeId }));
-      promosies.push(parent.api.chat
-        .getMessages({ ...req, chatId: -netNodeId })
-        .then((messages) => parent.setAllMessages(-netNodeId, messages))
-      );
-
-      promosies.push(parent.api.chat.sendMessage({ ...req, chatId: nodeId }));
-      promosies.push(parent.api.chat
-        .getMessages({ ...req, chatId: nodeId })
-        .then((messages) => parent.setAllMessages(nodeId, messages))
-      );
-
-      if (!parentNodeId) continue;
-      
-      promosies.push(parent.api.chat
-          .sendMessage({ ...req, chatId: parentNodeId }));
-      promosies.push(parent.api.chat
-        .getMessages({ ...req, chatId: parentNodeId })
-        .then((messages) => parent.setAllMessages(parentNodeId, messages))
-      );
-    }
-    try {
-      await Promise.all(promosies);
+      await Promise.all(promisies);
       parent.setStatus(AppStatus.READY);
     } catch (e: any) {
       parent.setError(e);
     }
   },
 
-  async getMessages(chatId: number, index = 0 ) {
-    console.log('GET MESSAGES')
-    const { node_id: nodeId } = parent.getState().net!;
+  getPromisies(nodeId: number, chatId: number) {
+    const req = { node_id: nodeId, chatId };
+    return [
+      parent.api.chat.sendMessage(req),
+      parent.api.chat.getMessages(req).then(
+        (messages) => parent.setAllMessages(chatId, messages),
+      ),
+    ];
+  },
+
+  async getMessages(chatId: number, index = 1 ) {
     parent.setStatus(AppStatus.LOADING);
     try {
+      const { node_id: nodeId } = parent.getState().net!;
       const messages = await parent.api.chat
         .getMessages({ node_id: nodeId, chatId, index });
       parent.setAllMessages(chatId, messages);
@@ -65,25 +52,13 @@ export const getChatMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  async sendMessage(message: string, netView?: NetViewKeys) {
-    console.log('SEND MESSAGE', netView);
+  async sendMessage(message: string, chatId: number) {
     parent.setStatus(AppStatus.LOADING);
     try {
       const { net } = parent.getState();
-      const {
-        net_node_id: netNodeId,
-        node_id: nodeId,
-        parent_node_id: parentNodeId } = net!;
-      if (!netView) {
-        await parent.api.chat
-          .sendMessage({ node_id: nodeId, chatId: -netNodeId, message });
-      } else if (netView === 'tree') {
-        await parent.api.chat
-          .sendMessage({ node_id: nodeId, chatId: nodeId, message });
-      } else if (parentNodeId) {
-        await parent.api.chat
-          .sendMessage({ node_id: nodeId, chatId: parentNodeId, message });
-      }
+      const { node_id: nodeId } = net!;
+      chatId && await parent.api.chat
+        .sendMessage({ node_id: nodeId, chatId, message });
       parent.setStatus(AppStatus.READY);
       return true;
     } catch (e: any) {
@@ -91,9 +66,15 @@ export const getChatMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  onMessage(message: IChatResponseMessage) {
-    if (!message) return;
-    // console.log('ON MESSAGE', message)
-    parent.setMessage(message);
+  getChatId(netView?: T.NetViewKeys) {
+    const { net } = parent.getState();
+    const {
+      net_node_id: netNodeId,
+      node_id: nodeId,
+      parent_node_id: parentNodeId,
+    } = net!;
+    if (!netView) return -netNodeId;
+    if (netView === 'tree') return nodeId;
+    if (parentNodeId) return parentNodeId;
   }
 });

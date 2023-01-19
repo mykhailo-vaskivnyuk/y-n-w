@@ -1,7 +1,5 @@
 /* eslint-disable import/no-cycle */
-import {
-  ITokenParams, ISignupParams, IUserResponse,
-} from '../../api/types/types';
+import * as T from '../../api/types/types';
 import { AppStatus } from '../../constants';
 import { IClientAppThis, TLoginOrSignup } from '../types';
 
@@ -32,7 +30,7 @@ export const getAccountMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  async overmail(args: ISignupParams) {
+  async overmail(args: T.ISignupParams) {
     parent.setStatus(AppStatus.LOADING);
     try {
       const success = await parent.api.account.overmail(args);
@@ -44,8 +42,8 @@ export const getAccountMethods = (parent: IClientAppThis) => ({
   },
 
   async loginOverLink(
-    type: 'confirm' | 'restore', args: ITokenParams,
-  ): Promise<IUserResponse> {
+    type: 'confirm' | 'restore', args: T.ITokenParams,
+  ): Promise<T.IUserResponse> {
     parent.setStatus(AppStatus.LOADING);
     try {
       const user = await parent.api.account[type](args);

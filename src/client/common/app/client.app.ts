@@ -1,11 +1,8 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
-import {
-  IChatMessage, IChatResponseMessage, INetResponse,
-  INetsResponse, IUserNetDataResponse, IUserResponse, NetViewKeys,
-} from '../api/types/types';
+import * as T from '../api/types/types'
 import { INITIAL_NETS, INets, IMember } from './types';
-import { OmitNull } from '../types';
+import { IChatMessage } from '../api/types/types';
 import { AppStatus } from '../constants';
 import { HttpResponseError } from '../errors';
 import { EventEmitter } from '../event.emitter';
@@ -24,29 +21,29 @@ export class ClientApp extends EventEmitter {
   private status: AppStatus = AppStatus.INITING;
   private error: HttpResponseError | null = null;
 
-  private user: IUserResponse = null;
-  private allNets: INetsResponse = [];
-  private messages = new Map<number, IChatMessage[]>();
-  private userNetData: IUserNetDataResponse | null = null;
+  private user: T.IUserResponse = null;
+  private allNets: T.INetsResponse = [];
+  private messages = new Map<number, T.IChatMessage[]>();
+  private userNetData: T.IUserNetDataResponse | null = null;
   private nets: INets = INITIAL_NETS;
-  private userNet: INetResponse = null;
+  private userNet: T.INetResponse = null;
   private circle: IMember[] = [];
   private tree: IMember[] = [];
-  private netView?: NetViewKeys;
+  private netView?: T.NetViewKeys;
   private memberData?: IMember;
 
   account: ReturnType<typeof getAccountMethods>;
-  netMethods: ReturnType<typeof getNetMethods>;
+  net: ReturnType<typeof getNetMethods>;
   member: ReturnType<typeof getMemberMethods>;
   chat: ReturnType<typeof getChatMethods>;
 
   constructor() {
     super();
+    this.baseUrl = process.env.API || `${window.location.origin}/api`;
     this.account = getAccountMethods(this as any);
-    this.netMethods = getNetMethods(this as any);
+    this.net = getNetMethods(this as any);
     this.member = getMemberMethods(this as any);
     this.chat = getChatMethods(this as any);
-    this.baseUrl = process.env.API || `${window.location.origin}/api`;
   }
 
   getState() {
@@ -77,7 +74,7 @@ export class ClientApp extends EventEmitter {
       try {
         const baseUrl = this.baseUrl.replace('http', 'ws');
         const connection = getWsConnection(
-          baseUrl, this.chat.onMessage.bind(this),
+          baseUrl, this.setMessage.bind(this),
         );
         this.api = getApi(connection);
         await this.api.health();
@@ -89,12 +86,12 @@ export class ClientApp extends EventEmitter {
     this.setStatus(AppStatus.INITED);
   }
 
-  protected async setUser(user: IUserResponse) {
+  protected async setUser(user: T.IUserResponse) {
     if (this.user === user) return;
     this.user = user;
     if (user && user.user_status !== 'NOT_CONFIRMED') {
-      await this.netMethods.getAllNets();
-      this.netMethods.getNets();
+      await this.net.getAllNets();
+      this.net.getNets();
     } else {
       this.nets = INITIAL_NETS;
       this.allNets = [];
@@ -103,16 +100,16 @@ export class ClientApp extends EventEmitter {
     this.emit('user', user);
   }
 
-  protected async setNet(userNet: INetResponse | null = null) {
+  protected async setNet(userNet: T.INetResponse = null) {
     if (this.userNet === userNet) return;
     this.userNet = userNet;
     if (userNet) {
-      await this.netMethods.getUserData(userNet.net_node_id);
+      await this.net.getUserData(userNet.net_node_id);
       this.user!.user_status = this.userNetData!.confirmed ?
         'INSIDE_NET' :
         'INVITING';
-      await this.netMethods.getCircle();
-      await this.netMethods.getTree();
+      await this.net.getCircle();
+      await this.net.getTree();
       this.emit('user', { ...this.user });
     } else {
       this.setUserNetData();
@@ -125,18 +122,18 @@ export class ClientApp extends EventEmitter {
         this.emit('user', { ...this.user });
       }
     }
-    this.netMethods.getNets();
+    this.net.getNets();
     this.emit('net', userNet);
   }
 
   protected setUserNetData(
-    userNetData: IUserNetDataResponse | null = null,
+    userNetData: T.IUserNetDataResponse | null = null,
   ) {
     if (this.userNetData === userNetData) return;
     this.userNetData = userNetData;
   }
 
-  protected setAllNets(nets: INetsResponse) {
+  protected setAllNets(nets: T.INetsResponse) {
     if (this.allNets === nets) return;
     this.allNets = nets;
   }
@@ -153,7 +150,7 @@ export class ClientApp extends EventEmitter {
     this.emit('circle', circle);
   }
 
-  protected setNetView(netView?: NetViewKeys) {
+  protected setNetView(netView?: T.NetViewKeys) {
     this.netView = netView;
   }
 
@@ -188,33 +185,31 @@ export class ClientApp extends EventEmitter {
     this.setStatus(AppStatus.ERROR);
   }
 
-  protected async setMessage(messageData: OmitNull<IChatResponseMessage>) {
+  protected async setMessage(messageData: T.IChatResponseMessage) {
+    if (!messageData) return;
     const { chatId, ...message } = messageData;
     if (!message.message) return;
     const chatMessages = this.messages.get(chatId);
     if (chatMessages) {
       const lastMessage = chatMessages.at(-1);
-      const { index = 0 } = lastMessage || {};
-      if (message.index > index + 1)
-        await this.chat.getMessages(chatId, index + 1);
-      chatMessages.push(message as IChatMessage);
-    } else  this.messages.set(chatId, [message as IChatMessage]);
+      const { index = 1 } = lastMessage || {};
+      if (message.index > index + 1) this.chat.getMessages(chatId, index + 1);
+      chatMessages.push(message as T.IChatMessage);
+    } else this.messages.set(chatId, [message as T.IChatMessage]);
     this.emit('message', chatId);
   }
 
-  protected setAllMessages(chatId: number, messages: IChatMessage[]) {
+  protected setAllMessages(chatId: number, messages: T.IChatMessage[]) {
     if (!messages.length) return;
-    let chatMessages: IChatMessage[] = messages.map(
-      ({ user_id, message, index }) => ({ user_id, message, index })
-    );
     const curChatMessages = this.messages.get(chatId);
-    console.log(chatId, this.messages.size, curChatMessages?.length);
+    let chatMessages: IChatMessage[] = []
     if (curChatMessages) {
-      chatMessages = [...curChatMessages, ...chatMessages]
+      chatMessages = [...curChatMessages, ...messages]
         .sort(({ index: a }, { index: b }) => a - b)
         .filter(({ index }, i, arr) => index !== arr[i + 1]?.index);
     }
-    this.messages.set(chatId, [...chatMessages]);
+    this.messages.set(chatId, chatMessages);
+    this.emit('message', chatId);
   }
 
   private async readUser() {
