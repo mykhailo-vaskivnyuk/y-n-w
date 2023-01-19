@@ -80,10 +80,11 @@ class WsConnection implements IInputConnection {
     try {
       if (this.apiUnavailable) throw new ServerError('SERVICE_UNAVAILABLE');
       const operation = await this.getOperation(message, options);
+      options = operation.options;
       const data = await this.exec!(operation);
       runResModules(
         connection,
-        operation.options,
+        options,
         data,
         this.resModules,
         this.wsChats
