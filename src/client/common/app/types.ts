@@ -1,9 +1,5 @@
 /* eslint-disable import/no-cycle */
 import * as T from '../api/types/types';
-import {
-  INetViewResponse, INetsResponse, NetViewKeys,
-  IMemberResponse, IUserNetDataResponse, IChatResponseMessage,
-} from '../api/types/types';
 import { OmitNull } from '../types';
 import { AppStatus, MemberStatusKeys } from '../constants';
 import { HttpResponseError } from '../errors';
@@ -15,24 +11,22 @@ export type IClientAppThis = ClientApp & {
   setStatus: (status: AppStatus) => void;
   setError: (e: HttpResponseError) => void;
   setUser: (user: T.IUserResponse) => Promise<void>;
-  setUserNetData: (userNetData: IUserNetDataResponse) => void;
+  setUserNetData: (userNetData: T.IUserNetDataResponse) => void;
   setNet: (net: T.INetResponse) => Promise<void>;
-  setAllNets: (nets: INetsResponse) => void;
+  setAllNets: (nets: T.INetsResponse) => void;
   setNets: (nets: INets) => void;
-  setCircle: (circle: INetViewResponse) => void;
-  setTree: (tree: INetViewResponse) => void;
-  setNetView: (netView?: NetViewKeys) => void;
+  setCircle: (circle: T.INetViewResponse) => void;
+  setTree: (tree: T.INetViewResponse) => void;
+  setNetView: (netView?: T.NetViewKeys) => void;
   setMemberPosition: (memberPosition?: number) => void;
-  setMessage: (message: OmitNull<IChatResponseMessage>) => void;
-  setAllMessages: (
-    chatId: number, messages: OmitNull<IChatResponseMessage>,
-  ) => void;
+  setMessage: (message: OmitNull<T.IChatResponseMessage>) => void;
+  setAllMessages: (chatId: number, messages: T.IChatMessage[]) => void;
 };
 
 export interface INets {
-  parentNets: INetsResponse;
-  siblingNets: INetsResponse;
-  childNets: INetsResponse;
+  parentNets: T.INetsResponse;
+  siblingNets: T.INetsResponse;
+  childNets: T.INetsResponse;
 }
 
 export type TLoginOrSignup =
@@ -45,7 +39,7 @@ export const INITIAL_NETS = {
   childNets: [],
 } as INets;
 
-export type IMember = Omit<IMemberResponse, 'member_name'> & {
+export type IMember = Omit<T.IMemberResponse, 'member_name'> & {
   member_name: string;
   memberStatus: MemberStatusKeys;
 };

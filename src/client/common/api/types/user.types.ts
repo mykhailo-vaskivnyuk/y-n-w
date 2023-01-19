@@ -1,7 +1,7 @@
 import {
   ITableNetsUsersData, ITableNodes, ITableUsersMembers,
 } from '../../../local/imports';
-import { DbRecordOrNull } from '../../types';
+import { OuterJoin } from '../../types';
 
 export const USER_STATUS_MAP = {
   'NOT_LOGGEDIN': 0,
@@ -22,6 +22,6 @@ export const loggedInState = USER_STATUS_MAP.LOGGEDIN;
 
 export type IUserNetDataResponse =
   Pick<ITableNodes, 'node_id' | 'parent_node_id'> &
-  DbRecordOrNull<Pick<ITableNetsUsersData, 'confirmed'>> &
-  DbRecordOrNull<Pick<ITableUsersMembers, 'vote'>> &
+  OuterJoin<Pick<ITableNetsUsersData, 'confirmed'>> &
+  OuterJoin<Pick<ITableUsersMembers, 'vote'>> &
   { vote_count: number };

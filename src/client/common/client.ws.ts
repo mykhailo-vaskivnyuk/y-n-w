@@ -26,7 +26,6 @@ export const getConnection = (
   function handleResponseMessage(
     this: WebSocket, { data: message }: MessageEvent,
   ) {
-    // console.log(message);
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     if (message === 'ping') return health.call(this);
 
@@ -74,7 +73,7 @@ export const getConnection = (
           connection('/net/chat/send', { chatId });
         }
         rv();
-      };
+      }
 
       socket.addEventListener('error', handleError);
       socket.addEventListener('open', handleOpen);
@@ -89,7 +88,6 @@ export const getConnection = (
   };
 
   function health(this: WebSocket) {
-    // console.log('HEALTH');
     clearTimeout(pingTimeout);
     pingTimeout = setTimeout(() => {
       this.close();
@@ -138,7 +136,7 @@ export const getConnection = (
       requestMessage,
     );
     return new Promise(sendWithTimeoutExecutor);
-  };
+  }
 
   return connection;
 };

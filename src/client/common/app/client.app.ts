@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
 import {
-  IChatGetMessagesResponse, IChatMessage, IChatResponseMessage, INetResponse,
+  IChatMessage, IChatResponseMessage, INetResponse,
   INetsResponse, IUserNetDataResponse, IUserResponse, NetViewKeys,
 } from '../api/types/types';
 import { INITIAL_NETS, INets, IMember } from './types';
@@ -202,7 +202,7 @@ export class ClientApp extends EventEmitter {
     this.emit('message', chatId);
   }
 
-  protected setAllMessages(chatId: number, messages: IChatGetMessagesResponse) {
+  protected setAllMessages(chatId: number, messages: IChatMessage[]) {
     if (!messages.length) return;
     let chatMessages: IChatMessage[] = messages.map(
       ({ user_id, message, index }) => ({ user_id, message, index })

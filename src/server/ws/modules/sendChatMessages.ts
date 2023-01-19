@@ -4,7 +4,7 @@ import { WsChats } from '../ws.chat';
 const getChatConnections = (
   chatId: number, connection: IWsConnection, wsChats: WsChats
 ): IWsConnection[] | undefined => {
-  const chatConnections = wsChats.addConnection(connection, chatId);
+  const chatConnections = wsChats.getChatConnections(chatId, connection);
   return chatConnections && [...chatConnections];
 };
 
@@ -20,7 +20,9 @@ export const sendChatMessages: TWsResModule = () =>
       data,
     };
     const chatResponseMessage = JSON.stringify(chatResponse);
-    for (const connection of chatConnections)
+    for (const connection of chatConnections) {
       connection.send(chatResponseMessage, { binary: false });
+      // logger.fatal('SEND', data);
+    }
     return true;
   };

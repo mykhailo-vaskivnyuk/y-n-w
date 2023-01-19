@@ -2,7 +2,7 @@
 import {
   INetResponse, IUserNetDataResponse,
 } from '../../../../client/common/api/types/types';
-import { DbRecordOrNull, OmitNull } from '../../../../client/common/types';
+import { OuterJoin, OmitNull } from '../../../../client/common/types';
 import { IUserNet } from '../../../../router/types';
 import { ITableNetsUsersData, ITableNodes } from '../../../db.types';
 import { TQuery } from '../../../types';
@@ -22,10 +22,9 @@ export interface IQueriesUserNet {
     ['net_node_id', number | null],
   ],
     ITableNodes &
-    DbRecordOrNull<
+    OuterJoin<
       Pick<ITableNetsUsersData, 'confirmed'>
-    >
-  >;
+  >>;
   getData: TQuery<[
     ['user_id', number],
     ['net_node_id', number],
