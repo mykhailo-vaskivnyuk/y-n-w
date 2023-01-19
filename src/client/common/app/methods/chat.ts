@@ -18,7 +18,7 @@ export const getChatMethods = (parent: IClientAppThis) => ({
       ) {
         promisies = promisies
           .concat(this.getPromisies(nodeId, -netNodeId))
-          .concat(this.getPromisies(nodeId, -nodeId))
+          .concat(this.getPromisies(nodeId, nodeId))
           .concat(parentNodeId ? this.getPromisies(nodeId, parentNodeId) : []); 
       }
 
