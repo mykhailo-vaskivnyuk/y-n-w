@@ -86,6 +86,39 @@ export class ClientApp extends EventEmitter {
     this.setStatus(AppStatus.INITED);
   }
 
+  protected setStatus(status: AppStatus) {
+    if (status === AppStatus.ERROR) {
+      this.status = status;
+      this.emit('error', this.error);
+      return this.emit('statuschanged', this.status);
+    }
+    this.error = null;
+    if (status === AppStatus.INITED) {
+      this.status = AppStatus.READY;
+      return this.emit('statuschanged', this.status);
+    }
+    if (this.status === AppStatus.INITING) return;
+    this.status = status;
+    return this.emit('statuschanged', this.status);
+  }
+
+  protected setError(e: HttpResponseError) {
+    this.error = e;
+    this.setStatus(AppStatus.ERROR);
+  }
+  
+  private async readUser() {
+    this.setStatus(AppStatus.LOADING);
+    try {
+      const user = await this.api!.user.read();
+      await this.setUser(user);
+      this.setStatus(AppStatus.READY);
+      return user;
+    } catch (e: any) {
+      this.setError(e);
+    }
+  }
+
   protected async setUser(user: T.IUserResponse) {
     if (this.user === user) return;
     this.user = user;
@@ -144,18 +177,14 @@ export class ClientApp extends EventEmitter {
     this.emit('nets', this.nets);
   }
 
-  protected setCircle(circle: IMember[] = []) {
-    if (this.circle === circle) return;
-    this.circle = circle;
-    this.emit('circle', circle);
-  }
-
   protected setNetView(netView?: T.NetViewKeys) {
     this.netView = netView;
   }
 
-  setMember(memberData?: IMember) {
-    this.memberData = memberData;
+  protected setCircle(circle: IMember[] = []) {
+    if (this.circle === circle) return;
+    this.circle = circle;
+    this.emit('circle', circle);
   }
 
   protected setTree(tree: IMember[] = []) {
@@ -164,28 +193,11 @@ export class ClientApp extends EventEmitter {
     this.emit('tree', tree);
   }
 
-  protected setStatus(status: AppStatus) {
-    if (status === AppStatus.ERROR) {
-      this.status = status;
-      this.emit('error', this.error);
-      return this.emit('statuschanged', this.status);
-    }
-    this.error = null;
-    if (status === AppStatus.INITED) {
-      this.status = AppStatus.READY;
-      return this.emit('statuschanged', this.status);
-    }
-    if (this.status === AppStatus.INITING) return;
-    this.status = status;
-    return this.emit('statuschanged', this.status);
+  protected setMember(memberData?: IMember) {
+    this.memberData = memberData;
   }
 
-  protected setError(e: HttpResponseError) {
-    this.error = e;
-    this.setStatus(AppStatus.ERROR);
-  }
-
-  protected async setMessage(messageData: T.IChatResponseMessage) {
+  protected setMessage(messageData: T.IChatResponseMessage) {
     if (!messageData) return;
     const { chatId, ...message } = messageData;
     if (!message.message) return;
@@ -210,18 +222,6 @@ export class ClientApp extends EventEmitter {
     } else chatMessages = [...messages];
     this.messages.set(chatId, chatMessages);
     this.emit('message', chatId);
-  }
-
-  private async readUser() {
-    this.setStatus(AppStatus.LOADING);
-    try {
-      const user = await this.api!.user.read();
-      await this.setUser(user);
-      this.setStatus(AppStatus.READY);
-      return user;
-    } catch (e: any) {
-      this.setError(e);
-    }
   }
 }
 

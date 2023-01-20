@@ -22,7 +22,6 @@ export const sendChatMessages: TWsResModule = () =>
     const chatResponseMessage = JSON.stringify(chatResponse);
     for (const connection of chatConnections) {
       connection.send(chatResponseMessage, { binary: false });
-      // logger.fatal('SEND', data);
     }
     return true;
   };

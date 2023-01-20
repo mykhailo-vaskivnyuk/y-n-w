@@ -19,6 +19,7 @@ export type IClientAppThis = ClientApp & {
   setTree: (tree: T.INetViewResponse) => void;
   setNetView: (netView?: T.NetViewKeys) => void;
   setMemberPosition: (memberPosition?: number) => void;
+  setMember: (memberData?: IMember) => void;
   setMessage: (message: OmitNull<T.IChatResponseMessage>) => void;
   setAllMessages: (chatId: number, messages: T.IChatMessage[]) => void;
 };

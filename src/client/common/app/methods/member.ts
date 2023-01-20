@@ -3,18 +3,20 @@
 import * as T from '../../api/types/types';
 import { IClientAppThis } from '../types';
 import { AppStatus } from '../../constants';
+import { HttpResponseError } from '../../errors';
 import { getMemberDataMethods } from './memberData';
 
 export const getMemberMethods = (parent: IClientAppThis) => ({
   data: getMemberDataMethods(parent),
 
-  async find(netView: T.NetViewKeys, nodeId: number) {
-    const { [netView]: netViewData } = parent.getState();
+  find(nodeId: number) {
+    const { netView } = parent.getState();
+    const { [netView!]: netViewData } = parent.getState();
     const memberPosition = netViewData
       .findIndex((item) => item.node_id === nodeId);
     const member = netViewData[memberPosition];
     parent.setMember(member);
-    if (member) parent.setNetView(netView);
+    if (!member) parent.setError(new HttpResponseError(404));
   },
 
   getName(
@@ -30,7 +32,7 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
   async inviteCreate(args: Pick<T.IMemberInviteParams, 'member_name'>) {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const { net, netView, memberData } = parent.getState();
+      const { net, memberData } = parent.getState();
       const token = await parent.api.member.invite.create({
         ...args,
         member_node_id: memberData!.node_id,
@@ -38,7 +40,7 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
       });
       if (token) {
         await parent.net.getTree();
-        await this.find(netView!, memberData!.node_id);
+        this.find(memberData!.node_id);
       }
       parent.setStatus(AppStatus.READY);
       return token;
@@ -50,12 +52,12 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
   async inviteCancel() {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const { net, netView, memberData } = parent.getState();
+      const { net, memberData } = parent.getState();
       const success = await parent.api.member.invite
         .cancel({ member_node_id: memberData!.node_id, ...net! });
       if (success) {
         await parent.net.getTree();
-        await this.find(netView!, memberData!.node_id);
+        this.find(memberData!.node_id);
       }
       parent.setStatus(AppStatus.READY);
       return success;
@@ -67,12 +69,12 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
   async inviteConfirm() {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const { net, netView, memberData } = parent.getState();
+      const { net, memberData } = parent.getState();
       const success = await parent.api.member.invite
         .confirm({ member_node_id: memberData!.node_id, ...net! });
       if (success) {
         await parent.net.getTree();
-        await this.find(netView!, memberData!.node_id);
+        this.find(memberData!.node_id);
       }
       parent.setStatus(AppStatus.READY);
       return success;
@@ -85,12 +87,12 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
   async inviteRefuse() {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const { net, netView, memberData } = parent.getState();
+      const { net, memberData } = parent.getState();
       const success = await parent.api.member.invite
         .refuse({ member_node_id: memberData!.node_id, ...net! });
       if (success) {
         await parent.net.getTree();
-        await this.find(netView!, memberData!.node_id);
+        this.find(memberData!.node_id);
       }
       parent.setStatus(AppStatus.READY);
       return success;

@@ -62,7 +62,6 @@ class WsConnection implements IInputConnection {
 
     const wsChats = this.wsChats;
     const handleClose = function(this: IWsConnection) {
-      logger.fatal('ON CLOSE');
       wsChats.removeConnection(this);
     };
 
@@ -123,12 +122,10 @@ class WsConnection implements IInputConnection {
       const connections = this.server.clients;
       for (const connection of connections) {
         if (connection.isAlive === false) {
-          logger.fatal('CLOSE');
           connection.terminate();
           return;
         }
         connection.isAlive = false;
-        // logger.fatal('PING');
         connection.send('ping', { binary: false });
         connection.ping();
       }
@@ -139,7 +136,6 @@ class WsConnection implements IInputConnection {
   }
 
   private handlePong(this: IWsConnection) {
-    // logger.fatal('PONG');
     this.isAlive = true;
   }
 }

@@ -26,7 +26,6 @@ export class WsChats {
   }
 
   removeConnection(connection: IWsConnection) {
-    logger.debug('WS CONNECTION REMOVE');
     const chatIds = this.connectionChats.get(connection);
     if (!chatIds) return;
     for (const chatId of chatIds)
@@ -35,7 +34,6 @@ export class WsChats {
   }
 
   private removeConnectionFromChat(connection: IWsConnection, chatId: number) {
-    logger.fatal('REMOVE CONNECTION FRON CHAT');
     const chatConnections = this.chatConnections.get(chatId);
     if (chatConnections!.size > 1) {
       chatConnections!.delete(connection);
