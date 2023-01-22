@@ -8,6 +8,7 @@ export interface IOperation {
     origin: string;
     requestId?: number;
     pathname?: string;
+    isAdmin?: boolean;
   };
   names: string[];
   data: {
@@ -15,12 +16,13 @@ export interface IOperation {
     params: IParams;
   };
 }
-export type IParams = Record<string, TPrimitiv | IObject> & {
+export type IParams = Record<string, TPrimitiv | IObject | TPrimitiv[]> & {
   node_id?: number | null;
 };
 
 export type TOperationResponse =
   | TPrimitiv
   | IObject
-  | (IObject | TPrimitiv)[]
+  | IObject[]
+  | TPrimitiv[]
   | Readable;

@@ -116,14 +116,14 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  setView(netView: T.NetViewKeys) {
+  setView(netView: T.NetViewEnum) {
     parent.setNetView(netView);
   },
 
   async getAllNets() {
     const nets = await parent.api.user.nets.get();
     parent.setAllNets(nets);
-    await parent.chat.connectAll();
+    parent.chat.connectAll();
   },
 
   getNets() {

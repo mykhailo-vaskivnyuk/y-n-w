@@ -20,8 +20,8 @@ export const applyResModules = (config: IWsConfig) => {
 };
 
 export function runResModules(
-  connection: IWsConnection,
-  options: IOperation['options'],
+  connection: IWsConnection | null,
+  options: IOperation['options'] | null,
   data: TOperationResponse,
   resModules: ReturnType<TWsResModule>[],
   wsChats: WsChats,

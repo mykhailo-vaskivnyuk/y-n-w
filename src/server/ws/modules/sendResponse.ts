@@ -3,6 +3,7 @@ import { getLog } from '../methods/utils';
 
 export const sendResponse: TWsResModule = () =>
   function sendResponse(connection, options, data) {
+    if (!connection || !options) return true;
     const { requestId, pathname } = options;
     const response = {
       requestId,

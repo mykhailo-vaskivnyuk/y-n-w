@@ -1,8 +1,9 @@
 import { THandler } from '../../router/types';
 import {
-  IChatGetMessages, IChatGetMessagesResponse,
-  IChatResponseMessage, IChatSendMessage,
+  IChatSendMessage, IChatGetMessages,
+  IChatResponseMessage, IChatGetMessagesResponse,
 } from '../../client/common/api/types/types';
+import { JOI_NULL } from '../../router/constants';
 import {
   ChatGetMessagesResponseSchema, ChatGetMessagesSchema,
   ChatResponseMessageSchema, ChatSendMessageSchema,
@@ -27,3 +28,14 @@ export const getMessages: THandler<
 };
 getMessages.paramsSchema = ChatGetMessagesSchema;
 getMessages.responseSchema = ChatGetMessagesResponseSchema;
+
+export const remove: THandler<{ chatsToDelete: number[] }, null> =
+  async ({ isAdmin }, { chatsToDelete }) => {
+    if (!isAdmin) return null;
+    for (const chatId of chatsToDelete) {
+      chatService.remove(chatId);
+    }
+    return null;
+  };
+remove.responseSchema = JOI_NULL;
+remove.allowedForUser = 'NOT_LOGGEDIN';

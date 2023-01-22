@@ -4,8 +4,8 @@ export class WsChats {
   private connectionChats = new Map<IWsConnection, Set<number>>();
   private chatConnections = new Map<number, Set<IWsConnection>>();
 
-  getChatConnections(chatId: number, connection: IWsConnection) {
-    this.addChatToConnection(chatId, connection);
+  getChatConnections(chatId: number, connection: IWsConnection | null) {
+    connection && this.addChatToConnection(chatId, connection);
     return this.addConnectionToChat(connection, chatId);
   }
 
@@ -15,8 +15,11 @@ export class WsChats {
     else this.connectionChats.set(connection, new Set([chatId]));
   }
 
-  private addConnectionToChat(connection: IWsConnection, chatId: number) {
+  private addConnectionToChat(
+    connection: IWsConnection | null, chatId: number,
+  ) {
     let connections = this.chatConnections.get(chatId);
+    if (!connection) return connections;
     if (connections) connections.add(connection);
     else {
       connections = new Set([connection]);
@@ -26,11 +29,15 @@ export class WsChats {
   }
 
   removeConnection(connection: IWsConnection) {
+    const chatsToDelete: number[] = [];
     const chatIds = this.connectionChats.get(connection);
-    if (!chatIds) return;
-    for (const chatId of chatIds)
-      this.removeConnectionFromChat(connection, chatId);
+    if (!chatIds) return chatsToDelete;
+    for (const chatId of chatIds) {
+      const chatToDelete = this.removeConnectionFromChat(connection, chatId);
+      chatToDelete && chatsToDelete.push(chatToDelete);
+    }
     this.connectionChats.delete(connection);
+    return chatsToDelete;
   }
 
   private removeConnectionFromChat(connection: IWsConnection, chatId: number) {
@@ -39,6 +46,7 @@ export class WsChats {
       chatConnections!.delete(connection);
     } else {
       this.chatConnections.delete(chatId);
+      return chatId;
     }
   }
 }

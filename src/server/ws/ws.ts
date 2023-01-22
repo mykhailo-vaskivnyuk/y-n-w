@@ -22,6 +22,7 @@ class WsConnection implements IInputConnection {
   constructor(config: IWsConfig, server: IHttpServer) {
     this.config = config;
     this.server = new Server({ server });
+    this.sendMessage = this.sendMessage.bind(this);
   }
 
   onOperation(fn: (operation: IOperation) => Promise<TOperationResponse>) {
@@ -61,8 +62,19 @@ class WsConnection implements IInputConnection {
       .handleRequest(message, options, connection);
 
     const wsChats = this.wsChats;
+    const exec = this.exec!;
     const handleClose = function(this: IWsConnection) {
-      wsChats.removeConnection(this);
+      const chatsToDelete = wsChats.removeConnection(this);
+      const operation: IOperation = {
+        options: { sessionKey: 'admin', origin: '', isAdmin: true },
+        names: ['chat', 'remove'],
+        data: { params: { chatsToDelete } },
+      };
+      try {
+        exec(operation);
+      } catch (e) {
+        logger.error(e);
+      }
     };
 
     connection
@@ -86,7 +98,7 @@ class WsConnection implements IInputConnection {
         options,
         data,
         this.resModules,
-        this.wsChats
+        this.wsChats,
       );
     } catch (e) {
       handleError(e, options, connection);
@@ -137,6 +149,22 @@ class WsConnection implements IInputConnection {
 
   private handlePong(this: IWsConnection) {
     this.isAlive = true;
+  }
+
+  sendMessage(data: TOperationResponse) {
+    try {
+      runResModules(
+        null,
+        null,
+        data,
+        this.resModules,
+        this.wsChats,
+      );
+      return true;
+    } catch (e) {
+      logger.error(e);
+      return false;
+    }
   }
 }
 

@@ -54,8 +54,8 @@ class Router implements IRouter {
 
   async exec(operation: IOperation): Promise<TOperationResponse> {
     if (!this.routes) throw new RouterError('ROUTES_CREATE_ERROR');
-    const { options: { origin }, names } = operation;
-    const context = { origin } as IContext;
+    const { options: { origin, isAdmin }, names } = operation;
+    const context = { origin, isAdmin } as IContext;
     const handler = this.findRoute(names);
     const execInputModules = getExecInputModules(this.modules);
     const execOutputModules = getExecOutputModules(this.responseModules);

@@ -17,9 +17,14 @@ export type IClientAppThis = ClientApp & {
   setNets: (nets: INets) => void;
   setCircle: (circle: T.INetViewResponse) => void;
   setTree: (tree: T.INetViewResponse) => void;
-  setNetView: (netView?: T.NetViewKeys) => void;
+  setNetView: (netView?: T.NetViewEnum) => void;
   setMemberPosition: (memberPosition?: number) => void;
   setMember: (memberData?: IMember) => void;
+  setChatId: (
+    nodeId: number,
+    netView: T.NetViewEnum,
+    message: T.IChatResponseMessage,
+  ) => void;
   setMessage: (message: OmitNull<T.IChatResponseMessage>) => void;
   setAllMessages: (chatId: number, messages: T.IChatMessage[]) => void;
 };
@@ -44,3 +49,5 @@ export type IMember = Omit<T.IMemberResponse, 'member_name'> & {
   member_name: string;
   memberStatus: MemberStatusKeys;
 };
+
+export type INetChatIds = Partial<Record<T.NetViewKeys, number>>;

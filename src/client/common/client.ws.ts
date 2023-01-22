@@ -18,6 +18,7 @@ class WsConnection {
   constructor(
     private baseUrl: string,
     private onChatMessage: (message: IChatResponseMessage) => void,
+    private onConnect: () => void,
   ) {
     this.handleResponse = this.handleResponse.bind(this);
     this.sendRequest = this.sendRequest.bind(this);
@@ -124,8 +125,9 @@ class WsConnection {
 
       const handleOpen = () => {
         this.health();
-        for (const chatId of this.chats)
-          this.fetch('/net/chat/send', { chatId }, false);
+        // for (const chatId of this.chats)
+        //   this.fetch('/net/chat/send', { chatId }, false);
+        this.onConnect();
         rv();
       };
 
@@ -144,4 +146,5 @@ class WsConnection {
 export const getConnection = (
   baseUrl: string,
   onChatMessage: (message: IChatResponseMessage) => void,
-): TFetch => new WsConnection(baseUrl, onChatMessage).sendRequest;
+  onConnect: () => void,
+): TFetch => new WsConnection(baseUrl, onChatMessage, onConnect).sendRequest;

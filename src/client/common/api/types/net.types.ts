@@ -16,5 +16,6 @@ export type INetsResponse = OmitNull<INetResponse>[];
 export type INetEnterParams = { net_node_id: number };
 export type INetReadParams = { node_id: number };
 export type INetViewResponse = IMemberResponse[];
-export const NET_VIEW_MAP = ['tree', 'circle'] as const;
+export const NET_VIEW_MAP = ['net', 'tree', 'circle'] as const;
 export type NetViewKeys = typeof NET_VIEW_MAP[number];
+export type NetViewEnum = Exclude<NetViewKeys, 'net'>;

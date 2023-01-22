@@ -2,7 +2,7 @@ import { IConfig } from '../types/config.types';
 import { ILogger } from '../logger/types';
 import { IDatabaseQueries } from '../db/types';
 import { IRouter } from '../router/types';
-import { IInputConnection } from '../server/types';
+import { IInputConnection, IConnectionService } from '../server/types';
 import { IMailService } from '../services/mail/types';
 import { ChatService } from '../services/chat/chat';
 import App from './app';
@@ -19,6 +19,7 @@ export type IAppThis = App & {
 export interface IRouterContext {
   execQuery: IDatabaseQueries;
   logger: ILogger;
+  connectionService: IConnectionService
   console?: typeof console;
   env?: IConfig['env'];
 }
@@ -26,6 +27,7 @@ export interface IRouterContext {
 export interface IGlobalMixins {
   execQuery: IDatabaseQueries;
   logger: ILogger;
+  connectionService: IConnectionService;
   mailService: IMailService;
   chatService: ChatService;
   env: IConfig['env'];
@@ -34,6 +36,7 @@ export interface IGlobalMixins {
 declare global {
   const execQuery: IDatabaseQueries;
   const logger: ILogger;
+  const connectionService: IConnectionService;
   const mailService: IMailService;
   const chatService: ChatService;
   const env: IConfig['env'];

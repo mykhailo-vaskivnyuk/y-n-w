@@ -16,9 +16,14 @@ export interface IInputConnection {
   ): this;
   setUnavailable(service?: TServerService): void;
   getServer(): IServer;
+  sendMessage?: IConnectionService['sendMessage'];
   start(): Promise<void>;
 }
 
 export type IServer = IHttpServer | IWsServer;
 export type TServerService = 'static' | 'api';
 export type IRequest = http.IncomingMessage;
+export interface IConnectionService {
+  sendMessage: (data: TOperationResponse) => boolean;
+  // removeFromChats: (chatsToRemoveFrom: number[]) => boolean;
+}

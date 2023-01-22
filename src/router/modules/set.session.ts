@@ -15,7 +15,7 @@ const setSession: TInputModule = () =>
   async ({ ...operation }, context) => {
     const { options } = operation;
     const { sessionKey } = options;
-    if (!sessionKey) return operation;
+    if (!sessionKey) throw new SessionError();
     try {
       const session = await createSession(sessionKey);
       context.session = session;

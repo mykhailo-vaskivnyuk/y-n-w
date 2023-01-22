@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import {
   IChatGetMessages, IChatMessage,
-  IChatResponseMessage, IChatSendMessage,
+  IChatResponseMessage, IChatSendMessage, NET_VIEW_MAP,
 } from '../../client/common/api/types/types';
 import { OmitNull } from '../../client/common/types';
 import { TJoiSchema } from '../../router/types';
@@ -10,6 +10,14 @@ import { JOI_NULL } from '../../router/constants';
 const ChatMessageSchema = {
   chatId: Joi.number().required(),
   message: Joi.string(),
+};
+
+export const ChatConnectNetSchema = {
+  node_id: Joi.number().required(),
+  netView: Joi.string().custom((value, helpers) => {
+    if (NET_VIEW_MAP.includes(value)) return value;
+    return helpers.error('invalid netView');
+  }),
 };
 
 export const ChatSendMessageSchema = {

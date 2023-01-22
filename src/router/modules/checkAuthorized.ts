@@ -4,7 +4,7 @@ import {
 } from '../../client/common/api/types/types';
 import { HandlerError } from '../errors';
 
-const validateInput: TInputModule = () =>
+const checkAuthorized: TInputModule = () =>
   async ({ ...operation }, { session }, handler) => {
     const user_status = session.read('user_status') || 'NOT_LOGGEDIN';
     const userStatus = USER_STATUS_MAP[user_status];
@@ -16,4 +16,4 @@ const validateInput: TInputModule = () =>
     throw new HandlerError('NOT_CONFIRMED');
   };
 
-export default validateInput;
+export default checkAuthorized;

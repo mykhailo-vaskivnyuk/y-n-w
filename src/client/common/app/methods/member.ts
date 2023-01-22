@@ -20,7 +20,9 @@ export const getMemberMethods = (parent: IClientAppThis) => ({
   },
 
   getName(
-    netView: T.NetViewKeys, member: T.IMemberResponse, memberPosition: number,
+    netView: T.NetViewEnum,
+    member: T.IMemberResponse,
+    memberPosition: number,
   ) {
     const position = netView === 'tree' ?
       memberPosition + 1 :

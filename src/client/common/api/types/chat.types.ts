@@ -1,3 +1,10 @@
+import { NetViewKeys } from './net.types';
+
+export type IChatConnectNet = {
+  node_id: number;
+  netView: NetViewKeys;
+};
+
 export type IChatMessage = {
   user_id: number;
   index: number;
@@ -7,7 +14,7 @@ export type IChatMessage = {
 export type IChatSendMessage = {
   node_id: number;
   chatId: number;
-  message?: string;
+  message: string;
 };
 
 export type IChatResponseMessage = Omit<IChatMessage, 'message'> & {

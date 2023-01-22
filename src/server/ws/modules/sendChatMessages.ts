@@ -2,7 +2,7 @@ import { IWsConnection, TWsResModule } from '../types';
 import { WsChats } from '../ws.chat';
 
 const getChatConnections = (
-  chatId: number, connection: IWsConnection, wsChats: WsChats
+  chatId: number, connection: IWsConnection | null, wsChats: WsChats
 ): IWsConnection[] | undefined => {
   const chatConnections = wsChats.getChatConnections(chatId, connection);
   return chatConnections && [...chatConnections];

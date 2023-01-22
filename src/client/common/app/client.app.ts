@@ -1,8 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
-import * as T from '../api/types/types'
-import { INITIAL_NETS, INets, IMember } from './types';
-import { IChatMessage } from '../api/types/types';
+import * as T from '../api/types/types';
+import { INITIAL_NETS, INets, IMember, INetChatIds } from './types';
 import { AppStatus } from '../constants';
 import { HttpResponseError } from '../errors';
 import { EventEmitter } from '../event.emitter';
@@ -29,8 +28,9 @@ export class ClientApp extends EventEmitter {
   private userNet: T.INetResponse = null;
   private circle: IMember[] = [];
   private tree: IMember[] = [];
-  private netView?: T.NetViewKeys;
+  private netView?: T.NetViewEnum;
   private memberData?: IMember;
+  private chatIds = new Map<number, INetChatIds>();
 
   account: ReturnType<typeof getAccountMethods>;
   net: ReturnType<typeof getNetMethods>;
@@ -60,6 +60,7 @@ export class ClientApp extends EventEmitter {
       netView: this.netView,
       memberData: this.memberData,
       messages: this.messages,
+      chatIds: this.chatIds,
     };
   }
 
@@ -74,7 +75,9 @@ export class ClientApp extends EventEmitter {
       try {
         const baseUrl = this.baseUrl.replace('http', 'ws');
         const connection = getWsConnection(
-          baseUrl, this.setMessage.bind(this),
+          baseUrl,
+          this.setMessage.bind(this),
+          this.handleConnect.bind(this),
         );
         this.api = getApi(connection);
         await this.api.health();
@@ -106,7 +109,7 @@ export class ClientApp extends EventEmitter {
     this.error = e;
     this.setStatus(AppStatus.ERROR);
   }
-  
+
   private async readUser() {
     this.setStatus(AppStatus.LOADING);
     try {
@@ -177,7 +180,7 @@ export class ClientApp extends EventEmitter {
     this.emit('nets', this.nets);
   }
 
-  protected setNetView(netView?: T.NetViewKeys) {
+  protected setNetView(netView?: T.NetViewEnum) {
     this.netView = netView;
   }
 
@@ -197,6 +200,24 @@ export class ClientApp extends EventEmitter {
     this.memberData = memberData;
   }
 
+  private handleConnect() {
+    if (this.status === AppStatus.INITING) return;
+    this.chat.connectAll();
+  }
+
+  protected setChatId(
+    netNodeId: number,
+    netView: T.NetViewKeys,
+    message: T.IChatResponseMessage,
+  ) {
+    if (!message) return;
+    const { chatId } = message;
+    const netChatIds = this.chatIds.get(netNodeId);
+    if (netChatIds) netChatIds[netView] = chatId;
+    else this.chatIds.set(netNodeId, { [netView]: chatId });
+    return chatId;
+  }
+
   protected setMessage(messageData: T.IChatResponseMessage) {
     if (!messageData) return;
     const { chatId, ...message } = messageData;
@@ -214,7 +235,7 @@ export class ClientApp extends EventEmitter {
   protected setAllMessages(chatId: number, messages: T.IChatMessage[]) {
     if (!messages.length) return;
     const curChatMessages = this.messages.get(chatId);
-    let chatMessages: IChatMessage[];
+    let chatMessages: T.IChatMessage[];
     if (curChatMessages) {
       chatMessages = [...curChatMessages, ...messages]
         .sort(({ index: a }, { index: b }) => a - b)

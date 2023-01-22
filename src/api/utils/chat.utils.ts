@@ -6,10 +6,12 @@ import { IUserNet } from '../../router/types';
 export const chatIdVerified = (
   userNet: IUserNet, messageData: IChatSendMessage | IChatGetMessages,
 ) => {
-  const { net_node_id, parent_node_id } = userNet!;
-  const { node_id, chatId } = messageData;
-  if (chatId === parent_node_id) return true;
-  if (chatId === node_id) return true;
-  if (chatId === -net_node_id) return true;
+  const { net_node_id, node_id, parent_node_id } = userNet!;
+  const { chatId } = messageData;
+  const { net_node_id: netNodeId, node_id: nodeId } =
+    chatService.getUserNetNode(chatId) || {};
+  if (net_node_id === netNodeId) return true;
+  if (parent_node_id === nodeId) return true;
+  if (node_id === nodeId) return true;
   return false;
 };

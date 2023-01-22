@@ -69,6 +69,7 @@ export type IContext = {
   origin: string;
   userNet?: IUserNet;
   userNetStatus?: UserStatusKeys;
+  isAdmin?: boolean;
 };
 
 export type IUserNet = ITableNodes & {
