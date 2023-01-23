@@ -1,3 +1,5 @@
+import { NetViewKeys } from '../client/common/api/types/types';
+
 /* eslint-disable max-lines */
 export const TABLES_MAP = {
   NODES: 'nodes',
@@ -6,6 +8,8 @@ export const TABLES_MAP = {
   NETS_DATA: 'nets_data',
   NETS_USERS_DATA: 'nets_users_data',
   NODES_INVITES: 'nodes_invites',
+  USERS_MESSAGES: 'users_messages',
+  USERS_CHANGES: 'users_changes',
   USERS_TOKENS: 'users_tokens',
   USERS_MEMBERS: 'users_members',
   SESSIONS: 'sessions',
@@ -56,15 +60,28 @@ export type ITableNetsUsersData = {
   confirmed: boolean;
 }
 
-export type ITableUsersTokens = {
-  user_id: number;
-  token: string;
-}
-
 export type ITableUsersNodesInvites = {
   parent_node_id: number;
   user_id: number;
   member_name: string;
+  token: string;
+}
+
+export type ITableUsersMessages = {
+  message_id: number;
+  user_node_id: number;
+  net_view: NetViewKeys;
+  member_node_id: number | null;
+  message: string;
+}
+
+export type ITableUsersChanges = {
+  user_id: number;
+  date: string;
+}
+
+export type ITableUsersTokens = {
+  user_id: number;
   token: string;
 }
 
