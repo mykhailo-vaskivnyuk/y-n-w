@@ -86,25 +86,14 @@ Table "nodes_invites" {
 
 Table "users_messages" {
   "message_id" bigint [primary key, not null]
-  "user_node_id" bigint [not null]
+  "user_id" bigint [not null]
+  "user_node_id" bigint [default: NULL]
   "net_view" "character(10)" [not null]
   "member_node_id" bigint [default: NULL]
   "message" "character varying(255)" [not null]
   "date" timestamp [not null]
   Indexes {
-    user_node_id [name: "sk_users_messages_user_node"]
-  }
-}
-
-Table "users_messages_tmp" {
-  "original_user_node_id" bigint [not null]
-  "user_node_id" bigint [not null]
-  "net_view" "character(10)" [not null]
-  "member_node_id" bigint
-  "message" "character varying(255)" [not null]
-  "date" timestamp [not null]
-  Indexes {
-    original_user_node_id [name: "sk_users_messages_original_user_node"]
+    user_id [name: "sk_users_messages_user"]
   }
 }
 
@@ -143,6 +132,7 @@ Ref "fk_users_members_parent_node":"nodes"."node_id" < "users_members"."parent_n
 Ref "fk_users_members_user":"users"."user_id" < "users_members"."user_id" [delete: cascade]
 Ref "fk_users_members_member":"users"."user_id" < "users_members"."member_id" [delete: cascade]
 Ref "fk_sessions_user":"users"."user_id" < "sessions"."user_id" [delete: cascade]
-Ref "fk_users_messages_user_node": "nets_users_data"."node_id" < "users_messages"."user_node_id" [delete: cascade]
+Ref "fk_users_messages_user": "users"."user_id" < "users_messages"."user_id" [delete: cascade]
+Ref "fk_users_messages_user_node": "nets_users_data"."node_id" < "users_messages"."user_node_id" [update: set null]
 Ref "fk_users_messages_member_node": "nodes"."node_id" < "users_messages"."member_node_id" [delete: cascade]
 Ref "fk_users_changes_user": "users"."user_id" - "users_changes"."user_id" [delete: cascade]

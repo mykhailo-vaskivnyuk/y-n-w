@@ -2,10 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.5
--- Dumped by pg_dump version 14.5
-
--- Started on 2023-01-23 11:46:25
+-- Dumped from database version 14.3
+-- Dumped by pg_dump version 14.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -23,7 +21,6 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 209 (class 1259 OID 34161)
 -- Name: nets; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -39,7 +36,6 @@ CREATE TABLE public.nets (
 ALTER TABLE public.nets OWNER TO merega;
 
 --
--- TOC entry 210 (class 1259 OID 34166)
 -- Name: nets_data; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -55,7 +51,6 @@ CREATE TABLE public.nets_data (
 ALTER TABLE public.nets_data OWNER TO merega;
 
 --
--- TOC entry 211 (class 1259 OID 34174)
 -- Name: nets_users_data; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -73,7 +68,6 @@ CREATE TABLE public.nets_users_data (
 ALTER TABLE public.nets_users_data OWNER TO merega;
 
 --
--- TOC entry 212 (class 1259 OID 34181)
 -- Name: nets_users_data_tmp; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -91,7 +85,6 @@ CREATE TABLE public.nets_users_data_tmp (
 ALTER TABLE public.nets_users_data_tmp OWNER TO merega;
 
 --
--- TOC entry 213 (class 1259 OID 34188)
 -- Name: nodes; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -109,7 +102,6 @@ CREATE TABLE public.nodes (
 ALTER TABLE public.nodes OWNER TO merega;
 
 --
--- TOC entry 214 (class 1259 OID 34195)
 -- Name: nodes_invites; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -124,7 +116,6 @@ CREATE TABLE public.nodes_invites (
 ALTER TABLE public.nodes_invites OWNER TO merega;
 
 --
--- TOC entry 215 (class 1259 OID 34198)
 -- Name: nodes_node_id_seq; Type: SEQUENCE; Schema: public; Owner: merega
 --
 
@@ -139,7 +130,6 @@ ALTER TABLE public.nodes ALTER COLUMN node_id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 216 (class 1259 OID 34199)
 -- Name: sessions; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -155,7 +145,6 @@ CREATE TABLE public.sessions (
 ALTER TABLE public.sessions OWNER TO merega;
 
 --
--- TOC entry 217 (class 1259 OID 34205)
 -- Name: sessions_session_id_seq; Type: SEQUENCE; Schema: public; Owner: merega
 --
 
@@ -170,7 +159,6 @@ ALTER TABLE public.sessions ALTER COLUMN session_id ADD GENERATED ALWAYS AS IDEN
 
 
 --
--- TOC entry 218 (class 1259 OID 34206)
 -- Name: users; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -187,7 +175,6 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO merega;
 
 --
--- TOC entry 225 (class 1259 OID 34344)
 -- Name: users_changes; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -200,7 +187,6 @@ CREATE TABLE public.users_changes (
 ALTER TABLE public.users_changes OWNER TO merega;
 
 --
--- TOC entry 219 (class 1259 OID 34213)
 -- Name: users_members; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -216,13 +202,13 @@ CREATE TABLE public.users_members (
 ALTER TABLE public.users_members OWNER TO merega;
 
 --
--- TOC entry 222 (class 1259 OID 34312)
 -- Name: users_messages; Type: TABLE; Schema: public; Owner: merega
 --
 
 CREATE TABLE public.users_messages (
     message_id bigint NOT NULL,
-    user_node_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    user_node_id bigint,
     net_view character(10) NOT NULL,
     member_node_id bigint,
     message character varying(255) NOT NULL,
@@ -233,7 +219,6 @@ CREATE TABLE public.users_messages (
 ALTER TABLE public.users_messages OWNER TO merega;
 
 --
--- TOC entry 223 (class 1259 OID 34329)
 -- Name: users_messages_message_id_seq; Type: SEQUENCE; Schema: public; Owner: merega
 --
 
@@ -248,24 +233,6 @@ ALTER TABLE public.users_messages ALTER COLUMN message_id ADD GENERATED ALWAYS A
 
 
 --
--- TOC entry 224 (class 1259 OID 34340)
--- Name: users_messages_tmp; Type: TABLE; Schema: public; Owner: merega
---
-
-CREATE TABLE public.users_messages_tmp (
-    original_user_node_id bigint NOT NULL,
-    user_node_id bigint NOT NULL,
-    net_view character(10) NOT NULL,
-    member_node_id bigint,
-    message character varying(255) NOT NULL,
-    date timestamp without time zone NOT NULL
-);
-
-
-ALTER TABLE public.users_messages_tmp OWNER TO merega;
-
---
--- TOC entry 220 (class 1259 OID 34218)
 -- Name: users_tokens; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -278,7 +245,6 @@ CREATE TABLE public.users_tokens (
 ALTER TABLE public.users_tokens OWNER TO merega;
 
 --
--- TOC entry 221 (class 1259 OID 34221)
 -- Name: users_user_id_seq; Type: SEQUENCE; Schema: public; Owner: merega
 --
 
@@ -293,8 +259,6 @@ ALTER TABLE public.users ALTER COLUMN user_id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 3433 (class 0 OID 34161)
--- Dependencies: 209
 -- Data for Name: nets; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
@@ -304,8 +268,6 @@ COPY public.nets (net_node_id, net_level, parent_net_id, first_net_id, count_of_
 
 
 --
--- TOC entry 3434 (class 0 OID 34166)
--- Dependencies: 210
 -- Data for Name: nets_data; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
@@ -315,8 +277,6 @@ COPY public.nets_data (net_node_id, name, goal, resource_name, resource_link) FR
 
 
 --
--- TOC entry 3435 (class 0 OID 34174)
--- Dependencies: 211
 -- Data for Name: nets_users_data; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
@@ -328,8 +288,6 @@ COPY public.nets_users_data (node_id, net_node_id, user_id, email_show, name_sho
 
 
 --
--- TOC entry 3436 (class 0 OID 34181)
--- Dependencies: 212
 -- Data for Name: nets_users_data_tmp; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
@@ -338,8 +296,6 @@ COPY public.nets_users_data_tmp (node_id, net_node_id, user_id, email_show, name
 
 
 --
--- TOC entry 3437 (class 0 OID 34188)
--- Dependencies: 213
 -- Data for Name: nodes; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
@@ -367,8 +323,6 @@ COPY public.nodes (node_id, node_level, node_position, parent_node_id, net_node_
 
 
 --
--- TOC entry 3438 (class 0 OID 34195)
--- Dependencies: 214
 -- Data for Name: nodes_invites; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
@@ -377,8 +331,6 @@ COPY public.nodes_invites (parent_node_id, node_id, member_name, token) FROM std
 
 
 --
--- TOC entry 3440 (class 0 OID 34199)
--- Dependencies: 216
 -- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
@@ -408,8 +360,6 @@ COPY public.sessions (session_id, user_id, session_key, session_value, updated) 
 
 
 --
--- TOC entry 3442 (class 0 OID 34206)
--- Dependencies: 218
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
@@ -421,8 +371,6 @@ COPY public.users (user_id, email, name, mobile, password, confirmed) FROM stdin
 
 
 --
--- TOC entry 3449 (class 0 OID 34344)
--- Dependencies: 225
 -- Data for Name: users_changes; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
@@ -431,8 +379,6 @@ COPY public.users_changes (user_id, date) FROM stdin;
 
 
 --
--- TOC entry 3443 (class 0 OID 34213)
--- Dependencies: 219
 -- Data for Name: users_members; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
@@ -446,28 +392,14 @@ COPY public.users_members (parent_node_id, user_id, member_id, dislike, vote) FR
 
 
 --
--- TOC entry 3446 (class 0 OID 34312)
--- Dependencies: 222
 -- Data for Name: users_messages; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.users_messages (message_id, user_node_id, net_view, member_node_id, message, date) FROM stdin;
+COPY public.users_messages (message_id, user_id, user_node_id, net_view, member_node_id, message, date) FROM stdin;
 \.
 
 
 --
--- TOC entry 3448 (class 0 OID 34340)
--- Dependencies: 224
--- Data for Name: users_messages_tmp; Type: TABLE DATA; Schema: public; Owner: merega
---
-
-COPY public.users_messages_tmp (original_user_node_id, user_node_id, net_view, member_node_id, message, date) FROM stdin;
-\.
-
-
---
--- TOC entry 3444 (class 0 OID 34218)
--- Dependencies: 220
 -- Data for Name: users_tokens; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
@@ -476,8 +408,6 @@ COPY public.users_tokens (user_id, token) FROM stdin;
 
 
 --
--- TOC entry 3455 (class 0 OID 0)
--- Dependencies: 215
 -- Name: nodes_node_id_seq; Type: SEQUENCE SET; Schema: public; Owner: merega
 --
 
@@ -485,8 +415,6 @@ SELECT pg_catalog.setval('public.nodes_node_id_seq', 19, true);
 
 
 --
--- TOC entry 3456 (class 0 OID 0)
--- Dependencies: 217
 -- Name: sessions_session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: merega
 --
 
@@ -494,8 +422,6 @@ SELECT pg_catalog.setval('public.sessions_session_id_seq', 44, true);
 
 
 --
--- TOC entry 3457 (class 0 OID 0)
--- Dependencies: 223
 -- Name: users_messages_message_id_seq; Type: SEQUENCE SET; Schema: public; Owner: merega
 --
 
@@ -503,8 +429,6 @@ SELECT pg_catalog.setval('public.users_messages_message_id_seq', 1, false);
 
 
 --
--- TOC entry 3458 (class 0 OID 0)
--- Dependencies: 221
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: merega
 --
 
@@ -512,7 +436,6 @@ SELECT pg_catalog.setval('public.users_user_id_seq', 3, true);
 
 
 --
--- TOC entry 3240 (class 2606 OID 34223)
 -- Name: nets pk_nets; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -521,7 +444,6 @@ ALTER TABLE ONLY public.nets
 
 
 --
--- TOC entry 3242 (class 2606 OID 34225)
 -- Name: nets_data pk_nets_data; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -530,7 +452,6 @@ ALTER TABLE ONLY public.nets_data
 
 
 --
--- TOC entry 3244 (class 2606 OID 34227)
 -- Name: nets_users_data pk_nets_users_data; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -539,7 +460,6 @@ ALTER TABLE ONLY public.nets_users_data
 
 
 --
--- TOC entry 3248 (class 2606 OID 34229)
 -- Name: nets_users_data_tmp pk_nets_users_data_tmp; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -548,7 +468,6 @@ ALTER TABLE ONLY public.nets_users_data_tmp
 
 
 --
--- TOC entry 3250 (class 2606 OID 34231)
 -- Name: nodes pk_nodes; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -557,7 +476,6 @@ ALTER TABLE ONLY public.nodes
 
 
 --
--- TOC entry 3261 (class 2606 OID 34233)
 -- Name: sessions pk_sessions; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -566,7 +484,6 @@ ALTER TABLE ONLY public.sessions
 
 
 --
--- TOC entry 3263 (class 2606 OID 34235)
 -- Name: users pk_users; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -575,7 +492,6 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3279 (class 2606 OID 34348)
 -- Name: users_changes pk_users_changes; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -584,7 +500,6 @@ ALTER TABLE ONLY public.users_changes
 
 
 --
--- TOC entry 3268 (class 2606 OID 34237)
 -- Name: users_members pk_users_members; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -593,7 +508,6 @@ ALTER TABLE ONLY public.users_members
 
 
 --
--- TOC entry 3275 (class 2606 OID 34316)
 -- Name: users_messages pk_users_messages; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -602,7 +516,6 @@ ALTER TABLE ONLY public.users_messages
 
 
 --
--- TOC entry 3256 (class 2606 OID 34239)
 -- Name: nodes_invites pk_users_nodes_invites; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -611,7 +524,6 @@ ALTER TABLE ONLY public.nodes_invites
 
 
 --
--- TOC entry 3270 (class 2606 OID 34241)
 -- Name: users_tokens pk_users_tokens; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -620,7 +532,6 @@ ALTER TABLE ONLY public.users_tokens
 
 
 --
--- TOC entry 3265 (class 2606 OID 34243)
 -- Name: users uk_email; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -629,7 +540,6 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3246 (class 2606 OID 34245)
 -- Name: nets_users_data uk_nets_users_data_user_net_node; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -638,7 +548,6 @@ ALTER TABLE ONLY public.nets_users_data
 
 
 --
--- TOC entry 3252 (class 2606 OID 34247)
 -- Name: nodes uk_nodes_node_net_node; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -647,7 +556,6 @@ ALTER TABLE ONLY public.nodes
 
 
 --
--- TOC entry 3254 (class 2606 OID 34249)
 -- Name: nodes uk_nodes_node_parent_node; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -656,7 +564,6 @@ ALTER TABLE ONLY public.nodes
 
 
 --
--- TOC entry 3258 (class 2606 OID 34251)
 -- Name: nodes_invites uk_users_nodes_invites_token; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -665,7 +572,6 @@ ALTER TABLE ONLY public.nodes_invites
 
 
 --
--- TOC entry 3272 (class 2606 OID 34253)
 -- Name: users_tokens uk_users_tokens_token; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -674,23 +580,13 @@ ALTER TABLE ONLY public.users_tokens
 
 
 --
--- TOC entry 3277 (class 1259 OID 34343)
--- Name: sk_users_messages_original_user_node; Type: INDEX; Schema: public; Owner: merega
+-- Name: sk_users_messages_user; Type: INDEX; Schema: public; Owner: merega
 --
 
-CREATE INDEX sk_users_messages_original_user_node ON public.users_messages_tmp USING btree (original_user_node_id);
-
-
---
--- TOC entry 3276 (class 1259 OID 34336)
--- Name: sk_users_messages_user_node; Type: INDEX; Schema: public; Owner: merega
---
-
-CREATE INDEX sk_users_messages_user_node ON public.users_messages USING btree (user_node_id);
+CREATE INDEX sk_users_messages_user ON public.users_messages USING btree (user_id);
 
 
 --
--- TOC entry 3266 (class 1259 OID 34254)
 -- Name: users_email_idx; Type: INDEX; Schema: public; Owner: merega
 --
 
@@ -698,7 +594,6 @@ CREATE UNIQUE INDEX users_email_idx ON public.users USING btree (email);
 
 
 --
--- TOC entry 3259 (class 1259 OID 34255)
 -- Name: users_nodes_invites_token_idx; Type: INDEX; Schema: public; Owner: merega
 --
 
@@ -706,7 +601,6 @@ CREATE UNIQUE INDEX users_nodes_invites_token_idx ON public.nodes_invites USING 
 
 
 --
--- TOC entry 3273 (class 1259 OID 34256)
 -- Name: users_tokens_token_idx; Type: INDEX; Schema: public; Owner: merega
 --
 
@@ -714,7 +608,6 @@ CREATE UNIQUE INDEX users_tokens_token_idx ON public.users_tokens USING btree (t
 
 
 --
--- TOC entry 3281 (class 2606 OID 34257)
 -- Name: nets_data fk_nets_data_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -723,7 +616,6 @@ ALTER TABLE ONLY public.nets_data
 
 
 --
--- TOC entry 3280 (class 2606 OID 34262)
 -- Name: nets fk_nets_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -732,7 +624,6 @@ ALTER TABLE ONLY public.nets
 
 
 --
--- TOC entry 3282 (class 2606 OID 34267)
 -- Name: nets_users_data fk_nets_users_data_node_net_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -741,7 +632,6 @@ ALTER TABLE ONLY public.nets_users_data
 
 
 --
--- TOC entry 3283 (class 2606 OID 34272)
 -- Name: nets_users_data fk_nets_users_data_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -750,7 +640,6 @@ ALTER TABLE ONLY public.nets_users_data
 
 
 --
--- TOC entry 3284 (class 2606 OID 34277)
 -- Name: nodes_invites fk_nodes_invites_node_parent_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -759,7 +648,6 @@ ALTER TABLE ONLY public.nodes_invites
 
 
 --
--- TOC entry 3285 (class 2606 OID 34282)
 -- Name: nodes_invites fk_nodes_invites_parent_user_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -768,7 +656,6 @@ ALTER TABLE ONLY public.nodes_invites
 
 
 --
--- TOC entry 3286 (class 2606 OID 34287)
 -- Name: sessions fk_sessions_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -777,7 +664,6 @@ ALTER TABLE ONLY public.sessions
 
 
 --
--- TOC entry 3293 (class 2606 OID 34349)
 -- Name: users_changes fk_users_changes_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -786,7 +672,6 @@ ALTER TABLE ONLY public.users_changes
 
 
 --
--- TOC entry 3287 (class 2606 OID 34292)
 -- Name: users_members fk_users_members_member; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -795,7 +680,6 @@ ALTER TABLE ONLY public.users_members
 
 
 --
--- TOC entry 3288 (class 2606 OID 34297)
 -- Name: users_members fk_users_members_parent_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -804,7 +688,6 @@ ALTER TABLE ONLY public.users_members
 
 
 --
--- TOC entry 3289 (class 2606 OID 34302)
 -- Name: users_members fk_users_members_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -813,7 +696,6 @@ ALTER TABLE ONLY public.users_members
 
 
 --
--- TOC entry 3292 (class 2606 OID 34324)
 -- Name: users_messages fk_users_messages_member_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -822,24 +704,28 @@ ALTER TABLE ONLY public.users_messages
 
 
 --
--- TOC entry 3291 (class 2606 OID 34319)
+-- Name: users_messages fk_users_messages_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.users_messages
+    ADD CONSTRAINT fk_users_messages_user FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
+
+
+--
 -- Name: users_messages fk_users_messages_user_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.users_messages
-    ADD CONSTRAINT fk_users_messages_user_node FOREIGN KEY (user_node_id) REFERENCES public.nets_users_data(node_id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_users_messages_user_node FOREIGN KEY (user_node_id) REFERENCES public.nets_users_data(node_id) ON DELETE SET NULL;
 
 
 --
--- TOC entry 3290 (class 2606 OID 34307)
 -- Name: users_tokens fk_users_tokens_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.users_tokens
     ADD CONSTRAINT fk_users_tokens_user FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
 
-
--- Completed on 2023-01-23 11:46:25
 
 --
 -- PostgreSQL database dump complete
