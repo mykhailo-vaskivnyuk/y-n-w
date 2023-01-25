@@ -1,14 +1,15 @@
 /* eslint-disable max-lines */
 import { UserStatusKeys } from '../../client/common/api/types/user.types';
-import { ITableNodes } from '../../db/db.types';
-import { IUserNet } from '../../db/types/member.types';
+import { IUserNetData, IUserNodeAndNetName } from '../../db/types/member.types';
+import { NetEventKeys } from '../types/net.types';
 import { HandlerError } from '../../router/errors';
 import { updateCountOfMembers } from './nodes.utils';
 import { excludeNullUndefined } from '../../utils/utils';
+import { createMessages, createMessagesToConnected } from './messages.utils';
 
 export const findUserNet = async (
   user_id: number, user_node_id: number,
-): Promise<readonly [IUserNet, UserStatusKeys]> => {
+): Promise<readonly [IUserNetData, UserStatusKeys]> => {
   const [userNet] = await execQuery.user.net.find([user_id, user_node_id]);
   if (!userNet) throw new HandlerError('NOT_FOUND');
   const { confirmed } = userNet;
@@ -27,36 +28,62 @@ export const updateCountOfNets = async (
   await updateCountOfNets(parent_net_id, addCount);
 };
 
-const removeConnected = async (parent_node: ITableNodes) => {
-  const { net_node_id, node_id } = parent_node;
+const removeConnected = async (
+  event: NetEventKeys, memberNode: IUserNodeAndNetName, date: string,
+) => {
+  const { node_id } = memberNode;
   const users = await execQuery.member.getConnected([node_id]);
   for (const { user_id } of users)
-    await refuseNetUser(user_id, net_node_id);
+    await removeConnectedMember(event, memberNode, user_id, date);
 };
 
 export const removeNetUser = async (
   user_id: number, net_node_id: number | null,
 ) => {
-  const nodes = await execQuery.user.net.getNodes([user_id, net_node_id]);
+  const date = new Date().toUTCString();
+
+  // 1 - get user's nodes in net and subnets
+  const userNets = await execQuery.user.net
+    .getNetAndSubnets([user_id, net_node_id]);
+
+  // 2 - remove member_data from user and to user in net and subnets
   await execQuery.member.data.remove([user_id, net_node_id]);
-  for (const { confirmed, ...node } of nodes)
-    confirmed && await removeConnected(node);
+
+  // 3 - remove connected users in net and subnets
+  for (const userNet of userNets) {
+    if (!userNet.confirmed) continue;
+    await removeConnected('LEAVE', userNet, date);
+  }
+
+  // 4 - remove user from nodes in net and subnets
   await execQuery.member.remove([user_id, net_node_id]);
-  for (const { node_id, confirmed } of nodes)
+
+  // 5 - update nodes data in net and subnets
+  for (const { node_id, confirmed } of userNets)
     confirmed && await updateCountOfMembers(node_id, -1);
-  const nodesToArrange = nodes.map(({ node_id: v }) => v);
-  const parentNodesToArrange = nodes
+
+  // 6 - create messages
+  for (const userNet of userNets) await createMessages('LEAVE', userNet, date);
+
+  const nodesToArrange = userNets.map(({ node_id: v }) => v);
+  const parentNodesToArrange = userNets
     .map(({ parent_node_id: v }) => v)
     .filter(excludeNullUndefined);
-  // for (const node of nodes) await createMessages(node, 'LEAVE');
+
   return [...parentNodesToArrange, ...nodesToArrange];
 };
 
-export const refuseNetUser = async (
-  member_id: number, net_node_id: number,
+export const removeConnectedMember = async (
+  event: NetEventKeys,
+  memberNode: IUserNodeAndNetName,
+  user_id: number,
+  eventDate?: string,
 ) => {
-  await execQuery.member.data.remove([member_id, net_node_id]);
-  await execQuery.member.remove([member_id, net_node_id]);
+  const { net_node_id } = memberNode;
+  const date = eventDate || new Date().toUTCString();
+  await execQuery.member.data.remove([user_id, net_node_id]);
+  await execQuery.member.remove([user_id, net_node_id]);
+  await createMessagesToConnected(event, memberNode, [user_id], date);
 };
 
 export const checkDislikes = async (
@@ -87,18 +114,19 @@ export const checkVotes = async (parent_node_id: number) => {
 };
 
 export const voteNetUser = async (node_id: number, parent_node_id: number) => {
+  const date = new Date().toUTCString();
   const [parent_member] = await execQuery.member.get([parent_node_id]);
 
   const { user_id: parentUserId = null } = parent_member || {};
   if (parent_member) {
-    await removeConnected(parent_member);
+    await removeConnected('VOTE', parent_member, date);
     await execQuery.member.data
       .removeFromCircle([parentUserId!, parent_node_id]);
   }
 
   const [member] = await execQuery.member.get([node_id]);
   const { user_id, net_node_id } = member!;
-  await removeConnected(member!);
+  await removeConnected('VOTE', member!, date);
   await execQuery.member.data.removeFromTree([user_id, node_id]);
 
   await execQuery.member.moveToTmp([node_id, parent_node_id]);

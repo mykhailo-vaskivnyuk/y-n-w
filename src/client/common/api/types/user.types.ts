@@ -22,6 +22,6 @@ export const loggedInState = USER_STATUS_MAP.LOGGEDIN;
 
 export type IUserNetDataResponse =
   Pick<ITableNodes, 'node_id' | 'parent_node_id'> &
-  OuterJoin<Pick<ITableNetsUsersData, 'confirmed'>> &
+  Pick<ITableNetsUsersData, 'confirmed'> &
   OuterJoin<Pick<ITableUsersMembers, 'vote'>> &
   { vote_count: number };

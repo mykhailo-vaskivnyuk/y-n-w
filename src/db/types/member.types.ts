@@ -1,10 +1,15 @@
 import { OuterJoin } from '../../client/common/types';
 import * as T from '../db.types';
 
-export type IUserNet =
+export type IUserNetData =
   T.ITableNodes &
-  Pick<T.ITableNetsUsersData, 'confirmed'> &
-  Pick<T.ITableNets, 'net_level'>;
+  Pick<T.ITableNets, 'net_level'> &
+  T.ITableNetsData &
+  Pick<T.ITableNetsUsersData, 'confirmed'>;
+
+export type IUserNodeAndNetName =
+  T.ITableNodes &
+  Pick<T.ITableNetsData, 'name'>;
 
 export type IMember =
   T.ITableNodes &

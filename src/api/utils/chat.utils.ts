@@ -1,10 +1,11 @@
 import {
   IChatGetMessages, IChatSendMessage,
 } from '../../client/common/api/types/types';
-import { IUserNet } from '../../db/types/member.types';
+import { IUserNetData } from '../../db/types/member.types';
 
 export const chatIdVerified = (
-  userNet: IUserNet, messageData: IChatSendMessage | IChatGetMessages,
+  userNet: IUserNetData,
+  messageData: IChatSendMessage | IChatGetMessages,
 ) => {
   const { net_node_id, node_id, parent_node_id } = userNet!;
   const { chatId } = messageData;

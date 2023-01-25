@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
-import { ITableNodes } from '../../db.types';
 import { TQuery } from '../../types/types';
-import { INodeWithUser } from '../../types/member.types';
+import { IMember, INodeWithUser } from '../../types/member.types';
+import { ITableNetsData } from '../../db.types';
 import { userInNetAndItsSubnets } from '../../utils';
 import { IQueriesMemberData } from './data';
 import { IQueriesMemberInvite } from './invite';
@@ -21,10 +21,7 @@ export interface IQueriesMember {
   ], INodeWithUser>;
   get: TQuery<[
     ['node_id', number],
-  ],
-    { user_id: number } &
-    ITableNodes
-  >;
+  ], IMember & Pick<ITableNetsData, 'name'>>;
   getConnected: TQuery<[
     ['parent_node_id', number],
   ], {
@@ -101,13 +98,15 @@ export const findInCircle = `
 
 export const get = `
   SELECT
+    nodes.*,
     nets_users_data.user_id,
-    nodes.node_id,
-    nodes.parent_node_id,
-    nodes.net_node_id
+    nets_users_data.confirmed,
+    nets_data.name
   FROM nodes
   INNER JOIN nets_users_data ON
     nets_users_data.node_id = nodes.node_id
+  INNER JOIN nets_data ON
+    nets_users_data.net_node_id = nets_data.net_node_id
   WHERE nodes.node_id = $1
 `;
 

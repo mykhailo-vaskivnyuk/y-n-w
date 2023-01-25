@@ -1,6 +1,7 @@
 import { IMemberResponse } from '../../../client/common/api/types/types';
 import { ITableNodes } from '../../db.types';
-import { TQuery } from '../../types';
+import { TQuery } from '../../types/types';
+import { IMember } from '../../types/member.types';
 
 export interface IQueriesNetTree {
   get: TQuery<[
@@ -10,6 +11,9 @@ export interface IQueriesNetTree {
   getNodes: TQuery<[
     ['parent_node_id', number],
   ], ITableNodes>;
+  getMembers: TQuery<[
+    ['parent_node_id', number],
+  ], IMember>;
 }
 
 export const get = `
@@ -43,4 +47,15 @@ export const getNodes = `
   FROM nodes
   WHERE nodes.parent_node_id = $1
   ORDER BY nodes.count_of_members DESC
+`;
+
+export const getMembers = `
+  SELECT 
+    nodes.*,
+    nets_users_data.user_id, 
+    nets_users_data.confirmed
+  FROM nodes
+  INNER JOIN nets_users_data ON
+    nets_users_data.node_id = nodes.node_id
+  WHERE nodes.parent_node_id = $1
 `;

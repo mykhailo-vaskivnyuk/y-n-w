@@ -4,7 +4,7 @@ import {
   IOperation, TOperationResponse, IParams,
 } from '../types/operation.types';
 import { ITableUsers } from '../db/db.types';
-import { IUserNet } from '../db/types/member.types';
+import { IUserNetData } from '../db/types/member.types';
 import {
   PartialUserNetStatusKeys, PartialUserStatusKeys, UserStatusKeys,
 } from '../client/common/api/types/types';
@@ -68,7 +68,7 @@ export type THandlerSchema = THandler['responseSchema' | 'paramsSchema'];
 export type IContext = {
   session: Session<ISessionContent>;
   origin: string;
-  userNet?: IUserNet;
+  userNet?: IUserNetData;
   userNetStatus?: UserStatusKeys;
   connectionId?: number;
 };

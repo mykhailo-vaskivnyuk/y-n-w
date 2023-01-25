@@ -1,7 +1,9 @@
 /* eslint-disable max-lines */
 import { IMemberResponse } from '../../../client/common/api/types/types';
-import { TQuery } from '../../types';
-import { IMemberDislikes, IMemberVotes } from '../../types/types';
+import { TQuery } from '../../types/types';
+import {
+  IMember, IMemberDislikes, IMemberVotes,
+} from '../../types/member.types';
 
 export interface IQueriesNetCircle {
   get: TQuery<[
@@ -15,6 +17,10 @@ export interface IQueriesNetCircle {
   getVotes: TQuery<[
     ['parent_node_id', number],
   ], IMemberVotes>;
+  getMembers: TQuery<[
+    ['node_id', number],
+    ['parent_node_id', number],
+  ], IMember>;
 }
 
 export const get = `
@@ -112,4 +118,19 @@ export const getVotes = `
   GROUP BY
     members.node_id
   ORDER BY vote_count DESC
+`;
+
+export const getMembers = `
+  SELECT
+    nodes.*,
+    nets_users_data.user_id,
+    nets_users_data.confirmed
+  FROM nodes
+  INNER JOIN nets_users_data ON
+    nets_users_data.node_id = nodes.node_id
+  WHERE
+    nodes.node_id = $2 OR (
+      nodes.parent_node_id = $2 AND
+      nodes.node_id <> $1
+    )
 `;

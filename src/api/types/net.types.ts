@@ -1,12 +1,15 @@
 export const NET_EVENT_MAP = {
   LEAVE: 'leave',
+  LEAVE_CONNECTED: 'leave_connected',
+  REFUSE: 'refuse',
+  VOTE: 'vote',
 };
 export type NetEventKeys = keyof typeof NET_EVENT_MAP;
 
-export const NET_EVENT_FROM_MAP = {
+export const NET_EVENT_TO_MAP = {
   TREE: 'tree',
-  INVITED: 'invited',
+  CONNECTED: 'connected',
   CIRCLE: 'circle',
   FACILITATOR: 'facilitator',
 };
-export type NetEventFromKeys = keyof typeof NET_EVENT_FROM_MAP;
+export type NetEventToKeys = keyof typeof NET_EVENT_TO_MAP;

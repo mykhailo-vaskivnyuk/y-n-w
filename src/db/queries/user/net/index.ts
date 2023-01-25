@@ -4,22 +4,22 @@ import {
 } from '../../../../client/common/api/types/types';
 import { OmitNull } from '../../../../client/common/types';
 import { TQuery } from '../../../types/types';
-import { IMember, IUserNet } from '../../../types/member.types';
+import { IUserNetData } from '../../../types/member.types';
 import { userInNetAndItsSubnets } from '../../../utils';
 
 export interface IQueriesUserNet {
   find: TQuery<[
     ['user_id', number],
     ['node_id', number],
-  ], IUserNet>
+  ], IUserNetData>
   read: TQuery<[
     ['user_id', number],
     ['net_node_id', number],
   ], OmitNull<INetResponse>>;
-  getNodes: TQuery<[
+  getNetAndSubnets: TQuery<[
     ['user_id', number],
     ['net_node_id', number | null],
-  ], Omit<IMember, 'user_id'>>;
+  ], IUserNetData>;
   getData: TQuery<[
     ['user_id', number],
     ['net_node_id', number],
@@ -32,11 +32,14 @@ export const find = `
     nodes.node_id::int,
     nodes.parent_node_id::int,
     nodes.net_node_id::int,
+    nets.net_level,
     nets_users_data.confirmed,
-    nets.net_level
+    nets_data.*
   FROM nets_users_data
   INNER JOIN nets ON
     nets.net_node_id = nets_users_data.net_node_id
+  INNER JOIN nets_data ON
+    nets_data.net_node_id = nets_users_data.net_node_id
   INNER JOIN nodes ON
     nodes.node_id = nets_users_data.node_id 
   WHERE
@@ -63,13 +66,17 @@ export const read = `
     nets_users_data.net_node_id = $2
 `;
 
-export const getNodes = `
+export const getNetAndSubnets = `
   SELECT
     nodes.*,
-    nets_users_data.confirmed
+    nets.net_level,
+    nets_users_data.confirmed,
+    nets_data.*
   FROM nets_users_data
   INNER JOIN nets ON
     nets.net_node_id = nets_users_data.net_node_id
+  INNER JOIN nets_data ON
+    nets_data.net_node_id = nets_users_data.net_node_id
   INNER JOIN nodes ON
     nodes.node_id = nets_users_data.node_id
   WHERE ${userInNetAndItsSubnets()}
