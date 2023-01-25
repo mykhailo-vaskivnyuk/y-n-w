@@ -1,9 +1,13 @@
 import { NetViewKeys } from './net.types';
 
-export type IChatConnectNet = {
+export type IChatConnect = {
   node_id: number;
   netView: NetViewKeys;
 };
+
+export type IChatConnectResponse = {
+  chatId: number;
+} | null;
 
 export type IChatMessage = {
   user_id: number;

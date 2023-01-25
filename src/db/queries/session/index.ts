@@ -1,5 +1,5 @@
 import { ITableSessions } from '../../db.types';
-import { TQuery } from '../../types';
+import { TQuery } from '../../types/types';
 
 export interface IQueriesSession {
   read: TQuery<[

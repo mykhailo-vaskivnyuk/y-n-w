@@ -2,19 +2,21 @@
 import { Server } from 'ws';
 import { IInputConnection, IRequest } from '../types';
 import { IWsConfig, IWsConnection, IWsServer, TWsResModule } from './types';
-import { WsChats } from './ws.chat';
 import { IOperation, TOperationResponse } from '../../types/operation.types';
 import { IHttpServer } from '../http/types';
+import { PINGS_INTERVAL } from './constants';
+import { MAX_CHAT_INDEX } from '../../constants/constants';
 import { ServerError } from '../errors';
 import { handleError } from './methods/handle.error';
-import { applyResModules, runResModules } from './methods/utils';
+import { applyResModules } from './methods/utils';
 import { getSessionKey } from '../utils';
-import { PINGS_INTERVAL } from './constants';
+import { excludeNullUndefined } from '../../utils/utils';
 
 class WsConnection implements IInputConnection {
   private config: IWsConfig;
   private server: IWsServer;
-  private wsChats = new WsChats();
+  private counter = 0;
+  private connections = new Map<number, IWsConnection>();
   private exec?: (operation: IOperation) => Promise<TOperationResponse>;
   private resModules: ReturnType<TWsResModule>[] = [];
   private apiUnavailable = false;
@@ -22,12 +24,12 @@ class WsConnection implements IInputConnection {
   constructor(config: IWsConfig, server: IHttpServer) {
     this.config = config;
     this.server = new Server({ server });
+    this.handleConnection = this.handleConnection.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
   }
 
-  onOperation(fn: (operation: IOperation) => Promise<TOperationResponse>) {
-    this.exec = fn;
-    return this;
+  onOperation(cb: (operation: IOperation) => Promise<TOperationResponse>) {
+    this.exec = cb;
   }
 
   setUnavailable() {
@@ -46,7 +48,7 @@ class WsConnection implements IInputConnection {
     }
     try {
       this.resModules = applyResModules(this.config);
-      this.server.on('connection', this.handleConnection.bind(this));
+      this.server.on('connection', this.handleConnection);
       this.doPings();
     } catch (e: any) {
       logger.error(e);
@@ -57,30 +59,30 @@ class WsConnection implements IInputConnection {
   private handleConnection(connection: IWsConnection, req: IRequest) {
     connection.isAlive = true;
 
-    const options = this.getRequestParams(req);
-    const handleMessage = (message: Buffer) => this
-      .handleRequest(message, options, connection);
+    const options = this.getRequestParams(connection, req);
 
-    const wsChats = this.wsChats;
-    const exec = this.exec!;
-    const handleClose = function(this: IWsConnection) {
-      const chatsToDelete = wsChats.removeConnection(this);
-      const operation: IOperation = {
-        options: { sessionKey: 'admin', origin: '', isAdmin: true },
-        names: ['chat', 'remove'],
-        data: { params: { chatsToDelete } },
-      };
-      try {
-        exec(operation);
-      } catch (e) {
-        logger.error(e);
-      }
-    };
+    const handleMessage = (message: Buffer) =>
+      this.handleRequest(message, options, connection);
 
     connection
       .on('message', handleMessage)
       .on('pong', this.handlePong)
-      .on('close', handleClose);
+      .on('close', () => this.handleClose(options));
+  }
+
+  private handleClose(options: IOperation['options']) {
+    const { connectionId } = options;
+    this.connections.delete(connectionId!);
+    const operation: IOperation = {
+      options,
+      names: ['chat', 'removeConnection'],
+      data: { params: {} },
+    };
+    try {
+      this.exec!(operation);
+    } catch (e) {
+      logger.error(e);
+    }
   }
 
   private async handleRequest(
@@ -93,24 +95,32 @@ class WsConnection implements IInputConnection {
       const operation = await this.getOperation(message, options);
       options = operation.options;
       const data = await this.exec!(operation);
-      runResModules(
-        connection,
-        options,
-        data,
-        this.resModules,
-        this.wsChats,
-      );
+      this.resModules.forEach((module) => module(connection, options, data));
     } catch (e) {
       handleError(e, options, connection);
       throw e;
     }
   }
 
-  private getRequestParams(req: IRequest): IOperation['options'] {
-    const { origin } = req.headers;
-    const options: IOperation['options'] = {} as IOperation['options'];
-    options.sessionKey = getSessionKey(req);
-    options.origin = origin || '';
+  private getConnectionId(connection: IWsConnection) {
+    const connectionId = this.counter = (this.counter % MAX_CHAT_INDEX) + 1;
+    this.connections.set(connectionId, connection);
+    return connectionId;
+  }
+
+  private getConnection(connectionId: number) {
+    return this.connections.get(connectionId);
+  }
+
+  private getRequestParams(
+    connection: IWsConnection, req: IRequest,
+  ): IOperation['options'] {
+    const { origin = '' } = req.headers;
+    const options: IOperation['options'] = {
+      sessionKey: getSessionKey(req),
+      origin,
+      connectionId: this.getConnectionId(connection),
+    };
     return options;
   }
 
@@ -151,15 +161,13 @@ class WsConnection implements IInputConnection {
     this.isAlive = true;
   }
 
-  sendMessage(data: TOperationResponse) {
+  sendMessage(data: TOperationResponse, connectionIds?: Set<number>) {
     try {
-      runResModules(
-        null,
-        null,
-        data,
-        this.resModules,
-        this.wsChats,
-      );
+      if (!connectionIds) return false;
+      const connections = [...connectionIds]
+        .map((connectionId) => this.getConnection(connectionId))
+        .filter(excludeNullUndefined);
+      this.resModules.forEach((module) => module(connections, null, data));
       return true;
     } catch (e) {
       logger.error(e);

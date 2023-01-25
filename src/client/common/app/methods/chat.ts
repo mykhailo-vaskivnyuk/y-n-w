@@ -9,7 +9,7 @@ export const getChatMethods = (parent: IClientAppThis) => ({
     let promisies: Promise<any>[] = [];
     for (const { node_id: nodeId } of allNets)
       promisies = promisies.concat(this.getPromisies(nodeId));
-    promisies.push(parent.api.chat.connect.user())
+    promisies.push(parent.api.chat.connect.user());
     Promise.all(promisies);
   },
 
@@ -24,7 +24,7 @@ export const getChatMethods = (parent: IClientAppThis) => ({
     return T.NET_VIEW_MAP.map(getChatIdAndMessages);
   },
 
-  async getMessages(chatId: number, index = 1 ) {
+  async getMessages(chatId: number, index = 1) {
     parent.setStatus(AppStatus.LOADING);
     try {
       const { node_id: nodeId } = parent.getState().net!;

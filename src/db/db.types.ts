@@ -1,5 +1,3 @@
-import { NetViewKeys } from '../client/common/api/types/types';
-
 /* eslint-disable max-lines */
 export const TABLES_MAP = {
   NODES: 'nodes',
@@ -70,7 +68,7 @@ export type ITableUsersNodesInvites = {
 export type ITableUsersMessages = {
   message_id: number;
   user_node_id: number;
-  net_view: NetViewKeys;
+  net_view: 'net' | 'tree' | 'circle'; // NetViewKeys
   member_node_id: number | null;
   message: string;
 }

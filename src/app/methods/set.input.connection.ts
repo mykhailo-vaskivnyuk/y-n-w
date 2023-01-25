@@ -22,20 +22,20 @@ export const createSetInputConnection = (parent: IAppThis) => async () => {
   const InConnection = require(server.path);
   const InApiConnection = apiServer && require(apiServer.path);
   parent.server = new InConnection(server);
-  const apiServerInstance = InApiConnection &&
+  parent.apiServer = InApiConnection &&
       new InApiConnection(apiServer, parent.server!.getServer());
 
-  if (apiServerInstance) {
+  if (parent.apiServer) {
     parent.server!.setUnavailable('api');
-    apiServerInstance.onOperation(handleOperation);
-    env.API_UNAVAILABLE && apiServerInstance!.setUnavailable('api');
+    parent.apiServer.onOperation(handleOperation);
+    env.API_UNAVAILABLE && parent.apiServer.setUnavailable('api');
   } else {
     parent.server!.onOperation(handleOperation);
     env.API_UNAVAILABLE && parent.server!.setUnavailable('api');
   }
 
   env.STATIC_UNAVAILABLE && parent.server!.setUnavailable('static');
-  await apiServerInstance.start();
+  parent.apiServer && await parent.apiServer.start();
   await parent.server!.start();
   return parent;
 };

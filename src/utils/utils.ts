@@ -16,9 +16,9 @@ export const getEnumFromMap =
 export const createPathResolve = (basePath: string) =>
   (path: string) => resolve(basePath, path);
 
-export const isNumberNotNull = (
-  value: number | null,
-): value is number => value !== null;
+export const excludeNullUndefined = <T>(
+  value: T | null | undefined
+): value is T => Boolean(value ?? true);
 
 export const runHeavyOperation = (
   operation: (index: number) => void,

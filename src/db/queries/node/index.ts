@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { ITableNetsUsersData, ITableNodes } from '../../db.types';
-import { TQuery } from '../../types';
+import { TQuery } from '../../types/types';
 
 export interface IQueriesNode {
   createInitial: TQuery<[

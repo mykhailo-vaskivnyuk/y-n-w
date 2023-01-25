@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
 import { UserStatusKeys } from '../../client/common/api/types/user.types';
 import { ITableNodes } from '../../db/db.types';
-import { IUserNet } from '../../router/types';
+import { IUserNet } from '../../db/types/member.types';
 import { HandlerError } from '../../router/errors';
 import { updateCountOfMembers } from './nodes.utils';
-import { isNumberNotNull } from '../../utils/utils';
+import { excludeNullUndefined } from '../../utils/utils';
 
 export const findUserNet = async (
   user_id: number, user_node_id: number,
@@ -47,7 +47,8 @@ export const removeNetUser = async (
   const nodesToArrange = nodes.map(({ node_id: v }) => v);
   const parentNodesToArrange = nodes
     .map(({ parent_node_id: v }) => v)
-    .filter<number>(isNumberNotNull);
+    .filter(excludeNullUndefined);
+  // for (const node of nodes) await createMessages(node, 'LEAVE');
   return [...parentNodesToArrange, ...nodesToArrange];
 };
 

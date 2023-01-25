@@ -2,10 +2,9 @@
 import {
   INetResponse, IUserNetDataResponse,
 } from '../../../../client/common/api/types/types';
-import { OuterJoin, OmitNull } from '../../../../client/common/types';
-import { IUserNet } from '../../../../router/types';
-import { ITableNetsUsersData, ITableNodes } from '../../../db.types';
-import { TQuery } from '../../../types';
+import { OmitNull } from '../../../../client/common/types';
+import { TQuery } from '../../../types/types';
+import { IMember, IUserNet } from '../../../types/member.types';
 import { userInNetAndItsSubnets } from '../../../utils';
 
 export interface IQueriesUserNet {
@@ -20,11 +19,7 @@ export interface IQueriesUserNet {
   getNodes: TQuery<[
     ['user_id', number],
     ['net_node_id', number | null],
-  ],
-    ITableNodes &
-    OuterJoin<
-      Pick<ITableNetsUsersData, 'confirmed'>
-  >>;
+  ], Omit<IMember, 'user_id'>>;
   getData: TQuery<[
     ['user_id', number],
     ['net_node_id', number],

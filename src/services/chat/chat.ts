@@ -1,19 +1,18 @@
 /* eslint-disable max-lines */
 import * as T from '../../client/common/api/types/types';
-import { IUserNet } from '../../router/types';
+import { IUserNet } from '../../db/types/member.types';
+import { IUserNetNode } from './types';
 import {
-  MAX_CHAT_MESSAGE_COUNT, MAX_CHAT_MESSAGE_INDEX,
+  MAX_CHAT_INDEX,
+  MAX_CHAT_MESSAGE_COUNT,
+  MAX_CHAT_MESSAGE_INDEX,
 } from '../../constants/constants';
-
-interface IUserNetNode {
-  user_id?: number;
-  net_node_id?: number;
-  node_id?: number;
-}
 
 export class ChatService {
   private messages = new Map<number, T.IChatMessage[]>();
   private counter = 0;
+  private connectionChats = new Map<number, Set<number>>();
+  private chatConnections = new Map<number, Set<number>>();
   private userChatIds = new Map<number, number>();
   private netChatIds = new Map<number, number>();
   private nodeChatIds = new Map<number, number>();
@@ -24,43 +23,53 @@ export class ChatService {
   };
   private chatIdUserNetNode = new Map<number, IUserNetNode>();
 
-  getUserChatId(user_id: number) {
+  private genChatId() {
+    this.counter = (this.counter % MAX_CHAT_INDEX) + 1;
+    return this.counter;
+  }
+
+  getChatIdOfUser(user_id: number, connectionId?: number) {
     let chatId = this.userChatIds.get(user_id);
     if (chatId) return chatId;
-    chatId = ++this.counter;
+    chatId = this.genChatId();
     this.userChatIds.set(user_id, chatId);
     this.chatIdUserNetNode.set(chatId, { user_id });
+    chatId && connectionId && this.addChatAndConnection(chatId, connectionId);
     return chatId;
   }
 
-  getChatIdOfNet(userNet: IUserNet, netView: T.NetViewKeys) {
-    return this.getChatIdMap[netView](userNet);
+  getChatIdOfNet(
+    userNet: IUserNet, netView: T.NetViewKeys, connectionId?: number,
+  ) {
+    const chatId = this.getChatIdMap[netView](userNet);
+    chatId && connectionId && this.addChatAndConnection(chatId, connectionId);
+    return chatId;
   }
 
-  getNetChatId({ net_node_id }: IUserNet) {
+  private getNetChatId({ net_node_id }: IUserNet) {
     let chatId = this.netChatIds.get(net_node_id);
     if (chatId) return chatId;
-    chatId = ++this.counter;
+    chatId = this.genChatId();
     this.netChatIds.set(net_node_id, chatId);
     this.chatIdUserNetNode.set(chatId, { net_node_id });
     return chatId;
   }
 
-  getNodeChatId(node_id: number | null) {
+  private getNodeChatId(node_id: number | null) {
     if (!node_id) return null;
     let chatId = this.nodeChatIds.get(node_id);
     if (chatId) return chatId;
-    chatId = ++this.counter;
+    chatId = this.genChatId();
     this.nodeChatIds.set(node_id, chatId);
     this.chatIdUserNetNode.set(chatId, { node_id });
     return chatId;
   }
 
-  getTreeChatId({ node_id }: IUserNet) {
+  private getTreeChatId({ node_id }: IUserNet) {
     return this.getNodeChatId(node_id);
   }
 
-  getCircleChatId({ parent_node_id }: IUserNet) {
+  private getCircleChatId({ parent_node_id }: IUserNet) {
     return this.getNodeChatId(parent_node_id);
   }
 
@@ -68,14 +77,14 @@ export class ChatService {
     return this.chatIdUserNetNode.get(chatId);
   }
 
-  remove(chatId: number) {
+  removeChat(chatId: number) {
     const { user_id, net_node_id, node_id } = this.getUserNetNode(chatId) || {};
     user_id && this.userChatIds.delete(user_id);
     net_node_id && this.netChatIds.delete(net_node_id);
-    node_id && this.userChatIds.delete(node_id);
+    node_id && this.nodeChatIds.delete(node_id);
   }
 
-  addMessage(user_id: number, messageData: T.IChatSendMessage) {
+  persistMessage(user_id: number, messageData: T.IChatSendMessage) {
     const { chatId, message } = messageData;
     const chatMessages = this.messages.get(chatId);
     let index: number;
@@ -88,7 +97,8 @@ export class ChatService {
       index = 1;
       this.messages.set(chatId, [{ user_id, index, message }]);
     }
-    return { chatId, user_id, index, message };
+    const connectionIds = this.getChatConnections(chatId);
+    return [{ chatId, user_id, index, message }, connectionIds] as const;
   }
 
   getMessages({ chatId, index = 1 }: T.IChatGetMessages) {
@@ -100,6 +110,44 @@ export class ChatService {
     const allCount = chatMessages.length;
     const messages = chatMessages.slice(-Math.min(count, allCount));
     return messages;
+  }
+
+  private addChatAndConnection(chatId: number, connection: number) {
+    this.addChatToConnection(chatId, connection);
+    this.addConnectionToChat(connection, chatId);
+  }
+
+  getChatConnections(chatId: number) {
+    return this.chatConnections.get(chatId);
+  }
+
+  private addChatToConnection(chatId: number, connection: number) {
+    const chats = this.connectionChats.get(connection);
+    if (chats) chats.add(chatId);
+    else this.connectionChats.set(connection, new Set([chatId]));
+  }
+
+  private addConnectionToChat(connection: number, chatId: number) {
+    const connections = this.chatConnections.get(chatId);
+    if (connections) connections.add(connection);
+    else this.chatConnections.set(chatId, new Set([connection]));
+  }
+
+  removeConnection(connectionId: number) {
+    const chatIds = this.connectionChats.get(connectionId);
+    if (!chatIds) return false;
+    for (const chatId of chatIds)
+      this.removeConnectionFromChat(connectionId, chatId);
+    return this.connectionChats.delete(connectionId);
+  }
+
+  private removeConnectionFromChat(connection: number, chatId: number) {
+    const chatConnections = this.chatConnections.get(chatId);
+    chatConnections!.delete(connection);
+    if (chatConnections!.size === 0) {
+      this.chatConnections.delete(chatId);
+      this.removeChat(chatId);
+    }
   }
 }
 

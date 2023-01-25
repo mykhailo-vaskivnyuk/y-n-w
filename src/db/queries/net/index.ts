@@ -1,11 +1,12 @@
 import { OmitNull } from '../../../client/common/types';
 import { INetResponse } from '../../../client/common/api/types/types';
 import { ITableNets, ITableNetsData } from '../../db.types';
-import { TQuery } from '../../types';
+import { TQuery } from '../../types/types';
 import { IQueriesNetUser } from './user';
 import { IQueriesNetCircle } from './circle';
 import { IQueriesNetTree } from './tree';
 import { IQueriesNetFind } from './find';
+import { IQueriesNetMessage } from './message';
 
 export interface IQueriesNet {
   createInitial: TQuery<[
@@ -35,6 +36,7 @@ export interface IQueriesNet {
   circle: IQueriesNetCircle;
   tree: IQueriesNetTree;
   find: IQueriesNetFind;
+  message: IQueriesNetMessage;
 }
 
 export const createInitial = `

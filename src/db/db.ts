@@ -3,7 +3,7 @@ import fsp from 'node:fs/promises';
 import {
   IDatabase, IDatabaseConfig, IDatabaseConnection,
   IDatabaseQueries, IQueries, TQueriesModule, TQuery,
-} from './types';
+} from './types/types';
 import { DatabaseError } from './errors';
 
 class Database implements IDatabase {

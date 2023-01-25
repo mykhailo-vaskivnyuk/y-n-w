@@ -27,9 +27,8 @@ class HttpConnection implements IInputConnection {
     this.server = createServer(this.handleRequest.bind(this));
   }
 
-  onOperation(fn: (operation: IOperation) => Promise<TOperationResponse>) {
-    this.exec = fn;
-    return this;
+  onOperation(cb: (operation: IOperation) => Promise<TOperationResponse>) {
+    this.exec = cb;
   }
 
   setUnavailable(service: TServerService) {

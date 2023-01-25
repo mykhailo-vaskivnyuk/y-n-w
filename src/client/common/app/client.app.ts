@@ -208,7 +208,7 @@ export class ClientApp extends EventEmitter {
   protected setChatId(
     netNodeId: number,
     netView: T.NetViewKeys,
-    message: T.IChatResponseMessage,
+    message: T.IChatConnectResponse,
   ) {
     if (!message) return;
     const { chatId } = message;

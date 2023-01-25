@@ -1,5 +1,5 @@
 import { ITableNets, ITableNodes } from '../../db.types';
-import { TQuery } from '../../types';
+import { TQuery } from '../../types/types';
 
 export interface IQueriesNetFind {
   byToken: TQuery<[

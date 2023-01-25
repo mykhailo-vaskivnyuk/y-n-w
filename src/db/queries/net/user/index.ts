@@ -1,5 +1,5 @@
 import { ITableNetsUsersData } from '../../../db.types';
-import { TQuery } from '../../../types';
+import { TQuery } from '../../../types/types';
 
 export interface IQueriesNetUser {
   createData: TQuery<[

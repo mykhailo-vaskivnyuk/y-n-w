@@ -3,15 +3,16 @@ import { IObject } from '../types/types';
 import {
   IOperation, TOperationResponse, IParams,
 } from '../types/operation.types';
-import { ITableNodes, ITableUsers } from '../db/db.types';
+import { ITableUsers } from '../db/db.types';
+import { IUserNet } from '../db/types/member.types';
 import {
   PartialUserNetStatusKeys, PartialUserStatusKeys, UserStatusKeys,
 } from '../client/common/api/types/types';
 import { IMailService } from '../services/mail/types';
-import { ChatService } from '../services/chat/chat';
 import {
   TInputModulesKeys, TOutputModulesKeys, TServicesKeys,
 } from './constants';
+import { ChatService } from '../services/chat/chat';
 import { Session } from '../services/session/session';
 
 export interface IRouterConfig {
@@ -69,13 +70,8 @@ export type IContext = {
   origin: string;
   userNet?: IUserNet;
   userNetStatus?: UserStatusKeys;
-  isAdmin?: boolean;
+  connectionId?: number;
 };
-
-export type IUserNet = ITableNodes & {
-  confirmed: boolean;
-  net_level: number;
-}
 
 export type ISessionContent = Partial<{
   user_id: ITableUsers['user_id'];

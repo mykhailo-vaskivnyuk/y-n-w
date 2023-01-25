@@ -1,8 +1,6 @@
 import { format } from 'node:util';
 import { join } from 'node:path';
-import { WsChats } from '../ws.chat';
-import { IOperation, TOperationResponse } from '../../../types/operation.types';
-import { IWsConfig, IWsConnection, TWsResModule } from '../types';
+import { IWsConfig } from '../types';
 import { WS_RES_MODULES } from '../constants';
 
 export const getLog = (
@@ -18,14 +16,3 @@ export const applyResModules = (config: IWsConfig) => {
       return require(modulePath)[moduleName](config);
     });
 };
-
-export function runResModules(
-  connection: IWsConnection | null,
-  options: IOperation['options'] | null,
-  data: TOperationResponse,
-  resModules: ReturnType<TWsResModule>[],
-  wsChats: WsChats,
-) {
-  for (const module of resModules)
-    module(connection, options, data, wsChats);
-}

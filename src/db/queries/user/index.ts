@@ -1,8 +1,9 @@
 import { ITableUsers } from '../../db.types';
-import { TQuery } from '../../types';
+import { TQuery } from '../../types/types';
 import { IQueriesUserNet } from './net';
 import { IQueriesUserNets } from './nets/get';
 import { IQueriesUserToken } from './token';
+import { IQueriesUserChanges } from './changes';
 
 export interface IQueriesUser {
   getById: TQuery<[
@@ -27,6 +28,7 @@ export interface IQueriesUser {
   net: IQueriesUserNet;
   nets: IQueriesUserNets;
   token: IQueriesUserToken;
+  changes: IQueriesUserChanges;
 }
 
 export const getById = `
@@ -35,16 +37,15 @@ export const getById = `
 `;
 
 export const findByEmail = `
-  SELECT users.*
+  SELECT *, user_id::int
   FROM users
-  LEFT JOIN users_tokens ON
-    users.user_id = users_tokens.user_id
   WHERE email = $1
 `;
 
 export const findByToken = `
-  SELECT * FROM users
-  JOIN users_tokens ON
+  SELECT *, users.user_id::int
+  FROM users
+  INNER JOIN users_tokens ON
     users.user_id = users_tokens.user_id
   WHERE token = $1
 `;

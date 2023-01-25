@@ -1,6 +1,6 @@
 import { IConfig } from '../types/config.types';
 import { ILogger } from '../logger/types';
-import { IDatabaseQueries } from '../db/types';
+import { IDatabaseQueries } from '../db/types/types';
 import { IRouter } from '../router/types';
 import { IInputConnection, IConnectionService } from '../server/types';
 import { IMailService } from '../services/mail/types';
@@ -12,6 +12,7 @@ export type IAppThis = App & {
   logger?: ILogger;
   router?: IRouter;
   server?: IInputConnection;
+  apiServer?: IInputConnection;
   shutdown: () => Promise<void>;
   setInputConnection: () => Promise<IAppThis>;
 };

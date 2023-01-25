@@ -12,13 +12,17 @@ const ChatMessageSchema = {
   message: Joi.string(),
 };
 
-export const ChatConnectNetSchema = {
+export const ChatConnectSchema = {
   node_id: Joi.number().required(),
   netView: Joi.string().custom((value, helpers) => {
     if (NET_VIEW_MAP.includes(value)) return value;
     return helpers.error('invalid netView');
   }),
 };
+
+export const ChatConnectResponseSchema = [JOI_NULL, {
+  chatId: Joi.number(),
+}];
 
 export const ChatSendMessageSchema = {
   ...ChatMessageSchema,

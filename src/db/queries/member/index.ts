@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { ITableNodes } from '../../db.types';
-import { TQuery } from '../../types';
-import { INodeWithUser } from '../../types/types';
+import { TQuery } from '../../types/types';
+import { INodeWithUser } from '../../types/member.types';
 import { userInNetAndItsSubnets } from '../../utils';
 import { IQueriesMemberData } from './data';
 import { IQueriesMemberInvite } from './invite';

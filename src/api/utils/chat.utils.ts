@@ -1,7 +1,7 @@
 import {
   IChatGetMessages, IChatSendMessage,
 } from '../../client/common/api/types/types';
-import { IUserNet } from '../../router/types';
+import { IUserNet } from '../../db/types/member.types';
 
 export const chatIdVerified = (
   userNet: IUserNet, messageData: IChatSendMessage | IChatGetMessages,

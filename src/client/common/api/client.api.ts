@@ -8,8 +8,6 @@ export type IClientApi = ReturnType<typeof getApi>;
 export const getApi = (
   fetch: <T>(pathname: string, options?: Record<string, any>) => Promise<T>
 ) => ({
-  'health': () => fetch<string>('/health'),
-
   'account': {
     'confirm': (options: P.ITokenParams) =>
       fetch<P.IUserResponse>('/account/confirm', options),
@@ -33,21 +31,23 @@ export const getApi = (
   },
   'chat': {
     'connect': {
-      'net': (options: P.IChatConnectNet) =>
-        fetch<P.IChatResponseMessage>('/chat/connect/net', options),
+      'net': (options: P.IChatConnect) =>
+        fetch<P.IChatConnectResponse>('/chat/connect/net', options),
 
-      'user': () => fetch<P.IChatResponseMessage>('/chat/connect/user'),
+      'user': () => fetch<P.IChatConnectResponse>('/chat/connect/user'),
 
     },
     'sendMessage': (options: P.IChatSendMessage) =>
-      fetch<P.IChatResponseMessage>('/chat/sendMessage', options),
+      fetch<boolean>('/chat/sendMessage', options),
 
     'getMessages': (options: P.IChatGetMessages) =>
       fetch<P.IChatGetMessagesResponse>('/chat/getMessages', options),
 
-    'remove': () => fetch<Q.TChatRemoveResponse>('/chat/remove'),
+    'removeConnection': () => fetch<boolean>('/chat/removeConnection'),
 
   },
+  'health': () => fetch<string>('/health'),
+
   'member': {
     'data': {
       'dislike': {
@@ -113,8 +113,6 @@ export const getApi = (
   'user': {
     'update': () => fetch<string>('/user/update'),
 
-    'read': () => fetch<P.IUserResponse>('/user/read'),
-
     'net': {
       'getData': (options: P.INetEnterParams) =>
         fetch<P.IUserNetDataResponse>('/user/net/getData', options),
@@ -124,5 +122,7 @@ export const getApi = (
       'get': () => fetch<P.INetsResponse>('/user/nets/get'),
 
     },
+    'read': () => fetch<P.IUserResponse>('/user/read'),
+
   },
 });

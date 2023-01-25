@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { TQuery } from '../../types';
+import { TQuery } from '../../types/types';
 
 export interface IQueriesMemberData {
   setDislike: TQuery<[

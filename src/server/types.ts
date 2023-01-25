@@ -11,19 +11,20 @@ export interface IInputConnectionConfig {
 export type TTransport = 'http' | 'ws';
 
 export interface IInputConnection {
-  onOperation(fn:
-    (operation: IOperation) => Promise<TOperationResponse>
-  ): this;
+  start(): Promise<void>;
+  onOperation(
+    cb: (operation: IOperation) => Promise<TOperationResponse>
+  ): void;
   setUnavailable(service?: TServerService): void;
   getServer(): IServer;
   sendMessage?: IConnectionService['sendMessage'];
-  start(): Promise<void>;
 }
 
 export type IServer = IHttpServer | IWsServer;
 export type TServerService = 'static' | 'api';
 export type IRequest = http.IncomingMessage;
 export interface IConnectionService {
-  sendMessage: (data: TOperationResponse) => boolean;
-  // removeFromChats: (chatsToRemoveFrom: number[]) => boolean;
+  sendMessage: (
+    data: TOperationResponse, connectionIds?: Set<number>,
+  ) => boolean;
 }

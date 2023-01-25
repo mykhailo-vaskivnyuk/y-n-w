@@ -5,7 +5,7 @@ import {
   AppError, handleAppInitError, setUncaughtErrorHandlers,
 } from './errors';
 import { ILogger } from '../logger/types';
-import { IDatabase } from '../db/types';
+import { IDatabase } from '../db/types/types';
 import { IRouter } from '../router/types';
 import { IConnectionService, IInputConnection } from '../server/types';
 import { setToGlobal } from './methods/utils';
@@ -18,6 +18,7 @@ export default class App {
   private db?: IDatabase;
   protected router?: IRouter;
   protected server?: IInputConnection;
+  protected apiServer?: IInputConnection;
   private connectionService?: IConnectionService;
   protected setInputConnection: () => Promise<IAppThis>;
 
@@ -96,11 +97,12 @@ export default class App {
   }
 
   private setConnectionService() {
+    const server = this.apiServer || this.server;
     const sendMessage: IConnectionService['sendMessage'] =
-      (data) => {
-        const method = this.server!.sendMessage;
+      (...args) => {
+        const method = server?.sendMessage;
         if (!method) return false;
-        return method(data);
+        return method(...args);
       };
     this.connectionService = { sendMessage };
   }
