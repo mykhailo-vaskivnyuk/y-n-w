@@ -34,7 +34,7 @@ export const find = `
     nodes.net_node_id::int,
     nets.net_level,
     nets_users_data.confirmed,
-    nets_data.*
+    nets_data.name
   FROM nets_users_data
   INNER JOIN nets ON
     nets.net_node_id = nets_users_data.net_node_id
@@ -71,7 +71,7 @@ export const getNetAndSubnets = `
     nodes.*,
     nets.net_level,
     nets_users_data.confirmed,
-    nets_data.*
+    nets_data.name
   FROM nets_users_data
   INNER JOIN nets ON
     nets.net_node_id = nets_users_data.net_node_id

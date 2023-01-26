@@ -4,25 +4,16 @@ import { IClientAppThis } from '../types';
 import { AppStatus } from '../../constants';
 
 export const getChatMethods = (parent: IClientAppThis) => ({
-  connectAll() {
-    const { allNets } = parent.getState();
-    let promisies: Promise<any>[] = [];
-    for (const { node_id: nodeId } of allNets)
-      promisies = promisies.concat(this.getPromisies(nodeId));
-    promisies.push(parent.api.chat.connect.user()
-      .then((message) => parent.setUserChatId(message)));
-    Promise.all(promisies);
-  },
-
-  getPromisies(nodeId: number) {
-    const getMessages = async (chatId?: number) => chatId && parent.api.chat
-      .getMessages({ chatId, node_id: nodeId })
-      .then((messages) => parent.setAllMessages(chatId, messages));
-    const getChatIdAndMessages = async (netView: T.NetViewKeys) =>
-      parent.api.chat.connect.net({ node_id: nodeId, netView })
-        .then((message) => parent.setChatId(nodeId, netView, message))
-        .then(getMessages);
-    return T.NET_VIEW_MAP.map(getChatIdAndMessages);
+  async connectAll() {
+    const userChatId = await parent.api.chat.connect.user();
+    parent.setUserChatId(userChatId);
+    const allChatIds = await parent.api.chat.connect.nets();
+    const netChatIdsMap = new Map<number, T.INetChatIds>();
+    for (const chatIds of allChatIds) {
+      const { net_node_id: netNodeId, ...netChatIds } = chatIds;
+      netChatIdsMap.set(netNodeId, netChatIds);
+    }
+    parent.setNetChatIds(netChatIdsMap);
   },
 
   async getMessages(chatId: number, index = 1) {
@@ -54,6 +45,6 @@ export const getChatMethods = (parent: IClientAppThis) => ({
 
   getChatId(netView: T.NetViewKeys) {
     const { net, chatIds } = parent.getState();
-    return chatIds.get(net!.node_id)?.[netView];
+    return chatIds.get(net!.net_node_id)?.[netView];
   },
 });

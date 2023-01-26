@@ -4,7 +4,7 @@ import * as T from '../db.types';
 export type IUserNetData =
   T.ITableNodes &
   Pick<T.ITableNets, 'net_level'> &
-  T.ITableNetsData &
+  Pick<T.ITableNetsData, 'name'> &
   Pick<T.ITableNetsUsersData, 'confirmed'>;
 
 export type IUserNodeAndNetName =

@@ -39,12 +39,18 @@ export class ChatService {
     return chatId;
   }
 
-  getChatIdOfNet(
-    userNet: IUserNetData, netView: T.NetViewKeys, connectionId?: number,
+  getChatIdsOfNet(
+    userNet: IUserNetData, connectionId?: number,
   ) {
-    const chatId = this.getChatIdMap[netView](userNet);
-    chatId && connectionId && this.addChatAndConnection(chatId, connectionId);
-    return chatId;
+    const { net_node_id } = userNet;
+    const netChatIds: T.IChatConnectAll[number] = { net_node_id };
+    for (const netView of T.NET_VIEW_MAP) {
+      const chatId = this.getChatIdMap[netView](userNet);
+      if (!chatId) continue;
+      netChatIds[netView] = chatId;
+      connectionId && this.addChatAndConnection(chatId, connectionId);
+    }
+    return netChatIds;
   }
 
   private getNetChatId({ net_node_id }: IUserNetData) {

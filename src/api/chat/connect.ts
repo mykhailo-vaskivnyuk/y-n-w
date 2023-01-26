@@ -1,22 +1,25 @@
 import { THandler } from '../../router/types';
+import * as T from '../../client/common/api/types/types';
 import {
-  IChatConnect, IChatConnectResponse,
-} from '../../client/common/api/types/types';
-import {
-  ChatConnectSchema, ChatConnectResponseSchema,
+  ChatConnectResponseSchema, ChatConnectAllSchema,
 } from '../schema/chat.schema';
 
-export const net: THandler<IChatConnect, IChatConnectResponse> =
-  async ({ connectionId, userNet }, { netView }) => {
-    if (!connectionId) return null;
-    const chatId = chatService.getChatIdOfNet(userNet!, netView, connectionId);
-    if (!chatId) return null;
-    return { chatId };
+export const nets: THandler<never, T.IChatConnectAll> =
+  async ({ session, connectionId }) => {
+    if (!connectionId) return [];
+    const user_id = session.read('user_id')!;
+    const nets = await execQuery.user.nets.get([user_id!]);
+    const allChatIds: T.IChatConnectAll = [];
+    for (const net of nets) {
+      allChatIds.push(
+        chatService.getChatIdsOfNet(net, connectionId),
+      );
+    }
+    return allChatIds;
   };
-net.paramsSchema = ChatConnectSchema;
-net.responseSchema = ChatConnectResponseSchema;
+nets.responseSchema = ChatConnectAllSchema;
 
-export const user: THandler<never, IChatConnectResponse> =
+export const user: THandler<never, T.IChatConnectResponse> =
   async ({ session, connectionId }) => {
     const user_id = session.read('user_id')!;
     if (!connectionId) return null;

@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
 import * as T from '../api/types/types';
-import { INITIAL_NETS, INets, IMember, INetChatIds } from './types';
+import { INITIAL_NETS, INets, IMember, TNetChatIdsMap } from './types';
 import { AppStatus } from '../constants';
 import { HttpResponseError } from '../errors';
 import { EventEmitter } from '../event.emitter';
@@ -32,7 +32,7 @@ export class ClientApp extends EventEmitter {
   private netView?: T.NetViewEnum;
   private memberData?: IMember;
   private userChatId?: number;
-  private chatIds = new Map<number, INetChatIds>();
+  private netChatIds: TNetChatIdsMap = new Map();
   private netChanges: T.IUserChanges = [];
 
   account: ReturnType<typeof getAccountMethods>;
@@ -65,7 +65,7 @@ export class ClientApp extends EventEmitter {
       netView: this.netView,
       memberData: this.memberData,
       messages: this.messages,
-      chatIds: this.chatIds,
+      chatIds: this.netChatIds, //!
       changes: this.netChanges,
     };
   }
@@ -211,9 +211,9 @@ export class ClientApp extends EventEmitter {
   private handleConnect() {
     if (this.status === AppStatus.INITING) return;
     this.userChatId = undefined;
-    this.chatIds = new Map();
+    this.netChatIds = new Map();
     this.messages = new Map();
-    this.chat.connectAll();
+    this.chat.connectAll().catch((e) => this.setError(e));
   }
 
   protected setUserChatId(message: T.IChatConnectResponse) {
@@ -221,17 +221,8 @@ export class ClientApp extends EventEmitter {
     this.userChatId = message.chatId;
   }
 
-  protected setChatId(
-    netNodeId: number,
-    netView: T.NetViewKeys,
-    message: T.IChatConnectResponse,
-  ) {
-    if (!message) return;
-    const { chatId } = message;
-    const netChatIds = this.chatIds.get(netNodeId);
-    if (netChatIds) netChatIds[netView] = chatId;
-    else this.chatIds.set(netNodeId, { [netView]: chatId });
-    return chatId;
+  protected setNetChatIds(netChatIds: TNetChatIdsMap) {
+    this.netChatIds = netChatIds;
   }
 
   protected setMessage(messageData: T.IChatResponseMessage) {

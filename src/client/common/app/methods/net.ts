@@ -124,8 +124,8 @@ export const getNetMethods = (parent: IClientAppThis) => ({
 
   async getAllNets() {
     const nets = await parent.api.user.nets.get();
+    await parent.chat.connectAll();
     parent.setAllNets(nets);
-    parent.chat.connectAll();
   },
 
   getNets() {

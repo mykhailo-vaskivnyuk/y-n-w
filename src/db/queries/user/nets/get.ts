@@ -1,5 +1,5 @@
 import {
-  ITableNets, ITableNetsData, ITableNodes,
+  ITableNets, ITableNetsData, ITableNetsUsersData, ITableNodes,
 } from '../../../db.types';
 import { TQuery } from '../../../types/types';
 
@@ -9,15 +9,20 @@ export interface IQueriesUserNets {
   ],
     ITableNodes &
     ITableNets &
-    ITableNetsData
+    Pick<ITableNetsData, 'name'> &
+    Pick<ITableNetsUsersData, 'confirmed'>
   >;
 }
 
 const get = `
   SELECT
-    nodes.node_id, nodes.parent_node_id,
     nets.*,
-    nets_data.name 
+    nodes.*,
+    nodes.node_id::int,
+    nodes.net_node_id::int,
+    nodes.parent_node_id::int,
+    nets_data.name,
+    nets_users_data.confirmed
   FROM nets_users_data
   INNER JOIN nodes ON
     nodes.node_id = nets_users_data.node_id
