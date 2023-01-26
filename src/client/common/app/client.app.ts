@@ -10,6 +10,7 @@ import { getAccountMethods } from './methods/account';
 import { getNetMethods } from './methods/net';
 import { getMemberMethods } from './methods/member';
 import { getChatMethods } from './methods/chat';
+import { getChangesMethods } from './methods/changes';
 import { getConnection as getHttpConnection } from '../client.http';
 import { getConnection as getWsConnection } from '../client.ws';
 
@@ -30,12 +31,15 @@ export class ClientApp extends EventEmitter {
   private tree: IMember[] = [];
   private netView?: T.NetViewEnum;
   private memberData?: IMember;
+  private userChatId?: number;
   private chatIds = new Map<number, INetChatIds>();
+  private netChanges: T.IUserChanges = [];
 
   account: ReturnType<typeof getAccountMethods>;
   net: ReturnType<typeof getNetMethods>;
   member: ReturnType<typeof getMemberMethods>;
   chat: ReturnType<typeof getChatMethods>;
+  changes: ReturnType<typeof getChangesMethods>;
 
   constructor() {
     super();
@@ -44,6 +48,7 @@ export class ClientApp extends EventEmitter {
     this.net = getNetMethods(this as any);
     this.member = getMemberMethods(this as any);
     this.chat = getChatMethods(this as any);
+    this.changes = getChangesMethods(this as any);
   }
 
   getState() {
@@ -61,6 +66,7 @@ export class ClientApp extends EventEmitter {
       memberData: this.memberData,
       messages: this.messages,
       chatIds: this.chatIds,
+      changes: this.netChanges,
     };
   }
 
@@ -95,6 +101,8 @@ export class ClientApp extends EventEmitter {
       this.emit('error', this.error);
       return this.emit('statuschanged', this.status);
     }
+    // if current status error ?
+    // if status already loading ?
     this.error = null;
     if (status === AppStatus.INITED) {
       this.status = AppStatus.READY;
@@ -202,7 +210,15 @@ export class ClientApp extends EventEmitter {
 
   private handleConnect() {
     if (this.status === AppStatus.INITING) return;
+    this.userChatId = undefined;
+    this.chatIds = new Map();
+    this.messages = new Map();
     this.chat.connectAll();
+  }
+
+  protected setUserChatId(message: T.IChatConnectResponse) {
+    if (!message) return;
+    this.userChatId = message.chatId;
   }
 
   protected setChatId(
@@ -221,6 +237,7 @@ export class ClientApp extends EventEmitter {
   protected setMessage(messageData: T.IChatResponseMessage) {
     if (!messageData) return;
     const { chatId, ...message } = messageData;
+    if (chatId === this.userChatId) return this.changes.read();
     if (!message.message) return;
     const chatMessages = this.messages.get(chatId);
     if (chatMessages) {
@@ -243,6 +260,11 @@ export class ClientApp extends EventEmitter {
     } else chatMessages = [...messages];
     this.messages.set(chatId, chatMessages);
     this.emit('message', chatId);
+  }
+
+  protected setChanges(changes: T.IUserChanges) {
+    this.netChanges = changes;
+    this.emit('changes', changes);
   }
 }
 

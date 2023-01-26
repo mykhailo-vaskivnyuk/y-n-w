@@ -10,3 +10,6 @@ export type TTestDataResponse = {
   field1: null | number;
   field2: P.ITestResponse;
 };
+export type TUserChangesConfirm = {
+  message_id: number;
+};

@@ -3,6 +3,7 @@ export const NET_EVENT_MAP = {
   LEAVE_CONNECTED: 'leave_connected',
   REFUSE: 'refuse',
   VOTE: 'vote',
+  DISLIKE: 'dislike',
 };
 export type NetEventKeys = keyof typeof NET_EVENT_MAP;
 

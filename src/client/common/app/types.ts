@@ -20,6 +20,7 @@ export type IClientAppThis = ClientApp & {
   setNetView: (netView?: T.NetViewEnum) => void;
   setMemberPosition: (memberPosition?: number) => void;
   setMember: (memberData?: IMember) => void;
+  setUserChatId: (chatId:  number) => void;
   setChatId: (
     nodeId: number,
     netView: T.NetViewEnum,
@@ -27,6 +28,7 @@ export type IClientAppThis = ClientApp & {
   ) => void;
   setMessage: (message: OmitNull<T.IChatResponseMessage>) => void;
   setAllMessages: (chatId: number, messages: T.IChatMessage[]) => void;
+  setChanges: (changes: T.IUserChanges) => void;
 };
 
 export interface INets {

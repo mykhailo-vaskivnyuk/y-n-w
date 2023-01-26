@@ -38,8 +38,11 @@ const removeConnected = async (
 };
 
 export const removeNetUser = async (
-  user_id: number, net_node_id: number | null,
+  event: NetEventKeys,
+  user_id: number,
+  net_node_id: number | null,
 ) => {
+  logger.debug('START REMOVE');
   const date = new Date().toUTCString();
 
   // 1 - get user's nodes in net and subnets
@@ -47,15 +50,17 @@ export const removeNetUser = async (
     .getNetAndSubnets([user_id, net_node_id]);
 
   // 2 - remove member_data from user and to user in net and subnets
+  logger.debug('MEMBER DATA REMOVE');
   await execQuery.member.data.remove([user_id, net_node_id]);
 
   // 3 - remove connected users in net and subnets
   for (const userNet of userNets) {
     if (!userNet.confirmed) continue;
-    await removeConnected('LEAVE', userNet, date);
+    await removeConnected(event, userNet, date);
   }
 
   // 4 - remove user from nodes in net and subnets
+  logger.debug('USER REMOVE');
   await execQuery.member.remove([user_id, net_node_id]);
 
   // 5 - update nodes data in net and subnets
@@ -63,7 +68,8 @@ export const removeNetUser = async (
     confirmed && await updateCountOfMembers(node_id, -1);
 
   // 6 - create messages
-  for (const userNet of userNets) await createMessages('LEAVE', userNet, date);
+  logger.debug('CREATE MESSAGES');
+  for (const userNet of userNets) await createMessages(event, userNet, date);
 
   const nodesToArrange = userNets.map(({ node_id: v }) => v);
   const parentNodesToArrange = userNets
@@ -97,7 +103,7 @@ export const checkDislikes = async (
   const disliked = Math.ceil(dislike_count / (count - dislike_count)) > 1;
   if (!disliked) return [];
   const { user_id, net_node_id } = memberWithMaxDislikes!;
-  const nodesToArrange = await removeNetUser(user_id, net_node_id);
+  const nodesToArrange = await removeNetUser('DISLIKE', user_id, net_node_id);
   return nodesToArrange;
 };
 

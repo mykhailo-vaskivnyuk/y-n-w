@@ -14,13 +14,14 @@ const commitChanges = async (user_id: number, date: string) => {
 };
 
 const createMessagesToFacilitator = async (
-  event: NetEventKeys,
+  netEvent: NetEventKeys,
   user: IMember,
   memberNet: IUserNetData,
   date: string,
 ) => {
   const { user_id, node_id: user_node_id } = user;
-  const { node_id: member_node_id } = memberNet;
+  const { node_id: member_node_id, confirmed } = memberNet;
+  const event = confirmed ? netEvent : 'LEAVE_CONNECTED';
   const message = NET_MESSAGES_MAP[event]['FACILITATOR']!;
   await execQuery.net.message.create([
     user_id,
@@ -76,8 +77,11 @@ const createMessagesInTree = async (
 const createMessagesInCircle = async (
   event: NetEventKeys, memberNet: IUserNetData,  date: string,
 ) => {
-  const { node_id: member_node_id, parent_node_id, confirmed } = memberNet;
-  if (!confirmed) return;
+  const {
+    node_id: member_node_id,
+    parent_node_id,
+    confirmed: member_confirmed,
+  } = memberNet;
   if (!parent_node_id) return;
   const users = await execQuery.net.circle
     .getMembers([member_node_id, parent_node_id]);
@@ -85,7 +89,8 @@ const createMessagesInCircle = async (
     const { node_id: user_node_id, confirmed: user_confirmed } = user;
     if (user_node_id === parent_node_id) {
       await createMessagesToFacilitator(event, user, memberNet, date);
-    } else if (!user_confirmed) continue;
+    } else if (!member_confirmed) continue;
+    else if (!user_confirmed) continue;
     else {
       await cretaeMessagesToCircleMembers(event, user, memberNet,  date);
     }

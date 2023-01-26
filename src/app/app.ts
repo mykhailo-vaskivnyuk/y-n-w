@@ -97,9 +97,9 @@ export default class App {
   }
 
   private setConnectionService() {
-    const server = this.apiServer || this.server;
     const sendMessage: IConnectionService['sendMessage'] =
       (...args) => {
+        const server = this.apiServer || this.server;
         const method = server?.sendMessage;
         if (!method) return false;
         return method(...args);

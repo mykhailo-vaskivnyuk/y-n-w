@@ -9,7 +9,8 @@ export const getChatMethods = (parent: IClientAppThis) => ({
     let promisies: Promise<any>[] = [];
     for (const { node_id: nodeId } of allNets)
       promisies = promisies.concat(this.getPromisies(nodeId));
-    promisies.push(parent.api.chat.connect.user());
+    promisies.push(parent.api.chat.connect.user()
+      .then((message) => parent.setUserChatId(message)));
     Promise.all(promisies);
   },
 

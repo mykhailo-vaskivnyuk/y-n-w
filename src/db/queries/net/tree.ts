@@ -52,7 +52,7 @@ export const getNodes = `
 export const getMembers = `
   SELECT 
     nodes.*,
-    nets_users_data.user_id, 
+    nets_users_data.user_id::int, 
     nets_users_data.confirmed
   FROM nodes
   INNER JOIN nets_users_data ON

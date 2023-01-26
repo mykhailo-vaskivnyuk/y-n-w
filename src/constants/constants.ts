@@ -24,5 +24,11 @@ export const NET_MESSAGES_MAP:
     },
     VOTE: {
       CONNECTED: 'Вас від\'єднано від мережі %s через вибори координатора',
+    },
+    DISLIKE: {
+      TREE: '',
+      CONNECTED: '',
+      CIRCLE: '',
+      FACILITATOR: '',
     }
   };

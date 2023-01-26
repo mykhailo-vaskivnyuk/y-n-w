@@ -9,7 +9,6 @@ import { HttpResponseError } from './errors';
 import { logData, delay } from './utils';
 
 class WsConnection {
-  private chats = new Set<number>();
   private socket: WebSocket;
   private requests: Map<number, (response: IWsResponse) => void>;
   private id = 0;
@@ -35,11 +34,10 @@ class WsConnection {
     if (messageData === 'ping') return this.health();
     const response = JSON.parse(messageData) as IWsResponse;
     const { requestId: reqId, data } = response;
-    if (reqId === undefined) {
+    if (!reqId) {
       const { chatId } = data || {};
-      if (!chatId) return;
-      this.chats.add(chatId);
-      this.onChatMessage(data);
+      console.log('MESSAGE', data);
+      chatId && this.onChatMessage(data);
       return;
     }
     logData(response, 'RES');
@@ -125,18 +123,13 @@ class WsConnection {
 
       const handleOpen = () => {
         this.health();
-        // for (const chatId of this.chats)
-        //   this.fetch('/net/chat/send', { chatId }, false);
         this.onConnect();
         rv();
       };
 
-      const handleClose = () => clearTimeout(this.pingTimeout);
-
       this.socket.addEventListener('error', handleError);
       this.socket.addEventListener('open', handleOpen);
       this.socket.addEventListener('message', this.handleResponse);
-      this.socket.addEventListener('close', handleClose);
     };
 
     return new Promise<void>(connectExecutor);
