@@ -284,6 +284,7 @@ COPY public.nets_users_data (node_id, net_node_id, user_id, email_show, name_sho
 1	1	1	f	f	f	t
 3	1	2	f	f	f	t
 5	1	3	f	f	f	t
+7	1	4	f	f	f	f
 \.
 
 
@@ -335,27 +336,6 @@ COPY public.nodes_invites (parent_node_id, node_id, member_name, token) FROM std
 --
 
 COPY public.sessions (session_id, user_id, session_key, session_value, updated) FROM stdin;
-41	2	78d6df1b8ef8b21e2ea3062a6522cd	{"user_id":"2","user_status":"LOGGEDIN"}	2023-01-19 16:24:56.265
-28	2	4975db69aa323f2152c94bb1004650	{"user_id":"2","user_status":"LOGGEDIN"}	2023-01-16 16:19:38.416747
-36	2	a16279b7f535d77b158ddd4af0aff0	{"user_id":"2","user_status":"LOGGEDIN"}	2023-01-18 16:38:07.907347
-31	3	909407aa548d0d75c70f140cb42b4e	{"user_id":"3","user_status":"LOGGEDIN"}	2023-01-16 21:10:02.061277
-30	2	a516286bb6146b2b91f90ee3c7624e	{"user_id":"2","user_status":"LOGGEDIN"}	2023-01-16 21:10:16.292129
-38	2	309eccfab1c0c07267f352bc46bab9	{"user_id":"2","user_status":"LOGGEDIN"}	2023-01-18 16:38:39.854006
-21	3	68438995ae426e4b693790048f18cb	{"user_id":"3","user_status":"LOGGEDIN"}	2023-01-11 19:51:21.154109
-19	2	d78abd8b5a02373468a1aee6af84ab	{"user_id":"2","user_status":"LOGGEDIN"}	2023-01-11 19:51:46.594308
-42	3	fe6df4e33b7420e0e198cea0726d9b	{"user_id":"3","user_status":"LOGGEDIN"}	2023-01-19 16:24:56.414605
-20	3	399a47fd4d6c260ac77c5fd1b7cb21	{"user_id":"3","user_status":"LOGGEDIN"}	2023-01-11 19:32:37.478999
-27	2	ae85a9a5507747419293eb8e65d16a	{"user_id":"2","user_status":"LOGGEDIN"}	2023-01-13 18:58:51.423334
-39	2	2ddb467fa0c2fa4cc53681c3bcccd7	{"user_id":"2","user_status":"LOGGEDIN"}	2023-01-18 18:46:32.018339
-32	2	3102a9b38ee5e08dbcd9a3ab946fcd	{"user_id":"2","user_status":"LOGGEDIN"}	2023-01-18 15:30:50.746464
-22	1	8ae0a34d58375ff02022626ef33f71	{"user_id":"1","user_status":"LOGGEDIN"}	2023-01-11 21:08:32.05622
-44	2	0588975b7cda4391ad4db93df159cf	{"user_id":"2","user_status":"LOGGEDIN"}	2023-01-20 16:53:22.963848
-26	2	aa02f5b34800f8681bd0509401b6d0	{"user_id":"2","user_status":"LOGGEDIN"}	2023-01-12 18:27:01.228986
-37	3	df9ed40c17fc3c343884bb76b01c11	{"user_id":"3","user_status":"LOGGEDIN"}	2023-01-18 16:28:30.467176
-40	3	19dbd8299f9df97f67987fc2909bd8	{"user_id":"3","user_status":"LOGGEDIN"}	2023-01-18 18:46:43.269426
-33	3	1a838e4ab6030fd6b374c2dc7ee64b	{"user_id":"3","user_status":"LOGGEDIN"}	2023-01-18 15:59:39.0693
-29	3	278d90b7289a3999b4c797dc9d8ce0	{"user_id":"3","user_status":"LOGGEDIN"}	2023-01-16 16:19:09.952988
-35	2	25ad20fdbdc955003b9dc9584c8fc4	{"user_id":"2","user_status":"LOGGEDIN"}	2023-01-18 16:00:20.382842
 \.
 
 
@@ -367,6 +347,7 @@ COPY public.users (user_id, email, name, mobile, password, confirmed) FROM stdin
 1	user01@gmail.com	\N	\N	ee5d3bb0f5f23cf735caea21a4321116:53be5841d206ea53f4aab75bbe1072dac00f203dcc812ca77c0fab776e566a6cb519348d4a2a9eeb26d549d46792e9fa70092254a1cbc4bb58df316662147fbb	t
 2	user02@gmail.com	\N	\N	8317b53f9189781a5aec6b8c4d1fdd83:235c7d0fff5c8d74fa0de478da7b1269397f6f14cc81f9f1f1d04d96637cfc41de78a375e728eaf0ab985877c5fcfdf40becaf2a458f52c1f36eea5fb96ca9d3	t
 3	user03@gmail.com	\N	\N	428505ea613e395075de8335d6c11f1a:801e1098928a65226c5ea0edb379c5bedfd81e07211b15b80ad5e48e4efc89bb2de79e038da105aaf70a19d59e318c0c45648b1f4c38a14fc1e8a6aadae3ba56	t
+4	user04@gmail.com	\N	\N	72f7b8c5e2f2a7eca7d4f86667274ef2:83ea46cd83030580f8d97fa4d622de348c536377228a759472419275630cd91be64db1bdf304795988b539f35f836883f6f8618ad5aaeb6c50bf5aaf538682ef	t
 \.
 
 
@@ -418,7 +399,7 @@ SELECT pg_catalog.setval('public.nodes_node_id_seq', 19, true);
 -- Name: sessions_session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: merega
 --
 
-SELECT pg_catalog.setval('public.sessions_session_id_seq', 44, true);
+SELECT pg_catalog.setval('public.sessions_session_id_seq', 48, true);
 
 
 --
@@ -432,7 +413,7 @@ SELECT pg_catalog.setval('public.users_messages_message_id_seq', 1, false);
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: merega
 --
 
-SELECT pg_catalog.setval('public.users_user_id_seq', 3, true);
+SELECT pg_catalog.setval('public.users_user_id_seq', 4, true);
 
 
 --
