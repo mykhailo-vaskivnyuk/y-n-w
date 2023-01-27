@@ -97,6 +97,19 @@ Table "users_messages" {
   }
 }
 
+Table "users_messages_tmp" {
+  "message_id" bigint [primary key, not null]
+  "user_id" bigint [not null]
+  "user_node_id" bigint [not null]
+  "net_view" "character(10)" [not null]
+  "member_node_id" bigint [default: NULL]
+  "message" "character varying(255)" [not null]
+  "date" timestamp [not null]
+  Indexes {
+    user_id [name: "sk_users_messages_tmp_user"]
+  }
+}
+
 Table "users_changes" {
   "user_id" bigint [primary key, not null]
   "date" timestamp [not null]

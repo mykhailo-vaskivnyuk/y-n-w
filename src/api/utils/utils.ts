@@ -1,4 +1,5 @@
-import { checkDislikes, checkVotes, updateCountOfNets } from './net.utils';
+import { checkDislikes, updateCountOfNets } from './net.utils';
+import { checkVotes } from './vote.utils';
 
 export const tightenNodes = async (node_id: number) => {
   const [node] = await execQuery.node.get([node_id]);

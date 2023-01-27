@@ -11,6 +11,10 @@ export type IUserNodeAndNetName =
   T.ITableNodes &
   Pick<T.ITableNetsData, 'name'>;
 
+export type IMemberWithNet =
+  Omit<IMember, 'user_id'> &
+  Pick<T.ITableNetsData, 'name'>;
+
 export type IMember =
   T.ITableNodes &
   Pick<T.ITableNetsUsersData, 'user_id' | 'confirmed'>;

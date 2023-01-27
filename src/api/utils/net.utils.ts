@@ -28,7 +28,7 @@ export const updateCountOfNets = async (
   await updateCountOfNets(parent_net_id, addCount);
 };
 
-const removeConnected = async (
+export const removeConnected = async (
   event: NetEventKeys, memberNode: IUserNodeAndNetName, date: string,
 ) => {
   const { node_id } = memberNode;
@@ -69,7 +69,10 @@ export const removeNetUser = async (
 
   // 6 - create messages
   logger.debug('CREATE MESSAGES');
-  for (const userNet of userNets) await createMessages(event, userNet, date);
+  for (const userNet of userNets) {
+    if (userNet.confirmed) await createMessages(event, userNet, date);
+    else await createMessages('LEAVE_CONNECTED', userNet, date);
+  }
 
   const nodesToArrange = userNets.map(({ node_id: v }) => v);
   const parentNodesToArrange = userNets
@@ -105,46 +108,4 @@ export const checkDislikes = async (
   const { user_id, net_node_id } = memberWithMaxDislikes!;
   const nodesToArrange = await removeNetUser('DISLIKE', user_id, net_node_id);
   return nodesToArrange;
-};
-
-export const checkVotes = async (parent_node_id: number) => {
-  const members = await execQuery.net.circle.getVotes([parent_node_id]);
-  const count = members.length;
-  if (!count) return null;
-  const [memberWithMaxVotes] = members;
-  const { vote_count } = memberWithMaxVotes!;
-  const isVoted = vote_count === count;
-  if (!isVoted) return;
-  const { node_id } = memberWithMaxVotes!;
-  await voteNetUser(node_id, parent_node_id);
-};
-
-export const voteNetUser = async (node_id: number, parent_node_id: number) => {
-  const date = new Date().toUTCString();
-  const [parent_member] = await execQuery.member.get([parent_node_id]);
-
-  const { user_id: parentUserId = null } = parent_member || {};
-  if (parent_member) {
-    await removeConnected('VOTE', parent_member, date);
-    await execQuery.member.data
-      .removeFromCircle([parentUserId!, parent_node_id]);
-  }
-
-  const [member] = await execQuery.member.get([node_id]);
-  const { user_id, net_node_id } = member!;
-  await removeConnected('VOTE', member!, date);
-  await execQuery.member.data.removeFromTree([user_id, node_id]);
-
-  await execQuery.member.moveToTmp([node_id, parent_node_id]);
-  await execQuery.member.removeVoted([node_id, parent_node_id]);
-  await execQuery.member.change([
-    node_id,
-    parent_node_id,
-    user_id,
-    parentUserId,
-    net_node_id,
-  ]);
-  await execQuery.member.moveFromTmp([node_id, parent_node_id]);
-  await execQuery.member.removeFromTmp([node_id, parent_node_id]);
-  !parentUserId && await execQuery.node.updateCountOfMembers([node_id, -1]);
 };

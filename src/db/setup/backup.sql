@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.3
--- Dumped by pg_dump version 14.3
+-- Dumped from database version 14.5
+-- Dumped by pg_dump version 14.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -233,6 +233,23 @@ ALTER TABLE public.users_messages ALTER COLUMN message_id ADD GENERATED ALWAYS A
 
 
 --
+-- Name: users_messages_tmp; Type: TABLE; Schema: public; Owner: merega
+--
+
+CREATE TABLE public.users_messages_tmp (
+    message_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    user_node_id bigint NOT NULL,
+    net_view character(10) NOT NULL,
+    member_node_id bigint,
+    message character varying(255) NOT NULL,
+    date timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.users_messages_tmp OWNER TO merega;
+
+--
 -- Name: users_tokens; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -381,6 +398,14 @@ COPY public.users_messages (message_id, user_id, user_node_id, net_view, member_
 
 
 --
+-- Data for Name: users_messages_tmp; Type: TABLE DATA; Schema: public; Owner: merega
+--
+
+COPY public.users_messages_tmp (message_id, user_id, user_node_id, net_view, member_node_id, message, date) FROM stdin;
+\.
+
+
+--
 -- Data for Name: users_tokens; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
@@ -497,6 +522,14 @@ ALTER TABLE ONLY public.users_messages
 
 
 --
+-- Name: users_messages_tmp pk_users_messages_tmp; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.users_messages_tmp
+    ADD CONSTRAINT pk_users_messages_tmp PRIMARY KEY (message_id);
+
+
+--
 -- Name: nodes_invites pk_users_nodes_invites; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -558,6 +591,13 @@ ALTER TABLE ONLY public.nodes_invites
 
 ALTER TABLE ONLY public.users_tokens
     ADD CONSTRAINT uk_users_tokens_token UNIQUE (token);
+
+
+--
+-- Name: sk_users_messages_tmp_user; Type: INDEX; Schema: public; Owner: merega
+--
+
+CREATE INDEX sk_users_messages_tmp_user ON public.users_messages_tmp USING btree (user_id);
 
 
 --
