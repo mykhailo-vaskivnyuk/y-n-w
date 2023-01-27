@@ -28,13 +28,10 @@ export const get = `
     nodes.node_id,
     nodes.count_of_members,
     members.user_id,
+    users.email AS name,
     members.confirmed,
     users_members.dislike,
     users_members.vote,
-    CASE
-      WHEN members.confirmed = true THEN users.email
-      ELSE null
-    END AS name,
     SUM (
       CASE
         WHEN votes.vote = true THEN 1
@@ -43,7 +40,8 @@ export const get = `
     ) AS vote_count
   FROM nodes
   LEFT JOIN nets_users_data AS members ON
-    members.node_id = nodes.node_id
+    members.node_id = nodes.node_id AND
+    members.confirmed = true
   LEFT JOIN users_members ON
     users_members.parent_node_id = $3 AND
     users_members.user_id = $1 AND
@@ -61,11 +59,11 @@ export const get = `
   GROUP BY
     nodes.node_id,
     nodes.count_of_members,
-    users_members.dislike,
-    users_members.vote,
-    members.confirmed,
     members.user_id,
-    users.email
+    users.email,
+    members.confirmed,
+    users_members.dislike,
+    users_members.vote
   ORDER BY nodes.node_level, nodes.node_position
 `;
 

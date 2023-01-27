@@ -22,18 +22,18 @@ export class ClientApp extends EventEmitter {
   private error: HttpResponseError | null = null;
 
   private user: T.IUserResponse = null;
-  private allNets: T.INetsResponse = [];
-  private messages = new Map<number, T.IChatMessage[]>();
+  private allNets: T.INetsResponse;
+  private messages: Map<number, T.IChatMessage[]>;
   private userNetData: T.IUserNetDataResponse | null = null;
-  private nets: INets = INITIAL_NETS;
+  private nets: INets;
   private userNet: T.INetResponse = null;
   private circle: IMember[] = [];
   private tree: IMember[] = [];
   private netView?: T.NetViewEnum;
   private memberData?: IMember;
   private userChatId?: number;
-  private netChatIds: TNetChatIdsMap = new Map();
-  private netChanges: T.IUserChanges = [];
+  private netChatIds: TNetChatIdsMap;
+  private netChanges: T.IUserChanges;
 
   account: ReturnType<typeof getAccountMethods>;
   net: ReturnType<typeof getNetMethods>;
@@ -43,6 +43,7 @@ export class ClientApp extends EventEmitter {
 
   constructor() {
     super();
+    this.setInitialValues();
     this.baseUrl = process.env.API || `${window.location.origin}/api`;
     this.account = getAccountMethods(this as any);
     this.net = getNetMethods(this as any);
@@ -95,14 +96,20 @@ export class ClientApp extends EventEmitter {
     this.setStatus(AppStatus.INITED);
   }
 
+  private setInitialValues() {
+    this.allNets = [];
+    this.nets = INITIAL_NETS;
+    this.messages = new Map();
+    this.netChatIds = new Map();
+    this.netChanges = [];
+  }
+
   protected setStatus(status: AppStatus) {
     if (status === AppStatus.ERROR) {
       this.status = status;
       this.emit('error', this.error);
       return this.emit('statuschanged', this.status);
     }
-    // if current status error ?
-    // if status already loading ?
     this.error = null;
     if (status === AppStatus.INITED) {
       this.status = AppStatus.READY;
@@ -136,11 +143,8 @@ export class ClientApp extends EventEmitter {
     if (user && user.user_status !== 'NOT_CONFIRMED') {
       await this.net.getAllNets();
       this.net.getNets();
-    } else {
-      this.nets = INITIAL_NETS;
-      this.allNets = [];
-      this.messages = new Map();
-    }
+      await this.changes.read();
+    } else this.setInitialValues();
     this.emit('user', user);
   }
 

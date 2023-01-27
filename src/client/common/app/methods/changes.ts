@@ -4,39 +4,34 @@ import { AppStatus } from '@api/constants';
 import { IClientAppThis } from '../types';
 
 export const getChangesMethods = (parent: IClientAppThis) => ({
-  async read() {
-    parent.setStatus(AppStatus.LOADING);
+  async read(inChain = false) {
+    !inChain && parent.setStatus(AppStatus.LOADING);
     try {
       const changes = await parent.api.user.changes.read();
-      await this.update(changes);
+      !inChain && await this.update(changes);
       parent.setChanges(changes);
-      parent.setStatus(AppStatus.READY);
+      !inChain && parent.setStatus(AppStatus.READY);
     } catch (e: any) {
+      if (inChain) throw e;
       parent.setError(e);
     }
   },
 
   async update(changes: IUserChanges) {
-    // status ?
-    const { net } = parent.getState();
+    const { user, net } = parent.getState();
     const { node_id: nodeId, net_node_id: netNodeId } = net || {};
     let updateAll = false;
     let updateNet = false;
-    for (const { user_node_id: userNodeId } of changes) {
-      if (userNodeId) {
-        if (userNodeId !== nodeId) continue;
-        updateNet = true;
-      } else {
+    for (const change of changes) {
+      const { user_node_id: userNodeId } = change;
+      if (!userNodeId) {
         updateAll = true;
         break;
       }
+      if (userNodeId === nodeId) updateNet = true;
     }
-    if (updateAll) {
-      // update all
-      return;
-    }
-    if (!updateNet) return;
-    await parent.net.enter(netNodeId!, false);
+    if (updateAll) return parent.setUser({ ...user! });
+    if (updateNet) return parent.net.enter(netNodeId!, false);
   },
 
   async confirm(messageId: number) {
