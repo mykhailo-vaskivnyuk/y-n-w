@@ -24,8 +24,6 @@ class WsConnection implements IInputConnection {
   constructor(config: IWsConfig, server: IHttpServer) {
     this.config = config;
     this.server = new Server({ server });
-    this.handleConnection = this.handleConnection.bind(this);
-    this.sendMessage = this.sendMessage.bind(this);
   }
 
   onOperation(cb: (operation: IOperation) => Promise<TOperationResponse>) {
@@ -48,7 +46,7 @@ class WsConnection implements IInputConnection {
     }
     try {
       this.resModules = applyResModules(this.config);
-      this.server.on('connection', this.handleConnection);
+      this.server.on('connection', this.handleConnection.bind(this));
       this.doPings();
     } catch (e: any) {
       logger.error(e);
@@ -161,7 +159,7 @@ class WsConnection implements IInputConnection {
     this.isAlive = true;
   }
 
-  sendMessage(data: TOperationResponse, connectionIds?: Set<number>) {
+  private sendMessage(data: TOperationResponse, connectionIds?: Set<number>) {
     try {
       if (!connectionIds) return false;
       const connections = [...connectionIds]
@@ -173,6 +171,12 @@ class WsConnection implements IInputConnection {
       logger.error(e);
       return false;
     }
+  }
+
+  getConnectionService() {
+    return {
+      sendMessage: this.sendMessage.bind(this),
+    };
   }
 }
 

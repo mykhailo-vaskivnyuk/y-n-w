@@ -9,8 +9,9 @@ import { createMessageToMember } from './messages.utils';
 export const createMessages = async (
   event: NetEventKeys,
   memberNet: IMember & Pick<ITableNetsData, 'name'>,
-  date: string,
+  eventDate?: string,
 ) => {
+  const date = eventDate || new Date().toUTCString();
   await createMessagesInTree(event, memberNet, date);
   await createMessagesInCircle(event, memberNet, date);
   const messageToMember = NET_MESSAGES_MAP[event]['MEMBER'];

@@ -58,7 +58,7 @@ export const createMessageToMember = async (
   await commitChanges(user_id, date);
 };
 
-export const sendInstantMessage = async (
+export const sendInstantMessage = (
   user_id: number, user_node_id: number, net_view: NetViewKeys,
 ) => {
   const chatId = chatService.getChatIdOfUser(user_id);

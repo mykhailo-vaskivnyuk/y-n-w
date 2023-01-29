@@ -5,13 +5,16 @@ import {
 import { THandler } from '../../../router/types';
 import { UserChangesSchema } from '../../schema/schema';
 
-export const read: THandler<never, IUserChanges> =
-  async ({ session }) => {
+export const read: THandler<{ date?: string }, IUserChanges> =
+  async ({ session }, { date }) => {
     const user_id = session.read('user_id')!;
-    const changes = await execQuery.user.changes
-      .read([user_id]);
+    const changes = await execQuery
+      .user.changes.read([user_id, date || null]);
     return changes;
   };
+read.paramsSchema = {
+  date: Joi.string(),
+};
 read.responseSchema = UserChangesSchema;
 
 export const confirm: THandler<{ message_id: number }, boolean> =

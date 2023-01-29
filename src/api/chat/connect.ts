@@ -23,7 +23,7 @@ export const user: THandler<never, T.IChatConnectResponse> =
   async ({ session, connectionId }) => {
     const user_id = session.read('user_id')!;
     if (!connectionId) return null;
-    const chatId = chatService.getChatIdOfUser(user_id, connectionId);
+    const chatId = chatService.getChatIdOfUser(user_id, connectionId)!;
     return { chatId };
   };
 user.responseSchema = ChatConnectResponseSchema;

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
 import { TPromiseExecutor } from '../../types/types';
@@ -91,6 +92,12 @@ class HttpConnection implements IInputConnection {
     } catch (e) {
       handleError(e, req, res);
     }
+  }
+
+  getConnectionService() {
+    return {
+      sendMessage: () => false,
+    };
   }
 }
 

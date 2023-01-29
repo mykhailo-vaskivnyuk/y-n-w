@@ -39,7 +39,7 @@ const cretaeMessagesToCircleMember = async (
   const { user_id, node_id: user_node_id } = user;
   const { node_id: member_node_id } = memberNet;
   if (SEND_INSTANT_MESSAGE.includes(event))
-    return await sendInstantMessage(user_id, user_node_id, 'circle');
+    return sendInstantMessage(user_id, user_node_id, 'circle');
   await execQuery.net.message.create([
     user_id,
     user_node_id,

@@ -4,6 +4,7 @@ import { IMemberConfirmParams } from '../../../client/common/api/types/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/api/utils';
 import { checkVotes } from '../../utils/vote.utils';
+import { createMessages } from '../../utils/messages.create.utils';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
   { session, userNet }, { member_node_id }
@@ -20,7 +21,8 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
   await execQuery.member.data.unsetVote([parent_node_id, user_id]);
   await execQuery.member.data
     .setVote([parent_node_id, user_id, member.user_id!]);
-  await checkVotes(parent_node_id);
+  createMessages('VOTE', userNet!);
+  checkVotes(parent_node_id);
   return true;
 };
 set.paramsSchema = MemberConfirmParamsSchema;
@@ -38,6 +40,7 @@ export const unSet: THandler<IMemberConfirmParams, boolean> = async (
   if (memberStatus !== 'ACTIVE') return false; // bad request
   const user_id = session.read('user_id')!;
   await execQuery.member.data.unsetVote([parent_node_id, user_id]);
+  createMessages('VOTE', userNet!);
   return true;
 };
 unSet.paramsSchema = MemberConfirmParamsSchema;

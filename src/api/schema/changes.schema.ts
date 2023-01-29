@@ -7,4 +7,5 @@ export const UserChangesSchema = {
   net_view: Joi.string(),
   member_node_id: [JOI_NULL, Joi.number()],
   message: Joi.string(),
+  date: Joi.date(),
 };

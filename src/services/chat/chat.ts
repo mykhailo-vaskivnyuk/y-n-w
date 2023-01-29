@@ -30,9 +30,9 @@ export class ChatService {
 
   getChatIdOfUser(user_id: number, connectionId?: number) {
     let chatId = this.userChatIds.get(user_id);
-    if (chatId) return chatId;
+    if (!connectionId) return chatId;
     chatId = this.genChatId();
-    logger.fatal('USER', user_id, 'NEW USER CHAT', chatId);
+    logger.debug('USER', user_id, 'NEW USER CHAT', chatId);
     this.userChatIds.set(user_id, chatId);
     this.chatIdUserNetNode.set(chatId, { user_id });
     chatId && connectionId && this.addChatAndConnection(chatId, connectionId);

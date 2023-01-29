@@ -17,7 +17,7 @@ export interface IInputConnection {
   ): void;
   setUnavailable(service?: TServerService): void;
   getServer(): IServer;
-  sendMessage?: IConnectionService['sendMessage'];
+  getConnectionService: () => IConnectionService;
 }
 
 export type IServer = IHttpServer | IWsServer;
