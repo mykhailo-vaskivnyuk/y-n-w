@@ -5,7 +5,7 @@ export type IUserNetData =
   T.ITableNodes &
   Pick<T.ITableNets, 'net_level'> &
   Pick<T.ITableNetsData, 'name'> &
-  Pick<T.ITableNetsUsersData, 'confirmed'>;
+  Pick<T.ITableNetsUsersData, 'user_id' | 'confirmed'>;
 
 export type IUserNodeAndNetName =
   T.ITableNodes &

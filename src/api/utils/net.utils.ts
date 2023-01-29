@@ -5,7 +5,8 @@ import { NetEventKeys } from '../types/net.types';
 import { HandlerError } from '../../router/errors';
 import { updateCountOfMembers } from './nodes.utils';
 import { excludeNullUndefined } from '../../utils/utils';
-import { createMessages, createMessagesToConnected } from './messages.utils';
+import { createMessagesToConnected } from './messages.utils';
+import { createMessages } from './messages.create.utils';
 
 export const findUserNet = async (
   user_id: number, user_node_id: number,

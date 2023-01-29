@@ -7,6 +7,6 @@ export const userInNetAndItsSubnets = (userIndex = 1, netIndex = 2) => `
         SELECT net_level FROM nets WHERE net_node_id = $${netIndex}
       )
     ) OR
-    ($${netIndex} + 1) ISNULL
+    $${netIndex}::int ISNULL
   )
 `;

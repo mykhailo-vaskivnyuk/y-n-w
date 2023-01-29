@@ -1,5 +1,5 @@
-import { createMessages, createMessagesInNet } from './messages.utils';
 import { removeConnected } from './net.utils';
+import { createMessages } from './messages.create.utils';
 
 export const checkVotes = async (parent_node_id: number) => {
   const members = await execQuery.net.circle.getVotes([parent_node_id]);
@@ -58,16 +58,22 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
   !parentUserId && await execQuery.node.updateCountOfMembers([node_id, -1]);
 
   createMessages('LEAVE_VOTE', member!, date);
+  createMessages('LEAVE_DISVOTE', parent_member!, date);
 
-  member!.node_id = parent_node_id;
-  member!.parent_node_id = parent_member?.parent_node_id || null;
-  createMessages('CONNECT_VOTE', member!, date);
-  createMessagesInNet('CONNECT_VOTE', 'tree', member!, date);
+  const voteMemeber = {
+    ...member!,
+    node_id: parent_node_id,
+    parent_node_id: parent_member?.parent_node_id || null,
+  };
+  createMessages('CONNECT_VOTE', voteMemeber, date);
+
 
   if (!parent_member) return;
 
-  parent_member.node_id = node_id;
-  parent_member.parent_node_id = parent_node_id;
-  createMessages('CONNECT_DISVOTE', parent_member, date);
-  createMessagesInNet('CONNECT_DISVOTE', 'circle', parent_member, date);
+  const disvoteMember = {
+    ...parent_member,
+    node_id,
+    parent_node_id,
+  };
+  createMessages('CONNECT_DISVOTE', disvoteMember, date);
 };

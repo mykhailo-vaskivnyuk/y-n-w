@@ -33,6 +33,7 @@ export const find = `
     nodes.parent_node_id::int,
     nodes.net_node_id::int,
     nets.net_level,
+    nets_users_data.user_id::int,
     nets_users_data.confirmed,
     nets_data.name
   FROM nets_users_data
@@ -70,6 +71,7 @@ export const getNetAndSubnets = `
   SELECT
     nodes.*,
     nets.net_level,
+    nets_users_data.user_id::int,
     nets_users_data.confirmed,
     nets_data.name
   FROM nets_users_data

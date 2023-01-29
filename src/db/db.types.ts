@@ -71,6 +71,7 @@ export type ITableUsersMessages = {
   net_view: 'net' | 'tree' | 'circle'; // NetViewKeys
   member_node_id: number | null;
   message: string;
+  date: string;
 }
 
 export type ITableUsersChanges = {

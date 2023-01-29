@@ -5,6 +5,7 @@ import { TQuery } from '../../types/types';
 export interface IQueriesUserChanges {
   read: TQuery<[
     ['user_id', number],
+    ['date', string | null],
   ], ITableUsersMessages>;
   write: TQuery<[
     ['user_id', number],
@@ -45,7 +46,11 @@ export interface IQueriesUserChanges {
 export const read = `
   SELECT *, TRIM(net_view) as net_view
   FROM users_messages
-  WHERE user_id = $1
+  WHERE
+    user_id = $1 AND (
+      $2::timestamp ISNULL OR
+      date > $2
+    )
   ORDER BY message_id
 `;
 
@@ -82,7 +87,7 @@ export const removeFromTree = `
 `;
 
 export const moveToTmp = `
-  INSERT INTO users_messages_tmp *
+  INSERT INTO users_messages_tmp
   SELECT * FROM users_messages
   WHERE
     (

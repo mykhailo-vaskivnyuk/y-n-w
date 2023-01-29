@@ -99,7 +99,7 @@ export const findInCircle = `
 export const get = `
   SELECT
     nodes.*,
-    nets_users_data.user_id,
+    nets_users_data.user_id::int,
     nets_users_data.confirmed,
     nets_data.name
   FROM nodes

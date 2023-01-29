@@ -10,7 +10,7 @@ export interface IQueriesUserNets {
     ITableNodes &
     ITableNets &
     Pick<ITableNetsData, 'name'> &
-    Pick<ITableNetsUsersData, 'confirmed'>
+    Pick<ITableNetsUsersData, 'user_id' | 'confirmed'>
   >;
 }
 
@@ -22,6 +22,7 @@ const get = `
     nodes.net_node_id::int,
     nodes.parent_node_id::int,
     nets_data.name,
+    nets_users_data.user_id,
     nets_users_data.confirmed
   FROM nets_users_data
   INNER JOIN nodes ON

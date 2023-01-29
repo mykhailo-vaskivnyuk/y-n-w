@@ -121,6 +121,7 @@ export const getVotes = `
 export const getMembers = `
   SELECT
     nodes.*,
+    nodes.node_id::int,
     nets_users_data.user_id::int,
     nets_users_data.confirmed
   FROM nodes
