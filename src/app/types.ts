@@ -20,7 +20,7 @@ export type IAppThis = App & {
 export interface IRouterContext {
   execQuery: IDatabaseQueries;
   logger: ILogger;
-  connectionService: IConnectionService
+  connectionService: IConnectionService;
   console?: typeof console;
   env?: IConfig['env'];
 }

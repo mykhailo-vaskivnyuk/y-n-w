@@ -7,7 +7,7 @@ import {
 import { ILogger } from '../logger/types';
 import { IDatabase } from '../db/types/types';
 import { IRouter } from '../router/types';
-import { IConnectionService, IInputConnection } from '../server/types';
+import { IInputConnection } from '../server/types';
 import { setToGlobal } from './methods/utils';
 import { createSetInputConnection } from './methods/set.input.connection';
 import { loadModule } from '../loader/require';
@@ -19,8 +19,7 @@ export default class App {
   protected router?: IRouter;
   protected server?: IInputConnection;
   protected apiServer?: IInputConnection;
-  private connectionService?: IConnectionService;
-  protected setInputConnection: () => Promise<IAppThis>;
+  protected setInputConnection: () => void;
 
   constructor(config: IConfig) {
     this.config = config;
@@ -39,12 +38,13 @@ export default class App {
         throw new AppError('INIT_ERROR', 'API set UNAVAILABLE');
       await this.setDatabase();
       logger.info('DATABASE IS READY');
-      this.setConnectionService();
-      logger.info('CONNECTION SERVICE IS CREATED');
+      this.setInputConnection();
+      logger.info('SERVER IS READY TO START');
       await this.setRouter();
       logger.info('ROUTER IS READY');
-      await this.setInputConnection();
-      logger.info('SERVER IS READY');
+      this.apiServer && await this.apiServer.start();
+      await this.server!.start();
+      logger.info('SERVER IS RUNNING');
       env.RUN_ONCE && process.exit();
     } catch (e: any) {
       await handleAppInitError(e, this as any);
@@ -79,9 +79,10 @@ export default class App {
     if (!execQuery)
       throw new AppError('INIT_ERROR', 'DB is not INITIALIZED');
 
-    const connectionService = this.connectionService;
-    if (!connectionService)
-      throw new AppError('INIT_ERROR', 'CONNECTION SERVICE is not CREATED');
+    const server = this.apiServer || this.server;
+    if (!server)
+      throw new AppError('INIT_ERROR', 'SERVER is not INITIALIZED');
+    const connectionService = server.getConnectionService();
 
     const { router, env } = this.config;
     const context: IRouterContext = {
@@ -94,16 +95,5 @@ export default class App {
     const Router = loadModule(__dirname, router.path, context);
     this.router = await new Router(router).init();
     return this;
-  }
-
-  private setConnectionService() {
-    const sendMessage: IConnectionService['sendMessage'] =
-      (...args) => {
-        const server = this.apiServer || this.server;
-        const method = server?.sendMessage;
-        if (!method) return false;
-        return method(...args);
-      };
-    this.connectionService = { sendMessage };
   }
 }

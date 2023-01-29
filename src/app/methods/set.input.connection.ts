@@ -1,11 +1,10 @@
 import { IOperation } from '../../types/operation.types';
 import { IAppThis } from '../types';
-import { AppError, handleOperationError } from '../errors';
+import { handleOperationError } from '../errors';
 
-export const createSetInputConnection = (parent: IAppThis) => async () => {
+
+export const createSetInputConnection = (parent: IAppThis) => () => {
   const { env } = parent.config;
-  if (!parent.router && !env.API_UNAVAILABLE)
-    throw new AppError('INIT_ERROR', 'ROUTER is not INITIALIZED');
 
   const handleOperation = async (operation: IOperation) => {
     try {
@@ -35,7 +34,4 @@ export const createSetInputConnection = (parent: IAppThis) => async () => {
   }
 
   env.STATIC_UNAVAILABLE && parent.server!.setUnavailable('static');
-  parent.apiServer && await parent.apiServer.start();
-  await parent.server!.start();
-  return parent;
 };
