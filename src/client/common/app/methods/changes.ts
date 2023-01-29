@@ -1,15 +1,31 @@
 /* eslint-disable import/no-cycle */
-import { IUserChanges } from '@api/api/types/changes.types';
-import { AppStatus } from '@api/constants';
+import {
+  IChatResponseMessage, IInstantChange, IUserChanges,
+} from '../../api/types/types';
 import { IClientAppThis } from '../types';
+import { OmitNull } from '../../types';
+import { AppStatus } from '../../constants';
 
 export const getChangesMethods = (parent: IClientAppThis) => ({
+  lastDate: undefined as string | undefined,
+
+  isInstantChange(
+    messageData: OmitNull<IChatResponseMessage> | IInstantChange,
+  ): messageData is IInstantChange {
+    return 'message_id' in messageData;
+  },
+
   async read(inChain = false) {
     !inChain && parent.setStatus(AppStatus.LOADING);
     try {
-      const changes = await parent.api.user.changes.read();
-      !inChain && await this.update(changes);
-      parent.setChanges(changes);
+      const newChanges = await parent.api
+        .user.changes.read({ date: this.lastDate });
+      this.lastDate = newChanges.at(-1)?.date;
+      !inChain && await this.update(newChanges);
+      if (newChanges.length) {
+        const { changes: curChanges } = parent.getState();
+        parent.setChanges([...curChanges, ...newChanges]);
+      }
       !inChain && parent.setStatus(AppStatus.READY);
     } catch (e: any) {
       if (inChain) throw e;
@@ -17,21 +33,22 @@ export const getChangesMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  async update(changes: IUserChanges) {
+  async update(changes: IUserChanges | IInstantChange[]) {
     const { user, net } = parent.getState();
     const { node_id: nodeId, net_node_id: netNodeId } = net || {};
     let updateAll = false;
     let updateNet = false;
     for (const change of changes) {
-      const { user_node_id: userNodeId } = change;
-      if (!userNodeId) {
+      const { user_node_id: userNodeId, net_view: netView } = change;
+      if (netView === 'net') {
         updateAll = true;
+        if (userNodeId && netNodeId) updateNet = true;
         break;
       }
       if (userNodeId === nodeId) updateNet = true;
     }
-    if (updateAll) return parent.setUser({ ...user! });
-    if (updateNet) return parent.net.enter(netNodeId!, false);
+    if (updateAll) await parent.setUser({ ...user! }, false);
+    if (updateNet) await parent.net.enter(netNodeId!, false);
   },
 
   async confirm(messageId: number) {

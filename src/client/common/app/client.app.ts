@@ -66,7 +66,7 @@ export class ClientApp extends EventEmitter {
       netView: this.netView,
       memberData: this.memberData,
       messages: this.messages,
-      chatIds: this.netChatIds, //!
+      chatIds: this.netChatIds,
       changes: this.netChanges,
     };
   }
@@ -137,13 +137,13 @@ export class ClientApp extends EventEmitter {
     }
   }
 
-  protected async setUser(user: T.IUserResponse) {
+  protected async setUser(user: T.IUserResponse, readChanges = true) {
     if (this.user === user) return;
     this.user = user;
     if (user && user.user_status !== 'NOT_CONFIRMED') {
       await this.net.getAllNets();
       this.net.getNets();
-      await this.changes.read();
+      readChanges && await this.changes.read(true);
     } else this.setInitialValues();
     this.emit('user', user);
   }
@@ -218,6 +218,7 @@ export class ClientApp extends EventEmitter {
     this.netChatIds = new Map();
     this.messages = new Map();
     this.chat.connectAll().catch((e) => this.setError(e));
+    this.changes.read(true).catch((e) => this.setError(e));
   }
 
   protected setUserChatId(message: T.IChatConnectResponse) {
@@ -229,18 +230,27 @@ export class ClientApp extends EventEmitter {
     this.netChatIds = netChatIds;
   }
 
-  protected setMessage(messageData: T.IChatResponseMessage) {
+  protected setMessage(messageData: T.IChatResponseMessage | T.IInstantChange) {
     if (!messageData) return;
-    const { chatId, ...message } = messageData;
-    if (chatId === this.userChatId) return this.changes.read();
-    if (!message.message) return;
+
+    const { chatId } = messageData;
+
+    if (chatId === this.userChatId) {
+      if (this.changes.isInstantChange(messageData)) {
+        this.changes.update([messageData]);
+      } else this.changes.read();
+      return;
+    }
+
+    if (!messageData.message) return;
     const chatMessages = this.messages.get(chatId);
     if (chatMessages) {
       const lastMessage = chatMessages.at(-1);
       const { index = 1 } = lastMessage || {};
-      if (message.index > index + 1) this.chat.getMessages(chatId, index + 1);
-      chatMessages.push(message as T.IChatMessage);
-    } else this.messages.set(chatId, [message as T.IChatMessage]);
+      if (messageData.index > index + 1)
+        this.chat.getMessages(chatId, index + 1);
+      chatMessages.push(messageData as T.IChatMessage);
+    } else this.messages.set(chatId, [messageData as T.IChatMessage]);
     this.emit('message', chatId);
   }
 

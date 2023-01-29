@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { IWsResponse, TFetch } from './types';
 import { TPromiseExecutor } from '../local/imports';
-import { IChatResponseMessage } from './api/types/types';
+import { IChatResponseMessage, IInstantChange } from './api/types/types';
 import {
   CONECTION_ATTEMPT_COUNT, CONNECTION_ATTEMPT_DELAY, CONNECTION_TIMEOUT,
 } from './constants';
@@ -16,7 +16,7 @@ class WsConnection {
 
   constructor(
     private baseUrl: string,
-    private onChatMessage: (message: IChatResponseMessage) => void,
+    private onMessage: (message: IChatResponseMessage | IInstantChange) => void,
     private onConnect: () => void,
   ) {
     this.handleResponse = this.handleResponse.bind(this);
@@ -28,7 +28,10 @@ class WsConnection {
     this.socket = new WebSocket(this.baseUrl);
   }
 
-  getId() { return ++this.id % 100; }
+  getId() { 
+    this.id = (this.id % 100) + 1;
+    return this.id;
+  }
 
   handleResponse({ data: messageData }: MessageEvent) {
     if (messageData === 'ping') return this.health();
@@ -37,7 +40,7 @@ class WsConnection {
     if (!reqId) {
       const { chatId } = data || {};
       console.log('MESSAGE', data);
-      chatId && this.onChatMessage(data);
+      chatId && this.onMessage(data);
       return;
     }
     logData(response, 'RES');
@@ -138,6 +141,6 @@ class WsConnection {
 
 export const getConnection = (
   baseUrl: string,
-  onChatMessage: (message: IChatResponseMessage) => void,
+  onMessage: (message: IChatResponseMessage) => void,
   onConnect: () => void,
-): TFetch => new WsConnection(baseUrl, onChatMessage, onConnect).sendRequest;
+): TFetch => new WsConnection(baseUrl, onMessage, onConnect).sendRequest;
