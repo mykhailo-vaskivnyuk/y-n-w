@@ -4,7 +4,7 @@ import { THandler } from '../../router/types';
 import { removeNetUser } from '../utils/net.utils';
 import { arrangeNodes } from '../utils/utils';
 
-const disconnect: THandler<{ monthAgo: number }, boolean> =
+const disconnectUnactive: THandler<{ monthAgo: number }, boolean> =
   async ({ isAdmin }, { monthAgo }) => {
     if (!isAdmin) return false;
     const date = new Date();
@@ -22,9 +22,9 @@ const disconnect: THandler<{ monthAgo: number }, boolean> =
     } while (member);
     return true;
   };
-disconnect.paramsSchema = {
+disconnectUnactive.paramsSchema = {
   monthAgo: Joi.number().required(),
 };
-disconnect.responseSchema = Joi.boolean();
+disconnectUnactive.responseSchema = Joi.boolean();
 
-export = disconnect;
+export = disconnectUnactive;

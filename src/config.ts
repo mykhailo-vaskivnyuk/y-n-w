@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { resolve } from 'node:path';
 import { IConfig } from './types/config.types';
 import { BUILD_PATH } from './constants/constants';
@@ -65,8 +66,13 @@ const config: IConfig = {
       },
     },
     tasks: [{
-      names: ['member', 'disconnect'],
-      time: 0,
+      names: ['member', 'disconnectUnactive'],
+      time: 86_400_000,
+      interval: 86_400_000,
+      params: { monthAgo: 2 },
+    }, {
+      names: ['member', 'disconnectNotVote'],
+      time: 86_400_000,
       interval: 86_400_000,
       params: { monthAgo: 2 },
     }],

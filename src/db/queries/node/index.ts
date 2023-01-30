@@ -38,6 +38,9 @@ export interface IQueriesNode {
     ['new_net_node_id', number],
     ['cur_net_node_id', number],
   ]>;
+  find: TQuery<[
+    ['date', string],
+  ], ITableNodes>;
 }
 
 export const createInitial = `
@@ -62,7 +65,9 @@ export const remove = `
 
 export const updateCountOfMembers = `
   UPDATE nodes
-  SET count_of_members = count_of_members + $2
+  SET
+    count_of_members = count_of_members + $2,
+    updated = now() at time zone 'UTC'
   WHERE node_id = $1
   RETURNING *
 `;
@@ -107,4 +112,14 @@ export const changeNetNode = `
     net_node_id = $1,
     node_level = node_level - 1
   WHERE net_node_id = $2
+`;
+
+export const find = `
+  SELECT nodes.* FROM nodes
+  LEFT JOIN nets_users_data ON
+    nets_users_data.node_id = nodes.node_id
+  WHERE
+    user_id ISNULL AND
+    count_of_members > 0 AND
+    updated < $1
 `;

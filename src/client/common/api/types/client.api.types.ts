@@ -1,6 +1,9 @@
 import * as P from './types';
 
-export type TMemberDisconnect = {
+export type TMemberDisconnectNotVote = {
+  monthAgo: number;
+};
+export type TMemberDisconnectUnactive = {
   monthAgo: number;
 };
 export type TMemberInviteCreateResponse = string | null;
