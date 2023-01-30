@@ -45,7 +45,8 @@ export const getMemberDataMethods = (parent: IClientAppThis) => ({
         .set({ ...net!, member_node_id: nodeId });
       const { net: newNet } = parent.getState();
       if (success && net === newNet)
-        await parent.net.enter(net!.net_node_id, false);
+        await parent.net.enter(net!.net_node_id, true)
+          .catch((e) => console.log(e));
       parent.setStatus(AppStatus.READY);
       return success;
     } catch (e: any) {

@@ -10,6 +10,7 @@ const enter: THandler<INetEnterParams, INetResponse> =
     const user_id = session.read('user_id')!;
     const [net] = await execQuery.user.net.read([user_id, net_node_id]);
     if (!net) throw new HandlerError('NOT_FOUND');
+    await execQuery.user.net.setActiveDate([user_id, net_node_id]);
     return net!;
   };
 enter.paramsSchema = NetEnterParamsSchema;

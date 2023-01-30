@@ -23,16 +23,16 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  async enter(net_node_id: number, changeState = true) {
-    changeState && parent.setStatus(AppStatus.LOADING);
+  async enter(net_node_id: number, inChain = false) {
+    !inChain && parent.setStatus(AppStatus.LOADING);
     try {
       const net = await parent.api.net.enter({ net_node_id });
       await parent.setNet(net);
-      changeState && parent.setStatus(AppStatus.READY);
+      !inChain && parent.setStatus(AppStatus.READY);
       return net;
     } catch (e: any) {
+      if (inChain) throw e;
       await parent.setNet();
-      if (!changeState) throw e;
       parent.setError(e);
       return null;
     }

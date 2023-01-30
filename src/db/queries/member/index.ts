@@ -5,6 +5,7 @@ import { ITableNetsData } from '../../db.types';
 import { userInNetAndItsSubnets } from '../../utils';
 import { IQueriesMemberData } from './data';
 import { IQueriesMemberInvite } from './invite';
+import { IQueriesMemberFind } from './find';
 
 export interface IQueriesMember {
   remove: TQuery<[
@@ -53,6 +54,7 @@ export interface IQueriesMember {
   ]>;
   data: IQueriesMemberData;
   invite: IQueriesMemberInvite;
+  find: IQueriesMemberFind;
 }
 
 export const remove = `

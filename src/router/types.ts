@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import Joi, { ObjectSchema } from 'joi';
 import { IObject } from '../types/types';
 import {
@@ -31,6 +32,14 @@ export interface IRouterConfig {
       | TOutputModulesKeys
     ]?: Record<string, any>;
   };
+  tasks?: ITask[];
+}
+
+export interface ITask {
+  time?: number,
+  interval?: number,
+  params: IOperation['data']['params'],
+  names: string[],
 }
 
 export interface IRouter {
@@ -71,6 +80,7 @@ export type IContext = {
   userNet?: IUserNetData;
   userNetStatus?: UserStatusKeys;
   connectionId?: number;
+  isAdmin?: boolean;
 };
 
 export type ISessionContent = Partial<{

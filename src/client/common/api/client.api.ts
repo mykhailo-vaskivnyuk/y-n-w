@@ -48,6 +48,9 @@ export const getApi = (
 
   },
   'member': {
+    'disconnect': (options: Q.TMemberDisconnect) =>
+      fetch<boolean>('/member/disconnect', options),
+
     'data': {
       'dislike': {
         'set': (options: P.IMemberConfirmParams) =>

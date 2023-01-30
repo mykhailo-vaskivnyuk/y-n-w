@@ -30,7 +30,7 @@ export class ChatService {
 
   getChatIdOfUser(user_id: number, connectionId?: number) {
     let chatId = this.userChatIds.get(user_id);
-    if (!connectionId) return chatId;
+    if (!connectionId || chatId) return chatId;
     chatId = this.genChatId();
     logger.debug('USER', user_id, 'NEW USER CHAT', chatId);
     this.userChatIds.set(user_id, chatId);

@@ -97,13 +97,14 @@ export const change = `
   UPDATE nodes
   SET
     parent_node_id = $2,
-    node_position = $3,
-    node_level = node_level - 1
+    node_position = $3
   WHERE node_id = $1
 `;
 
 export const changeNetNode = `
   UPDATE nodes
-  SET net_node_id = $1
+  SET
+    net_node_id = $1,
+    node_level = node_level - 1
   WHERE net_node_id = $2
 `;

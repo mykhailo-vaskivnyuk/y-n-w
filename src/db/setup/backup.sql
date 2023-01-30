@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.5
--- Dumped by pg_dump version 14.5
+-- Dumped from database version 14.3
+-- Dumped by pg_dump version 14.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -61,7 +61,8 @@ CREATE TABLE public.nets_users_data (
     email_show boolean DEFAULT false NOT NULL,
     name_show boolean DEFAULT false NOT NULL,
     mobile_show boolean DEFAULT false NOT NULL,
-    confirmed boolean DEFAULT false NOT NULL
+    confirmed boolean DEFAULT false NOT NULL,
+    active_date timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -78,7 +79,8 @@ CREATE TABLE public.nets_users_data_tmp (
     email_show boolean DEFAULT false NOT NULL,
     name_show boolean DEFAULT false NOT NULL,
     mobile_show boolean DEFAULT false NOT NULL,
-    confirmed boolean DEFAULT false NOT NULL
+    confirmed boolean DEFAULT false NOT NULL,
+    active_date timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -297,11 +299,11 @@ COPY public.nets_data (net_node_id, name, goal, resource_name, resource_link) FR
 -- Data for Name: nets_users_data; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.nets_users_data (node_id, net_node_id, user_id, email_show, name_show, mobile_show, confirmed) FROM stdin;
-1	1	1	f	f	f	t
-3	1	2	f	f	f	t
-5	1	3	f	f	f	t
-7	1	4	f	f	f	f
+COPY public.nets_users_data (node_id, net_node_id, user_id, email_show, name_show, mobile_show, confirmed, active_date) FROM stdin;
+1	1	1	f	f	f	t	2023-01-08 13:27:19.209752
+3	1	2	f	f	f	t	2023-01-08 13:27:19.209752
+5	1	3	f	f	f	t	2023-01-08 13:27:19.209752
+7	1	4	f	f	f	f	2023-01-08 13:27:19.209752
 \.
 
 
@@ -309,7 +311,7 @@ COPY public.nets_users_data (node_id, net_node_id, user_id, email_show, name_sho
 -- Data for Name: nets_users_data_tmp; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.nets_users_data_tmp (node_id, net_node_id, user_id, email_show, name_show, mobile_show, confirmed) FROM stdin;
+COPY public.nets_users_data_tmp (node_id, net_node_id, user_id, email_show, name_show, mobile_show, confirmed, active_date) FROM stdin;
 \.
 
 

@@ -47,8 +47,10 @@ export const getChangesMethods = (parent: IClientAppThis) => ({
       }
       if (userNodeId === nodeId) updateNet = true;
     }
-    if (updateAll) await parent.setUser({ ...user! }, false);
-    if (updateNet) await parent.net.enter(netNodeId!, false);
+    if (updateAll) await parent.setUser({ ...user! }, true)
+      .catch((e) => console.log(e));;
+    if (updateNet) await parent.net.enter(netNodeId!, true)
+      .catch((e) => console.log(e));;
   },
 
   async confirm(messageId: number) {

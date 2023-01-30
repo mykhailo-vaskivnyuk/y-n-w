@@ -8,6 +8,7 @@ export const NET_EVENT_MAP = {
   LEAVE_DISVOTE: 'leave_disvote',
   CONNECT_VOTE: 'connect_vote',
   CONNECT_DISVOTE: 'connect_disvote',
+  UNACTIVE_DISCONNECT: 'unactive_disconnect',
 };
 export type NetEventKeys = keyof typeof NET_EVENT_MAP;
 

@@ -23,7 +23,11 @@ export interface IQueriesUserNet {
   getData: TQuery<[
     ['user_id', number],
     ['net_node_id', number],
-  ], IUserNetDataResponse>
+  ], IUserNetDataResponse>;
+  setActiveDate: TQuery<[
+    ['user_id', number],
+    ['net_node_id', number],
+  ]>;
 }
 
 export const find = `
@@ -116,4 +120,12 @@ export const getData = `
     nodes.parent_node_id,
     nets_users_data.confirmed,
     users_members.vote
+`;
+
+export const setActiveDate = `
+  UPDATE nets_users_data
+  SET active_date = now()
+  WHERE
+    user_id = $1 AND
+    net_node_id = $2
 `;

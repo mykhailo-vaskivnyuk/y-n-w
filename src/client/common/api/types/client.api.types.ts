@@ -1,5 +1,8 @@
 import * as P from './types';
 
+export type TMemberDisconnect = {
+  monthAgo: number;
+};
 export type TMemberInviteCreateResponse = string | null;
 export type TNetConnectByTokenResponse = null | {
   net_node_id: number;

@@ -12,7 +12,7 @@ export const tightenNodes = async (node_id: number) => {
   } = node;
   if (user_id) return false;
   if (!count_of_members) {
-    await execQuery.node.removeTree([node_id]);
+    // await execQuery.node.removeTree([node_id]);
     if (parent_node_id) return true;
     await updateCountOfNets(node_id, -1);
     await execQuery.node.remove([node_id]);

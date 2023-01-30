@@ -1,6 +1,8 @@
+/* eslint-disable max-lines */
+import { setTimeout, setInterval } from 'node:timers';
 import {
   THandler, IRoutes, TInputModule, IContext,
-  TOutputModule, IRouter, IRouterConfig,
+  TOutputModule, IRouter, IRouterConfig, ITask,
 } from './types';
 import { IOperation, TOperationResponse } from '../types/operation.types';
 import { RouterError } from './errors';
@@ -49,6 +51,15 @@ class Router implements IRouter {
       logger.error(e);
       throw new RouterError('ROUTES_CREATE_ERROR');
     }
+
+    try {
+      const { tasks = [] } = this.config;
+      for (const task of tasks) await this.execTask(task);
+    } catch (e: any) {
+      logger.error(e);
+      throw new RouterError('TASK_ERROR');
+    }
+
     return this;
   }
 
@@ -70,6 +81,24 @@ class Router implements IRouter {
     } finally {
       await context.session.finalize();
     }
+  }
+
+  private async execTask(task: ITask) {
+    const { time = null, interval = 0, params, names } = task;
+    const context = { isAdmin: true } as IContext;
+    const handler = this.findRoute(names);
+    if (time === null) {
+      if (!interval) return await handler(context, params);
+      setInterval(() => handler(context, params)
+        .catch((e) => logger.error(e)), interval);
+      return;
+    }
+    setTimeout(() => {
+      handler(context, params).catch((e) => logger.error(e));
+      if (!interval) return;
+      setInterval(() => handler(context, params)
+        .catch((e) => logger.error(e)), interval);
+    }, time);
   }
 
   private findRoute(names: IOperation['names']): THandler {

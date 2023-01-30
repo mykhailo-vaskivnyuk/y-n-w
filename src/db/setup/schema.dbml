@@ -48,6 +48,7 @@ Table "nets_users_data" {
   "name_show" boolean [not null, default: false]
   "mobile_show" boolean [not null, default: false]
   "confirmed" boolean [not null, default: false]
+  "active_date" timestamp [not null, default: 'now()']
   Indexes {
     (user_id, net_node_id) [unique, name: "uk_nets_users_data_user_net_node"]
   }
@@ -61,6 +62,7 @@ Table "nets_users_data_tmp" {
   "name_show" boolean [not null, default: false]
   "mobile_show" boolean [not null, default: false]
   "confirmed" boolean [not null, default: false]
+  "active_date" timestamp [not null, default: 'now()']
   Indexes {
     (user_id, net_node_id) [pk]
   }

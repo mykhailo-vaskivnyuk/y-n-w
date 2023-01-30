@@ -18,7 +18,7 @@ export const createPathResolve = (basePath: string) =>
 
 export const excludeNullUndefined = <T>(
   value: T | null | undefined
-): value is T => Boolean(value ?? true);
+): value is T => value !== null && value !== undefined;
 
 export const runHeavyOperation = (
   operation: (index: number) => void,

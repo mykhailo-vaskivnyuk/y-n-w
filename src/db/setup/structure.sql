@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.5
--- Dumped by pg_dump version 14.5
+-- Dumped from database version 14.3
+-- Dumped by pg_dump version 14.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -61,7 +61,8 @@ CREATE TABLE public.nets_users_data (
     email_show boolean DEFAULT false NOT NULL,
     name_show boolean DEFAULT false NOT NULL,
     mobile_show boolean DEFAULT false NOT NULL,
-    confirmed boolean DEFAULT false NOT NULL
+    confirmed boolean DEFAULT false NOT NULL,
+    active_date timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -78,7 +79,8 @@ CREATE TABLE public.nets_users_data_tmp (
     email_show boolean DEFAULT false NOT NULL,
     name_show boolean DEFAULT false NOT NULL,
     mobile_show boolean DEFAULT false NOT NULL,
-    confirmed boolean DEFAULT false NOT NULL
+    confirmed boolean DEFAULT false NOT NULL,
+    active_date timestamp without time zone DEFAULT now() NOT NULL
 );
 
 

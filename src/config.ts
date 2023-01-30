@@ -64,6 +64,12 @@ const config: IConfig = {
         },
       },
     },
+    tasks: [{
+      names: ['member', 'disconnect'],
+      time: 0,
+      interval: 86_400_000,
+      params: { monthAgo: 2 },
+    }],
   },
   inConnection: {
     transport,

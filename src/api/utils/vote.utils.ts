@@ -8,9 +8,10 @@ export const checkVotes = async (parent_node_id: number) => {
   const [memberWithMaxVotes] = members;
   const { vote_count } = memberWithMaxVotes!;
   const isVoted = vote_count === count;
-  if (!isVoted) return;
+  if (!isVoted) return false;
   const { node_id } = memberWithMaxVotes!;
   await voteNetUser(node_id, parent_node_id);
+  return true;
 };
 
 export const voteNetUser = async (node_id: number, parent_node_id: number) => {
