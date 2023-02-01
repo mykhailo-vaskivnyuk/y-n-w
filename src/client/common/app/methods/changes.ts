@@ -42,7 +42,7 @@ export const getChangesMethods = (parent: IClientAppThis) => ({
       const { user_node_id: userNodeId, net_view: netView } = change;
       if (netView === 'net') {
         updateAll = true;
-        if (userNodeId && netNodeId) updateNet = true;
+        if (userNodeId !== undefined && netNodeId) updateNet = true;
         break;
       }
       if (userNodeId === nodeId) updateNet = true;

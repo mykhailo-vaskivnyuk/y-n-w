@@ -2,6 +2,7 @@
 /* eslint-disable import/no-cycle */
 import * as T from '../api/types/types';
 import { INITIAL_NETS, INets, IMember, TNetChatIdsMap } from './types';
+import { ITableUsersBoardMessages } from '../../local/imports';
 import { AppStatus } from '../constants';
 import { HttpResponseError } from '../errors';
 import { EventEmitter } from '../event.emitter';
@@ -34,6 +35,7 @@ export class ClientApp extends EventEmitter {
   private userChatId?: number;
   private netChatIds: TNetChatIdsMap;
   private netChanges: T.IUserChanges;
+  private boardMessages: ITableUsersBoardMessages[];
 
   account: ReturnType<typeof getAccountMethods>;
   net: ReturnType<typeof getNetMethods>;
@@ -68,6 +70,7 @@ export class ClientApp extends EventEmitter {
       messages: this.messages,
       chatIds: this.netChatIds,
       changes: this.netChanges,
+      boardMessages: this.boardMessages,
     };
   }
 
@@ -156,11 +159,13 @@ export class ClientApp extends EventEmitter {
       this.user!.user_status = this.userNetData!.confirmed ?
         'INSIDE_NET' :
         'INVITING';
+      await this.net.board.read();
       await this.net.getCircle();
       await this.net.getTree();
       this.emit('user', { ...this.user });
     } else {
       this.setUserNetData();
+      this.setBoardMessages();
       this.setCircle();
       this.setTree();
       this.setNetView();
@@ -233,12 +238,14 @@ export class ClientApp extends EventEmitter {
   protected setMessage(messageData: T.IChatResponseMessage | T.IInstantChange) {
     if (!messageData) return;
 
-    const { chatId } = messageData;
+    if (this.changes.isInstantChange(messageData)) {
+      this.changes.update([messageData]);
+      return;
+    }
 
+    const { chatId } = messageData;
     if (chatId === this.userChatId) {
-      if (this.changes.isInstantChange(messageData)) {
-        this.changes.update([messageData]);
-      } else this.changes.read();
+      this.changes.read();
       return;
     }
 
@@ -265,6 +272,10 @@ export class ClientApp extends EventEmitter {
     } else chatMessages = [...messages];
     this.messages.set(chatId, chatMessages);
     this.emit('message', chatId);
+  }
+
+  protected setBoardMessages(messages: ITableUsersBoardMessages[] = []) {
+    this.boardMessages = messages;
   }
 
   protected setChanges(changes: T.IUserChanges) {

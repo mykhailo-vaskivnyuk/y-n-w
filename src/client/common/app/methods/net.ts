@@ -3,9 +3,12 @@
 import * as T from '../../api/types/types';
 import { INITIAL_NETS, IClientAppThis, IMember } from '../types';
 import { AppStatus } from '../../constants';
+import { getNetBoardMethods } from './net.board';
 import { getMemberStatus } from '../../api/utils';
 
 export const getNetMethods = (parent: IClientAppThis) => ({
+  board: getNetBoardMethods(parent),
+
   async create(args: Omit<T.INetCreateParams, 'node_id'>) {
     parent.setStatus(AppStatus.LOADING);
     try {
@@ -54,7 +57,7 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   async comeout() {
     parent.setStatus(AppStatus.LOADING);
     try {
-      parent.setNet();
+      await parent.setNet();
       parent.setStatus(AppStatus.READY);
       return true;
     } catch (e: any) {
@@ -81,8 +84,6 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   },
 
   async getCircle() {
-    parent.setStatus(AppStatus.LOADING);
-    try {
       const { net } = parent.getState();
       const result = await parent.api.net.getCircle(net!);
       const circle: IMember[] = result.map((member, memberPosition) => {
@@ -93,15 +94,10 @@ export const getNetMethods = (parent: IClientAppThis) => ({
         return { ...member, member_name: memberName, memberStatus };
       });
       parent.setCircle(circle);
-      parent.setStatus(AppStatus.READY);
-    } catch (e: any) {
-      parent.setError(e);
-    }
   },
 
   async getTree() {
-    parent.setStatus(AppStatus.LOADING);
-    try {
+
       const { net } = parent.getState();
       const result = await parent.api.net.getTree(net!);
       const tree: IMember[] = result.map((member, memberPosition) => {
@@ -112,10 +108,6 @@ export const getNetMethods = (parent: IClientAppThis) => ({
         return { ...member, member_name: memberName, memberStatus };
       });
       parent.setTree(tree);
-      parent.setStatus(AppStatus.READY);
-    } catch (e: any) {
-      parent.setError(e);
-    }
   },
 
   setView(netView: T.NetViewEnum) {

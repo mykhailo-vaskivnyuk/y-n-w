@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS users_members CASCADE;
 DROP TABLE IF EXISTS users_changes CASCADE;
 DROP TABLE IF EXISTS users_messages_tmp CASCADE;
 DROP TABLE IF EXISTS users_messages CASCADE;
+DROP TABLE IF EXISTS users_board_messages CASCADE;
 DROP TABLE IF EXISTS nodes_invites CASCADE;
 DROP TABLE IF EXISTS nets_users_data_tmp CASCADE;
 DROP TABLE IF EXISTS nets_users_data CASCADE;

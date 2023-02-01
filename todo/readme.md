@@ -79,9 +79,12 @@
 
 ## UI
 
+- create `<IconMenuItem />`
+
 ## ROUTING
 
 - set `netView` correctly
+- control routes access in acсordance with `user_state`
 
 ## OTHER
 

@@ -177,6 +177,37 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO merega;
 
 --
+-- Name: users_board_messages; Type: TABLE; Schema: public; Owner: merega
+--
+
+CREATE TABLE public.users_board_messages (
+    message_id bigint NOT NULL,
+    net_node_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    node_id bigint NOT NULL,
+    net_view character(10) DEFAULT 'net'::bpchar,
+    message character varying(255) NOT NULL,
+    date timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.users_board_messages OWNER TO merega;
+
+--
+-- Name: users_board_messages_message_id_seq; Type: SEQUENCE; Schema: public; Owner: merega
+--
+
+ALTER TABLE public.users_board_messages ALTER COLUMN message_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.users_board_messages_message_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: users_changes; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -334,6 +365,14 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: users_board_messages pk_users_board_messages; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.users_board_messages
+    ADD CONSTRAINT pk_users_board_messages PRIMARY KEY (message_id);
+
+
+--
 -- Name: users_changes pk_users_changes; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -398,6 +437,14 @@ ALTER TABLE ONLY public.nets_users_data
 
 
 --
+-- Name: nets_users_data uk_nets_users_data_user_node; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.nets_users_data
+    ADD CONSTRAINT uk_nets_users_data_user_node UNIQUE (user_id, node_id);
+
+
+--
 -- Name: nodes uk_nodes_node_net_node; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -427,6 +474,13 @@ ALTER TABLE ONLY public.nodes_invites
 
 ALTER TABLE ONLY public.users_tokens
     ADD CONSTRAINT uk_users_tokens_token UNIQUE (token);
+
+
+--
+-- Name: sk_users_board_messages_net_node; Type: INDEX; Schema: public; Owner: merega
+--
+
+CREATE INDEX sk_users_board_messages_net_node ON public.users_board_messages USING btree (net_node_id);
 
 
 --
@@ -518,6 +572,22 @@ ALTER TABLE ONLY public.nodes_invites
 
 ALTER TABLE ONLY public.sessions
     ADD CONSTRAINT fk_sessions_user FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
+
+
+--
+-- Name: users_board_messages fk_users_board_messages_node_net_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.users_board_messages
+    ADD CONSTRAINT fk_users_board_messages_node_net_node FOREIGN KEY (node_id, net_node_id) REFERENCES public.nodes(node_id, net_node_id) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
+
+
+--
+-- Name: users_board_messages fk_users_board_messages_user_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.users_board_messages
+    ADD CONSTRAINT fk_users_board_messages_user_node FOREIGN KEY (user_id, node_id) REFERENCES public.nets_users_data(user_id, node_id) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
 
 
 --
