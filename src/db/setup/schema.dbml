@@ -110,6 +110,7 @@ Table "users_board_messages" {
   "date" timestamp [not null, default: 'now()']
   Indexes {
     net_node_id [name: "sk_users_board_messages_net_node"]
+    (user_id, net_node_id) [unique, name: "uk_users_board_mesages_user_net_node"]
   }
 }
 

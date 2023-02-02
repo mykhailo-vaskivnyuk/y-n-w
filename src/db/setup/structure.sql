@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.3
--- Dumped by pg_dump version 14.3
+-- Dumped from database version 14.5
+-- Dumped by pg_dump version 14.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -458,6 +458,14 @@ ALTER TABLE ONLY public.nodes
 
 ALTER TABLE ONLY public.nodes
     ADD CONSTRAINT uk_nodes_node_parent_node UNIQUE (node_id, parent_node_id);
+
+
+--
+-- Name: users_board_messages uk_users_board_mesages_user_net_node; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.users_board_messages
+    ADD CONSTRAINT uk_users_board_mesages_user_net_node UNIQUE (user_id, net_node_id);
 
 
 --
