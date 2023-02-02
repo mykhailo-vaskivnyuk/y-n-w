@@ -14,7 +14,7 @@ export const create = `
   INSERT INTO users_tokens (user_id, token)
   VALUES ($1, $2)
   ON CONFLICT (user_id)
-  DO UPDATE
+    DO UPDATE
     SET token = EXCLUDED.token
     WHERE users_tokens.user_id = $1 
 `;

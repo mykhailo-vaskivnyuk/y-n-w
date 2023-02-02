@@ -45,6 +45,9 @@ export const create = `
     net_node_id, user_id, node_id, message, date
   )
   VALUES ($1, $2, $3, $4, now() at time zone 'UTC')
+  ON CONFLICT (user_id, net_node_id)
+    DO UPDATE
+    SET node_id = $3, message = $4, date = EXCLUDED.date
 `;
 
 export const update = `

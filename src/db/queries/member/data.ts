@@ -40,7 +40,7 @@ export const setDislike = `
     parent_node_id, user_id, member_id, dislike)
   VALUES ($1, $2, $3, true)
   ON CONFLICT (parent_node_id, user_id, member_id)
-  DO UPDATE
+    DO UPDATE
     SET dislike = EXCLUDED.dislike
     WHERE um.parent_node_id = $1 AND um.user_id = $2 AND um.member_id = $3 
 `;
@@ -55,7 +55,7 @@ export const setVote = `
   INSERT INTO users_members AS um (parent_node_id, user_id, member_id, vote)
   VALUES ($1, $2, $3, true)
   ON CONFLICT (parent_node_id, user_id, member_id)
-  DO UPDATE
+    DO UPDATE
     SET vote = EXCLUDED.vote
     WHERE um.parent_node_id = $1 AND um.user_id = $2 AND um.member_id = $3
 `;

@@ -11,12 +11,12 @@ export const NetBoardReadResponseSchema = {
 };
 
 export const BoardRemoveParamsSchema = {
-  node_id: Joi.number(),
-  message_id: Joi.number(),
+  node_id: Joi.number().required(),
+  message_id: Joi.number().required(),
 };
 
 export const BoardSaveParamsSchema = {
-  node_id: Joi.number(),
+  node_id: Joi.number().required(),
   message_id: Joi.number(),
-  message: Joi.string(),
+  message: Joi.string().required(),
 };
