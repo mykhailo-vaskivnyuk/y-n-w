@@ -106,6 +106,20 @@ export const getApi = (
     'leave': (options: P.INetReadParams) =>
       fetch<boolean>('/net/leave', options),
 
+    'board': {
+      'clear': (options: Q.TNetBoardClear) =>
+        fetch<boolean>('/net/board/clear', options),
+
+      'read': (options: P.INetReadParams) =>
+        fetch<P.INetBoardReadResponse>('/net/board/read', options),
+
+      'remove': (options: P.IBoardRemoveParams) =>
+        fetch<boolean>('/net/board/remove', options),
+
+      'save': (options: P.IBoardSaveParams) =>
+        fetch<boolean>('/net/board/save', options),
+
+    },
   },
   'scripts': {
     'script.js': () => fetch<Q.TScriptsScriptjsResponse>('/scripts/script.js'),

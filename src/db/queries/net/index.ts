@@ -7,6 +7,7 @@ import { IQueriesNetCircle } from './circle';
 import { IQueriesNetTree } from './tree';
 import { IQueriesNetFind } from './find';
 import { IQueriesNetMessage } from './message';
+import { IQueriesNetBoard } from './board';
 
 export interface IQueriesNet {
   createInitial: TQuery<[
@@ -37,6 +38,7 @@ export interface IQueriesNet {
   tree: IQueriesNetTree;
   find: IQueriesNetFind;
   message: IQueriesNetMessage;
+  board: IQueriesNetBoard;
 }
 
 export const createInitial = `

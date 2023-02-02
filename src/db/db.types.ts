@@ -7,6 +7,7 @@ export const TABLES_MAP = {
   NETS_USERS_DATA: 'nets_users_data',
   NODES_INVITES: 'nodes_invites',
   USERS_MESSAGES: 'users_messages',
+  USERS_BOARD_MESSAGES: 'users_board_messages',
   USERS_CHANGES: 'users_changes',
   USERS_TOKENS: 'users_tokens',
   USERS_MEMBERS: 'users_members',
@@ -67,9 +68,20 @@ export type ITableUsersNodesInvites = {
 
 export type ITableUsersMessages = {
   message_id: number;
-  user_node_id: number;
+  user_id: number;
+  user_node_id: number | null;
   net_view: 'net' | 'tree' | 'circle'; // NetViewKeys
   member_node_id: number | null;
+  message: string;
+  date: string;
+}
+
+export type ITableUsersBoardMessages = {
+  message_id: number;
+  net_node_id: number;
+  user_id: number;
+  node_id: number;
+  net_view: 'net' | 'tree' | 'circle'; // NetViewKeys
   message: string;
   date: string;
 }

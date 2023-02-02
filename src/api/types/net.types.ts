@@ -10,6 +10,7 @@ export const NET_EVENT_MAP = {
   CONNECT_DISVOTE: 'connect_disvote',
   UNACTIVE_DISCONNECT: 'unactive_disconnect',
   NOT_VOTE_DISCONNECT: 'not_vote_disconnect',
+  BOARD_MESSAGE: 'board_message',
 };
 export type NetEventKeys = keyof typeof NET_EVENT_MAP;
 
@@ -19,5 +20,6 @@ export const NET_EVENT_TO_MAP = {
   CIRCLE: 'circle',
   FACILITATOR: 'facilitator',
   MEMBER: 'member',
+  NET: 'net',
 };
 export type NetEventToKeys = keyof typeof NET_EVENT_TO_MAP;

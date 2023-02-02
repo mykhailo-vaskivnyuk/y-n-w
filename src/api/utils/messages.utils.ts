@@ -9,7 +9,7 @@ import {
   NetViewKeys, IInstantChange,
 } from '../../client/common/api/types/types';
 import {
-  NET_MESSAGES_MAP, SET_USER_NODE_ID_FOR,
+  NET_MESSAGES_MAP, SEND_INSTANT_MESSAGE, SET_USER_NODE_ID_FOR,
 } from '../../constants/constants';
 
 export const commitChanges = async (user_id: number, date: string) => {
@@ -61,6 +61,7 @@ export const createMessageToMember = async (
 export const sendInstantMessage = (
   user_id: number, user_node_id: number, net_view: NetViewKeys,
 ) => {
+  // change logic as in createMessagesInNet
   const chatId = chatService.getChatIdOfUser(user_id);
   if (!chatId) return;
   const connectionIds = chatService.getChatConnections(chatId);
@@ -73,4 +74,37 @@ export const sendInstantMessage = (
     date: '',
   };
   connectionService.sendMessage(response, connectionIds);
+};
+
+export const sendNetInstantMessage = (memberNet: IMember, message: string) => {
+  const { net: chatId } = chatService.getChatIdsOfNet(memberNet);
+  if (!chatId) return;
+  // const { user_id, node_id: user_node_id } = memberNet;
+  // const userChatId = chatService.getChatIdOfUser(user_id)!;
+  const netConnectionIds = chatService.getChatConnections(chatId);
+  // const userConnectionId =
+  //   chatService.getChatConnections(userChatId)!
+  //     .values().next().value as number;
+  const response: IInstantChange = {
+    chatId, user_id: 0, index: 0, message,
+    message_id: 0,
+    user_node_id: 0,
+    net_view: 'net',
+    member_node_id: null,
+    date: '',
+  };
+  // const connectionIds = new Set(netConnectionIds);
+  // userConnectionId && connectionIds.delete(userConnectionId);
+  connectionService.sendMessage(response, netConnectionIds);
+};
+
+export const createMessagesInNet = (
+  event: NetEventKeys,
+  memberNet: IMember,
+) => {
+  const isMessage = 'NET' in NET_MESSAGES_MAP[event];
+  if (!isMessage) return;
+  if (!SEND_INSTANT_MESSAGE.includes(event)) return;
+  const message = NET_MESSAGES_MAP[event]['NET'];
+  sendNetInstantMessage(memberNet, message!);
 };

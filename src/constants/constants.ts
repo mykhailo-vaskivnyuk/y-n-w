@@ -70,7 +70,10 @@ export const NET_MESSAGES_MAP:
         `Вас від'єднано від мережі %s через від'єднання координатора
         через невибори`,
       MEMBER: 'Вас від\'єднано від мережі %s через невибори',
-    }
+    },
+    BOARD_MESSAGE: {
+      NET: 'Дошка оголошень',
+    },
   };
 
 export const SET_USER_NODE_ID_FOR: NetEventKeys[] = [
@@ -80,4 +83,5 @@ export const SET_USER_NODE_ID_FOR: NetEventKeys[] = [
 
 export const SEND_INSTANT_MESSAGE: NetEventKeys[] = [
   'VOTE',
+  'BOARD_MESSAGE',
 ];

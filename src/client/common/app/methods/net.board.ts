@@ -1,10 +1,10 @@
 /* eslint-disable import/no-cycle */
-import { TNetBoardSave } from '../../api/types/client.api.types';
+import { IBoardSaveParams } from '../../api/types/types';
 import { IClientAppThis } from '../types';
 import { AppStatus } from '../../constants';
 
 export const getNetBoardMethods = (parent: IClientAppThis) => ({
-  async persist(args: Omit<TNetBoardSave, 'node_id'>) {
+  async persist(args: Omit<IBoardSaveParams, 'node_id'>) {
     parent.setStatus(AppStatus.LOADING);
     try {
       const { net } = parent.getState();

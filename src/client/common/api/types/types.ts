@@ -4,5 +4,6 @@ export * from './account.types';
 export * from './net.types';
 export * from './member.types';
 export * from './chat.types';
+export * from './board.types';
 export * from './changes.types';
 export * from './test.types';

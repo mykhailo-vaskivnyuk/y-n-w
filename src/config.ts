@@ -75,6 +75,11 @@ const config: IConfig = {
       time: 86_400_000,
       interval: 86_400_000,
       params: { monthAgo: 2 },
+    }, {
+      names: ['net', 'board', 'clear'],
+      time: 86_400_000,
+      interval: 86_400_000,
+      params: { weekAgo: 0 },
     }],
   },
   inConnection: {

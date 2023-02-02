@@ -11,6 +11,9 @@ export type TNetConnectByTokenResponse = null | {
   net_node_id: number;
   error?: string;
 };
+export type TNetBoardClear = {
+  weekAgo: number;
+};
 export type TScriptsScriptjsResponse = Record<string, any>;
 export type TTestDataResponse = {
   field1: null | number;

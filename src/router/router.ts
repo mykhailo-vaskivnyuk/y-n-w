@@ -84,21 +84,16 @@ class Router implements IRouter {
   }
 
   private async execTask(task: ITask) {
-    const { time = null, interval = 0, params, names } = task;
+    const { time, interval = 0, params, names } = task;
     const context = { isAdmin: true } as IContext;
     const handler = this.findRoute(names);
-    if (time === null) {
-      if (!interval) return await handler(context, params);
-      setInterval(() => handler(context, params)
-        .catch((e) => logger.error(e)), interval);
-      return;
-    }
     setTimeout(() => {
-      handler(context, params).catch((e) => logger.error(e));
+      time !== undefined &&
+        handler(context, params).catch((e) => logger.error(e));
       if (!interval) return;
       setInterval(() => handler(context, params)
         .catch((e) => logger.error(e)), interval);
-    }, time);
+    }, time || 0);
   }
 
   private findRoute(names: IOperation['names']): THandler {
