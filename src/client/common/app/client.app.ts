@@ -156,10 +156,11 @@ export class ClientApp extends EventEmitter {
     this.userNet = userNet;
     if (userNet) {
       await this.net.getUserData(userNet.net_node_id);
-      this.user!.user_status = this.userNetData!.confirmed ?
+      const userStatus = this.userNetData!.confirmed ?
         'INSIDE_NET' :
         'INVITING';
-      await this.net.board.read();
+      this.user!.user_status = userStatus;
+      userStatus === 'INSIDE_NET' && await this.net.board.read();
       await this.net.getCircle();
       await this.net.getTree();
       this.emit('user', { ...this.user });

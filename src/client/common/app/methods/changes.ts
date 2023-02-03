@@ -52,12 +52,9 @@ export const getChangesMethods = (parent: IClientAppThis) => ({
       if (userNodeId === nodeId) updateNet = true;
     }
     if (updateAll) await parent.setUser({ ...user! }, false)
-      .catch((e) => console.log(e));
+      .catch(console.log);
     if (updateNet) await parent.net.enter(netNodeId!, true)
-      .catch((e) => {
-        console.log(e);
-        // parent.setNet();
-      });
+      .catch(console.log);
   },
 
   async confirm(messageId: number) {
@@ -65,10 +62,6 @@ export const getChangesMethods = (parent: IClientAppThis) => ({
     try {
       await parent.api.user.changes
         .confirm({ message_id: messageId });
-      // let { changes } = parent.getState();
-      // changes = changes
-      //   .filter(({ message_id: v }) => messageId !== v);
-      // parent.setChanges(changes);
       parent.setStatus(AppStatus.READY);
     } catch (e: any) {
       parent.setError(e);
@@ -77,8 +70,7 @@ export const getChangesMethods = (parent: IClientAppThis) => ({
 
   remove(messageId: number) {
     let { changes } = parent.getState();
-    changes = changes
-      .filter(({ message_id: v }) => messageId !== v);
+    changes = changes.filter(({ message_id: v }) => messageId !== v);
     parent.setChanges(changes);
   },
 
