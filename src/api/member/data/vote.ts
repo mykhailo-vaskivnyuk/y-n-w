@@ -22,7 +22,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
   await execQuery.member.data
     .setVote([parent_node_id, user_id, member.user_id!]);
   const result = await checkVotes(parent_node_id);
-  !result && await createMessages('VOTE', userNet!);
+  !result && createMessages('VOTE', userNet!);
   return true;
 };
 set.paramsSchema = MemberConfirmParamsSchema;

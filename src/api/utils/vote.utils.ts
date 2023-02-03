@@ -59,14 +59,14 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
   !parentUserId && await execQuery.node.updateCountOfMembers([node_id, -1]);
 
   createMessages('LEAVE_VOTE', member!, date);
-  createMessages('LEAVE_DISVOTE', parent_member!, date);
+  parent_member && createMessages('LEAVE_DISVOTE', parent_member, date);
 
   const voteMemeber = {
     ...member!,
     node_id: parent_node_id,
     parent_node_id: parent_member?.parent_node_id || null,
   };
-  createMessages('CONNECT_VOTE', voteMemeber, date);
+  await createMessages('CONNECT_VOTE', voteMemeber, date);
 
 
   if (!parent_member) return;

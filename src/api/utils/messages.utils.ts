@@ -71,7 +71,6 @@ export const sendInstantMessage = (
     user_node_id,
     net_view,
     member_node_id: null,
-    date: '',
   };
   connectionService.sendMessage(response, connectionIds);
 };
@@ -91,7 +90,6 @@ export const sendNetInstantMessage = (memberNet: IMember, message: string) => {
     user_node_id: 0,
     net_view: 'net',
     member_node_id: null,
-    date: '',
   };
   // const connectionIds = new Set(netConnectionIds);
   // userConnectionId && connectionIds.delete(userConnectionId);

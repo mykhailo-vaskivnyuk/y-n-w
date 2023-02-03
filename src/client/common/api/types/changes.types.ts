@@ -7,4 +7,4 @@ export type IUserChanges = IUserChange[];
 
 export type IInstantChange =
   OmitNull<IChatResponseMessage> &
-  Omit<IUserChange, 'message'>;
+  Omit<IUserChange, 'message' | 'date'>;

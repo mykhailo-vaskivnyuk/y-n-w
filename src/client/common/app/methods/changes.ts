@@ -9,6 +9,10 @@ import { AppStatus } from '../../constants';
 export const getChangesMethods = (parent: IClientAppThis) => ({
   lastDate: undefined as string | undefined,
 
+  setLastDate(changes: IUserChanges) {
+    this.lastDate = changes.at(-1)?.date;
+  },
+
   isInstantChange(
     messageData: OmitNull<IChatResponseMessage> | IInstantChange,
   ): messageData is IInstantChange {
@@ -20,7 +24,7 @@ export const getChangesMethods = (parent: IClientAppThis) => ({
     try {
       const newChanges = await parent.api
         .user.changes.read({ date: this.lastDate });
-      this.lastDate = newChanges.at(-1)?.date;
+      this.setLastDate(newChanges);
       !inChain && await this.update(newChanges);
       if (newChanges.length) {
         const { changes: curChanges } = parent.getState();
@@ -47,10 +51,13 @@ export const getChangesMethods = (parent: IClientAppThis) => ({
       }
       if (userNodeId === nodeId) updateNet = true;
     }
-    if (updateAll) await parent.setUser({ ...user! }, true)
-      .catch((e) => console.log(e));;
+    if (updateAll) await parent.setUser({ ...user! }, false)
+      .catch((e) => console.log(e));
     if (updateNet) await parent.net.enter(netNodeId!, true)
-      .catch((e) => console.log(e));;
+      .catch((e) => {
+        console.log(e);
+        // parent.setNet();
+      });
   },
 
   async confirm(messageId: number) {
@@ -58,14 +65,21 @@ export const getChangesMethods = (parent: IClientAppThis) => ({
     try {
       await parent.api.user.changes
         .confirm({ message_id: messageId });
-      let { changes } = parent.getState();
-      changes = changes
-        .filter(({ message_id: v }) => messageId !== v);
-      parent.setChanges(changes);
+      // let { changes } = parent.getState();
+      // changes = changes
+      //   .filter(({ message_id: v }) => messageId !== v);
+      // parent.setChanges(changes);
       parent.setStatus(AppStatus.READY);
     } catch (e: any) {
       parent.setError(e);
     }
+  },
+
+  remove(messageId: number) {
+    let { changes } = parent.getState();
+    changes = changes
+      .filter(({ message_id: v }) => messageId !== v);
+    parent.setChanges(changes);
   },
 
 });

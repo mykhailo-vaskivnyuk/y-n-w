@@ -22,7 +22,7 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
 
     if (parent_net_id) {
       const [parentNet] = await execQuery.user.net
-        .find([user_id, parent_net_id]);
+        .read([user_id, parent_net_id]);
       if (!parentNet) return { net_node_id, error: 'not parent net member' };
     }
 
