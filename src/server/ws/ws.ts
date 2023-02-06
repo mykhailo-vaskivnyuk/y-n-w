@@ -4,7 +4,7 @@ import { IInputConnection, IRequest } from '../types';
 import { IWsConfig, IWsConnection, IWsServer, TWsResModule } from './types';
 import { IOperation, TOperationResponse } from '../../types/operation.types';
 import { IHttpServer } from '../http/types';
-import { PINGS_INTERVAL } from './constants';
+import { PING_INTERVAL } from '../../client/common/constants';
 import { MAX_CHAT_INDEX } from '../../constants/constants';
 import { ServerError } from '../errors';
 import { handleError } from './methods/handle.error';
@@ -151,7 +151,7 @@ class WsConnection implements IInputConnection {
       }
     };
 
-    const interval = setInterval(sendPing, PINGS_INTERVAL);
+    const interval = setInterval(sendPing, PING_INTERVAL);
     this.server.on('close', () => clearInterval(interval));
   }
 

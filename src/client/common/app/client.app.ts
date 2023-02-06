@@ -86,8 +86,8 @@ export class ClientApp extends EventEmitter {
         const baseUrl = this.baseUrl.replace('http', 'ws');
         const connection = getWsConnection(
           baseUrl,
-          this.setMessage.bind(this),
           this.handleConnect.bind(this),
+          this.setMessage.bind(this),
         );
         this.api = getApi(connection);
         await this.api.health();

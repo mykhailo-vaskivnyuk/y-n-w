@@ -20,6 +20,7 @@ export const MEMBER_STATUS_MAP = {
 export type MemberStatusKeys = keyof typeof MEMBER_STATUS_MAP;
 export const MEMBER_STATUS_ENUM = getEnumFromMap(MEMBER_STATUS_MAP);
 
-export const CONECTION_ATTEMPT_COUNT = 3;
+export const CONNECTION_ATTEMPT_COUNT = 3;
 export const CONNECTION_ATTEMPT_DELAY = 3000;
 export const CONNECTION_TIMEOUT = 20000;
+export const PING_INTERVAL = 5000;
