@@ -9,7 +9,9 @@
 
 ## ARCHITECTURE
 
-## DB
+- block data for net changes
+
+## DATA (DB)
 
 - order db types
 - create additional indexes
@@ -18,11 +20,17 @@
 - optimize texts of queries, select identical parts, move them to separate file
 - remove `RETURNING` if unnecessary and add its if necessary
 - ? verify types of queries' results, use `::type` operator
+- changes -> events, messages - > events or chat messages
+- divide events on users_events / members_events (net, tree, circle)
+- add `event` to events
+- add userName to boardMessage
+- chatId fo user?
 
 ## ENDPOINTS
 
 - combine `getMemberStatus()` on backend with `app.member.getStatus()` on frontend
 - add metadata `handler.allowedForNetUser` and error type `HandlerError('FORBIDDEN')`
+- confirm event - additionaly verify user_id
 
 ## CONNECTION
 
@@ -70,12 +78,32 @@
 38. check schema and paramsSchema fields of endpoint
 39. check tighten if userId isnull
 40. combine confirm and restore tokens, add index
+41. at time zone
+42. Tighten messages
+43. changes not loader, board is loader, reconnect load Net if in
+44. one user can has several connections
+45. вас видалено? як перегрузити net?
+46. if chatId then min one connection is
+47. vote if one don't work
+48. connect by token, find parent net fic
+
+## FUNCTIONS
+
+### VOTE
+
+- single member can't vote
 
 ---
 
 # FRONT
 
 ## APP
+
+- send only required data in requests
+- confirm changes being loaded date
+- one loading proccess at a time
+- chain user_id with node_id (net_node_id) ?
+- which data reload on reconnect ?
 
 ## UI
 
@@ -118,6 +146,39 @@
 28. copy button for invite
 29. decide how to determine vote button display
 
+## FUNCTIONS
+
+### INVITING
+
+- save invite token for not authorized user
+- add more notifications and events messages
+
 ---
 
 # TESTING
+
+----
+
+# BUGs
+
+- invite forbidden for free member
+- ws - not found
+- hooks, loading, error
+- operation on member if user deleted
+- use slice for array merge
+- ‌use chatId different from nodeId, send req for separate endpoint with nodeId and netView tree l circle l net, use two Maps for net end tree+circle,
+- save chatId counter, add onOpen to ws.client, run operation to clear chat
+- ‌‌add to chat if request Id is, at first check if connection is
+‌- chatService removeNetNode
+‌- ‌ws server on error
+‌- ‌index of chat mess can be reseted on connection reconnect
+‌- ‌reset chat connection on user remove or leave
+‌- ‌front chatIds if logout or reconnect
+- ‌‌remove await
+‌- ‌load all chat with single request
+‌- ‌connected in circle as empty! Connected circle!!!
+‌- ‌if chatId no available or circle is not
+‌- ‌disvote myself and on vote if empty node is available
+‌- ‌use count of members infront of confirmed
+‌- ‌get changes from date
+‌- ‌set blocking on net if leave dislike or vote
