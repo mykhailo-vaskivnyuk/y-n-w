@@ -14,19 +14,19 @@ export interface IQueriesUserNet {
   ], IUserNetData>
   read: TQuery<[
     ['user_id', number],
-    ['net_node_id', number],
+    ['net_id', number],
   ], OmitNull<INetResponse>>;
   getNetAndSubnets: TQuery<[
     ['user_id', number],
-    ['net_node_id', number | null],
+    ['net_id', number | null],
   ], IUserNetData>;
   getData: TQuery<[
     ['user_id', number],
-    ['net_node_id', number],
+    ['net_id', number],
   ], IUserNetDataResponse>;
   setActiveDate: TQuery<[
     ['user_id', number],
-    ['net_node_id', number],
+    ['net_id', number],
   ]>;
 }
 
@@ -35,16 +35,16 @@ export const find = `
     nodes.*,
     nodes.node_id::int,
     nodes.parent_node_id::int,
-    nodes.net_node_id::int,
+    nodes.net_id::int,
     nets.net_level,
     nets_users_data.user_id::int,
     nets_users_data.confirmed,
     nets_data.name
   FROM nets_users_data
   INNER JOIN nets ON
-    nets.net_node_id = nets_users_data.net_node_id
+    nets.net_id = nets_users_data.net_id
   INNER JOIN nets_data ON
-    nets_data.net_node_id = nets_users_data.net_node_id
+    nets_data.net_id = nets_users_data.net_id
   INNER JOIN nodes ON
     nodes.node_id = nets_users_data.node_id 
   WHERE
@@ -61,14 +61,14 @@ export const read = `
     nets_users_data.confirmed
   FROM nets_users_data
   INNER JOIN nets ON
-    nets.net_node_id = nets_users_data.net_node_id
+    nets.net_id = nets_users_data.net_id
   INNER JOIN nets_data ON
-    nets_data.net_node_id = nets.net_node_id
+    nets_data.net_id = nets.net_id
   INNER JOIN nodes ON
     nodes.node_id = nets_users_data.node_id
   WHERE
     nets_users_data.user_id = $1 AND
-    nets_users_data.net_node_id = $2
+    nets_users_data.net_id = $2
 `;
 
 export const getNetAndSubnets = `
@@ -80,9 +80,9 @@ export const getNetAndSubnets = `
     nets_data.name
   FROM nets_users_data
   INNER JOIN nets ON
-    nets.net_node_id = nets_users_data.net_node_id
+    nets.net_id = nets_users_data.net_id
   INNER JOIN nets_data ON
-    nets_data.net_node_id = nets_users_data.net_node_id
+    nets_data.net_id = nets_users_data.net_id
   INNER JOIN nodes ON
     nodes.node_id = nets_users_data.node_id
   WHERE ${userInNetAndItsSubnets()}
@@ -103,7 +103,7 @@ export const getData = `
     ) AS vote_count
   FROM nets_users_data
   INNER JOIN nets ON
-    nets.net_node_id = nets_users_data.net_node_id
+    nets.net_id = nets_users_data.net_id
   INNER JOIN nodes ON
     nodes.node_id = nets_users_data.node_id
   LEFT JOIN users_members ON
@@ -114,7 +114,7 @@ export const getData = `
     um.parent_node_id = nodes.parent_node_id
   WHERE
     nets_users_data.user_id = $1 AND
-    nets_users_data.net_node_id = $2
+    nets_users_data.net_id = $2
   GROUP BY
     nodes.node_id,
     nodes.parent_node_id,
@@ -127,5 +127,5 @@ export const setActiveDate = `
   SET active_date = now()
   WHERE
     user_id = $1 AND
-    net_node_id = $2
+    net_id = $2
 `;

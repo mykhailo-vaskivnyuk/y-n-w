@@ -14,9 +14,9 @@ export interface IQueriesNetUser {
 
 export const createData = `
   INSERT INTO nets_users_data (
-    node_id, net_node_id, user_id, confirmed
+    node_id, net_id, user_id, confirmed
   )
-  SELECT $1, net_node_id, $2, true
+  SELECT $1, net_id, $2, true
   FROM nodes
   WHERE node_id = $1
   RETURNING *
@@ -24,9 +24,9 @@ export const createData = `
 
 export const connect = `
   INSERT INTO nets_users_data (
-    node_id, net_node_id, user_id
+    node_id, net_id, user_id
   )
-  SELECT $1, net_node_id, $2
+  SELECT $1, net_id, $2
   FROM nodes
   WHERE node_id = $1
   RETURNING *

@@ -48,7 +48,7 @@ export const ChatGetMessagesResponseSchema = {
 } as Record<keyof IChatMessage, TJoiSchema>;
 
 export const ChatConnectAllSchema = {
-  net_node_id: Joi.number(),
+  net_id: Joi.number(),
   net: Joi.number(),
   tree: Joi.number(),
   circle: Joi.number(),

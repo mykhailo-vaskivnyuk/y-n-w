@@ -56,6 +56,7 @@ class Router implements IRouter {
     }
 
     this.inited = true;
+    return this;
   }
 
   private async execTask(task: ITask) {
@@ -71,7 +72,7 @@ class Router implements IRouter {
     }, time || 0);
   }
 
-  async execOperation(operation: IOperation): Promise<TOperationResponse> {
+  async exec(operation: IOperation): Promise<TOperationResponse> {
     if (!this.inited) throw new RouterError('ROUTER_ERROR');
     const { options: { origin, connectionId }, names } = operation;
     const context = { origin, connectionId } as IContext;

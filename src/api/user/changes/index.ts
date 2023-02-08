@@ -10,6 +10,7 @@ export const read: THandler<{ date?: string }, IUserChanges> =
     const user_id = session.read('user_id')!;
     const changes = await execQuery
       .user.changes.read([user_id, date || null]);
+    logger.debug(changes);
     return changes;
   };
 read.paramsSchema = {

@@ -9,8 +9,8 @@ export const getChatMethods = (parent: IClientAppThis) => ({
     parent.setUserChatId(userChatId);
     const allChatIds = await parent.api.chat.connect.nets();
     const netChatIdsMap = new Map<number, T.INetChatIds>();
-    allChatIds.forEach(({ net_node_id: netNodeId, ...netChatIds }) => {
-      netChatIdsMap.set(netNodeId, netChatIds);
+    allChatIds.forEach(({ net_id: netId, ...netChatIds }) => {
+      netChatIdsMap.set(netId, netChatIds);
     });
     parent.setNetChatIds(netChatIdsMap);
   },
@@ -44,6 +44,6 @@ export const getChatMethods = (parent: IClientAppThis) => ({
 
   getChatId(netView: T.NetViewKeys) {
     const { net, chatIds } = parent.getState();
-    return chatIds.get(net!.net_node_id)?.[netView];
+    return chatIds.get(net!.net_id)?.[netView];
   },
 });

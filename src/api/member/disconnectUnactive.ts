@@ -15,9 +15,9 @@ const disconnectUnactive: THandler<{ monthAgo: number }, boolean> =
     do {
       [member] = await execQuery.member.find.unactive([strDate]);
       if (!member) return true;
-      const { user_id, net_node_id } = member;
+      const { user_id, net_id } = member;
       const nodesToArrange =
-        await removeNetUser('UNACTIVE_DISCONNECT', user_id, net_node_id);
+        await removeNetUser('UNACTIVE_DISCONNECT', user_id, net_id);
       await arrangeNodes(nodesToArrange);
     } while (member);
     return true;

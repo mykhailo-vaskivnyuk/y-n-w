@@ -8,10 +8,10 @@ import {
 } from '../../schema/schema';
 
 export const getData: THandler<INetEnterParams, IUserNetDataResponse> =
-  async ({ session }, { net_node_id }) => {
+  async ({ session }, { net_id }) => {
     const user_id = session.read('user_id')!;
     const [userNetData] = await execQuery.user.net
-      .getData([user_id, net_node_id]);
+      .getData([user_id, net_id]);
     if (!userNetData) throw new HandlerError('NOT_FOUND');
     return userNetData!;
   };

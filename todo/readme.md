@@ -102,7 +102,7 @@
 - send only required data in requests
 - confirm changes being loaded date
 - one loading proccess at a time
-- chain user_id with node_id (net_node_id) ?
+- chain user_id with node_id (net_id) ?
 - which data reload on reconnect ?
 
 ## UI

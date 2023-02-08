@@ -15,12 +15,12 @@ const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
     do {
       [parentNode] = await execQuery.node.find([strDate]);
       if (!parentNode) return true;
-      const { node_id, net_node_id } = parentNode;
+      const { node_id, net_id } = parentNode;
       const members = await execQuery.net.tree.getMembers([node_id]);
       const nodesToArrange: number[] = [node_id];
       for (const member of members) {
         const { user_id, node_id } = member;
-        await removeNetUser('NOT_VOTE_DISCONNECT', user_id, net_node_id);
+        await removeNetUser('NOT_VOTE_DISCONNECT', user_id, net_id);
         nodesToArrange.push(node_id);
       }
       await arrangeNodes(nodesToArrange);

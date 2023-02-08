@@ -25,7 +25,7 @@ export type INodeWithUser =
   OuterJoin<Pick<T.ITableNetsUsersData, 'user_id' | 'confirmed'>>;
 
 export type IMemberDislikes =
-  Pick<T.ITableNetsUsersData, 'net_node_id' | 'user_id'> & {
+  Pick<T.ITableNetsUsersData, 'net_id' | 'user_id'> & {
   dislike_count: number;
 };
 

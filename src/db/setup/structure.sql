@@ -25,7 +25,7 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.nets (
-    net_node_id bigint NOT NULL,
+    net_id bigint NOT NULL,
     net_level integer DEFAULT 0 NOT NULL,
     parent_net_id bigint,
     first_net_id bigint,
@@ -40,7 +40,7 @@ ALTER TABLE public.nets OWNER TO merega;
 --
 
 CREATE TABLE public.nets_data (
-    net_node_id bigint NOT NULL,
+    net_id bigint NOT NULL,
     name character varying(50) NOT NULL,
     goal text DEFAULT NULL::character varying,
     resource_name character varying(50) DEFAULT NULL::character varying,
@@ -51,12 +51,26 @@ CREATE TABLE public.nets_data (
 ALTER TABLE public.nets_data OWNER TO merega;
 
 --
+-- Name: nets_net_id_seq; Type: SEQUENCE; Schema: public; Owner: merega
+--
+
+ALTER TABLE public.nets ALTER COLUMN net_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.nets_net_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: nets_users_data; Type: TABLE; Schema: public; Owner: merega
 --
 
 CREATE TABLE public.nets_users_data (
     node_id bigint NOT NULL,
-    net_node_id bigint NOT NULL,
+    net_id bigint NOT NULL,
     user_id bigint NOT NULL,
     email_show boolean DEFAULT false NOT NULL,
     name_show boolean DEFAULT false NOT NULL,
@@ -74,7 +88,7 @@ ALTER TABLE public.nets_users_data OWNER TO merega;
 
 CREATE TABLE public.nets_users_data_tmp (
     node_id bigint NOT NULL,
-    net_node_id bigint NOT NULL,
+    net_id bigint NOT NULL,
     user_id bigint NOT NULL,
     email_show boolean DEFAULT false NOT NULL,
     name_show boolean DEFAULT false NOT NULL,
@@ -95,7 +109,7 @@ CREATE TABLE public.nodes (
     node_level integer DEFAULT 0 NOT NULL,
     node_position integer DEFAULT 0 NOT NULL,
     parent_node_id bigint,
-    net_node_id bigint,
+    net_id bigint,
     count_of_members integer DEFAULT 0 NOT NULL,
     updated timestamp without time zone DEFAULT now() NOT NULL
 );
@@ -182,7 +196,7 @@ ALTER TABLE public.users OWNER TO merega;
 
 CREATE TABLE public.users_board_messages (
     message_id bigint NOT NULL,
-    net_node_id bigint NOT NULL,
+    net_id bigint NOT NULL,
     user_id bigint NOT NULL,
     node_id bigint NOT NULL,
     net_view character(10) DEFAULT 'net'::bpchar,
@@ -313,7 +327,7 @@ ALTER TABLE public.users ALTER COLUMN user_id ADD GENERATED ALWAYS AS IDENTITY (
 --
 
 ALTER TABLE ONLY public.nets
-    ADD CONSTRAINT pk_nets PRIMARY KEY (net_node_id);
+    ADD CONSTRAINT pk_nets PRIMARY KEY (net_id);
 
 
 --
@@ -321,7 +335,7 @@ ALTER TABLE ONLY public.nets
 --
 
 ALTER TABLE ONLY public.nets_data
-    ADD CONSTRAINT pk_nets_data PRIMARY KEY (net_node_id);
+    ADD CONSTRAINT pk_nets_data PRIMARY KEY (net_id);
 
 
 --
@@ -337,7 +351,7 @@ ALTER TABLE ONLY public.nets_users_data
 --
 
 ALTER TABLE ONLY public.nets_users_data_tmp
-    ADD CONSTRAINT pk_nets_users_data_tmp PRIMARY KEY (user_id, net_node_id);
+    ADD CONSTRAINT pk_nets_users_data_tmp PRIMARY KEY (user_id, net_id);
 
 
 --
@@ -429,11 +443,11 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: nets_users_data uk_nets_users_data_user_net_node; Type: CONSTRAINT; Schema: public; Owner: merega
+-- Name: nets_users_data uk_nets_users_data_user_net; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.nets_users_data
-    ADD CONSTRAINT uk_nets_users_data_user_net_node UNIQUE (user_id, net_node_id);
+    ADD CONSTRAINT uk_nets_users_data_user_net UNIQUE (user_id, net_id);
 
 
 --
@@ -445,11 +459,11 @@ ALTER TABLE ONLY public.nets_users_data
 
 
 --
--- Name: nodes uk_nodes_node_net_node; Type: CONSTRAINT; Schema: public; Owner: merega
+-- Name: nodes uk_nodes_node_net; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.nodes
-    ADD CONSTRAINT uk_nodes_node_net_node UNIQUE (node_id, net_node_id);
+    ADD CONSTRAINT uk_nodes_node_net UNIQUE (node_id, net_id);
 
 
 --
@@ -461,11 +475,11 @@ ALTER TABLE ONLY public.nodes
 
 
 --
--- Name: users_board_messages uk_users_board_mesages_user_net_node; Type: CONSTRAINT; Schema: public; Owner: merega
+-- Name: users_board_messages uk_users_board_mesages_user_net; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.users_board_messages
-    ADD CONSTRAINT uk_users_board_mesages_user_net_node UNIQUE (user_id, net_node_id);
+    ADD CONSTRAINT uk_users_board_mesages_user_net UNIQUE (user_id, net_id);
 
 
 --
@@ -485,10 +499,10 @@ ALTER TABLE ONLY public.users_tokens
 
 
 --
--- Name: sk_users_board_messages_net_node; Type: INDEX; Schema: public; Owner: merega
+-- Name: sk_users_board_messages_net; Type: INDEX; Schema: public; Owner: merega
 --
 
-CREATE INDEX sk_users_board_messages_net_node ON public.users_board_messages USING btree (net_node_id);
+CREATE INDEX sk_users_board_messages_net ON public.users_board_messages USING btree (net_id);
 
 
 --
@@ -527,27 +541,19 @@ CREATE UNIQUE INDEX users_tokens_token_idx ON public.users_tokens USING btree (t
 
 
 --
--- Name: nets_data fk_nets_data_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
+-- Name: nets_data fk_nets_data_net; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.nets_data
-    ADD CONSTRAINT fk_nets_data_node FOREIGN KEY (net_node_id) REFERENCES public.nodes(node_id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_nets_data_net FOREIGN KEY (net_id) REFERENCES public.nets(net_id) ON DELETE CASCADE;
 
 
 --
--- Name: nets fk_nets_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
---
-
-ALTER TABLE ONLY public.nets
-    ADD CONSTRAINT fk_nets_node FOREIGN KEY (net_node_id) REFERENCES public.nodes(node_id) ON DELETE CASCADE;
-
-
---
--- Name: nets_users_data fk_nets_users_data_node_net_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
+-- Name: nets_users_data fk_nets_users_data_node_net; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.nets_users_data
-    ADD CONSTRAINT fk_nets_users_data_node_net_node FOREIGN KEY (node_id, net_node_id) REFERENCES public.nodes(node_id, net_node_id) ON UPDATE CASCADE;
+    ADD CONSTRAINT fk_nets_users_data_node_net FOREIGN KEY (node_id, net_id) REFERENCES public.nodes(node_id, net_id);
 
 
 --
@@ -575,6 +581,14 @@ ALTER TABLE ONLY public.nodes_invites
 
 
 --
+-- Name: nodes fk_nodes_net; Type: FK CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.nodes
+    ADD CONSTRAINT fk_nodes_net FOREIGN KEY (net_id) REFERENCES public.nets(net_id) ON DELETE CASCADE;
+
+
+--
 -- Name: sessions fk_sessions_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -583,11 +597,11 @@ ALTER TABLE ONLY public.sessions
 
 
 --
--- Name: users_board_messages fk_users_board_messages_node_net_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
+-- Name: users_board_messages fk_users_board_messages_node_net; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.users_board_messages
-    ADD CONSTRAINT fk_users_board_messages_node_net_node FOREIGN KEY (node_id, net_node_id) REFERENCES public.nodes(node_id, net_node_id) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
+    ADD CONSTRAINT fk_users_board_messages_node_net FOREIGN KEY (node_id, net_id) REFERENCES public.nodes(node_id, net_id) ON DELETE CASCADE;
 
 
 --
@@ -595,7 +609,7 @@ ALTER TABLE ONLY public.users_board_messages
 --
 
 ALTER TABLE ONLY public.users_board_messages
-    ADD CONSTRAINT fk_users_board_messages_user_node FOREIGN KEY (user_id, node_id) REFERENCES public.nets_users_data(user_id, node_id) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
+    ADD CONSTRAINT fk_users_board_messages_user_node FOREIGN KEY (user_id, node_id) REFERENCES public.nets_users_data(user_id, node_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

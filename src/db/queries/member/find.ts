@@ -10,7 +10,7 @@ export interface IQueriesMemberFind {
 
 export const unactive = `
   SELECT *,
-    nets_users_data.net_node_id::int,
+    nets_users_data.net_id::int,
     nets_users_data.user_id::int
   FROM nets_users_data
   WHERE

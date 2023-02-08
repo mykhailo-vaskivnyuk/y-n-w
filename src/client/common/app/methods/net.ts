@@ -26,10 +26,10 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  async enter(net_node_id: number, inChain = false) {
+  async enter(net_id: number, inChain = false) {
     !inChain && parent.setStatus(AppStatus.LOADING);
     try {
-      const net = await parent.api.net.enter({ net_node_id });
+      const net = await parent.api.net.enter({ net_id });
       await parent.setNet(net);
       !inChain && parent.setStatus(AppStatus.READY);
       return net;
@@ -41,10 +41,10 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  async getUserData(net_node_id: number) {
+  async getUserData(net_id: number) {
     parent.setStatus(AppStatus.LOADING);
     try {
-      const userNetData = await parent.api.user.net.getData({ net_node_id });
+      const userNetData = await parent.api.user.net.getData({ net_id });
       await parent.setUserNetData(userNetData);
       parent.setStatus(AppStatus.READY);
       return userNetData;
@@ -123,7 +123,7 @@ export const getNetMethods = (parent: IClientAppThis) => ({
   getNets() {
     const { net, allNets } = parent.getState();
     const {
-      net_node_id: netId = null,
+      net_id: netId = null,
       parent_net_id: parentNetId = null,
     } = net || {};
     const nets = { ...INITIAL_NETS };
@@ -137,7 +137,7 @@ export const getNetMethods = (parent: IClientAppThis) => ({
     nets.parentNets = allNets
       .reduceRight((acc, item) => {
         if (!curParentNetId) return acc;
-        const { net_node_id: curNetId, parent_net_id: nextParentNetId } = item;
+        const { net_id: curNetId, parent_net_id: nextParentNetId } = item;
         if (curNetId !== curParentNetId) return acc;
         acc.push(item);
         curParentNetId = nextParentNetId;

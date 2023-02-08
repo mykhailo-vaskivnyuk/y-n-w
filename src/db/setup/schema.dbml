@@ -2,20 +2,20 @@ Table "nodes" {
   "node_id" bigint [primary key, not null]
   "node_level" integer [not null, default: 0]
   "node_position" integer [not null, default: 0]
-  "parent_node_id" bigint
-  "net_node_id" bigint
+  "parent_node_id" bigint [default: NULL]
+  "net_id" bigint [not null]
   "count_of_members" integer [not null, default: 0]
   "updated" timestamp [not null, default: 'now()']
   Indexes {
-    (node_id, net_node_id) [unique, name: "uk_nodes_node_net_node"]
+    (node_id, net_id) [unique, name: "uk_nodes_node_net"]
     (node_id, parent_node_id) [unique, name: "uk_nodes_node_parent_node"]
   }
 }
 
 Table "nets" {
-  "net_node_id" bigint [primary key, not null]
+  "net_id" bigint [primary key, not null]
   "net_level" integer [not null, default: 0]
-  "parent_net_id" bigint
+  "parent_net_id" bigint [default: NULL]
   "first_net_id" bigint [not null]
   "count_of_nets" integer [not null, default: 1]
 }
@@ -33,7 +33,7 @@ Table "users" {
 }
 
 Table "nets_data" {
-  "net_node_id" bigint [primary key, not null]
+  "net_id" bigint [primary key, not null]
   "name" "character varying(50)" [not null]
   "goal" text [default: NULL]
   "resource_name" "character varying(50)" [default: NULL]
@@ -42,7 +42,7 @@ Table "nets_data" {
 
 Table "nets_users_data" {
   "node_id" bigint [primary key, not null]
-  "net_node_id" bigint [not null]
+  "net_id" bigint [not null]
   "user_id" bigint [not null]
   "email_show" boolean [not null, default: false]
   "name_show" boolean [not null, default: false]
@@ -50,14 +50,14 @@ Table "nets_users_data" {
   "confirmed" boolean [not null, default: false]
   "active_date" timestamp [not null, default: 'now()']
   Indexes {
-    (user_id, net_node_id) [unique, name: "uk_nets_users_data_user_net_node"]
+    (user_id, net_id) [unique, name: "uk_nets_users_data_user_net"]
     (user_id, node_id) [unique, name: "uk_nets_users_data_user_node"]
   }
 }
 
 Table "nets_users_data_tmp" {
   "node_id" bigint [not null]
-  "net_node_id" bigint [not null]
+  "net_id" bigint [not null]
   "user_id" bigint [not null]
   "email_show" boolean [not null, default: false]
   "name_show" boolean [not null, default: false]
@@ -65,7 +65,7 @@ Table "nets_users_data_tmp" {
   "confirmed" boolean [not null, default: false]
   "active_date" timestamp [not null, default: 'now()']
   Indexes {
-    (user_id, net_node_id) [pk]
+    (user_id, net_id) [pk]
   }
 }
 
@@ -89,10 +89,10 @@ Table "nodes_invites" {
 
 Table "users_messages" {
   "message_id" bigint [primary key, not null]
+  "member_node_id" bigint [default: NULL]
   "user_id" bigint [not null]
   "user_node_id" bigint [default: NULL]
   "net_view" "character(10)" [not null]
-  "member_node_id" bigint [default: NULL]
   "message" "character varying(255)" [not null]
   "date" timestamp [not null]
   Indexes {
@@ -102,15 +102,15 @@ Table "users_messages" {
 
 Table "users_board_messages" {
   "message_id" bigint [primary key, not null]
-  "net_node_id" bigint [not null]
+  "net_id" bigint [not null]
   "user_id" bigint [not null]
   "node_id" bigint [not null]
   "net_view" "character(10)" [not null, default: 'net']
   "message" "character varying(255)" [not null]
   "date" timestamp [not null, default: 'now()']
   Indexes {
-    net_node_id [name: "sk_users_board_messages_net_node"]
-    (user_id, net_node_id) [unique, name: "uk_users_board_mesages_user_net_node"]
+    net_id [name: "sk_users_board_messages_net"]
+    (user_id, net_id) [unique, name: "uk_users_board_mesages_user_net"]
   }
 }
 
@@ -151,9 +151,9 @@ Table "sessions" {
   "updated" timestamp [not null, default: 'now()']
 }
 
-Ref "fk_nets_node":"nodes"."node_id" - "nets"."net_node_id" [delete: cascade]
-Ref "fk_nets_data_node":"nodes"."node_id" - "nets_data"."net_node_id" [delete: cascade]
-Ref "fk_nets_users_data_node_net_node":"nodes".(node_id, net_node_id) - "nets_users_data".(node_id, net_node_id) [update: cascade]
+Ref "fk_nodes_net":"nets"."net_id" < "nodes"."net_id" [delete: cascade]
+Ref "fk_nets_data_net":"nets"."net_id" - "nets_data"."net_id" [delete: cascade]
+Ref "fk_nets_users_data_node_net":"nodes".(node_id, net_id) - "nets_users_data".(node_id, net_id)
 Ref "fk_nets_users_data_user":"users"."user_id" < "nets_users_data"."user_id" [delete: cascade]
 Ref "fk_nodes_invites_node_parent_node":"nodes".(node_id, parent_node_id) - "nodes_invites".(node_id, parent_node_id) [update: cascade]
 Ref "fk_nodes_invites_parent_user_node":"nets_users_data"."node_id" < "nodes_invites"."parent_node_id" [delete: cascade]
@@ -166,6 +166,5 @@ Ref "fk_users_messages_user": "users"."user_id" < "users_messages"."user_id" [de
 Ref "fk_users_messages_user_node": "nets_users_data"."node_id" < "users_messages"."user_node_id" [update: set null]
 Ref "fk_users_messages_member_node": "nodes"."node_id" < "users_messages"."member_node_id" [delete: cascade]
 Ref "fk_users_changes_user": "users"."user_id" - "users_changes"."user_id" [delete: cascade]
-
 Ref "fk_users_board_messages_user_node":"nets_users_data".(user_id, node_id) - "users_board_messages".(user_id, node_id) [update: cascade, delete: cascade]
-Ref "fk_users_board_messages_node_net_node":"nodes".(node_id, net_node_id) - "users_board_messages".(node_id, net_node_id) [update: cascade, delete: cascade]
+Ref "fk_users_board_messages_node_net":"nodes".(node_id, net_id) - "users_board_messages".(node_id, net_id) [delete: cascade]

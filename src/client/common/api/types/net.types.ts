@@ -13,7 +13,7 @@ export type INetResponse = null | (
   Pick<ITableNodes, 'node_id' | 'parent_node_id'>
 );
 export type INetsResponse = OmitNull<INetResponse>[];
-export type INetEnterParams = { net_node_id: number };
+export type INetEnterParams = { net_id: number };
 export type INetReadParams = { node_id: number };
 export type INetViewResponse = IMemberResponse[];
 export const NET_VIEW_MAP = ['net', 'tree', 'circle'] as const;

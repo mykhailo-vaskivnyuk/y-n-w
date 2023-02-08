@@ -1,5 +1,4 @@
-import { OmitNull } from '../../../client/common/types';
-import { INetResponse } from '../../../client/common/api/types/types';
+/* eslint-disable max-lines */
 import { ITableNets, ITableNetsData } from '../../db.types';
 import { TQuery } from '../../types/types';
 import { IQueriesNetUser } from './user';
@@ -10,28 +9,31 @@ import { IQueriesNetMessage } from './message';
 import { IQueriesNetBoard } from './board';
 
 export interface IQueriesNet {
-  createInitial: TQuery<[
-    ['net_node_id', number],
-  ], OmitNull<INetResponse>>;
+  createInitial: TQuery<[], ITableNets>;
+  setFirstNet: TQuery<[
+    ['net_id', number],
+  ], ITableNets>;
   createChild: TQuery<[
-    ['net_node_id', number],
     ['parent_net_id', number],
-  ], OmitNull<INetResponse>>;
+  ], ITableNets>;
   createData: TQuery<[
-    ['net_node_id', number],
+    ['net_id', number],
     ['name', string],
   ], ITableNetsData>;
   updateCountOfNets: TQuery<[
-    ['net_node_id', number | null],
+    ['net_id', number | null],
     ['addCount', number],
   ], ITableNets>;
-  changeNetNode: TQuery<[
-    ['new_net_node', number],
-    ['cur_net_node', number],
-  ]>;
-  changeDataNetNode: TQuery<[
-    ['new_net_node', number],
-    ['cur_net_node', number],
+  // changeNetNode: TQuery<[
+  //   ['new_net_node', number],
+  //   ['cur_net_node', number],
+  // ]>;
+  // changeDataNetNode: TQuery<[
+  //   ['new_net_node', number],
+  //   ['cur_net_node', number],
+  // ]>;
+  remove: TQuery<[
+    ['net_id', number],
   ]>;
   user: IQueriesNetUser;
   circle: IQueriesNetCircle;
@@ -42,33 +44,34 @@ export interface IQueriesNet {
 }
 
 export const createInitial = `
-  INSERT INTO nets (
-    net_node_id, first_net_id
-  )
-  VALUES ($1, $1)
-  RETURNING *, net_node_id as node_id
+  INSERT INTO nets
+  RETURNING *
+`;
+
+export const setFirstNet = `
+  UPDATE nets
+  SET first_net_id = $1
+  WHERE net_id = $1
 `;
 
 export const createChild = `
   INSERT INTO nets (
-    net_node_id,
     net_level,
     parent_net_id,
     first_net_id
   )
   SELECT
-    $1,
     net_level + 1,
-    net_node_id,
+    net_id,
     first_net_id
   FROM nets
-  WHERE net_node_id = $2
-  RETURNING *, net_node_id as node_id
+  WHERE net_id = $1
+  RETURNING *
 `;
 
 export const createData = `
   INSERT INTO nets_data (
-    net_node_id, name
+    net_id, name
   )
   VALUES ($1, $2)
   RETURNING *
@@ -77,18 +80,23 @@ export const createData = `
 export const updateCountOfNets = `
   UPDATE nets
   SET count_of_nets = count_of_nets + $2
-  WHERE net_node_id = $1
+  WHERE net_id = $1
   RETURNING *
 `;
 
-export const changeNetNode = `
-  UPDATE nets
-  SET net_node_id = $1, first_net_id = $1
-  WHERE net_node_id = $2
-`;
+// export const changeNetNode = `
+//   UPDATE nets
+//   SET net_id = $1, first_net_id = $1
+//   WHERE net_id = $2
+// `;
 
-export const changeDataNetNode = `
-  UPDATE nets_data
-  SET net_node_id = $1
-  WHERE net_node_id = $2
+// export const changeDataNetNode = `
+//   UPDATE nets_data
+//   SET net_id = $1
+//   WHERE net_id = $2
+// `;
+
+export const remove = `
+  DELETE FROM nets
+  WHERE net_id = $1
 `;

@@ -4,9 +4,7 @@ import { TQuery } from '../../types/types';
 
 export interface IQueriesNode {
   createInitial: TQuery<[
-  ], ITableNodes>;
-  setNetNodeId: TQuery<[
-    ['net_node_id', number],
+    ['net_id', number]
   ], ITableNodes>;
   remove: TQuery<[
     ['node_id', number],
@@ -18,7 +16,7 @@ export interface IQueriesNode {
   createTree: TQuery<[
     ['node_level', number],
     ['parent_node_id', number],
-    ['net_node_id', number],
+    ['net_id', number],
   ]>;
   removeTree: TQuery<[
     ['parent_node_id', number],
@@ -34,10 +32,10 @@ export interface IQueriesNode {
     ['new_parent_node_id', number | null],
     ['node_position', number],
   ]>;
-  changeNetNode: TQuery<[
-    ['new_net_node_id', number],
-    ['cur_net_node_id', number],
-  ]>;
+  // changeNetNode: TQuery<[
+  //   ['new_net_id', number],
+  //   ['cur_net_id', number],
+  // ]>;
   find: TQuery<[
     ['date', string],
   ], ITableNodes>;
@@ -45,16 +43,9 @@ export interface IQueriesNode {
 
 export const createInitial = `
   INSERT INTO nodes (
-    count_of_members
+    net_id, count_of_members
   )
-  VALUES (1)
-  RETURNING *
-`;
-
-export const setNetNodeId = `
-  UPDATE nodes
-  SET net_node_id = $1
-  WHERE node_id = $1
+  VALUES ($1, 1)
   RETURNING *
 `;
 
@@ -74,7 +65,7 @@ export const updateCountOfMembers = `
 
 export const createTree = `
   INSERT INTO nodes (
-    node_position, node_level, parent_node_id, net_node_id
+    node_position, node_level, parent_node_id, net_id
   )
   VALUES
     (1, $1, $2, $3),
@@ -106,13 +97,13 @@ export const change = `
   WHERE node_id = $1
 `;
 
-export const changeNetNode = `
-  UPDATE nodes
-  SET
-    net_node_id = $1,
-    node_level = node_level - 1
-  WHERE net_node_id = $2
-`;
+// export const changeNetNode = `
+//   UPDATE nodes
+//   SET
+//     net_id = $1,
+//     node_level = node_level - 1
+//   WHERE net_id = $2
+// `;
 
 export const find = `
   SELECT nodes.* FROM nodes

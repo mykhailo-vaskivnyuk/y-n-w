@@ -23,7 +23,7 @@ export interface IQueriesMemberData {
   ]>;
   remove: TQuery<[
     ['user_id', number],
-    ['net_node_id', number | null],
+    ['net_id', number | null],
   ]>;
   removeFromCircle: TQuery<[
     ['user_id', number],
@@ -78,12 +78,12 @@ export const remove = `
       INNER JOIN nodes ON
         nodes.node_id = nets_users_data.node_id
       INNER JOIN nets ON
-        nets.net_node_id = nets_users_data.net_node_id
+        nets.net_id = nets_users_data.net_id
       WHERE
         nets_users_data.user_id = $1 AND ((
           ($2 + 1) NOTNULL AND
           nets.first_net_id = $2 AND
-          nets.net_level >= (SELECT net_level FROM nets WHERE net_node_id = $2)
+          nets.net_level >= (SELECT net_level FROM nets WHERE net_id = $2)
           ) OR ($2 + 1) ISNULL
         )
       ORDER BY nets.net_level DESC
@@ -92,12 +92,12 @@ export const remove = `
       SELECT nets_users_data.node_id
       FROM nets_users_data
       INNER JOIN nets ON
-        nets.net_node_id = nets_users_data.net_node_id
+        nets.net_id = nets_users_data.net_id
       WHERE
         nets_users_data.user_id = $1 AND ((
           ($2 + 1) NOTNULL AND
           nets.first_net_id = $2 AND
-          nets.net_level >= (SELECT net_level FROM nets WHERE net_node_id = $2)
+          nets.net_level >= (SELECT net_level FROM nets WHERE net_id = $2)
           ) OR ($2 + 1) ISNULL
         )
       ORDER BY nets.net_level DESC

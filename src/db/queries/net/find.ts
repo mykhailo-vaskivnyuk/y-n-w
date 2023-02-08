@@ -23,11 +23,11 @@ export const byToken = `
   INNER JOIN nodes ON
     nodes.node_id = nodes_invites.node_id
   INNER JOIN nets ON
-    nets.net_node_id = nodes.net_node_id
+    nets.net_id = nodes.net_id
   LEFT JOIN nets_users_data AS another_user ON
     another_user.node_id = nodes.node_id
   LEFT JOIN nets_users_data AS this_user ON
-    this_user.net_node_id = nodes.net_node_id AND
+    this_user.net_id = nodes.net_id AND
     this_user.user_id = $2
   WHERE
     nodes_invites.token = $1 AND

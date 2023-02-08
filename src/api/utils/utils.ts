@@ -9,13 +9,13 @@ export const tightenNodes = async (node_id: number) => {
     count_of_members,
     parent_node_id,
     node_position,
+    net_id,
   } = node;
   if (user_id) return false;
   if (!count_of_members) {
-    // await execQuery.node.removeTree([node_id]);
     if (parent_node_id) return true;
-    await updateCountOfNets(node_id, -1);
-    await execQuery.node.remove([node_id]);
+    await updateCountOfNets(net_id, -1);
+    await execQuery.net.remove([node_id]);
     return true;
   }
   const [nodeWithMaxCount] = await execQuery.net.tree
@@ -27,11 +27,11 @@ export const tightenNodes = async (node_id: number) => {
   if (childCount !== count_of_members) return false;
   await execQuery.node.change([childNodeId, parent_node_id, node_position]);
   await execQuery.node.removeTree([node_id]);
-  if (!parent_node_id) {
-    await execQuery.node.changeNetNode([childNodeId, node_id]);
-    await execQuery.net.changeNetNode([childNodeId, node_id]);
-    await execQuery.net.changeDataNetNode([childNodeId, node_id]);
-  }
+  // if (!parent_node_id) {
+  //   await execQuery.node.changeNetNode([childNodeId, node_id]);
+  //   await execQuery.net.changeNetNode([childNodeId, node_id]);
+  //   await execQuery.net.changeDataNetNode([childNodeId, node_id]);
+  // }
   await execQuery.node.remove([node_id]);
   return true;
 };

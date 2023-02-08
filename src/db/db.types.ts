@@ -19,13 +19,13 @@ export type ITableNodes = {
   node_level: number;
   node_position: number;
   parent_node_id: number | null;
-  net_node_id: number;
+  net_id: number;
   count_of_members: number;
   updated: string;
 }
 
 export type ITableNets = {
-  net_node_id: number;
+  net_id: number;
   net_level: number;
   parent_net_id: number | null;
   first_net_id: number;
@@ -42,7 +42,7 @@ export type ITableUsers = {
 }
 
 export type ITableNetsData = {
-  net_node_id: number;
+  net_id: number;
   name: string;
   goal: string | null;
   resource_name: string | null;
@@ -51,7 +51,7 @@ export type ITableNetsData = {
 
 export type ITableNetsUsersData = {
   node_id: number;
-  net_node_id: number;
+  net_id: number;
   user_id: number;
   email_show: boolean;
   name_show: boolean;
@@ -78,7 +78,7 @@ export type ITableUsersMessages = {
 
 export type ITableUsersBoardMessages = {
   message_id: number;
-  net_node_id: number;
+  net_id: number;
   user_id: number;
   node_id: number;
   net_view: 'net' | 'tree' | 'circle'; // NetViewKeys

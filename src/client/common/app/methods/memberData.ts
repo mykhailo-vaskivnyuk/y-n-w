@@ -45,7 +45,7 @@ export const getMemberDataMethods = (parent: IClientAppThis) => ({
         .set({ ...net!, member_node_id: nodeId });
       const { net: newNet } = parent.getState();
       if (success && net === newNet)
-        await parent.net.enter(net!.net_node_id, true)
+        await parent.net.enter(net!.net_id, true)
           .catch((e) => console.log(e));
       parent.setStatus(AppStatus.READY);
       return success;
@@ -61,7 +61,7 @@ export const getMemberDataMethods = (parent: IClientAppThis) => ({
       const success = await parent.api.member.data.vote
         .unSet({ ...net!, member_node_id: nodeId });
       if (success) {
-        await parent.net.getUserData(net!.net_node_id);
+        await parent.net.getUserData(net!.net_id);
         await parent.net.getCircle();
       }
       parent.setStatus(AppStatus.READY);

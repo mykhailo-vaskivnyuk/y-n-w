@@ -28,7 +28,7 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
   }
 
   const [member] = await execQuery.member.get([node_id]);
-  const { user_id, net_node_id } = member!;
+  const { user_id, net_id } = member!;
   await removeConnected('LEAVE_VOTE', member!, date);
   await execQuery.member.data.removeFromTree([user_id, node_id]);
   await execQuery.user.changes.removeFromTree([user_id, node_id]);
@@ -42,7 +42,7 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
     parent_node_id,
     user_id,
     parentUserId,
-    net_node_id,
+    net_id,
   ]);
   await execQuery.member.moveFromTmp([node_id, parent_node_id]);
   await execQuery.member.removeFromTmp([node_id, parent_node_id]);

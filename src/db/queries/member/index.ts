@@ -10,7 +10,7 @@ import { IQueriesMemberFind } from './find';
 export interface IQueriesMember {
   remove: TQuery<[
     ['user_id', number],
-    ['net_node_id', number | null],
+    ['net_id', number | null],
   ]>;
   findInTree: TQuery<[
     ['user_node_id', number],
@@ -42,7 +42,7 @@ export interface IQueriesMember {
     ['parent_node_id', number],
     ['user_id', number],
     ['parent_user_id', number | null],
-    ['net_node_id', number],
+    ['net_id', number],
   ]>;
   moveFromTmp: TQuery<[
     ['node_id', number],
@@ -59,11 +59,11 @@ export interface IQueriesMember {
 
 export const remove = `
   DELETE FROM nets_users_data
-  WHERE user_id = $1 AND net_node_id IN (
-    SELECT nets_users_data.net_node_id
+  WHERE user_id = $1 AND net_id IN (
+    SELECT nets_users_data.net_id
     FROM nets_users_data
     INNER JOIN nets ON
-      nets.net_node_id = nets_users_data.net_node_id
+      nets.net_id = nets_users_data.net_id
     WHERE ${userInNetAndItsSubnets()}
   )
 `;
@@ -108,7 +108,7 @@ export const get = `
   INNER JOIN nets_users_data ON
     nets_users_data.node_id = nodes.node_id
   INNER JOIN nets_data ON
-    nets_users_data.net_node_id = nets_data.net_node_id
+    nets_users_data.net_id = nets_data.net_id
   WHERE nodes.node_id = $1
 `;
 
@@ -138,7 +138,7 @@ export const change = `
   UPDATE nets_users_data_tmp
   SET
     node_id = CASE WHEN user_id = $3 THEN +$2 ELSE +$1 END
-  WHERE user_id IN ($3, $4) AND net_node_id = $5
+  WHERE user_id IN ($3, $4) AND net_id = $5
 `;
 
 export const moveFromTmp = `

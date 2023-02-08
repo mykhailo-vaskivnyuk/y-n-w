@@ -35,4 +35,4 @@ export type IChatGetMessages = {
 export type IChatGetMessagesResponse = IChatMessage[];
 
 export type INetChatIds = Partial<Record<NetViewKeys, number>>;
-export type IChatConnectAll = ({ net_node_id: number } & INetChatIds)[];
+export type IChatConnectAll = ({ net_id: number } & INetChatIds)[];

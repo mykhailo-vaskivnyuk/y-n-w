@@ -10,8 +10,8 @@ import { createMessages } from '../../utils/messages.create.utils';
 
 export const read: THandler<INetReadParams, INetBoardReadResponse> =
   async ({ userNet }) => {
-    const { net_node_id } = userNet!;
-    return await execQuery.net.board.get([net_node_id]);
+    const { net_id } = userNet!;
+    return await execQuery.net.board.get([net_id]);
   };
 read.paramsSchema = NetReadParamsSchema;
 read.responseSchema = NetBoardReadResponseSchema;

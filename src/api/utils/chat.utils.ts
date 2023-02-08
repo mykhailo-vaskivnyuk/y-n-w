@@ -7,11 +7,11 @@ export const chatIdVerified = (
   userNet: IUserNetData,
   messageData: IChatSendMessage | IChatGetMessages,
 ) => {
-  const { net_node_id, node_id, parent_node_id } = userNet!;
+  const { net_id, node_id, parent_node_id } = userNet!;
   const { chatId } = messageData;
-  const { net_node_id: netNodeId, node_id: nodeId } =
+  const { net_id: netId, node_id: nodeId } =
     chatService.getUserNetNode(chatId) || {};
-  if (net_node_id === netNodeId) return true;
+  if (net_id === netId) return true;
   if (parent_node_id === nodeId) return true;
   if (node_id === nodeId) return true;
   return false;

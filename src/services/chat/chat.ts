@@ -42,8 +42,8 @@ export class ChatService {
   getChatIdsOfNet(
     userNet: IMember, connectionId?: number,
   ) {
-    const { net_node_id } = userNet;
-    const netChatIds: T.IChatConnectAll[number] = { net_node_id };
+    const { net_id } = userNet;
+    const netChatIds: T.IChatConnectAll[number] = { net_id };
     for (const netView of T.NET_VIEW_MAP) {
       const chatId = this.getChatIdMap[netView](userNet);
       if (!chatId) continue;
@@ -53,12 +53,12 @@ export class ChatService {
     return netChatIds;
   }
 
-  private getNetChatId({ net_node_id }: IMember) {
-    let chatId = this.netChatIds.get(net_node_id);
+  private getNetChatId({ net_id }: IMember) {
+    let chatId = this.netChatIds.get(net_id);
     if (chatId) return chatId;
     chatId = this.genChatId();
-    this.netChatIds.set(net_node_id, chatId);
-    this.chatIdUserNetNode.set(chatId, { net_node_id });
+    this.netChatIds.set(net_id, chatId);
+    this.chatIdUserNetNode.set(chatId, { net_id });
     return chatId;
   }
 
@@ -85,9 +85,9 @@ export class ChatService {
   }
 
   removeChat(chatId: number) {
-    const { user_id, net_node_id, node_id } = this.getUserNetNode(chatId) || {};
+    const { user_id, net_id, node_id } = this.getUserNetNode(chatId) || {};
     user_id && this.userChatIds.delete(user_id);
-    net_node_id && this.netChatIds.delete(net_node_id);
+    net_id && this.netChatIds.delete(net_id);
     node_id && this.nodeChatIds.delete(node_id);
   }
 

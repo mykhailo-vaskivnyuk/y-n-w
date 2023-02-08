@@ -19,10 +19,10 @@ export const findUserNet = async (
 };
 
 export const updateCountOfNets = async (
-  net_node_id: number, addCount = 1,
+  net_id: number, addCount = 1,
 ): Promise<void> => {
   const [net] = await execQuery.net.updateCountOfNets(
-    [net_node_id, addCount],
+    [net_id, addCount],
   );
   const { parent_net_id } = net!;
   if (!parent_net_id) return;
@@ -41,18 +41,18 @@ export const removeConnected = async (
 export const removeNetUser = async (
   event: NetEventKeys,
   user_id: number,
-  net_node_id: number | null,
+  net_id: number | null,
 ) => {
   logger.debug('START REMOVE');
   const date = new Date().toUTCString();
 
   // 1 - get user's nodes in net and subnets
   const userNets = await execQuery.user.net
-    .getNetAndSubnets([user_id, net_node_id]);
+    .getNetAndSubnets([user_id, net_id]);
 
   // 2 - remove member_data from user and to user in net and subnets
   logger.debug('MEMBER DATA REMOVE');
-  await execQuery.member.data.remove([user_id, net_node_id]);
+  await execQuery.member.data.remove([user_id, net_id]);
 
   // 3 - remove connected users in net and subnets
   for (const userNet of userNets) {
@@ -62,7 +62,7 @@ export const removeNetUser = async (
 
   // 4 - remove user from nodes in net and subnets
   logger.debug('USER REMOVE');
-  await execQuery.member.remove([user_id, net_node_id]);
+  await execQuery.member.remove([user_id, net_id]);
 
   // 5 - update nodes data in net and subnets
   for (const { node_id, confirmed } of userNets)
@@ -89,10 +89,10 @@ export const removeConnectedMember = async (
   user_id: number,
   eventDate?: string,
 ) => {
-  const { net_node_id } = memberNode;
+  const { net_id } = memberNode;
   const date = eventDate || new Date().toUTCString();
-  await execQuery.member.data.remove([user_id, net_node_id]);
-  await execQuery.member.remove([user_id, net_node_id]);
+  await execQuery.member.data.remove([user_id, net_id]);
+  await execQuery.member.remove([user_id, net_id]);
   await createMessagesToConnected(event, memberNode, [user_id], date);
 };
 
@@ -106,7 +106,7 @@ export const checkDislikes = async (
   const { dislike_count } = memberWithMaxDislikes!;
   const disliked = Math.ceil(dislike_count / (count - dislike_count)) > 1;
   if (!disliked) return [];
-  const { user_id, net_node_id } = memberWithMaxDislikes!;
-  const nodesToArrange = await removeNetUser('DISLIKE', user_id, net_node_id);
+  const { user_id, net_id } = memberWithMaxDislikes!;
+  const nodesToArrange = await removeNetUser('DISLIKE', user_id, net_id);
   return nodesToArrange;
 };

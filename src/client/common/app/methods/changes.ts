@@ -39,21 +39,21 @@ export const getChangesMethods = (parent: IClientAppThis) => ({
 
   async update(changes: IUserChanges | IInstantChange[]) {
     const { user, net } = parent.getState();
-    const { node_id: nodeId, net_node_id: netNodeId } = net || {};
+    const { node_id: nodeId, net_id: netId } = net || {};
     let updateAll = false;
     let updateNet = false;
     for (const change of changes) {
       const { user_node_id: userNodeId, net_view: netView } = change;
       if (netView === 'net') {
         updateAll = true;
-        if (userNodeId !== undefined && netNodeId) updateNet = true;
+        if (userNodeId !== undefined && netId) updateNet = true;
         break;
       }
       if (userNodeId === nodeId) updateNet = true;
     }
     if (updateAll) await parent.setUser({ ...user! }, false)
       .catch(console.log);
-    if (updateNet) await parent.net.enter(netNodeId!, true)
+    if (updateNet) await parent.net.enter(netId!, true)
       .catch(console.log);
   },
 

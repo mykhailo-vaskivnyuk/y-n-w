@@ -2,13 +2,12 @@ import { IOperation } from '../../types/operation.types';
 import { IAppThis } from '../types';
 import { handleOperationError } from '../errors';
 
-
 export const createSetInputConnection = (parent: IAppThis) => () => {
   const { env } = parent.config;
 
   const handleOperation = async (operation: IOperation) => {
     try {
-      return await parent.router!.execOperation(operation);
+      return await parent.router!.exec(operation);
     } catch (e: any) {
       return handleOperationError(e);
     }
