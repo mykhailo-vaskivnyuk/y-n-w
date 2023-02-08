@@ -8,7 +8,7 @@ export const createSetInputConnection = (parent: IAppThis) => () => {
 
   const handleOperation = async (operation: IOperation) => {
     try {
-      return await parent.router!.exec(operation);
+      return await parent.router!.execOperation(operation);
     } catch (e: any) {
       return handleOperationError(e);
     }

@@ -43,8 +43,8 @@ export interface ITask {
 }
 
 export interface IRouter {
-  init(): Promise<this>;
-  exec(operation: IOperation): Promise<TOperationResponse>;
+  init(): Promise<void>;
+  execOperation(operation: IOperation): Promise<TOperationResponse>;
 }
 
 export interface IRoutes {

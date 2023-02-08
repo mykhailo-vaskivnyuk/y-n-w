@@ -1,52 +1,55 @@
 import { IOperation, TOperationResponse } from '../../types/operation.types';
-import {
-  IContext, IRouterConfig, THandler,
-  TInputModule, TOutputModule,
-} from '../types';
+import { IRouterConfig, IContext, THandler } from '../types';
 import { INPUT_MODULES_MAP, OUTPUT_MODULES_MAP } from '../constants';
 import { createPathResolve } from '../../utils/utils';
 
-export function applyInputModules(config: IRouterConfig) {
+export function createInputModules(config: IRouterConfig) {
   const { modulesPath, inputModules, modulesConfig } = config;
   const resolvePath = createPathResolve(modulesPath);
-  return inputModules.map(
+
+  const modules = inputModules.map(
     (module) => {
       const moduleConfig = modulesConfig[module];
       const modulePath = resolvePath(INPUT_MODULES_MAP[module]);
       const moduleExport = require(modulePath).default;
       return moduleExport(moduleConfig);
     });
+
+  const execInputModules = async (
+    { ...operation }: IOperation,
+    context: IContext,
+    handler: THandler,
+  ): Promise<IOperation> => {
+    for (const module of modules)
+      operation = await module(operation, context, handler);
+    return operation;
+  };
+
+  return execInputModules;
 }
 
-export const applyOutputModules = (config: IRouterConfig) => {
+export const createOutputModules = (config: IRouterConfig) => {
   const { modulesPath, outputModules, modulesConfig } = config;
   const resolvePath = createPathResolve(modulesPath);
-  return outputModules.map(
+
+  const modules = outputModules.map(
     (module) => {
       const moduleConfig = modulesConfig[module];
       const modulePath = resolvePath(OUTPUT_MODULES_MAP[module]);
       const moduleExport = require(modulePath).default;
       return moduleExport(moduleConfig);
-    });
-};
+    }
+  );
 
-export const getExecInputModules = (
-  inputModules: ReturnType<TInputModule>[],
-) => async (
-  { ...operation }: IOperation, context: IContext, handler: THandler
-): Promise<IOperation> => {
-  for (const module of inputModules) {
-    operation = await module(operation, context, handler);
-  }
-  return operation;
-};
+  const execOutputModules = async (
+    response: TOperationResponse,
+    context: IContext,
+    handler: THandler,
+  ): Promise<TOperationResponse> => {
+    for (const module of modules)
+      response = await module(response, context, handler);
+    return response;
+  };
 
-export const getExecOutputModules = (
-  outputModules: ReturnType<TOutputModule>[],
-) => async (
-  response: TOperationResponse, context: IContext, handler: THandler
-): Promise<TOperationResponse> => {
-  for (const module of outputModules)
-    response = await module(response, context, handler);
-  return response;
+  return execOutputModules;
 };
