@@ -2,7 +2,7 @@ import Joi from 'joi';
 import { THandler } from '../../router/types';
 import {
   IChatSendMessage, IChatGetMessages, IChatGetMessagesResponse,
-} from '../../client/common/api/types/types';
+} from '../../client/common/server/types/types';
 import {
   ChatGetMessagesResponseSchema, ChatGetMessagesSchema,
   ChatSendMessageSchema,

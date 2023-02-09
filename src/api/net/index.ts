@@ -1,6 +1,6 @@
 import {
   INetReadParams, INetViewResponse,
-} from '../../client/common/api/types/types';
+} from '../../client/common/server/types/types';
 import { THandler } from '../../router/types';
 import { NetReadParamsSchema, NetViewResponseSchema } from '../schema/schema';
 

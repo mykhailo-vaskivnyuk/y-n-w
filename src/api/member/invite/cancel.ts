@@ -1,8 +1,8 @@
 import Joi from 'joi';
-import { IMemberConfirmParams } from '../../../client/common/api/types/types';
+import { IMemberConfirmParams } from '../../../client/common/server/types/types';
 import { THandler } from '../../../router/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
-import { getMemberStatus } from '../../../client/common/api/utils';
+import { getMemberStatus } from '../../../client/common/server/utils';
 
 const cancel: THandler<IMemberConfirmParams, boolean> = async (
   _, { node_id, member_node_id }

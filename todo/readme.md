@@ -104,6 +104,7 @@
 - one loading proccess at a time
 - chain user_id with node_id (net_id) ?
 - which data reload on reconnect ?
+- EventEmmiter types
 
 ## UI
 

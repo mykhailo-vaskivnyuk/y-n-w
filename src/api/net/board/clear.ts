@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { ITableNets } from '../../../db/db.types';
+import { ITableNets } from '../../../db/types/db.tables.types';
 import { IMember } from '../../../db/types/member.types';
 import { THandler } from '../../../router/types';
 import { createMessagesInNet } from '../../utils/messages.utils';

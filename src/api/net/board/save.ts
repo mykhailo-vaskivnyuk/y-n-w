@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import { THandler } from '../../../router/types';
-import { IBoardSaveParams } from '../../../client/common/api/types/types';
+import { IBoardSaveParams } from '../../../client/common/server/types/types';
 import { BoardSaveParamsSchema } from '../../schema/schema';
 import { createMessages } from '../../utils/messages.create.utils';
 

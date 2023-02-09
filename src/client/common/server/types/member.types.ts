@@ -1,8 +1,7 @@
 import {
-  ITableUsers, ITableUsersNodesInvites,
+  ITableUsers, ITableUsersNodesInvites, OuterJoin,
   ITableUsersMembers, ITableNetsUsersData, ITableNodes,
 } from '../../../local/imports';
-import { OuterJoin } from '../../types';
 
 export type IMemberInviteParams = {
   node_id: number;

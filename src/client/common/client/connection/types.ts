@@ -11,7 +11,3 @@ export interface IWsResponse {
   error: any;
   data: any;
 }
-
-export type OmitNull<T> = T extends null ? never : T;
-
-export type OuterJoin<T> = { [key in keyof T]: T[key] | null };

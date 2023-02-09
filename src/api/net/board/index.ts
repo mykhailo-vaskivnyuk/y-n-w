@@ -2,7 +2,7 @@ import Joi from 'joi';
 import { THandler } from '../../../router/types';
 import {
   IBoardRemoveParams, INetBoardReadResponse, INetReadParams,
-} from '../../../client/common/api/types/types';
+} from '../../../client/common/server/types/types';
 import {
   NetReadParamsSchema, NetBoardReadResponseSchema, BoardRemoveParamsSchema,
 } from '../../schema/schema';

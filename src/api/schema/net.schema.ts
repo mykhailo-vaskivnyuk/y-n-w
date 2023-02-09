@@ -1,9 +1,8 @@
 import Joi from 'joi';
 import {
-  IMemberResponse, INetCreateParams, INetResponse,
-} from '../../client/common/api/types/types';
+  IMemberResponse, INetCreateParams, INetResponse, OmitNull,
+} from '../../client/common/server/types/types';
 import { TJoiSchema } from '../../router/types';
-import { OmitNull } from '../../client/common/types';
 import { JOI_NULL } from '../../router/constants';
 
 export const NetEnterParamsSchema = { net_id: Joi.number().required() };

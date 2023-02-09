@@ -1,5 +1,5 @@
 import { ITableUsersMessages } from '../../../local/imports';
-import { OmitNull } from '../../types';
+import { OmitNull } from './common.types';
 import { IChatResponseMessage } from './chat.types';
 
 export type IUserChange = ITableUsersMessages;

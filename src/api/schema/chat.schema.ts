@@ -1,9 +1,8 @@
 import Joi from 'joi';
 import {
-  IChatGetMessages, IChatMessage,
+  IChatGetMessages, IChatMessage, OmitNull,
   IChatResponseMessage, IChatSendMessage, NET_VIEW_MAP,
-} from '../../client/common/api/types/types';
-import { OmitNull } from '../../client/common/types';
+} from '../../client/common/server/types/types';
 import { TJoiSchema } from '../../router/types';
 import { JOI_NULL } from '../../router/constants';
 

@@ -1,4 +1,4 @@
-import { INetsResponse } from '../../../client/common/api/types/types';
+import { INetsResponse } from '../../../client/common/server/types/types';
 import { THandler } from '../../../router/types';
 import { NetsResponseSchema } from '../../schema/schema';
 

@@ -1,4 +1,4 @@
-import { ITableUsers } from '../../db.types';
+import { ITableUsers } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
 import { IQueriesUserNet } from './net';
 import { IQueriesUserNets } from './nets/get';

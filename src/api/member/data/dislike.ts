@@ -1,8 +1,8 @@
 import Joi from 'joi';
 import { THandler } from '../../../router/types';
-import { IMemberConfirmParams } from '../../../client/common/api/types/types';
+import { IMemberConfirmParams } from '../../../client/common/server/types/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
-import { getMemberStatus } from '../../../client/common/api/utils';
+import { getMemberStatus } from '../../../client/common/server/utils';
 import { arrangeNodes } from '../../utils/utils';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (

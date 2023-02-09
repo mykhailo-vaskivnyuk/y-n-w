@@ -1,6 +1,6 @@
 /* eslint-disable import/no-cycle */
-import * as T from '../../api/types/types';
-import { AppStatus } from '../../constants';
+import * as T from '../../server/types/types';
+import { AppStatus } from '../constants';
 import { IClientAppThis, TLoginOrSignup } from '../types';
 
 export const getAccountMethods = (parent: IClientAppThis) => ({

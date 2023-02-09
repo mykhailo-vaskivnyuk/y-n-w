@@ -1,5 +1,4 @@
-import { OuterJoin } from '../../client/common/types';
-import * as T from '../db.types';
+import * as T from './db.tables.types';
 
 export type IUserNetData =
   T.ITableNodes &
@@ -21,8 +20,8 @@ export type IMember =
 
 export type INodeWithUser =
   T.ITableNodes &
-  OuterJoin<Pick<T.ITableUsersNodesInvites, 'token'>> &
-  OuterJoin<Pick<T.ITableNetsUsersData, 'user_id' | 'confirmed'>>;
+  T.OuterJoin<Pick<T.ITableUsersNodesInvites, 'token'>> &
+  T.OuterJoin<Pick<T.ITableNetsUsersData, 'user_id' | 'confirmed'>>;
 
 export type IMemberDislikes =
   Pick<T.ITableNetsUsersData, 'net_id' | 'user_id'> & {

@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { ITableNetsUsersData } from '../../db.types';
+import { ITableNetsUsersData } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesMemberFind {

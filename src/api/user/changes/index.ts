@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import {
   IUserChanges,
-} from '../../../client/common/api/types/types';
+} from '../../../client/common/server/types/types';
 import { THandler } from '../../../router/types';
 import { UserChangesSchema } from '../../schema/schema';
 

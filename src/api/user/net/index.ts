@@ -1,6 +1,6 @@
 import {
   INetEnterParams, IUserNetDataResponse,
-} from '../../../client/common/api/types/types';
+} from '../../../client/common/server/types/types';
 import { THandler } from '../../../router/types';
 import { HandlerError } from '../../../router/errors';
 import {

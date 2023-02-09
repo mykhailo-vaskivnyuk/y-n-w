@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
-import * as T from '../../api/types/types';
+import * as T from '../../server/types/types';
 import { IClientAppThis } from '../types';
-import { AppStatus } from '../../constants';
-import { HttpResponseError } from '../../errors';
+import { AppStatus } from '../constants';
+import { HttpResponseError } from '../connection/errors';
 import { getMemberDataMethods } from './memberData';
 
 export const getMemberMethods = (parent: IClientAppThis) => ({

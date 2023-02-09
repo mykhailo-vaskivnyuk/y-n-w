@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import { THandler } from '../../router/types';
-import { ITokenParams } from '../../client/common/api/types/types';
+import { ITokenParams } from '../../client/common/server/types/types';
 import { JOI_NULL } from '../../router/constants';
 import { TokenParamsSchema } from '../schema/schema';
 

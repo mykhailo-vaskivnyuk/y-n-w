@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import {
   IMemberConfirmParams, IMemberInviteParams,
-} from '../../client/common/api/types/types';
+} from '../../client/common/server/types/types';
 import { TJoiSchema } from '../../router/types';
 
 export const MemberConfirmParamsSchema = {

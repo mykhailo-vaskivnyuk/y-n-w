@@ -1,6 +1,6 @@
 import {
   ITableNets, ITableNetsData, ITableNetsUsersData, ITableNodes,
-} from '../../../db.types';
+} from '../../../types/db.tables.types';
 import { TQuery } from '../../../types/types';
 
 export interface IQueriesUserNets {

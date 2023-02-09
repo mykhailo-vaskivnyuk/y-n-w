@@ -1,5 +1,5 @@
-import { MAX_NODE_LEVEL } from '../../client/common/api/constants';
-import { ITableNodes } from '../../db/db.types';
+import { MAX_NODE_LEVEL } from '../../client/common/server/constants';
+import { ITableNodes } from '../../db/types/db.tables.types';
 
 export const updateCountOfMembers = async (
   node_id: number, addCount = 1,

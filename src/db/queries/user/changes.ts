@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { ITableUsersMessages } from '../../db.types';
+import { ITableUsersMessages } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesUserChanges {

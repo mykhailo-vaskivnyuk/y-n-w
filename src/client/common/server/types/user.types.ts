@@ -1,7 +1,7 @@
 import {
-  ITableNetsUsersData, ITableNodes, ITableUsersMembers,
+  ITableNetsUsersData, ITableNodes,
+  ITableUsersMembers, OuterJoin,
 } from '../../../local/imports';
-import { OuterJoin } from '../../types';
 
 export const USER_STATUS_MAP = {
   'NOT_LOGGEDIN': 0,

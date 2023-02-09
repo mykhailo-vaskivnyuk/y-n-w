@@ -1,6 +1,6 @@
 import {
   IChatGetMessages, IChatSendMessage,
-} from '../../client/common/api/types/types';
+} from '../../client/common/server/types/types';
 import { IUserNetData } from '../../db/types/member.types';
 
 export const chatIdVerified = (

@@ -1,5 +1,5 @@
-import { IMemberResponse } from '../../../client/common/api/types/types';
-import { ITableNodes } from '../../db.types';
+import { IMemberResponse } from '../../../client/common/server/types/types';
+import { ITableNodes } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
 import { IMember } from '../../types/member.types';
 

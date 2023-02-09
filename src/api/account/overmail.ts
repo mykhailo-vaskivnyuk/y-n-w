@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import { THandler } from '../../router/types';
-import { ISignupParams } from '../../client/common/api/types/types';
+import { ISignupParams } from '../../client/common/server/types/types';
 import { SignupParamsSchema } from '../schema/schema';
 import { createUnicCode } from '../../utils/crypto';
 

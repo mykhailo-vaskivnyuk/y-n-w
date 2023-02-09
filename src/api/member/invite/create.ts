@@ -1,9 +1,9 @@
 import Joi from 'joi';
 import { JOI_NULL } from '../../../router/constants';
 import { THandler } from '../../../router/types';
-import { IMemberInviteParams } from '../../../client/common/api/types/types';
+import { IMemberInviteParams } from '../../../client/common/server/types/types';
 import { MemberInviteParamsSchema } from '../../schema/schema';
-import { getMemberStatus } from '../../../client/common/api/utils';
+import { getMemberStatus } from '../../../client/common/server/utils';
 import { createUnicCode } from '../../../utils/crypto';
 
 const create: THandler<IMemberInviteParams, string | null> = async (

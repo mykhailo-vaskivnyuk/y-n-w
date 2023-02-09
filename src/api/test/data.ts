@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { ITestResponse } from '../../client/common/api/types/test.types';
+import { ITestResponse } from '../../client/common/server/types/test.types';
 import { JOI_NULL } from '../../router/constants';
 import { THandler } from '../../router/types';
 import { TestResponseSchema } from '../schema/test.schema';

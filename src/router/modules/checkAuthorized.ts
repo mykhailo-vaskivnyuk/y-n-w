@@ -1,7 +1,7 @@
 import { TInputModule } from '../types';
 import {
   loggedInState, USER_STATUS_MAP,
-} from '../../client/common/api/types/types';
+} from '../../client/common/server/types/types';
 import { HandlerError } from '../errors';
 
 const checkAuthorized: TInputModule = () =>

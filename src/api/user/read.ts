@@ -1,4 +1,4 @@
-import { IUserResponse } from '../../client/common/api/types/types';
+import { IUserResponse } from '../../client/common/server/types/types';
 import { THandler } from '../../router/types';
 import { UserResponseSchema } from '../schema/schema';
 

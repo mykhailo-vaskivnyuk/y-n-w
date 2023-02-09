@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { ITableNets, ITableNetsData } from '../../db.types';
+import { ITableNets, ITableNetsData } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
 import { IQueriesNetUser } from './user';
 import { IQueriesNetCircle } from './circle';

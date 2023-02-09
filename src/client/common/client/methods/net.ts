@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
-import * as T from '../../api/types/types';
+import * as T from '../../server/types/types';
 import { INITIAL_NETS, IClientAppThis, IMember } from '../types';
-import { AppStatus } from '../../constants';
+import { AppStatus } from '../constants';
 import { getNetBoardMethods } from './net.board';
-import { getMemberStatus } from '../../api/utils';
+import { getMemberStatus } from '../../server/utils';
 
 export const getNetMethods = (parent: IClientAppThis) => ({
   board: getNetBoardMethods(parent),

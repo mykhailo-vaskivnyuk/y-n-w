@@ -1,4 +1,4 @@
-import { ITableNets, ITableNodes } from '../../db.types';
+import { ITableNets, ITableNodes } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNetFind {

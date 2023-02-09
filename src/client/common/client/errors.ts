@@ -1,4 +1,4 @@
-export const HttpResponseErrorMap = {
+export const HTTP_RESPONSE_ERROR_MAP = {
   400: 'Bad request',
   401: 'Unauthorized',
   403: 'Forbidden',
@@ -7,16 +7,16 @@ export const HttpResponseErrorMap = {
   500: 'Internal server error',
   503: 'Service unavailable',
 } as const;
-export type HttpResponseErrorCode = keyof typeof HttpResponseErrorMap;
+export type HttpResponseErrorCode = keyof typeof HTTP_RESPONSE_ERROR_MAP;
 
 export class HttpResponseError extends Error {
   statusCode: HttpResponseErrorCode;
 
   constructor(code: number) {
     const statusCode = (
-      code in HttpResponseErrorMap ? code : 500
+      code in HTTP_RESPONSE_ERROR_MAP ? code : 500
     ) as HttpResponseErrorCode;
-    super(HttpResponseErrorMap[statusCode]);
+    super(HTTP_RESPONSE_ERROR_MAP[statusCode]);
     this.statusCode = statusCode;
     this.name = this.constructor.name;
   }

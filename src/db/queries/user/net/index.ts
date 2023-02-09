@@ -1,8 +1,7 @@
 /* eslint-disable max-lines */
 import {
-  INetResponse, IUserNetDataResponse,
-} from '../../../../client/common/api/types/types';
-import { OmitNull } from '../../../../client/common/types';
+  INetResponse, IUserNetDataResponse, OmitNull,
+} from '../../../../client/common/server/types/types';
 import { TQuery } from '../../../types/types';
 import { IUserNetData } from '../../../types/member.types';
 import { userInNetAndItsSubnets } from '../../../utils';

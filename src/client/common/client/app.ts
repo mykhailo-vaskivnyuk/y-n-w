@@ -1,19 +1,21 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
-import * as T from '../api/types/types';
-import { INITIAL_NETS, INets, IMember, TNetChatIdsMap } from './types';
+import * as T from '../server/types/types';
+import {
+  INITIAL_NETS, INets, IMember, TNetChatIdsMap,
+} from './types';
 import { ITableUsersBoardMessages } from '../../local/imports';
-import { AppStatus } from '../constants';
-import { HttpResponseError } from '../errors';
-import { EventEmitter } from '../event.emitter';
-import { getApi, IClientApi } from '../api/client.api';
+import { AppStatus } from './constants';
+import { HttpResponseError } from './connection/errors';
+import { EventEmitter } from './event.emitter';
+import { getApi, IClientApi } from '../server/client.api';
 import { getAccountMethods } from './methods/account';
 import { getNetMethods } from './methods/net';
 import { getMemberMethods } from './methods/member';
 import { getChatMethods } from './methods/chat';
 import { getChangesMethods } from './methods/changes';
-import { getConnection as getHttpConnection } from '../client.http';
-import { getConnection as getWsConnection } from '../client.ws';
+import { getConnection as getHttpConnection } from './connection/http';
+import { getConnection as getWsConnection } from './connection/ws';
 
 export class ClientApp extends EventEmitter {
   private baseUrl = '';

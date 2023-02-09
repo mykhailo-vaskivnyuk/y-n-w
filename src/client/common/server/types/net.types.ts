@@ -1,7 +1,7 @@
 import {
-  ITableNets, ITableNetsData, ITableNodes,
+  ITableNets, ITableNetsData, ITableNodes
 } from '../../../local/imports';
-import { OmitNull } from '../../types';
+import { OmitNull } from './common.types';
 import { IMemberResponse } from './member.types';
 
 export type INetCreateParams  =

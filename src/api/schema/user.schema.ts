@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { IUserNetDataResponse } from '../../client/common/api/types/types';
+import { IUserNetDataResponse } from '../../client/common/server/types/types';
 import { TJoiSchema } from '../../router/types';
 import { JOI_NULL } from '../../router/constants';
 

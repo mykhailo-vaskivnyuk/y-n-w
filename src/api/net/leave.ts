@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { INetReadParams } from '../../client/common/api/types/types';
+import { INetReadParams } from '../../client/common/server/types/types';
 import { THandler } from '../../router/types';
 import { NetReadParamsSchema } from '../schema/schema';
 import { removeNetUser } from '../utils/net.utils';

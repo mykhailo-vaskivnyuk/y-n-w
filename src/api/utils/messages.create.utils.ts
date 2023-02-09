@@ -1,4 +1,4 @@
-import { ITableNetsData } from '../../db/db.types';
+import { ITableNetsData } from '../../db/types/db.tables.types';
 import { IMember } from '../../db/types/member.types';
 import { NetEventKeys } from '../types/net.types';
 import { createMessagesInTree } from './messages.tree.utils';

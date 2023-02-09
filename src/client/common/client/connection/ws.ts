@@ -1,12 +1,13 @@
 /* eslint-disable max-lines */
 import { IWsResponse, TFetch } from './types';
-import { TPromiseExecutor } from '../local/imports';
+import { TPromiseExecutor } from '../../../local/imports';
 import {
   CONNECTION_ATTEMPT_COUNT, CONNECTION_ATTEMPT_DELAY,
-  CONNECTION_TIMEOUT, PING_INTERVAL,
-} from './constants';
+  CONNECTION_TIMEOUT,
+} from '../constants';
+import { PING_INTERVAL } from '../../server/constants';
 import { HttpResponseError } from './errors';
-import { EventEmitter } from './event.emitter';
+import { EventEmitter } from '../event.emitter';
 import { logData, delay } from './utils';
 
 class WsConnection extends EventEmitter {

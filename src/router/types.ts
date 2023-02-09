@@ -4,11 +4,11 @@ import { IObject } from '../types/types';
 import {
   IOperation, TOperationResponse, IParams,
 } from '../types/operation.types';
-import { ITableUsers } from '../db/db.types';
+import { ITableUsers } from '../db/types/db.tables.types';
 import { IUserNetData } from '../db/types/member.types';
 import {
   PartialUserNetStatusKeys, PartialUserStatusKeys, UserStatusKeys,
-} from '../client/common/api/types/types';
+} from '../client/common/server/types/types';
 import { IMailService } from '../services/mail/types';
 import {
   TInputModulesKeys, TOutputModulesKeys, TServicesKeys,

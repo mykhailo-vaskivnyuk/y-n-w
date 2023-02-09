@@ -1,7 +1,6 @@
 import Joi from 'joi';
-import { IUserResponse } from '../../client/common/api/types/types';
+import { IUserResponse, OmitNull } from '../../client/common/server/types/types';
 import { TJoiSchema } from '../../router/types';
-import { OmitNull } from '../../client/common/types';
 import { JOI_NULL } from '../../router/constants';
 
 export const UserResponseSchema = [JOI_NULL, {

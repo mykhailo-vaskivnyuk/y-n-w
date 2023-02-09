@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
-import { IBoardSaveParams } from '../../api/types/types';
+import { IBoardSaveParams } from '../../server/types/types';
 import { IClientAppThis } from '../types';
-import { AppStatus } from '../../constants';
+import { AppStatus } from '../constants';
 
 export const getNetBoardMethods = (parent: IClientAppThis) => ({
   async persist(args: Omit<IBoardSaveParams, 'node_id'>) {

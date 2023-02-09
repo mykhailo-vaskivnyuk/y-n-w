@@ -1,7 +1,7 @@
 import { THandler } from '../../router/types';
 import {
   INetEnterParams, INetResponse,
-} from '../../client/common/api/types/types';
+} from '../../client/common/server/types/types';
 import { HandlerError } from '../../router/errors';
 import { NetResponseSchema, NetEnterParamsSchema } from '../schema/schema';
 

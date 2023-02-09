@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
 import { format } from 'node:util';
-import { ITableNetsData } from '../../db/db.types';
+import { ITableNetsData } from '../../db/types/db.tables.types';
 import {
   IMember, IUserNodeAndNetName,
 } from '../../db/types/member.types';
 import { NetEventKeys } from '../types/net.types';
 import {
   NetViewKeys, IInstantChange,
-} from '../../client/common/api/types/types';
+} from '../../client/common/server/types/types';
 import {
   NET_MESSAGES_MAP, SEND_INSTANT_MESSAGE, SET_USER_NODE_ID_FOR,
 } from '../../constants/constants';

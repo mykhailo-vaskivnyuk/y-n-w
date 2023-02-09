@@ -1,5 +1,5 @@
 import { THandler } from '../../router/types';
-import * as T from '../../client/common/api/types/types';
+import * as T from '../../client/common/server/types/types';
 import {
   ChatConnectResponseSchema, ChatConnectAllSchema,
 } from '../schema/chat.schema';

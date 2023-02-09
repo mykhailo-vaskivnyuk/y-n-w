@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import * as T from '../../client/common/api/types/types';
+import * as T from '../../client/common/server/types/types';
 import { IMember } from '../../db/types/member.types';
 import { IChatIdMapValue } from './types';
 import {

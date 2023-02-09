@@ -1,7 +1,7 @@
 import {
   INetCreateParams, INetResponse,
-} from '../../client/common/api/types/types';
-import { MAX_NET_LEVEL } from '../../client/common/api/constants';
+} from '../../client/common/server/types/types';
+import { MAX_NET_LEVEL } from '../../client/common/server/constants';
 import { THandler } from '../../router/types';
 import { NetResponseSchema, NetCreateParamsSchema } from '../schema/schema';
 import { updateCountOfNets } from '../utils/net.utils';

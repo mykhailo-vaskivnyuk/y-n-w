@@ -1,10 +1,9 @@
 /* eslint-disable import/no-cycle */
 import {
-  IChatResponseMessage, IInstantChange, IUserChanges,
-} from '../../api/types/types';
+  IChatResponseMessage, IInstantChange, IUserChanges, OmitNull,
+} from '../../server/types/types';
 import { IClientAppThis } from '../types';
-import { OmitNull } from '../../types';
-import { AppStatus } from '../../constants';
+import { AppStatus } from '../constants';
 
 export const getChangesMethods = (parent: IClientAppThis) => ({
   lastDate: undefined as string | undefined,

@@ -1,4 +1,4 @@
-import { ITableNets, ITableUsersBoardMessages } from '../../db.types';
+import { ITableNets, ITableUsersBoardMessages } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNetBoard {

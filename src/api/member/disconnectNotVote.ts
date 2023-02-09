@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { ITableNodes } from '../../db/db.types';
+import { ITableNodes } from '../../db/types/db.tables.types';
 import { THandler } from '../../router/types';
 import { removeNetUser } from '../utils/net.utils';
 import { arrangeNodes } from '../utils/utils';

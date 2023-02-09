@@ -1,5 +1,5 @@
 import { TInputModule } from '../types';
-import { USER_STATUS_MAP } from '../../client/common/api/types/types';
+import { USER_STATUS_MAP } from '../../client/common/server/types/types';
 import { HandlerError } from '../errors';
 import { findUserNet } from '../../api/utils/net.utils';
 

@@ -1,6 +1,6 @@
 /* eslint-disable import/no-cycle */
 import { IClientAppThis } from '../types';
-import { AppStatus } from '../../constants';
+import { AppStatus } from '../constants';
 
 export const getMemberDataMethods = (parent: IClientAppThis) => ({
   async setDislike(nodeId: number) {

@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { IMemberResponse } from '../../../client/common/api/types/types';
+import { IMemberResponse } from '../../../client/common/server/types/types';
 import { TQuery } from '../../types/types';
 import {
   IMember, IMemberDislikes, IMemberVotes,

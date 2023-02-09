@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
-import * as T from '../../api/types/types';
+import * as T from '../../server/types/types';
 import { IClientAppThis } from '../types';
-import { AppStatus } from '../../constants';
+import { AppStatus } from '../constants';
 
 export const getChatMethods = (parent: IClientAppThis) => ({
   async connectAll() {

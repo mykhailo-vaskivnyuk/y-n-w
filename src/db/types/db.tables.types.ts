@@ -14,6 +14,10 @@ export const TABLES_MAP = {
   SESSIONS: 'sessions',
 };
 
+export type OuterJoin<T> =
+  | { [key in keyof T]: T[key] }
+  | { [key in keyof T]: null };
+
 export type ITableNodes = {
   node_id: number;
   node_level: number;
@@ -28,7 +32,7 @@ export type ITableNets = {
   net_id: number;
   net_level: number;
   parent_net_id: number | null;
-  first_net_id: number;
+  first_net_id: number | null;
   count_of_nets: number;
 }
 
@@ -70,7 +74,7 @@ export type ITableUsersMessages = {
   message_id: number;
   user_id: number;
   user_node_id: number | null;
-  net_view: 'net' | 'tree' | 'circle'; // NetViewKeys
+  net_view: 'net' | 'tree' | 'circle'; /* NetViewKeys */
   member_node_id: number | null;
   message: string;
   date: string;
@@ -81,7 +85,7 @@ export type ITableUsersBoardMessages = {
   net_id: number;
   user_id: number;
   node_id: number;
-  net_view: 'net' | 'tree' | 'circle'; // NetViewKeys
+  net_view: 'net' | 'tree' | 'circle'; /* NetViewKeys */
   message: string;
   date: string;
 }

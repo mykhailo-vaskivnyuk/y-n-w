@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { UserStatusKeys } from '../../client/common/api/types/user.types';
+import { UserStatusKeys } from '../../client/common/server/types/user.types';
 import { IUserNetData, IUserNodeAndNetName } from '../../db/types/member.types';
 import { NetEventKeys } from '../types/net.types';
 import { HandlerError } from '../../router/errors';
