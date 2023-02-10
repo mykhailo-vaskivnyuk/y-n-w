@@ -56,11 +56,11 @@ export const getChangesMethods = (parent: IClientAppThis) => ({
       .catch(console.log);
   },
 
-  async confirm(messageId: number) {
+  async confirm(eventId: number) {
     parent.setStatus(AppStatus.LOADING);
     try {
       await parent.api.user.changes
-        .confirm({ message_id: messageId });
+        .confirm({ event_id: eventId });
       parent.setStatus(AppStatus.READY);
     } catch (e: any) {
       parent.setError(e);
@@ -69,7 +69,7 @@ export const getChangesMethods = (parent: IClientAppThis) => ({
 
   remove(messageId: number) {
     let { changes } = parent.getState();
-    changes = changes.filter(({ message_id: v }) => messageId !== v);
+    changes = changes.filter(({ event_id: v }) => messageId !== v);
     parent.setChanges(changes);
   },
 

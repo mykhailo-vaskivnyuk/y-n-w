@@ -58,12 +58,12 @@ export interface IQueriesMember {
 }
 
 export const remove = `
-  DELETE FROM nets_users_data
+  DELETE FROM members
   WHERE user_id = $1 AND net_id IN (
-    SELECT nets_users_data.net_id
-    FROM nets_users_data
+    SELECT members.net_id
+    FROM members
     INNER JOIN nets ON
-      nets.net_id = nets_users_data.net_id
+      nets.net_id = members.net_id
     WHERE ${userInNetAndItsSubnets()}
   )
 `;
@@ -72,10 +72,10 @@ export const findInTree = `
   SELECT
     nodes_invites.*,
     nodes.*,
-    nets_users_data.user_id, nets_users_data.confirmed
+    members.user_id, members.confirmed
   FROM nodes
-  LEFT JOIN nets_users_data ON
-    nets_users_data.node_id = nodes.node_id
+  LEFT JOIN members ON
+    members.node_id = nodes.node_id
   LEFT JOIN nodes_invites ON
     nodes_invites.node_id = nodes.node_id
   WHERE nodes.parent_node_id = $1 AND nodes.node_id = $2
@@ -85,10 +85,10 @@ export const findInCircle = `
   SELECT
     nodes_invites.*,
     nodes.*,
-    nets_users_data.user_id, nets_users_data.confirmed
+    members.user_id, members.confirmed
   FROM nodes
-  LEFT JOIN nets_users_data ON
-    nets_users_data.node_id = nodes.node_id
+  LEFT JOIN members ON
+    members.node_id = nodes.node_id
   LEFT JOIN nodes_invites ON
     nodes_invites.node_id = nodes.node_id
   WHERE
@@ -101,53 +101,53 @@ export const findInCircle = `
 export const get = `
   SELECT
     nodes.*,
-    nets_users_data.user_id::int,
-    nets_users_data.confirmed,
+    members.user_id::int,
+    members.confirmed,
     nets_data.name
   FROM nodes
-  INNER JOIN nets_users_data ON
-    nets_users_data.node_id = nodes.node_id
+  INNER JOIN members ON
+    members.node_id = nodes.node_id
   INNER JOIN nets_data ON
-    nets_users_data.net_id = nets_data.net_id
+    members.net_id = nets_data.net_id
   WHERE nodes.node_id = $1
 `;
 
 export const getConnected = `
   SELECT
-    nets_users_data.user_id
+    members.user_id
   FROM nodes
-  INNER JOIN nets_users_data ON
-    nets_users_data.node_id = nodes.node_id
+  INNER JOIN members ON
+    members.node_id = nodes.node_id
   WHERE
     nodes.parent_node_id = $1 AND
-    nets_users_data.confirmed = false
+    members.confirmed = false
 `;
 
 export const moveToTmp = `
-  INSERT INTO nets_users_data_tmp
-  SELECT * FROM nets_users_data
+  INSERT INTO members_tmp
+  SELECT * FROM members
   WHERE node_id IN ($1, $2)
 `;
 
 export const removeVoted = `
-  DELETE FROM nets_users_data
+  DELETE FROM members
   WHERE node_id IN ($1, $2)
 `;
 
 export const change = `
-  UPDATE nets_users_data_tmp
+  UPDATE members_tmp
   SET
     node_id = CASE WHEN user_id = $3 THEN +$2 ELSE +$1 END
   WHERE user_id IN ($3, $4) AND net_id = $5
 `;
 
 export const moveFromTmp = `
-  INSERT INTO nets_users_data 
-  SELECT * FROM nets_users_data_tmp
+  INSERT INTO members 
+  SELECT * FROM members_tmp
   WHERE node_id IN ($1, $2)
 `;
 
 export const removeFromTmp = `
-  DELETE FROM nets_users_data_tmp
+  DELETE FROM members_tmp
   WHERE node_id IN ($1, $2)
 `;

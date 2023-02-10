@@ -28,7 +28,7 @@ export const get = `
     users_members.dislike,
     users_members.vote
   FROM nodes
-  LEFT JOIN nets_users_data AS members ON
+  LEFT JOIN members AS members ON
     members.node_id = nodes.node_id
   LEFT JOIN users_members ON
     users_members.parent_node_id = $2 AND
@@ -52,10 +52,10 @@ export const getNodes = `
 export const getMembers = `
   SELECT 
     nodes.*,
-    nets_users_data.user_id::int, 
-    nets_users_data.confirmed
+    members.user_id::int, 
+    members.confirmed
   FROM nodes
-  INNER JOIN nets_users_data ON
-    nets_users_data.node_id = nodes.node_id
+  INNER JOIN members ON
+    members.node_id = nodes.node_id
   WHERE nodes.parent_node_id = $1
 `;

@@ -1,4 +1,6 @@
-import { ITableNets, ITableUsersBoardMessages } from '../../types/db.tables.types';
+import {
+  ITableNets, ITableUsersBoardMessages,
+} from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNetBoard {
@@ -29,13 +31,15 @@ export interface IQueriesNetBoard {
 }
 
 export const get = `
-  SELECT * FROM users_board_messages
+  SELECT *
+  FROM users_board_messages
   WHERE net_id = $1
   ORDER BY date DESC
 `;
 
 export const findUnactive = `
-  SELECT net_id::int FROM users_board_messages
+  SELECT net_id::int
+  FROM users_board_messages
   WHERE date < $1
   LIMIT 1
 `;

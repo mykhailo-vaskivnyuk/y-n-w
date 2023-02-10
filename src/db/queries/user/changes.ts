@@ -1,19 +1,19 @@
 /* eslint-disable max-lines */
-import { ITableUsersMessages } from '../../types/db.tables.types';
+import { ITableEvents } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesUserChanges {
   read: TQuery<[
     ['user_id', number],
     ['date', string | null],
-  ], ITableUsersMessages>;
+  ], ITableEvents>;
   write: TQuery<[
     ['user_id', number],
     ['date', string],
   ]>;
   confirm: TQuery<[
     ['user_id', number],
-    ['message_id', number],
+    ['event_id', number],
   ]>;
   removeFromCircle: TQuery<[
     ['user_id', number],
@@ -45,13 +45,13 @@ export interface IQueriesUserChanges {
 
 export const read = `
   SELECT *, TRIM(net_view) as net_view
-  FROM users_messages
+  FROM events
   WHERE
     user_id = $1 AND (
       $2::timestamp ISNULL OR
       date > $2
     )
-  ORDER BY message_id
+  ORDER BY event_id
 `;
 
 export const write = `
@@ -66,12 +66,12 @@ export const write = `
 `;
 
 export const confirm = `
-  DELETE FROM users_messages
-  WHERE user_id = $1 AND message_id = $2
+  DELETE FROM events
+  WHERE user_id = $1 AND event_id = $2
 `;
 
 export const removeFromCircle = `
-  DELETE FROM users_messages
+  DELETE FROM events
   WHERE
     user_id = $1 AND
     user_node_id = $2 AND
@@ -79,7 +79,7 @@ export const removeFromCircle = `
 `;
 
 export const removeFromTree = `
-  DELETE FROM users_messages
+  DELETE FROM events
   WHERE
     user_id = $1 AND
     user_node_id = $2 AND
@@ -87,8 +87,8 @@ export const removeFromTree = `
 `;
 
 export const moveToTmp = `
-  INSERT INTO users_messages_tmp
-  SELECT * FROM users_messages
+  INSERT INTO events_tmp
+  SELECT * FROM events
   WHERE
     (
       user_node_id = $1 AND (
@@ -104,7 +104,7 @@ export const moveToTmp = `
 `;
 
 export const changeNodes = `
-  UPDATE users_messages_tmp
+  UPDATE events_tmp
   SET user_node_id =
     CASE
       WHEN user_id = $3 AND user_node_id = $1 THEN +$2
@@ -114,7 +114,7 @@ export const changeNodes = `
 `;
 
 export const moveFromTmp = `
-  INSERT INTO users_messages (
+  INSERT INTO events (
     user_id,
     user_node_id,
     net_view,
@@ -129,12 +129,12 @@ export const moveFromTmp = `
     member_node_id,
     message,
     date
-  FROM users_messages_tmp
+  FROM events_tmp
   WHERE user_node_id IN ($1, $2)
-  ORDER BY message_id
+  ORDER BY event_id
 `;
 
 export const removeFromTmp = `
-  DELETE FROM users_messages_tmp
+  DELETE FROM events_tmp
   WHERE user_node_id IN ($1, $2)
 `;

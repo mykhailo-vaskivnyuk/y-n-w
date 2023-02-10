@@ -36,19 +36,19 @@ export const find = `
     nodes.parent_node_id::int,
     nodes.net_id::int,
     nets.net_level,
-    nets_users_data.user_id::int,
-    nets_users_data.confirmed,
+    members.user_id::int,
+    members.confirmed,
     nets_data.name
-  FROM nets_users_data
+  FROM members
   INNER JOIN nets ON
-    nets.net_id = nets_users_data.net_id
+    nets.net_id = members.net_id
   INNER JOIN nets_data ON
-    nets_data.net_id = nets_users_data.net_id
+    nets_data.net_id = members.net_id
   INNER JOIN nodes ON
-    nodes.node_id = nets_users_data.node_id 
+    nodes.node_id = members.node_id 
   WHERE
-    nets_users_data.user_id = $1 AND
-    nets_users_data.node_id = $2
+    members.user_id = $1 AND
+    members.node_id = $2
 `;
 
 export const read = `
@@ -56,34 +56,34 @@ export const read = `
     nets.*,
     nets_data.*,
     nodes.parent_node_id,
-    nets_users_data.node_id,
-    nets_users_data.confirmed
-  FROM nets_users_data
+    members.node_id,
+    members.confirmed
+  FROM members
   INNER JOIN nets ON
-    nets.net_id = nets_users_data.net_id
+    nets.net_id = members.net_id
   INNER JOIN nets_data ON
     nets_data.net_id = nets.net_id
   INNER JOIN nodes ON
-    nodes.node_id = nets_users_data.node_id
+    nodes.node_id = members.node_id
   WHERE
-    nets_users_data.user_id = $1 AND
-    nets_users_data.net_id = $2
+    members.user_id = $1 AND
+    members.net_id = $2
 `;
 
 export const getNetAndSubnets = `
   SELECT
     nodes.*,
     nets.net_level,
-    nets_users_data.user_id::int,
-    nets_users_data.confirmed,
+    members.user_id::int,
+    members.confirmed,
     nets_data.name
-  FROM nets_users_data
+  FROM members
   INNER JOIN nets ON
-    nets.net_id = nets_users_data.net_id
+    nets.net_id = members.net_id
   INNER JOIN nets_data ON
-    nets_data.net_id = nets_users_data.net_id
+    nets_data.net_id = members.net_id
   INNER JOIN nodes ON
-    nodes.node_id = nets_users_data.node_id
+    nodes.node_id = members.node_id
   WHERE ${userInNetAndItsSubnets()}
   ORDER BY nets.net_level DESC
 `;
@@ -92,7 +92,7 @@ export const getData = `
   SELECT
     nodes.node_id,
     nodes.parent_node_id,
-    nets_users_data.confirmed,
+    members.confirmed,
     users_members.vote,
     SUM (
       CASE
@@ -100,29 +100,29 @@ export const getData = `
         ELSE 0
       END
     ) AS vote_count
-  FROM nets_users_data
+  FROM members
   INNER JOIN nets ON
-    nets.net_id = nets_users_data.net_id
+    nets.net_id = members.net_id
   INNER JOIN nodes ON
-    nodes.node_id = nets_users_data.node_id
+    nodes.node_id = members.node_id
   LEFT JOIN users_members ON
-    users_members.user_id = nets_users_data.user_id AND
-    users_members.member_id = nets_users_data.user_id
+    users_members.user_id = members.user_id AND
+    users_members.member_id = members.user_id
   LEFT JOIN users_members as um ON
-    um.member_id = nets_users_data.user_id AND
+    um.member_id = members.user_id AND
     um.parent_node_id = nodes.parent_node_id
   WHERE
-    nets_users_data.user_id = $1 AND
-    nets_users_data.net_id = $2
+    members.user_id = $1 AND
+    members.net_id = $2
   GROUP BY
     nodes.node_id,
     nodes.parent_node_id,
-    nets_users_data.confirmed,
+    members.confirmed,
     users_members.vote
 `;
 
 export const setActiveDate = `
-  UPDATE nets_users_data
+  UPDATE members
   SET active_date = now()
   WHERE
     user_id = $1 AND

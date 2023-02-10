@@ -1,19 +1,19 @@
-import { ITableNetsUsersData } from '../../../types/db.tables.types';
+import { ITableMembers } from '../../../types/db.tables.types';
 import { TQuery } from '../../../types/types';
 
 export interface IQueriesNetUser {
   createData: TQuery<[
     ['node_id', number],
     ['user_id', number],
-  ], ITableNetsUsersData>;
+  ], ITableMembers>;
   connect: TQuery<[
     ['node_id', number],
     ['user_id', number],
-  ], ITableNetsUsersData>;
+  ], ITableMembers>;
 }
 
 export const createData = `
-  INSERT INTO nets_users_data (
+  INSERT INTO members (
     node_id, net_id, user_id, confirmed
   )
   SELECT $1, net_id, $2, true
@@ -23,7 +23,7 @@ export const createData = `
 `;
 
 export const connect = `
-  INSERT INTO nets_users_data (
+  INSERT INTO members (
     node_id, net_id, user_id
   )
   SELECT $1, net_id, $2

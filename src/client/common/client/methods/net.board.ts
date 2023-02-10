@@ -13,7 +13,7 @@ export const getNetBoardMethods = (parent: IClientAppThis) => ({
       let success = false;
       if (!message) {
         if (!messageId) success = true;
-        else { 
+        else {
           success = await parent.api.net.board
             .remove({ message_id: messageId, node_id: nodeId });
         }

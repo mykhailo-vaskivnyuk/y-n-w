@@ -1,5 +1,5 @@
 import {
-  ITableNetsUsersData, ITableNodes,
+  ITableMembers, ITableNodes,
   ITableUsersMembers, OuterJoin,
 } from '../../../local/imports';
 
@@ -22,6 +22,6 @@ export const loggedInState = USER_STATUS_MAP.LOGGEDIN;
 
 export type IUserNetDataResponse =
   Pick<ITableNodes, 'node_id' | 'parent_node_id'> &
-  Pick<ITableNetsUsersData, 'confirmed'> &
+  Pick<ITableMembers, 'confirmed'> &
   OuterJoin<Pick<ITableUsersMembers, 'vote'>> &
   { vote_count: number };

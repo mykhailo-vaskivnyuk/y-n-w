@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { ITableNetsUsersData, ITableNodes } from '../../types/db.tables.types';
+import { ITableMembers, ITableNodes } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNode {
@@ -25,7 +25,7 @@ export interface IQueriesNode {
     ['node_id', number],
   ],
     ITableNodes &
-    Pick<ITableNetsUsersData, 'user_id'>
+    Pick<ITableMembers, 'user_id'>
   >;
   change: TQuery<[
     ['node_id', number],
@@ -82,10 +82,10 @@ export const removeTree = `
 `;
 
 export const get = `
-  SELECT nodes.*, nets_users_data.user_id
+  SELECT nodes.*, members.user_id
   FROM nodes
-  LEFT JOIN nets_users_data ON
-    nets_users_data.node_id = nodes.node_id
+  LEFT JOIN members ON
+    members.node_id = nodes.node_id
   WHERE nodes.node_id = $1
 `;
 
@@ -107,8 +107,8 @@ export const change = `
 
 export const find = `
   SELECT nodes.* FROM nodes
-  LEFT JOIN nets_users_data ON
-    nets_users_data.node_id = nodes.node_id
+  LEFT JOIN members ON
+    members.node_id = nodes.node_id
   WHERE
     user_id ISNULL AND
     count_of_members > 0 AND

@@ -8,6 +8,8 @@ export type IClientApi = ReturnType<typeof getApi>;
 export const getApi = (
   fetch: <T>(pathname: string, options?: Record<string, any>) => Promise<T>
 ) => ({
+  'health': () => fetch<string>('/health'),
+
   'account': {
     'confirm': (options: P.ITokenParams) =>
       fetch<P.IUserResponse>('/account/confirm', options),
@@ -45,9 +47,13 @@ export const getApi = (
     'removeConnection': () => fetch<boolean>('/chat/removeConnection'),
 
   },
-  'health': () => fetch<string>('/health'),
-
   'member': {
+    'disconnectNotVote': (options: Q.TMemberDisconnectNotVote) =>
+      fetch<boolean>('/member/disconnectNotVote', options),
+
+    'disconnectUnactive': (options: Q.TMemberDisconnectUnactive) =>
+      fetch<boolean>('/member/disconnectUnactive', options),
+
     'data': {
       'dislike': {
         'set': (options: P.IMemberConfirmParams) =>
@@ -66,12 +72,6 @@ export const getApi = (
 
       },
     },
-    'disconnectNotVote': (options: Q.TMemberDisconnectNotVote) =>
-      fetch<boolean>('/member/disconnectNotVote', options),
-
-    'disconnectUnactive': (options: Q.TMemberDisconnectUnactive) =>
-      fetch<boolean>('/member/disconnectUnactive', options),
-
     'invite': {
       'cancel': (options: P.IMemberConfirmParams) =>
         fetch<boolean>('/member/invite/cancel', options),
@@ -88,20 +88,6 @@ export const getApi = (
     },
   },
   'net': {
-    'board': {
-      'clear': (options: Q.TNetBoardClear) =>
-        fetch<boolean>('/net/board/clear', options),
-
-      'read': (options: P.INetReadParams) =>
-        fetch<P.INetBoardReadResponse>('/net/board/read', options),
-
-      'remove': (options: P.IBoardRemoveParams) =>
-        fetch<boolean>('/net/board/remove', options),
-
-      'save': (options: P.IBoardSaveParams) =>
-        fetch<boolean>('/net/board/save', options),
-
-    },
     'connectByToken': (options: P.ITokenParams) =>
       fetch<Q.TNetConnectByTokenResponse>('/net/connectByToken', options),
 
@@ -120,6 +106,20 @@ export const getApi = (
     'leave': (options: P.INetReadParams) =>
       fetch<boolean>('/net/leave', options),
 
+    'board': {
+      'clear': (options: Q.TNetBoardClear) =>
+        fetch<boolean>('/net/board/clear', options),
+
+      'read': (options: P.INetReadParams) =>
+        fetch<P.INetBoardReadResponse>('/net/board/read', options),
+
+      'remove': (options: P.IBoardRemoveParams) =>
+        fetch<boolean>('/net/board/remove', options),
+
+      'save': (options: P.IBoardSaveParams) =>
+        fetch<boolean>('/net/board/save', options),
+
+    },
   },
   'scripts': {
     'script.js': () => fetch<Q.TScriptsScriptjsResponse>('/scripts/script.js'),
@@ -130,6 +130,10 @@ export const getApi = (
 
   },
   'user': {
+    'update': () => fetch<string>('/user/update'),
+
+    'read': () => fetch<P.IUserResponse>('/user/read'),
+
     'changes': {
       'read': (options: Q.TUserChangesRead) =>
         fetch<P.IUserChanges>('/user/changes/read', options),
@@ -138,8 +142,6 @@ export const getApi = (
         fetch<boolean>('/user/changes/confirm', options),
 
     },
-    'update': () => fetch<string>('/user/update'),
-
     'net': {
       'getData': (options: P.INetEnterParams) =>
         fetch<P.IUserNetDataResponse>('/user/net/getData', options),
@@ -149,7 +151,5 @@ export const getApi = (
       'get': () => fetch<P.INetsResponse>('/user/nets/get'),
 
     },
-    'read': () => fetch<P.IUserResponse>('/user/read'),
-
   },
 });

@@ -4,7 +4,7 @@ export type IUserNetData =
   T.ITableNodes &
   Pick<T.ITableNets, 'net_level'> &
   Pick<T.ITableNetsData, 'name'> &
-  Pick<T.ITableNetsUsersData, 'user_id' | 'confirmed'>;
+  Pick<T.ITableMembers, 'user_id' | 'confirmed'>;
 
 export type IUserNodeAndNetName =
   T.ITableNodes &
@@ -16,19 +16,19 @@ export type IMemberWithNet =
 
 export type IMember =
   T.ITableNodes &
-  Pick<T.ITableNetsUsersData, 'user_id' | 'confirmed'>;
+  Pick<T.ITableMembers, 'user_id' | 'confirmed'>;
 
 export type INodeWithUser =
   T.ITableNodes &
   T.OuterJoin<Pick<T.ITableUsersNodesInvites, 'token'>> &
-  T.OuterJoin<Pick<T.ITableNetsUsersData, 'user_id' | 'confirmed'>>;
+  T.OuterJoin<Pick<T.ITableMembers, 'user_id' | 'confirmed'>>;
 
 export type IMemberDislikes =
-  Pick<T.ITableNetsUsersData, 'net_id' | 'user_id'> & {
+  Pick<T.ITableMembers, 'net_id' | 'user_id'> & {
   dislike_count: number;
 };
 
 export type IMemberVotes =
-  Pick<T.ITableNetsUsersData, 'node_id'> & {
+  Pick<T.ITableMembers, 'node_id'> & {
   vote_count: number;
 };

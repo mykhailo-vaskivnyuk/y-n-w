@@ -12,7 +12,7 @@ export interface IQueriesNetMessage {
 }
 
 export const create = `
-  INSERT INTO users_messages (
+  INSERT INTO events (
     user_id,
     user_node_id,
     net_view,

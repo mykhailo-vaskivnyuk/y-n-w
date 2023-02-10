@@ -24,9 +24,9 @@ export const byToken = `
     nodes.node_id = nodes_invites.node_id
   INNER JOIN nets ON
     nets.net_id = nodes.net_id
-  LEFT JOIN nets_users_data AS another_user ON
+  LEFT JOIN members AS another_user ON
     another_user.node_id = nodes.node_id
-  LEFT JOIN nets_users_data AS this_user ON
+  LEFT JOIN members AS this_user ON
     this_user.net_id = nodes.net_id AND
     this_user.user_id = $2
   WHERE

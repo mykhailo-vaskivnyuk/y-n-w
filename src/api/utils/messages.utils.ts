@@ -67,7 +67,7 @@ export const sendInstantMessage = (
   const connectionIds = chatService.getChatConnections(chatId);
   const response: IInstantChange = {
     chatId, user_id, index: 0,
-    message_id: 0,
+    event_id: 0,
     user_node_id,
     net_view,
     member_node_id: null,
@@ -86,7 +86,7 @@ export const sendNetInstantMessage = (memberNet: IMember, message: string) => {
   //     .values().next().value as number;
   const response: IInstantChange = {
     chatId, user_id: 0, index: 0, message,
-    message_id: 0,
+    event_id: 0,
     user_node_id: 0,
     net_view: 'net',
     member_node_id: null,

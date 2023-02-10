@@ -1,8 +1,8 @@
-import { ITableUsersMessages } from '../../../local/imports';
+import { ITableEvents } from '../../../local/imports';
 import { OmitNull } from './common.types';
 import { IChatResponseMessage } from './chat.types';
 
-export type IUserChange = ITableUsersMessages;
+export type IUserChange = ITableEvents;
 export type IUserChanges = IUserChange[];
 
 export type IInstantChange =

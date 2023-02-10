@@ -74,13 +74,13 @@ export const remove = `
     ) AND 
     parent_node_id in (
       SELECT nodes.parent_node_id
-      FROM nets_users_data
+      FROM members
       INNER JOIN nodes ON
-        nodes.node_id = nets_users_data.node_id
+        nodes.node_id = members.node_id
       INNER JOIN nets ON
-        nets.net_id = nets_users_data.net_id
+        nets.net_id = members.net_id
       WHERE
-        nets_users_data.user_id = $1 AND ((
+        members.user_id = $1 AND ((
           ($2 + 1) NOTNULL AND
           nets.first_net_id = $2 AND
           nets.net_level >= (SELECT net_level FROM nets WHERE net_id = $2)
@@ -89,12 +89,12 @@ export const remove = `
       ORDER BY nets.net_level DESC
     ) OR
     parent_node_id in (
-      SELECT nets_users_data.node_id
-      FROM nets_users_data
+      SELECT members.node_id
+      FROM members
       INNER JOIN nets ON
-        nets.net_id = nets_users_data.net_id
+        nets.net_id = members.net_id
       WHERE
-        nets_users_data.user_id = $1 AND ((
+        members.user_id = $1 AND ((
           ($2 + 1) NOTNULL AND
           nets.first_net_id = $2 AND
           nets.net_level >= (SELECT net_level FROM nets WHERE net_id = $2)

@@ -28,7 +28,7 @@ export const remove = `
 `;
 
 export const confirm = `
-  UPDATE nets_users_data
+  UPDATE members
   SET confirmed = true
   WHERE node_id = $1
 `;
