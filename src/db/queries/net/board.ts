@@ -1,12 +1,12 @@
 import {
-  ITableNets, ITableUsersBoardMessages,
+  ITableNets, ITableBoardMessages,
 } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNetBoard {
   get: TQuery<[
     ['net_id', number],
-  ], ITableUsersBoardMessages>;
+  ], ITableBoardMessages>;
   findUnactive: TQuery<[
     ['date', string],
   ], ITableNets>;
@@ -32,20 +32,20 @@ export interface IQueriesNetBoard {
 
 export const get = `
   SELECT *
-  FROM users_board_messages
+  FROM board_messages
   WHERE net_id = $1
   ORDER BY date DESC
 `;
 
 export const findUnactive = `
   SELECT net_id::int
-  FROM users_board_messages
+  FROM board_messages
   WHERE date < $1
   LIMIT 1
 `;
 
 export const create = `
-  INSERT INTO users_board_messages (
+  INSERT INTO board_messages (
     net_id, user_id, node_id, message, date
   )
   VALUES ($1, $2, $3, $4, now() at time zone 'UTC')
@@ -55,7 +55,7 @@ export const create = `
 `;
 
 export const update = `
-  UPDATE users_board_messages
+  UPDATE board_messages
   SET message = $3, date = now() at time zone 'UTC'
   WHERE
     message_id = $1 AND
@@ -63,13 +63,13 @@ export const update = `
 `;
 
 export const remove = `
-  DELETE FROM users_board_messages
+  DELETE FROM board_messages
   WHERE
     message_id = $1 AND
     user_id = $2
 `;
 
 export const clear = `
-  DELETE FROM users_board_messages
+  DELETE FROM board_messages
   WHERE date < $1
 `;

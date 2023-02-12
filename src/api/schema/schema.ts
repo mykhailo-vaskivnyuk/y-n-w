@@ -5,5 +5,5 @@ export * from './user.schema';
 export * from './member.schema';
 export * from './chat.schema';
 export * from './board.schema';
-export * from './changes.schema';
+export * from './events.schema';
 export * from './test.schema';

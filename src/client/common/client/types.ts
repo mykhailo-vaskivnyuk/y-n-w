@@ -1,6 +1,6 @@
 /* eslint-disable import/no-cycle */
 import * as T from '../server/types/types';
-import { ITableUsersBoardMessages } from '../../local/imports';
+import { ITableBoardMessages } from '../../local/imports';
 import { AppStatus } from './constants';
 import { MemberStatusKeys } from '../server/constants';
 import { HttpResponseError } from './connection/errors';
@@ -25,8 +25,8 @@ export type IClientAppThis = ClientApp & {
   setNetChatIds: (netChatIds: TNetChatIdsMap) => void;
   setMessage: (message: T.OmitNull<T.IChatResponseMessage>) => void;
   setAllMessages: (chatId: number, messages: T.IChatMessage[]) => void;
-  setBoardMessages: (messages: ITableUsersBoardMessages[]) => void;
-  setChanges: (changes: T.IUserChanges) => void;
+  setBoardMessages: (messages: ITableBoardMessages[]) => void;
+  setChanges: (changes: T.IEvents) => void;
 };
 
 export interface INets {

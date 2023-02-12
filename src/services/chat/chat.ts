@@ -30,12 +30,14 @@ export class ChatService {
 
   getChatIdOfUser(user_id: number, connectionId?: number) {
     let chatId = this.userChatIds.get(user_id);
-    if (!connectionId || chatId) return chatId;
-    chatId = this.genChatId();
-    logger.debug('USER', user_id, 'NEW USER CHAT', chatId);
-    this.userChatIds.set(user_id, chatId);
-    this.chatIdUserNetNode.set(chatId, { user_id });
-    chatId && connectionId && this.addChatAndConnection(chatId, connectionId);
+    if (!connectionId) return chatId;
+    if (!chatId) {
+      chatId = this.genChatId();
+      logger.debug('USER', user_id, 'NEW USER CHAT', chatId);
+      this.userChatIds.set(user_id, chatId);
+      this.chatIdUserNetNode.set(chatId, { user_id });
+    }
+    this.addChatAndConnection(chatId, connectionId);
     return chatId;
   }
 
@@ -98,11 +100,11 @@ export class ChatService {
     if (chatMessages) {
       const { index: lastIndex } = chatMessages.at(-1)!;
       index = (lastIndex % MAX_CHAT_MESSAGE_INDEX) + 1;
-      chatMessages.push({ user_id, index, message });
+      chatMessages.push({ user_id, chatId, index, message });
       chatMessages.length > MAX_CHAT_MESSAGE_COUNT && chatMessages.shift();
     } else {
       index = 1;
-      this.messages.set(chatId, [{ user_id, index, message }]);
+      this.messages.set(chatId, [{ user_id, chatId, index, message }]);
     }
     const connectionIds = this.getChatConnections(chatId);
     return [{ chatId, user_id, index, message }, connectionIds] as const;

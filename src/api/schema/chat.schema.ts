@@ -19,10 +19,6 @@ export const ChatConnectSchema = {
   }),
 };
 
-export const ChatConnectResponseSchema = [JOI_NULL, {
-  chatId: Joi.number(),
-}];
-
 export const ChatSendMessageSchema = {
   ...ChatMessageSchema,
   node_id: Joi.number().required(),

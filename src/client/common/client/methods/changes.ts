@@ -1,6 +1,6 @@
 /* eslint-disable import/no-cycle */
 import {
-  IChatResponseMessage, IInstantChange, IUserChanges, OmitNull,
+  IEvents, IMessage, MessageTypeKeys,
 } from '../../server/types/types';
 import { IClientAppThis } from '../types';
 import { AppStatus } from '../constants';
@@ -8,14 +8,14 @@ import { AppStatus } from '../constants';
 export const getChangesMethods = (parent: IClientAppThis) => ({
   lastDate: undefined as string | undefined,
 
-  setLastDate(changes: IUserChanges) {
+  setLastDate(changes: IEvents) {
     this.lastDate = changes.at(-1)?.date;
   },
 
-  isInstantChange(
-    messageData: OmitNull<IChatResponseMessage> | IInstantChange,
-  ): messageData is IInstantChange {
-    return 'message_id' in messageData;
+  isEvent(
+    messageData: IMessage<MessageTypeKeys>,
+  ): messageData is IMessage<'EVENT'> {
+    return messageData?.type === 'EVENT';
   },
 
   async read(inChain = false) {
@@ -36,7 +36,7 @@ export const getChangesMethods = (parent: IClientAppThis) => ({
     }
   },
 
-  async update(changes: IUserChanges | IInstantChange[]) {
+  async update(changes: IEvents) {
     const { user, net } = parent.getState();
     const { node_id: nodeId, net_id: netId } = net || {};
     let updateAll = false;

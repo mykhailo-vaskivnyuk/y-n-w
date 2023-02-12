@@ -1,11 +1,9 @@
 import Joi from 'joi';
-import {
-  IUserChanges,
-} from '../../../client/common/server/types/types';
+import { IEvents } from '../../../client/common/server/types/types';
 import { THandler } from '../../../router/types';
-import { UserChangesSchema } from '../../schema/schema';
+import { EventsSchema } from '../../schema/schema';
 
-export const read: THandler<{ date?: string }, IUserChanges> =
+export const read: THandler<{ date?: string }, IEvents> =
   async ({ session }, { date }) => {
     const user_id = session.read('user_id')!;
     const changes = await execQuery
@@ -15,7 +13,7 @@ export const read: THandler<{ date?: string }, IUserChanges> =
 read.paramsSchema = {
   date: Joi.string(),
 };
-read.responseSchema = UserChangesSchema;
+read.responseSchema = EventsSchema;
 
 export const confirm: THandler<{ event_id: number }, boolean> =
   async ({ session }, { event_id }) => {

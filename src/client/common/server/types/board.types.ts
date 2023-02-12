@@ -1,6 +1,6 @@
-import { ITableUsersBoardMessages } from '../../../local/imports';
+import { ITableBoardMessages } from '../../../local/imports';
 
-export type INetBoardReadResponse = ITableUsersBoardMessages[]
+export type INetBoardReadResponse = ITableBoardMessages[]
 
 export type IBoardRemoveParams = {
   node_id: number,

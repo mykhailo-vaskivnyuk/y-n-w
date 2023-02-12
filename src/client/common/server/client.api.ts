@@ -35,7 +35,7 @@ export const getApi = (
     'connect': {
       'nets': () => fetch<P.IChatConnectAll>('/chat/connect/nets'),
 
-      'user': () => fetch<P.IChatConnectResponse>('/chat/connect/user'),
+      'user': () => fetch<boolean>('/chat/connect/user'),
 
     },
     'sendMessage': (options: P.IChatSendMessage) =>
@@ -136,7 +136,7 @@ export const getApi = (
 
     'changes': {
       'read': (options: Q.TUserChangesRead) =>
-        fetch<P.IUserChanges>('/user/changes/read', options),
+        fetch<P.IEvents>('/user/changes/read', options),
 
       'confirm': (options: Q.TUserChangesConfirm) =>
         fetch<boolean>('/user/changes/confirm', options),

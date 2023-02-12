@@ -5,8 +5,7 @@ import { AppStatus } from '../constants';
 
 export const getChatMethods = (parent: IClientAppThis) => ({
   async connectAll() {
-    const userChatId = await parent.api.chat.connect.user();
-    parent.setUserChatId(userChatId);
+    await parent.api.chat.connect.user();
     const allChatIds = await parent.api.chat.connect.nets();
     const netChatIdsMap = new Map<number, T.INetChatIds>();
     allChatIds.forEach(({ net_id: netId, ...netChatIds }) => {

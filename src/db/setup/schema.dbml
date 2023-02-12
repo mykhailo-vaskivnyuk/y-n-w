@@ -100,7 +100,7 @@ Table "events" {
   }
 }
 
-Table "users_board_messages" {
+Table "board_messages" {
   "message_id" bigint [primary key, not null]
   "net_id" bigint [not null]
   "user_id" bigint [not null]
@@ -109,7 +109,7 @@ Table "users_board_messages" {
   "message" "character varying(255)" [not null]
   "date" timestamp [not null, default: 'now()']
   Indexes {
-    net_id [name: "sk_users_board_messages_net"]
+    net_id [name: "sk_board_messages_net"]
     (user_id, net_id) [unique, name: "uk_users_board_mesages_user_net"]
   }
 }
@@ -166,5 +166,5 @@ Ref "fk_events_user": "users"."user_id" < "events"."user_id" [delete: cascade]
 Ref "fk_events_user_node": "members"."node_id" < "events"."user_node_id" [update: set null]
 Ref "fk_events_member_node": "nodes"."node_id" < "events"."member_node_id" [delete: cascade]
 Ref "fk_users_changes_user": "users"."user_id" - "users_changes"."user_id" [delete: cascade]
-// Ref "fk_users_board_messages_user_node":"nets_users".(user_id, node_id) - "users_board_messages".(user_id, node_id) [update: cascade, delete: cascade]
-Ref "fk_users_board_messages_node_net":"nodes".(node_id, net_id) - "users_board_messages".(node_id, net_id) [delete: cascade]
+// Ref "fk_board_messages_user_node":"nets_users".(user_id, node_id) - "board_messages".(user_id, node_id) [update: cascade, delete: cascade]
+Ref "fk_board_messages_node_net":"nodes".(node_id, net_id) - "board_messages".(node_id, net_id) [delete: cascade]

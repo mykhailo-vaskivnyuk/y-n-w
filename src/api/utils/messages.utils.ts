@@ -6,7 +6,7 @@ import {
 } from '../../db/types/member.types';
 import { NetEventKeys } from '../types/net.types';
 import {
-  NetViewKeys, IInstantChange,
+  IEventMessage, NetViewKeys,
 } from '../../client/common/server/types/types';
 import {
   NET_MESSAGES_MAP, SEND_INSTANT_MESSAGE, SET_USER_NODE_ID_FOR,
@@ -65,12 +65,15 @@ export const sendInstantMessage = (
   const chatId = chatService.getChatIdOfUser(user_id);
   if (!chatId) return;
   const connectionIds = chatService.getChatConnections(chatId);
-  const response: IInstantChange = {
-    chatId, user_id, index: 0,
+  const response: IEventMessage = {
+    type: 'EVENT',
     event_id: 0,
+    user_id,
     user_node_id,
     net_view,
     member_node_id: null,
+    message: '',
+    date: new Date().toUTCString(),
   };
   connectionService.sendMessage(response, connectionIds);
 };
@@ -84,12 +87,15 @@ export const sendNetInstantMessage = (memberNet: IMember, message: string) => {
   // const userConnectionId =
   //   chatService.getChatConnections(userChatId)!
   //     .values().next().value as number;
-  const response: IInstantChange = {
-    chatId, user_id: 0, index: 0, message,
+  const response: IEventMessage = {
+    type: 'EVENT',
     event_id: 0,
+    user_id: 0,
     user_node_id: 0,
     net_view: 'net',
     member_node_id: null,
+    message,
+    date: new Date().toUTCString(),
   };
   // const connectionIds = new Set(netConnectionIds);
   // userConnectionId && connectionIds.delete(userConnectionId);

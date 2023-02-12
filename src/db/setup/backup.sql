@@ -21,6 +21,37 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: board_messages; Type: TABLE; Schema: public; Owner: merega
+--
+
+CREATE TABLE public.board_messages (
+    message_id bigint NOT NULL,
+    net_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    node_id bigint NOT NULL,
+    net_view character(10) DEFAULT 'net'::bpchar,
+    message character varying(255) NOT NULL,
+    date timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.board_messages OWNER TO merega;
+
+--
+-- Name: board_messages_message_id_seq; Type: SEQUENCE; Schema: public; Owner: merega
+--
+
+ALTER TABLE public.board_messages ALTER COLUMN message_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.board_messages_message_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: events; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -255,37 +286,6 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO merega;
 
 --
--- Name: users_board_messages; Type: TABLE; Schema: public; Owner: merega
---
-
-CREATE TABLE public.users_board_messages (
-    message_id bigint NOT NULL,
-    net_id bigint NOT NULL,
-    user_id bigint NOT NULL,
-    node_id bigint NOT NULL,
-    net_view character(10) DEFAULT 'net'::bpchar,
-    message character varying(255) NOT NULL,
-    date timestamp without time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE public.users_board_messages OWNER TO merega;
-
---
--- Name: users_board_messages_message_id_seq; Type: SEQUENCE; Schema: public; Owner: merega
---
-
-ALTER TABLE public.users_board_messages ALTER COLUMN message_id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.users_board_messages_message_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
-
-
---
 -- Name: users_changes; Type: TABLE; Schema: public; Owner: merega
 --
 
@@ -336,6 +336,14 @@ ALTER TABLE public.users ALTER COLUMN user_id ADD GENERATED ALWAYS AS IDENTITY (
     NO MAXVALUE
     CACHE 1
 );
+
+
+--
+-- Data for Name: board_messages; Type: TABLE DATA; Schema: public; Owner: merega
+--
+
+COPY public.board_messages (message_id, net_id, user_id, node_id, net_view, message, date) FROM stdin;
+\.
 
 
 --
@@ -448,14 +456,6 @@ COPY public.users (user_id, email, name, mobile, password, confirmed) FROM stdin
 
 
 --
--- Data for Name: users_board_messages; Type: TABLE DATA; Schema: public; Owner: merega
---
-
-COPY public.users_board_messages (message_id, net_id, user_id, node_id, net_view, message, date) FROM stdin;
-\.
-
-
---
 -- Data for Name: users_changes; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
@@ -482,6 +482,13 @@ COPY public.users_members (parent_node_id, user_id, member_id, dislike, vote) FR
 
 COPY public.users_tokens (user_id, token) FROM stdin;
 \.
+
+
+--
+-- Name: board_messages_message_id_seq; Type: SEQUENCE SET; Schema: public; Owner: merega
+--
+
+SELECT pg_catalog.setval('public.board_messages_message_id_seq', 1, false);
 
 
 --
@@ -520,17 +527,18 @@ SELECT pg_catalog.setval('public.sessions_session_id_seq', 48, true);
 
 
 --
--- Name: users_board_messages_message_id_seq; Type: SEQUENCE SET; Schema: public; Owner: merega
---
-
-SELECT pg_catalog.setval('public.users_board_messages_message_id_seq', 1, false);
-
-
---
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: merega
 --
 
 SELECT pg_catalog.setval('public.users_user_id_seq', 4, true);
+
+
+--
+-- Name: board_messages pk_board_messages; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.board_messages
+    ADD CONSTRAINT pk_board_messages PRIMARY KEY (message_id);
 
 
 --
@@ -606,14 +614,6 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users_board_messages pk_users_board_messages; Type: CONSTRAINT; Schema: public; Owner: merega
---
-
-ALTER TABLE ONLY public.users_board_messages
-    ADD CONSTRAINT pk_users_board_messages PRIMARY KEY (message_id);
-
-
---
 -- Name: users_changes pk_users_changes; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -686,10 +686,10 @@ ALTER TABLE ONLY public.nodes
 
 
 --
--- Name: users_board_messages uk_users_board_mesages_user_net; Type: CONSTRAINT; Schema: public; Owner: merega
+-- Name: board_messages uk_users_board_mesages_user_net; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
-ALTER TABLE ONLY public.users_board_messages
+ALTER TABLE ONLY public.board_messages
     ADD CONSTRAINT uk_users_board_mesages_user_net UNIQUE (user_id, net_id);
 
 
@@ -710,6 +710,13 @@ ALTER TABLE ONLY public.users_tokens
 
 
 --
+-- Name: sk_board_messages_net; Type: INDEX; Schema: public; Owner: merega
+--
+
+CREATE INDEX sk_board_messages_net ON public.board_messages USING btree (net_id);
+
+
+--
 -- Name: sk_events_tmp_user; Type: INDEX; Schema: public; Owner: merega
 --
 
@@ -721,13 +728,6 @@ CREATE INDEX sk_events_tmp_user ON public.events_tmp USING btree (user_id);
 --
 
 CREATE INDEX sk_events_user ON public.events USING btree (user_id);
-
-
---
--- Name: sk_users_board_messages_net; Type: INDEX; Schema: public; Owner: merega
---
-
-CREATE INDEX sk_users_board_messages_net ON public.users_board_messages USING btree (net_id);
 
 
 --
@@ -749,6 +749,14 @@ CREATE UNIQUE INDEX users_nodes_invites_token_idx ON public.nodes_invites USING 
 --
 
 CREATE UNIQUE INDEX users_tokens_token_idx ON public.users_tokens USING btree (token);
+
+
+--
+-- Name: board_messages fk_board_messages_node_net; Type: FK CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.board_messages
+    ADD CONSTRAINT fk_board_messages_node_net FOREIGN KEY (node_id, net_id) REFERENCES public.nodes(node_id, net_id) ON DELETE CASCADE;
 
 
 --
@@ -829,14 +837,6 @@ ALTER TABLE ONLY public.nodes
 
 ALTER TABLE ONLY public.sessions
     ADD CONSTRAINT fk_sessions_user FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
-
-
---
--- Name: users_board_messages fk_users_board_messages_node_net; Type: FK CONSTRAINT; Schema: public; Owner: merega
---
-
-ALTER TABLE ONLY public.users_board_messages
-    ADD CONSTRAINT fk_users_board_messages_node_net FOREIGN KEY (node_id, net_id) REFERENCES public.nodes(node_id, net_id) ON DELETE CASCADE;
 
 
 --

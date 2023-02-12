@@ -7,7 +7,7 @@ export const TABLES_MAP = {
   MEMBERS: 'members',
   NODES_INVITES: 'nodes_invites',
   EVENTS: 'events',
-  USERS_BOARD_MESSAGES: 'users_board_messages',
+  BOARD_MESSAGES: 'board_messages',
   USERS_CHANGES: 'users_changes',
   USERS_TOKENS: 'users_tokens',
   USERS_MEMBERS: 'users_members',
@@ -81,7 +81,7 @@ export type ITableEvents = {
   date: string;
 }
 
-export type ITableUsersBoardMessages = {
+export type ITableBoardMessages = {
   message_id: number;
   net_id: number;
   user_id: number;

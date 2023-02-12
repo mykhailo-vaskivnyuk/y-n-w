@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import { JOI_NULL } from '../../router/constants';
 
-export const UserChangesSchema = {
+export const EventsSchema = {
   event_id: Joi.number(),
   user_id: Joi.number(),
   user_node_id: [JOI_NULL, Joi.number()],

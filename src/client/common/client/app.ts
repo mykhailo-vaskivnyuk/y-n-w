@@ -4,7 +4,7 @@ import * as T from '../server/types/types';
 import {
   INITIAL_NETS, INets, IMember, TNetChatIdsMap,
 } from './types';
-import { ITableUsersBoardMessages } from '../../local/imports';
+import { ITableBoardMessages } from '../../local/imports';
 import { AppStatus } from './constants';
 import { HttpResponseError } from './connection/errors';
 import { EventEmitter } from './event.emitter';
@@ -34,10 +34,9 @@ export class ClientApp extends EventEmitter {
   private tree: IMember[] = [];
   private netView?: T.NetViewEnum;
   private memberData?: IMember;
-  private userChatId?: number;
   private netChatIds: TNetChatIdsMap;
-  private netChanges: T.IUserChanges;
-  private boardMessages: ITableUsersBoardMessages[];
+  private netChanges: T.IEvents;
+  private boardMessages: ITableBoardMessages[];
 
   account: ReturnType<typeof getAccountMethods>;
   net: ReturnType<typeof getNetMethods>;
@@ -222,36 +221,28 @@ export class ClientApp extends EventEmitter {
 
   private handleConnect() {
     if (this.status === AppStatus.INITING) return;
-    this.userChatId = undefined;
     this.netChatIds = new Map();
     this.messages = new Map();
     this.chat.connectAll().catch((e) => this.setError(e));
     this.changes.read(true).catch((e) => this.setError(e));
   }
 
-  protected setUserChatId(message: T.IChatConnectResponse) {
-    if (!message) return;
-    this.userChatId = message.chatId;
-  }
-
   protected setNetChatIds(netChatIds: TNetChatIdsMap) {
     this.netChatIds = netChatIds;
   }
 
-  protected setMessage(messageData: T.IChatResponseMessage | T.IInstantChange) {
+  protected setMessage<T extends T.MessageTypeKeys>(
+    messageData: T.IMessage<T>,
+  ) {
     if (!messageData) return;
 
-    if (this.changes.isInstantChange(messageData)) {
-      this.changes.update([messageData]);
+    if (this.changes.isEvent(messageData)) {
+      if (!messageData.event_id) this.changes.read();
+      else this.changes.update([messageData]);
       return;
     }
 
     const { chatId } = messageData;
-    if (chatId === this.userChatId) {
-      this.changes.read();
-      return;
-    }
-
     if (!messageData.message) return;
     const chatMessages = this.messages.get(chatId);
     if (chatMessages) {
@@ -277,11 +268,11 @@ export class ClientApp extends EventEmitter {
     this.emit('message', chatId);
   }
 
-  protected setBoardMessages(messages: ITableUsersBoardMessages[] = []) {
+  protected setBoardMessages(messages: ITableBoardMessages[] = []) {
     this.boardMessages = messages;
   }
 
-  protected setChanges(changes: T.IUserChanges) {
+  protected setChanges(changes: T.IEvents) {
     this.netChanges = changes;
     this.emit('changes', changes);
   }
