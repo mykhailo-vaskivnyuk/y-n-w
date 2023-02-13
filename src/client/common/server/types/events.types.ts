@@ -7,3 +7,7 @@ export type IEvents = IEvent[];
 export type IEventMessage = {
   type: Extract<MessageTypeKeys, 'EVENT'>;
 } & IEvent;
+
+export interface INewEventsMessage {
+  type: Extract<MessageTypeKeys, 'NEW_EVENTS'>;
+}

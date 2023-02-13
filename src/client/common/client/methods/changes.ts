@@ -18,6 +18,12 @@ export const getChangesMethods = (parent: IClientAppThis) => ({
     return messageData?.type === 'EVENT';
   },
 
+  isNewEvents(
+    messageData: IMessage<MessageTypeKeys>,
+  ): messageData is IMessage<'NEW_EVENTS'> {
+    return messageData?.type === 'NEW_EVENTS';
+  },
+
   async read(inChain = false) {
     !inChain && parent.setStatus(AppStatus.LOADING);
     try {

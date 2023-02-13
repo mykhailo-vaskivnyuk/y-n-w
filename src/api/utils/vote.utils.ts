@@ -1,5 +1,5 @@
 import { removeConnected } from './net.utils';
-import { createMessages } from './messages.create.utils';
+import { createEventMessages } from './events/event.messages.create';
 
 export const checkVotes = async (parent_node_id: number) => {
   const members = await execQuery.net.circle.getVotes([parent_node_id]);
@@ -71,15 +71,15 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
 
   !parent_member && await execQuery.node.updateCountOfMembers([node_id, -1]);
 
-  createMessages('LEAVE_VOTE', member!, date);
-  parent_member && createMessages('LEAVE_DISVOTE', parent_member, date);
+  createEventMessages('LEAVE_VOTE', member!, date);
+  parent_member && createEventMessages('LEAVE_DISVOTE', parent_member, date);
 
   const voteMemeber = {
     ...member!,
     node_id: parent_node_id,
     parent_node_id: parent_member?.parent_node_id || null,
   };
-  await createMessages('CONNECT_VOTE', voteMemeber, date);
+  await createEventMessages('CONNECT_VOTE', voteMemeber, date);
 
 
   if (!parent_member) return;
@@ -89,5 +89,5 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
     node_id,
     parent_node_id,
   };
-  createMessages('CONNECT_DISVOTE', disvoteMember, date);
+  createEventMessages('CONNECT_DISVOTE', disvoteMember, date);
 };

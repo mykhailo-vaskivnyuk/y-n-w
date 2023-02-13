@@ -5,8 +5,8 @@ import { NetEventKeys } from '../types/net.types';
 import { HandlerError } from '../../router/errors';
 import { updateCountOfMembers } from './nodes.utils';
 import { excludeNullUndefined } from '../../utils/utils';
-import { createMessagesToConnected } from './messages.utils';
-import { createMessages } from './messages.create.utils';
+import { createMessagesToConnected } from './events/event.messages.other';
+import { createEventMessages } from './events/event.messages.create';
 
 export const findUserNet = async (
   user_id: number, user_node_id: number,
@@ -71,8 +71,8 @@ export const removeNetUser = async (
   // 6 - create messages
   logger.debug('CREATE MESSAGES');
   for (const userNet of userNets) {
-    if (userNet.confirmed) await createMessages(event, userNet, date);
-    else await createMessages('LEAVE_CONNECTED', userNet, date);
+    if (userNet.confirmed) await createEventMessages(event, userNet, date);
+    else await createEventMessages('LEAVE_CONNECTED', userNet, date);
   }
 
   const nodesToArrange = userNets.map(({ node_id: v }) => v);

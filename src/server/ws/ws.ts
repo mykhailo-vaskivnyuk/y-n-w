@@ -11,6 +11,9 @@ import { handleError } from './methods/handle.error';
 import { applyResModules } from './methods/utils';
 import { getSessionKey } from '../utils';
 import { excludeNullUndefined } from '../../utils/utils';
+import {
+  IMessage, MessageTypeKeys,
+} from '../../client/common/server/types/messages.types';
 
 class WsConnection implements IInputConnection {
   private config: IWsConfig;
@@ -159,7 +162,9 @@ class WsConnection implements IInputConnection {
     this.isAlive = true;
   }
 
-  private sendMessage(data: TOperationResponse, connectionIds?: Set<number>) {
+  private sendMessage<T extends MessageTypeKeys>(
+    data: IMessage<T>, connectionIds?: Set<number>,
+  ) {
     try {
       if (!connectionIds) return false;
       const connections = [...connectionIds]

@@ -1,4 +1,7 @@
 import ws from 'ws';
+import {
+  IMessage, MessageTypeKeys,
+} from '../../client/common/server/types/messages.types';
 import { IOperation, TOperationResponse } from '../../types/operation.types';
 import { TWsResModulesKeys } from './constants';
 
@@ -15,5 +18,5 @@ export type WsConnectionMap = Map<number, IWsConnection>;
 export type TWsResModule<T = any> = (config: T) => (
   connection: IWsConnection | IWsConnection[],
   options: IOperation['options'] | null,
-  data: TOperationResponse,
+  data: TOperationResponse | IMessage<MessageTypeKeys>,
 ) => boolean;

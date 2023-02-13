@@ -1,7 +1,7 @@
-import { IMember } from '../../db/types/member.types';
-import { NetEventKeys } from '../types/net.types';
-import { NET_MESSAGES_MAP } from '../../constants/constants';
-import { commitChanges } from './messages.utils';
+import { IMember } from '../../../db/types/member.types';
+import { NetEventKeys } from '../../types/net.types';
+import { NET_MESSAGES_MAP } from '../../../constants/constants';
+import { commitChanges } from './event.messages.other';
 
 export const createMessagesInTree = async (
   event: NetEventKeys,

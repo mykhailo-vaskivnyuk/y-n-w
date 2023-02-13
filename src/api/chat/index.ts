@@ -15,7 +15,8 @@ export const sendMessage: THandler<IChatSendMessage, boolean> =
     const user_id = session.read('user_id');
     const [message, connectionIds] =
       chatService.persistMessage(user_id!, messageData);
-    return connectionService.sendMessage(message, connectionIds);
+    return connectionService
+      .sendMessage({ type: 'CHAT', ...message }, connectionIds);
   };
 sendMessage.paramsSchema = ChatSendMessageSchema;
 sendMessage.responseSchema = Joi.boolean();

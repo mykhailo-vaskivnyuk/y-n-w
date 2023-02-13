@@ -6,7 +6,7 @@ import {
 import {
   NetReadParamsSchema, NetBoardReadResponseSchema, BoardRemoveParamsSchema,
 } from '../../schema/schema';
-import { createMessages } from '../../utils/messages.create.utils';
+import { createEventMessages } from '../../utils/events/event.messages.create';
 
 export const read: THandler<INetReadParams, INetBoardReadResponse> =
   async ({ userNet }) => {
@@ -21,7 +21,7 @@ export const remove: THandler<IBoardRemoveParams, boolean> = async (
 ) => {
   const user_id = session.read('user_id')!;
   await execQuery.net.board.remove([message_id, user_id]);
-  createMessages('BOARD_MESSAGE', userNet!);
+  createEventMessages('BOARD_MESSAGE', userNet!);
   return true;
 };
 remove.paramsSchema = BoardRemoveParamsSchema;

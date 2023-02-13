@@ -2,7 +2,9 @@ import Joi from 'joi';
 import { ITableNets } from '../../../db/types/db.tables.types';
 import { IMember } from '../../../db/types/member.types';
 import { THandler } from '../../../router/types';
-import { createMessagesInNet } from '../../utils/messages.utils';
+import {
+  createInstantMessageInNet,
+} from '../../utils/events/event.messages.instant';
 
 const clear: THandler<{ weekAgo: number }, boolean> =
  async ({ isAdmin }, { weekAgo }) => {
@@ -16,7 +18,7 @@ const clear: THandler<{ weekAgo: number }, boolean> =
      [net] = await execQuery.net.board.findUnactive([strDate]);
      if (!net) return true;
      await execQuery.net.board.clear([strDate]);
-     createMessagesInNet('BOARD_MESSAGE', net as unknown as IMember);
+     createInstantMessageInNet('BOARD_MESSAGE', net as unknown as IMember);
    } while (net);
    return true;
  };

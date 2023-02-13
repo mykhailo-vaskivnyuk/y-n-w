@@ -73,7 +73,7 @@ export const NET_MESSAGES_MAP:
       MEMBER: 'Вас від\'єднано від мережі %s через невибори',
     },
     BOARD_MESSAGE: {
-      NET: 'Дошка оголошень',
+      NET: '',
     },
   };
 
@@ -82,7 +82,7 @@ export const SET_USER_NODE_ID_FOR: NetEventKeys[] = [
   'CONNECT_DISVOTE',
 ];
 
-export const SEND_INSTANT_MESSAGE: NetEventKeys[] = [
+export const INSTANT_EVENTS: NetEventKeys[] = [
   'VOTE',
   'BOARD_MESSAGE',
 ];

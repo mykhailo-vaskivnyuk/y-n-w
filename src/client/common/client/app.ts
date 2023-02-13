@@ -235,15 +235,12 @@ export class ClientApp extends EventEmitter {
     messageData: T.IMessage<T>,
   ) {
     if (!messageData) return;
-
-    if (this.changes.isEvent(messageData)) {
-      if (!messageData.event_id) this.changes.read();
-      else this.changes.update([messageData]);
-      return;
-    }
+    if (this.changes.isNewEvents(messageData)) return this.changes.read();
+    if (this.changes.isEvent(messageData))
+      return this.changes.update([messageData]);
 
     const { chatId } = messageData;
-    if (!messageData.message) return;
+    // if (!messageData.message) return;
     const chatMessages = this.messages.get(chatId);
     if (chatMessages) {
       const lastMessage = chatMessages.at(-1);

@@ -1,22 +1,23 @@
-import { NetEventKeys } from '../types/net.types';
+import { NetEventKeys } from '../../types/net.types';
 import {
   IMember, IMemberWithNet
-} from '../../db/types/member.types';
+} from '../../../db/types/member.types';
 import {
-  NET_MESSAGES_MAP, SEND_INSTANT_MESSAGE,
-} from '../../constants/constants';
-import { commitChanges, sendInstantMessage } from './messages.utils';
+  NET_MESSAGES_MAP, INSTANT_EVENTS,
+} from '../../../constants/constants';
+import { sendInstantMessage } from './event.messages.instant';
+import { commitChanges } from './event.messages.other';
 
 const createMessageToFacilitator = async (
   event: NetEventKeys,
   user: IMember,
-  memberNet: IMemberWithNet,
+  fromMember: IMemberWithNet,
   date: string,
 ) => {
   const message = NET_MESSAGES_MAP[event]['FACILITATOR'];
   if (!message) return;
   const { user_id } = user;
-  const { node_id: from_node_id, net_id } = memberNet;
+  const { node_id: from_node_id, net_id } = fromMember;
   await execQuery.net.message.create([
     user_id,
     net_id,
@@ -31,14 +32,14 @@ const createMessageToFacilitator = async (
 const cretaeMessagesToCircleMember = async (
   event: NetEventKeys,
   user: IMember,
-  memberNet: IMemberWithNet,
+  fromMember: IMemberWithNet,
   date: string,
 ) => {
   const message = NET_MESSAGES_MAP[event]['CIRCLE'];
   if (!message) return;
   const { user_id } = user;
-  const { node_id: from_node_id, net_id } = memberNet;
-  if (SEND_INSTANT_MESSAGE.includes(event))
+  const { node_id: from_node_id, net_id } = fromMember;
+  if (INSTANT_EVENTS.includes(event))
     return sendInstantMessage(user_id, net_id, 'circle');
   await execQuery.net.message.create([
     user_id,
@@ -53,14 +54,14 @@ const cretaeMessagesToCircleMember = async (
 
 export const createMessagesInCircle = async (
   event: NetEventKeys,
-  memberNet: IMemberWithNet,
+  fromMember: IMemberWithNet,
   date: string,
 ) => {
   const {
     node_id: member_node_id,
     parent_node_id,
     confirmed: member_confirmed,
-  } = memberNet;
+  } = fromMember;
   if (!parent_node_id) return;
   const messageToFacilitator = NET_MESSAGES_MAP[event]['FACILITATOR'];
   const messageToCircleMember = NET_MESSAGES_MAP[event]['CIRCLE'];
@@ -70,11 +71,11 @@ export const createMessagesInCircle = async (
   for (const user of users) {
     const { node_id: user_node_id, confirmed: user_confirmed } = user;
     if (user_node_id === parent_node_id) {
-      await createMessageToFacilitator(event, user, memberNet, date);
+      await createMessageToFacilitator(event, user, fromMember, date);
     } else if (!member_confirmed) continue;
     else if (!user_confirmed) continue;
     else {
-      await cretaeMessagesToCircleMember(event, user, memberNet,  date);
+      await cretaeMessagesToCircleMember(event, user, fromMember,  date);
     }
   }
 };

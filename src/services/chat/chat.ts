@@ -107,7 +107,8 @@ export class ChatService {
       this.messages.set(chatId, [{ user_id, chatId, index, message }]);
     }
     const connectionIds = this.getChatConnections(chatId);
-    return [{ chatId, user_id, index, message }, connectionIds] as const;
+    const responseMessage = { chatId, user_id, index, message };
+    return [responseMessage, connectionIds] as const;
   }
 
   getMessages({ chatId, index = 1 }: T.IChatGetMessages) {
