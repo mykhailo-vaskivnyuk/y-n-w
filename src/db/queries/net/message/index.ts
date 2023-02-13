@@ -3,9 +3,9 @@ import { TQuery } from '../../../types/types';
 export interface IQueriesNetMessage {
   create: TQuery<[
     ['user_id', number],
-    ['user_node_id', number | null],
+    ['net_id', number | null],
     ['net_view', string],
-    ['member_node_id', number | null],
+    ['from_node_id', number | null],
     ['message', string],
     ['date', string],
   ]>;
@@ -14,9 +14,9 @@ export interface IQueriesNetMessage {
 export const create = `
   INSERT INTO events (
     user_id,
-    user_node_id,
+    net_id,
     net_view,
-    member_node_id,
+    from_node_id,
     message,
     date
   )

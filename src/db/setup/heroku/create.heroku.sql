@@ -16,7 +16,12 @@ DROP TABLE IF EXISTS users_board_messages CASCADE;
 -- ---
 
 DROP TABLE IF EXISTS board_messages CASCADE;
+
+-- del
 DROP TABLE IF EXISTS nodes_invites CASCADE;
+-- ---
+
+DROP TABLE IF EXISTS members_invites CASCADE;
 
 -- del
 DROP TABLE IF EXISTS nets_users_data_tmp CASCADE;

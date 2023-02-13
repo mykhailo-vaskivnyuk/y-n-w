@@ -66,7 +66,7 @@
 26. operationPrepareHandlares, operationResultHandlers, move to special dir
 27. users_nets_nodes
 28. readUser - remove net from session or clear session
-29. users_nodes_invites
+29. members_invites
 30. refactor net router and net enter and net comeout add control on back for netid and nodeid depends on user status, refactor redirect
 31. CONNECTED is not net user
 32. add level limit 6 and net limit

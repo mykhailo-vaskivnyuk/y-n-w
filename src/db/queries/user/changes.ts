@@ -17,30 +17,30 @@ export interface IQueriesUserChanges {
   ]>;
   removeFromCircle: TQuery<[
     ['user_id', number],
-    ['user_node_id', number],
+    ['net_id', number],
   ]>;
   removeFromTree: TQuery<[
     ['user_id', number],
-    ['user_node_id', number],
+    ['net_id', number],
   ]>;
-  moveToTmp: TQuery<[
-    ['node_id', number],
-    ['parent_node_id', number],
-  ]>;
-  changeNodes: TQuery<[
-    ['node_id', number],
-    ['parent_node_id', number],
-    ['user_id', number],
-    ['parent_user_id', number | null],
-  ]>;
-  moveFromTmp: TQuery<[
-    ['node_id', number],
-    ['parent_node_id', number],
-  ]>;
-  removeFromTmp: TQuery<[
-    ['node_id', number],
-    ['parent_node_id', number],
-  ]>;
+  // moveToTmp: TQuery<[
+  //   ['node_id', number],
+  //   ['parent_node_id', number],
+  // // ]>;
+  // changeNodes: TQuery<[
+  //   ['node_id', number],
+  //   ['parent_node_id', number],
+  //   ['user_id', number],
+  //   ['parent_user_id', number | null],
+  // ]>;
+  // moveFromTmp: TQuery<[
+  //   ['node_id', number],
+  //   ['parent_node_id', number],
+  // ]>;
+  // removeFromTmp: TQuery<[
+  //   ['node_id', number],
+  //   ['parent_node_id', number],
+  // ]>;
 }
 
 export const read = `
@@ -74,7 +74,7 @@ export const removeFromCircle = `
   DELETE FROM events
   WHERE
     user_id = $1 AND
-    user_node_id = $2 AND
+    net_id = $2 AND
     net_view = 'circle'
 `;
 
@@ -82,59 +82,59 @@ export const removeFromTree = `
   DELETE FROM events
   WHERE
     user_id = $1 AND
-    user_node_id = $2 AND
+    net_id = $2 AND
     net_view = 'tree'
 `;
 
-export const moveToTmp = `
-  INSERT INTO events_tmp
-  SELECT * FROM events
-  WHERE
-    (
-      user_node_id = $1 AND (
-        net_view = 'tree' OR
-        net_view = 'net'
-      )
-    ) OR (
-      user_node_id = $2 AND (
-        net_view = 'circle' OR
-        net_view = 'net'
-      )
-    )
-`;
+// export const moveToTmp = `
+//   INSERT INTO events_tmp
+//   SELECT * FROM events
+//   WHERE
+//     (
+//       user_node_id = $1 AND (
+//         net_view = 'tree' OR
+//         net_view = 'net'
+//       )
+//     ) OR (
+//       user_node_id = $2 AND (
+//         net_view = 'circle' OR
+//         net_view = 'net'
+//       )
+//     )
+// `;
 
-export const changeNodes = `
-  UPDATE events_tmp
-  SET user_node_id =
-    CASE
-      WHEN user_id = $3 AND user_node_id = $1 THEN +$2
-      ELSE +$1
-    END
-  WHERE user_id IN ($3, $4) AND user_node_id IN ($1, $2)
-`;
+// export const changeNodes = `
+//   UPDATE events_tmp
+//   SET user_node_id =
+//     CASE
+//       WHEN user_id = $3 AND user_node_id = $1 THEN +$2
+//       ELSE +$1
+//     END
+//   WHERE user_id IN ($3, $4) AND user_node_id IN ($1, $2)
+// `;
 
-export const moveFromTmp = `
-  INSERT INTO events (
-    user_id,
-    user_node_id,
-    net_view,
-    member_node_id,
-    message,
-    date
-  )
-  SELECT
-    user_id,
-    user_node_id,
-    net_view,
-    member_node_id,
-    message,
-    date
-  FROM events_tmp
-  WHERE user_node_id IN ($1, $2)
-  ORDER BY event_id
-`;
+// export const moveFromTmp = `
+//   INSERT INTO events (
+//     user_id,
+//     user_node_id,
+//     net_view,
+//     member_node_id,
+//     message,
+//     date
+//   )
+//   SELECT
+//     user_id,
+//     user_node_id,
+//     net_view,
+//     member_node_id,
+//     message,
+//     date
+//   FROM events_tmp
+//   WHERE user_node_id IN ($1, $2)
+//   ORDER BY event_id
+// `;
 
-export const removeFromTmp = `
-  DELETE FROM events_tmp
-  WHERE user_node_id IN ($1, $2)
-`;
+// export const removeFromTmp = `
+//   DELETE FROM events_tmp
+//   WHERE user_node_id IN ($1, $2)
+// `;

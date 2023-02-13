@@ -25,6 +25,9 @@ export interface IQueriesUser {
   remove: TQuery<[
     ['user_id', number],
   ]>;
+  copy: TQuery<[
+    ['user_id', number],
+  ], ITableUsers>;
   net: IQueriesUserNet;
   nets: IQueriesUserNets;
   token: IQueriesUserToken;
@@ -67,4 +70,23 @@ export const confirm = `
 export const remove = `
   DELETE FROM users
   WHERE user_id = $1
+`;
+
+export const copy = `
+  INSERT INTO users (
+    email,
+    name,
+    mobile,
+    password,
+    confirmed
+  )
+  SELECT
+    ('copy:' || email) as email,
+    name,
+    mobile,
+    password,
+    confirmed
+  FROM users
+  WHERE user_id = $1
+  RETURNING *
 `;

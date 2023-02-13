@@ -44,12 +44,12 @@ export const createMessageToMember = async (
   let message = NET_MESSAGES_MAP[event].MEMBER;
   if (!message) return;
   const { name } = memberNet;
-  const { user_id, node_id } = memberNet;
+  const { user_id, node_id, net_id } = memberNet;
   const user_node_id = SET_USER_NODE_ID_FOR.includes(event) ? node_id : null;
   if (!user_node_id) message = format(message, name);
   await execQuery.net.message.create([
     user_id,
-    user_node_id,
+    net_id,
     'net',
     null,
     message,
@@ -59,7 +59,7 @@ export const createMessageToMember = async (
 };
 
 export const sendInstantMessage = (
-  user_id: number, user_node_id: number, net_view: NetViewKeys,
+  user_id: number, net_id: number, net_view: NetViewKeys,
 ) => {
   // change logic as in createMessagesInNet
   const chatId = chatService.getChatIdOfUser(user_id);
@@ -69,9 +69,9 @@ export const sendInstantMessage = (
     type: 'EVENT',
     event_id: 0,
     user_id,
-    user_node_id,
+    net_id,
     net_view,
-    member_node_id: null,
+    from_node_id: null,
     message: '',
     date: new Date().toUTCString(),
   };
@@ -91,9 +91,9 @@ export const sendNetInstantMessage = (memberNet: IMember, message: string) => {
     type: 'EVENT',
     event_id: 0,
     user_id: 0,
-    user_node_id: 0,
+    net_id: memberNet.net_id,
     net_view: 'net',
-    member_node_id: null,
+    from_node_id: null,
     message,
     date: new Date().toUTCString(),
   };

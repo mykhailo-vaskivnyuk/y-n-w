@@ -15,13 +15,13 @@ const createMessageToFacilitator = async (
 ) => {
   const message = NET_MESSAGES_MAP[event]['FACILITATOR'];
   if (!message) return;
-  const { user_id, node_id: user_node_id } = user;
-  const { node_id: member_node_id } = memberNet;
+  const { user_id } = user;
+  const { node_id: from_node_id, net_id } = memberNet;
   await execQuery.net.message.create([
     user_id,
-    user_node_id,
+    net_id,
     'tree',
-    member_node_id,
+    from_node_id,
     message,
     date,
   ]);
@@ -36,15 +36,15 @@ const cretaeMessagesToCircleMember = async (
 ) => {
   const message = NET_MESSAGES_MAP[event]['CIRCLE'];
   if (!message) return;
-  const { user_id, node_id: user_node_id } = user;
-  const { node_id: member_node_id } = memberNet;
+  const { user_id } = user;
+  const { node_id: from_node_id, net_id } = memberNet;
   if (SEND_INSTANT_MESSAGE.includes(event))
-    return sendInstantMessage(user_id, user_node_id, 'circle');
+    return sendInstantMessage(user_id, net_id, 'circle');
   await execQuery.net.message.create([
     user_id,
-    user_node_id,
+    net_id,
     'circle',
-    member_node_id,
+    from_node_id,
     message,
     date,
   ]);

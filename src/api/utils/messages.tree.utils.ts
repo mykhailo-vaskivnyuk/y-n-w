@@ -10,15 +10,15 @@ export const createMessagesInTree = async (
 ) => {
   const message = NET_MESSAGES_MAP[event]['TREE'];
   if (!message) return;
-  const { node_id: member_node_id, confirmed } = memberNet;
+  const { node_id: from_node_id, net_id, confirmed } = memberNet;
   if (!confirmed) return;
-  const users = await execQuery.net.tree.getMembers([member_node_id]);
-  for (const { user_id, node_id: user_node_id } of users) {
+  const users = await execQuery.net.tree.getMembers([from_node_id]);
+  for (const { user_id } of users) {
     await execQuery.net.message.create([
       user_id,
-      user_node_id,
+      net_id,
       'circle',
-      member_node_id,
+      from_node_id,
       message,
       date,
     ]);

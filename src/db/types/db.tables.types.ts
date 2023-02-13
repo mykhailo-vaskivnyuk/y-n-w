@@ -5,7 +5,7 @@ export const TABLES_MAP = {
   USERS: 'users',
   NETS_DATA: 'nets_data',
   MEMBERS: 'members',
-  NODES_INVITES: 'nodes_invites',
+  MEMBERS_INVITES: 'members_invites',
   EVENTS: 'events',
   BOARD_MESSAGES: 'board_messages',
   USERS_CHANGES: 'users_changes',
@@ -64,9 +64,9 @@ export type ITableMembers = {
   confirmed: boolean;
 }
 
-export type ITableUsersNodesInvites = {
-  parent_node_id: number;
+export type ITableMembersInvites = {
   user_id: number;
+  member_node_id: number;
   member_name: string;
   token: string;
 }
@@ -74,9 +74,9 @@ export type ITableUsersNodesInvites = {
 export type ITableEvents = {
   event_id: number;
   user_id: number;
-  user_node_id: number | null;
-  net_view: 'net' | 'tree' | 'circle'; /* NetViewKeys */
-  member_node_id: number | null;
+  net_id: number | null;
+  net_view: 'net' | 'tree' | 'circle' | null; /* NetViewKeys */
+  from_node_id: number | null;
   message: string;
   date: string;
 }

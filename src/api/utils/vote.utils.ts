@@ -16,47 +16,60 @@ export const checkVotes = async (parent_node_id: number) => {
 
 export const voteNetUser = async (node_id: number, parent_node_id: number) => {
   const date = new Date().toUTCString();
-  const [parent_member] = await execQuery.member.get([parent_node_id]);
-
-  const { user_id: parentUserId = null } = parent_member || {};
-  if (parent_member) {
-    await removeConnected('LEAVE_DISVOTE', parent_member, date);
-    await execQuery.member.data
-      .removeFromCircle([parentUserId!, parent_node_id]);
-    await execQuery.user.changes
-      .removeFromCircle([parentUserId!, parent_node_id]);
-  }
 
   const [member] = await execQuery.member.get([node_id]);
   const { user_id, net_id } = member!;
   await removeConnected('LEAVE_VOTE', member!, date);
   await execQuery.member.data.removeFromTree([user_id, node_id]);
-  await execQuery.user.changes.removeFromTree([user_id, node_id]);
+  await execQuery.user.changes.removeFromTree([user_id, net_id]);
 
-  await execQuery.member.moveToTmp([node_id, parent_node_id]);
-  await execQuery.user.changes.moveToTmp([node_id, parent_node_id]);
-  await execQuery.member.removeVoted([node_id, parent_node_id]);
+  const [parent_member] = await execQuery.member.get([parent_node_id]);
 
-  await execQuery.member.change([
-    node_id,
-    parent_node_id,
-    user_id,
-    parentUserId,
-    net_id,
-  ]);
-  await execQuery.member.moveFromTmp([node_id, parent_node_id]);
-  await execQuery.member.removeFromTmp([node_id, parent_node_id]);
+  if (parent_member) {
+    const { user_id: parentUserId } = parent_member;
+    await removeConnected('LEAVE_DISVOTE', parent_member, date);
+    await execQuery.member.data
+      .removeFromCircle([parentUserId!, parent_node_id]);
+    await execQuery.user.changes
+      .removeFromCircle([parentUserId!, net_id]);
+  }
 
-  await execQuery.user.changes.changeNodes([
-    node_id,
-    parent_node_id,
-    user_id,
-    parentUserId,
-  ]);
-  await execQuery.user.changes.moveFromTmp([node_id, parent_node_id]);
-  await execQuery.user.changes.removeFromTmp([node_id, parent_node_id]);
+  // await execQuery.member.moveToTmp([node_id, parent_node_id]);
+  // await execQuery.user.changes.moveToTmp([node_id, parent_node_id]);
+  // await execQuery.member.removeVoted([node_id, parent_node_id]);
 
-  !parentUserId && await execQuery.node.updateCountOfMembers([node_id, -1]);
+  if (parent_member) {
+    await execQuery.member.copyToTmp([parent_node_id]);
+    const [tmpUser] = await execQuery.user.copy([user_id]);
+    await execQuery.member.copy([parent_node_id, node_id, tmpUser!.user_id]);
+    await execQuery.member.replace([node_id, parent_node_id]);
+    await execQuery.member.changeUser([parent_node_id, user_id]);
+    await execQuery.member.removeFromTmp([parent_node_id]);
+    await execQuery.user.remove([tmpUser!.user_id]);
+  } else {
+    await execQuery.member.changeNode([node_id, parent_node_id]);
+  }
+
+  // await execQuery.member.change([
+  //   node_id,
+  //   parent_node_id,
+  //   user_id,
+  //   parentUserId,
+  //   net_id,
+  // ]);
+  // await execQuery.member.moveFromTmp([node_id, parent_node_id]);
+  // await execQuery.member.removeFromTmp([node_id, parent_node_id]);
+
+  // await execQuery.user.changes.changeNodes([
+  //   node_id,
+  //   parent_node_id,
+  //   user_id,
+  //   parentUserId,
+  // ]);
+  // await execQuery.user.changes.moveFromTmp([node_id, parent_node_id]);
+  // await execQuery.user.changes.removeFromTmp([node_id, parent_node_id]);
+
+  !parent_member && await execQuery.node.updateCountOfMembers([node_id, -1]);
 
   createMessages('LEAVE_VOTE', member!, date);
   parent_member && createMessages('LEAVE_DISVOTE', parent_member, date);

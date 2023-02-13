@@ -7,16 +7,17 @@ import { getMemberStatus } from '../../../client/common/server/utils';
 import { createUnicCode } from '../../../utils/crypto';
 
 const create: THandler<IMemberInviteParams, string | null> = async (
-  _, { node_id, member_node_id, member_name },
+  { session }, { node_id, member_node_id, member_name },
 ) => {
   const [member] = await execQuery.member
     .findInTree([node_id, member_node_id]);
   if (!member) return null; // bad request
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'EMPTY') return null; // bad request
+  const user_id = session.read('user_id');
   const token = createUnicCode(15);
   await execQuery.member.invite
-    .create([node_id, member_node_id, member_name, token]);
+    .create([user_id!, member_node_id, member_name, token]);
   return token;
 };
 create.paramsSchema = MemberInviteParamsSchema;

@@ -23,8 +23,8 @@ export const get = `
     users.user_id,
     users.email as name,
     members.confirmed,
-    nodes_invites.member_name,
-    nodes_invites.token,
+    members_invites.member_name,
+    members_invites.token,
     users_members.dislike,
     users_members.vote
   FROM nodes
@@ -36,8 +36,8 @@ export const get = `
     users_members.member_id = members.user_id
   LEFT JOIN users
     ON users.user_id = members.user_id
-  LEFT JOIN nodes_invites ON
-    nodes_invites.node_id = nodes.node_id
+  LEFT JOIN members_invites ON
+    members_invites.member_node_id = nodes.node_id
   WHERE nodes.parent_node_id = $2
   ORDER BY nodes.node_position
 `;

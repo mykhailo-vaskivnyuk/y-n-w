@@ -29,29 +29,48 @@ export interface IQueriesMember {
     user_id: number;
     node_id: number;
   }>;
-  moveToTmp: TQuery<[
+  copyToTmp: TQuery<[
+    ['parent_node_id', number],
+  ]>;
+  copy: TQuery<[
+    ['parent_node_id', number],
+    ['node_id', number],
+    ['tmp_user_id', number],
+  ]>;
+  replace: TQuery<[
     ['node_id', number],
     ['parent_node_id', number],
   ]>;
-  removeVoted: TQuery<[
+  changeUser: TQuery<[
     ['node_id', number],
-    ['parent_node_id', number],
-  ]>;
-  change: TQuery<[
-    ['node_id', number],
-    ['parent_node_id', number],
     ['user_id', number],
-    ['parent_user_id', number | null],
-    ['net_id', number],
-  ]>;
-  moveFromTmp: TQuery<[
-    ['node_id', number],
-    ['parent_node_id', number],
   ]>;
   removeFromTmp: TQuery<[
+    ['parent_node_id', number],
+  ]>;
+  changeNode: TQuery<[
     ['node_id', number],
     ['parent_node_id', number],
   ]>;
+  // moveToTmp: TQuery<[
+  //   ['node_id', number],
+  //   ['parent_node_id', number],
+  // ]>;
+  // removeVoted: TQuery<[
+  //   ['node_id', number],
+  //   ['parent_node_id', number],
+  // ]>;
+  // change: TQuery<[
+  //   ['node_id', number],
+  //   ['parent_node_id', number],
+  //   ['user_id', number],
+  //   ['parent_user_id', number | null],
+  //   ['net_id', number],
+  // ]>;
+  // removeFromTmp: TQuery<[
+  //   ['node_id', number],
+  //   ['parent_node_id', number],
+  // ]>;
   data: IQueriesMemberData;
   invite: IQueriesMemberInvite;
   find: IQueriesMemberFind;
@@ -70,27 +89,27 @@ export const remove = `
 
 export const findInTree = `
   SELECT
-    nodes_invites.*,
+    members_invites.*,
     nodes.*,
     members.user_id, members.confirmed
   FROM nodes
   LEFT JOIN members ON
     members.node_id = nodes.node_id
-  LEFT JOIN nodes_invites ON
-    nodes_invites.node_id = nodes.node_id
+  LEFT JOIN members_invites ON
+    members_invites.member_node_id = nodes.node_id
   WHERE nodes.parent_node_id = $1 AND nodes.node_id = $2
 `;
 
 export const findInCircle = `
   SELECT
-    nodes_invites.*,
+    members_invites.*,
     nodes.*,
     members.user_id, members.confirmed
   FROM nodes
   LEFT JOIN members ON
     members.node_id = nodes.node_id
-  LEFT JOIN nodes_invites ON
-    nodes_invites.node_id = nodes.node_id
+  LEFT JOIN members_invites ON
+    members_invites.member_node_id = nodes.node_id
   WHERE
     nodes.node_id = $2 AND (
       nodes.parent_node_id = $1 OR
@@ -123,31 +142,92 @@ export const getConnected = `
     members.confirmed = false
 `;
 
-export const moveToTmp = `
+// export const moveToTmp = `
+//   INSERT INTO members_tmp
+//   SELECT * FROM members
+//   WHERE node_id IN ($1, $2)
+// `;
+
+export const copyToTmp = `
   INSERT INTO members_tmp
   SELECT * FROM members
-  WHERE node_id IN ($1, $2)
+  WHERE node_id = $1
 `;
 
-export const removeVoted = `
-  DELETE FROM members
-  WHERE node_id IN ($1, $2)
+// export const removeVoted = `
+//   DELETE FROM members
+//   WHERE node_id IN ($1, $2)
+// `;
+
+// export const change = `
+//   UPDATE members_tmp
+//   SET
+//     node_id = CASE WHEN user_id = $3 THEN +$2 ELSE +$1 END
+//   WHERE user_id IN ($3, $4) AND net_id = $5
+// `;
+
+export const changeUser = `
+  UPDATE members
+  SET user_id = $2
+  WHERE node_id = $1
 `;
 
-export const change = `
-  UPDATE members_tmp
-  SET
-    node_id = CASE WHEN user_id = $3 THEN +$2 ELSE +$1 END
-  WHERE user_id IN ($3, $4) AND net_id = $5
+// export const moveFromTmp = `
+//   INSERT INTO members
+//   SELECT * FROM members_tmp
+//   WHERE node_id IN ($1, $2)
+// `;
+
+export const replace = `
+  UPDATE members
+  SET (
+    user_id,
+    email_show,
+    name_show,
+    mobile_show
+  ) = (
+    SELECT
+      user_id,
+      email_show,
+      name_show,
+      mobile_show
+    FROM members_tmp
+    WHERE node_id = $2
+  )
+  WHERE node_id = $1
 `;
 
-export const moveFromTmp = `
-  INSERT INTO members 
-  SELECT * FROM members_tmp
-  WHERE node_id IN ($1, $2)
-`;
+// export const removeFromTmp = `
+//   DELETE FROM members_tmp
+//   WHERE node_id IN ($1, $2)
+// `;
 
 export const removeFromTmp = `
   DELETE FROM members_tmp
-  WHERE node_id IN ($1, $2)
+  WHERE node_id = $1
+`;
+
+export const copy = `
+  UPDATE members
+  SET (
+    user_id,
+    email_show,
+    name_show,
+    mobile_show
+  ) = (
+    SELECT
+      $3 AS user_id,
+      email_show,
+      name_show,
+      mobile_show
+    FROM members
+    WHERE node_id = $2
+  )
+  WHERE node_id = $1
+`;
+
+export const changeNode = `
+  UPDATE members
+  SET node_id = $2
+  WHERE node_id = $1
 `;

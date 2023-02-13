@@ -20,7 +20,7 @@ export type IMember =
 
 export type INodeWithUser =
   T.ITableNodes &
-  T.OuterJoin<Pick<T.ITableUsersNodesInvites, 'token'>> &
+  T.OuterJoin<Pick<T.ITableMembersInvites, 'token'>> &
   T.OuterJoin<Pick<T.ITableMembers, 'user_id' | 'confirmed'>>;
 
 export type IMemberDislikes =

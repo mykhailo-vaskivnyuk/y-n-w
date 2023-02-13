@@ -19,9 +19,9 @@ export const byToken = `
     nodes.*,
     nets.parent_net_id,
     this_user.user_id AS user_exists
-  FROM nodes_invites
+  FROM members_invites
   INNER JOIN nodes ON
-    nodes.node_id = nodes_invites.node_id
+    nodes.node_id = members_invites.member_node_id
   INNER JOIN nets ON
     nets.net_id = nodes.net_id
   LEFT JOIN members AS another_user ON
@@ -30,6 +30,6 @@ export const byToken = `
     this_user.net_id = nodes.net_id AND
     this_user.user_id = $2
   WHERE
-    nodes_invites.token = $1 AND
+    members_invites.token = $1 AND
     another_user.user_id ISNULL
 `;
