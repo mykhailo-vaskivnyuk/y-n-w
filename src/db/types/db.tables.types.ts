@@ -85,8 +85,6 @@ export type ITableBoardMessages = {
   message_id: number;
   net_id: number;
   user_id: number;
-  node_id: number;
-  net_view: 'net' | 'tree' | 'circle'; /* NetViewKeys */
   message: string;
   date: string;
 }

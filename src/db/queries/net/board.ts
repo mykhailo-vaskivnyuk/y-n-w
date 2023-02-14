@@ -13,7 +13,6 @@ export interface IQueriesNetBoard {
   create: TQuery<[
     ['net_id', number],
     ['user_id', number],
-    ['node_id', number],
     ['message', string],
   ]>;
   update: TQuery<[
@@ -46,12 +45,9 @@ export const findUnactive = `
 
 export const create = `
   INSERT INTO board_messages (
-    net_id, user_id, node_id, message, date
+    net_id, user_id, message, date
   )
-  VALUES ($1, $2, $3, $4, now() at time zone 'UTC')
-  ON CONFLICT (user_id, net_id)
-    DO UPDATE
-    SET node_id = $3, message = $4, date = EXCLUDED.date
+  VALUES ($1, $2, $3, now() at time zone 'UTC')
 `;
 
 export const update = `

@@ -8,7 +8,6 @@ Table "nodes" {
   "updated" timestamp [not null, default: 'now()']
   Indexes {
     (node_id, net_id) [unique, name: "uk_nodes_node_net"]
-    // (node_id, parent_node_id) [unique, name: "uk_nodes_node_parent_node"]
   }
 }
 
@@ -54,7 +53,6 @@ Table "members" {
     node_id [unique, name: "uk_members_node"]
     user_id [unique, name: "uk_members_user"]
     (user_id, net_id) [unique, name: "uk_members_user_net"]
-    // (user_id, node_id) [unique, name: "uk_members_user_node"]
   }
 }
 
@@ -80,7 +78,6 @@ Table "users_tokens" {
 
 Table "members_invites" {
   "user_id" bigint [not null]
-  // "node_id" bigint [not null]
   "member_node_id" bigint [primary key, not null]
   "member_name" "character varying(50)" [not null]
   "token" "character varying(255)" [not null]
@@ -106,28 +103,12 @@ Table "board_messages" {
   "message_id" bigint [primary key, not null]
   "net_id" bigint [not null]
   "user_id" bigint [not null]
-  "node_id" bigint [not null]
-  "net_view" "character(10)" [not null, default: 'net']
   "message" "character varying(255)" [not null]
   "date" timestamp [not null, default: 'now()']
   Indexes {
     net_id [name: "sk_board_messages_net"]
-    (user_id, net_id) [unique, name: "uk_board_mesages_user_net"]
   }
 }
-
-// Table "events_tmp" {
-//   "event_id" bigint [primary key, not null]
-//   "user_id" bigint [not null]
-//   "user_node_id" bigint [not null]
-//   "net_view" "character(10)" [not null]
-//   "member_node_id" bigint [default: NULL]
-//   "message" "character varying(255)" [not null]
-//   "date" timestamp [not null]
-//   Indexes {
-//     user_id [name: "sk_events_tmp_user"]
-//   }
-// }
 
 Table "users_changes" {
   "user_id" bigint [primary key, not null]
@@ -155,9 +136,8 @@ Table "sessions" {
 
 Ref "fk_nodes_net":"nets"."net_id" < "nodes"."net_id" [delete: cascade]
 Ref "fk_nets_data_net":"nets"."net_id" - "nets_data"."net_id" [delete: cascade]
-Ref "fk_members_node_net":"nodes".(node_id,net_id) - "members".(node_id, net_id)
+Ref "fk_members_node_net":"nodes".(node_id, net_id) - "members".(node_id, net_id)
 Ref "fk_members_user":"users"."user_id" < "members"."user_id" [delete: cascade]
-// Ref "fk_members_invites_":"nodes".(node_id, parent_node_id) - "members_invites".(node_id, member_node_id) [update: cascade]
 Ref "fk_members_invites_user":"members"."user_id" < "members_invites"."user_id" [delete: cascade]
 Ref "fk_members_invites_node":"nodes"."node_id" - "members_invites"."member_node_id"
 Ref "fk_users_tokens_user":"users"."user_id" < "users_tokens"."user_id" [delete: cascade]
@@ -169,5 +149,4 @@ Ref "fk_events_user": "users"."user_id" < "events"."user_id" [delete: cascade]
 Ref "fk_events_user_net": "members".(user_id, net_id) < "events".(user_id, net_id) [update: cascade, delete: cascade]
 Ref "fk_events_from_node": "nodes"."node_id" < "events"."from_node_id" [delete: cascade]
 Ref "fk_users_changes_user": "users"."user_id" - "users_changes"."user_id" [delete: cascade]
-// Ref "fk_board_messages_user_node":"nets_users".(user_id, node_id) - "board_messages".(user_id, node_id) [update: cascade, delete: cascade]
-Ref "fk_board_messages_node_net":"nodes".(node_id, net_id) - "board_messages".(node_id, net_id) [delete: cascade]
+Ref "fk_board_messages_user_net":"members".(user_id, net_id) - "board_messages".(user_id, net_id) [delete: cascade]

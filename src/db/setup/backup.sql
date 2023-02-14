@@ -28,8 +28,6 @@ CREATE TABLE public.board_messages (
     message_id bigint NOT NULL,
     net_id bigint NOT NULL,
     user_id bigint NOT NULL,
-    node_id bigint NOT NULL,
-    net_view character(10) DEFAULT 'net'::bpchar,
     message character varying(255) NOT NULL,
     date timestamp without time zone DEFAULT now() NOT NULL
 );
@@ -325,7 +323,7 @@ ALTER TABLE public.users ALTER COLUMN user_id ADD GENERATED ALWAYS AS IDENTITY (
 -- Data for Name: board_messages; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.board_messages (message_id, net_id, user_id, node_id, net_view, message, date) FROM stdin;
+COPY public.board_messages (message_id, net_id, user_id, message, date) FROM stdin;
 \.
 
 
@@ -661,14 +659,6 @@ ALTER TABLE ONLY public.nodes
 
 
 --
--- Name: board_messages uk_users_board_mesages_user_net; Type: CONSTRAINT; Schema: public; Owner: merega
---
-
-ALTER TABLE ONLY public.board_messages
-    ADD CONSTRAINT uk_users_board_mesages_user_net UNIQUE (user_id, net_id);
-
-
---
 -- Name: users_tokens uk_users_tokens_token; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -712,11 +702,11 @@ CREATE UNIQUE INDEX users_tokens_token_idx ON public.users_tokens USING btree (t
 
 
 --
--- Name: board_messages fk_board_messages_node_net; Type: FK CONSTRAINT; Schema: public; Owner: merega
+-- Name: board_messages fk_board_messages_user_net; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.board_messages
-    ADD CONSTRAINT fk_board_messages_node_net FOREIGN KEY (node_id, net_id) REFERENCES public.nodes(node_id, net_id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_board_messages_user_net FOREIGN KEY (user_id, net_id) REFERENCES public.members(user_id, net_id) ON DELETE CASCADE;
 
 
 --

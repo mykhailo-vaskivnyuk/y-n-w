@@ -4,8 +4,6 @@ export const NetBoardReadResponseSchema = {
   message_id: Joi.number(),
   net_id: Joi.number(),
   user_id: Joi.number(),
-  node_id: Joi.number(),
-  net_view: Joi.string(),
   message: Joi.string(),
   date: Joi.date(),
 };
