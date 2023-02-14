@@ -13,6 +13,7 @@ exports.fromBackToFront = [
 exports.fromFrontToBack = [
   'common/client',
   'common/client/methods',
+  'common/client/classes',
   'common/client/connection',
 ].map((i) => join(exports.frontPath, i));
 

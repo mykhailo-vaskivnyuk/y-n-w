@@ -1,32 +1,33 @@
 /* eslint-disable import/no-cycle */
 import * as T from '../server/types/types';
-import { ITableBoardMessages } from '../../local/imports';
+// import { ITableBoardMessages } from '../../local/imports';
 import { AppStatus } from './constants';
 import { MemberStatusKeys } from '../server/constants';
 import { HttpResponseError } from './connection/errors';
-import { getApi } from '../server/client.api';
 import { ClientApp } from './app';
 
-export type IClientAppThis = ClientApp & {
-  api: ReturnType<typeof getApi>;
+export type IClientAppThis = Pick<ClientApp,
+  | 'account'
+  | 'userNets'
+  | 'net'
+  | 'member'
+  | 'chat'
+  | 'changes'
+  | 'getState'
+  | 'emit'
+> & {
+  api: T.OmitNull<ClientApp['api']>;
   setStatus: (status: AppStatus) => void;
   setError: (e: HttpResponseError) => void;
-  setUser: (user: T.IUserResponse) => Promise<void>;
-  setUserNetData: (userNetData: T.IUserNetDataResponse) => void;
-  setNet: (net: T.INetResponse) => Promise<void>;
-  setAllNets: (nets: T.INetsResponse) => void;
-  setNets: (nets: INets) => void;
-  setCircle: (circle: T.INetViewResponse) => void;
-  setTree: (tree: T.INetViewResponse) => void;
-  setNetView: (netView?: T.NetViewEnum) => void;
+  setUser: (user: T.IUserResponse, readChanges?: boolean) => Promise<void>;
   setMemberPosition: (memberPosition?: number) => void;
   setMember: (memberData?: IMember) => void;
-  setUserChatId: (chatId:  number) => void;
-  setNetChatIds: (netChatIds: TNetChatIdsMap) => void;
-  setMessage: (message: T.OmitNull<T.IChatResponseMessage>) => void;
-  setAllMessages: (chatId: number, messages: T.IChatMessage[]) => void;
-  setBoardMessages: (messages: ITableBoardMessages[]) => void;
-  setChanges: (changes: T.IEvents) => void;
+  // setUserChatId: (chatId:  number) => void;
+  // setNetChatIds: (netChatIds: TNetChatIdsMap) => void;
+  // setMessage: (message: T.OmitNull<T.IChatResponseMessage>) => void;
+  // setAllMessages: (chatId: number, messages: T.IChatMessage[]) => void;
+  // setBoardMessages: (messages: ITableBoardMessages[]) => void;
+  // setChanges: (changes: T.IEvents) => void;
 };
 
 export interface INets {

@@ -12,6 +12,7 @@ export const FROM_BACK_TO_FRONT = [
 export const FROM_FRONT_TO_BACK = [
   'common/client',
   'common/client/methods',
+  'common/client/classes',
   'common/client/connection',
 ].map((i) => join(FRONT_PATH, i));
 
