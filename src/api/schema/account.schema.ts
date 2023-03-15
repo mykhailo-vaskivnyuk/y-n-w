@@ -1,5 +1,7 @@
 import Joi from 'joi';
-import { IUserResponse, OmitNull } from '../../client/common/server/types/types';
+import {
+  IUserResponse, OmitNull,
+} from '../../client/common/server/types/types';
 import { TJoiSchema } from '../../router/types';
 import { JOI_NULL } from '../../router/constants';
 

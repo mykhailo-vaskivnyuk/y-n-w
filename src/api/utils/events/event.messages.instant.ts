@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { IMember } from '../../../db/types/member.types';
-import { NetEventKeys } from '../../types/net.types';
+import { NetEventKeys } from '../../../client/common/server/types/types';
 import {
   IEventMessage, NetViewKeys,
 } from '../../../client/common/server/types/types';
@@ -9,7 +9,7 @@ import {
 } from '../../../constants/constants';
 
 export const sendInstantMessage = (
-  user_id: number, net_id: number, net_view: NetViewKeys,
+  event: NetEventKeys, user_id: number, net_id: number, net_view: NetViewKeys,
 ) => {
   // change logic as in createMessagesInNet
   const chatId = chatService.getChatIdOfUser(user_id);
@@ -22,6 +22,7 @@ export const sendInstantMessage = (
     net_id,
     net_view,
     from_node_id: null,
+    event_type: event,
     message: '',
     date: '',
   };
@@ -29,7 +30,7 @@ export const sendInstantMessage = (
 };
 
 export const sendInstantMessageInNet = (
-  fromMember: IMember, message: string,
+  event: NetEventKeys, fromMember: IMember, message: string,
 ) => {
   const { net: chatId } = chatService.getChatIdsOfNet(fromMember);
   if (!chatId) return;
@@ -46,6 +47,7 @@ export const sendInstantMessageInNet = (
     net_id: fromMember.net_id,
     net_view: 'net',
     from_node_id: fromMember.node_id,
+    event_type: event,
     message,
     date: '',
   };
@@ -65,5 +67,5 @@ export const createInstantMessageInNet = (
   const message = NET_MESSAGES_MAP[event]['NET'];
   if (message === undefined) return;
   if (!INSTANT_EVENTS.includes(event)) return;
-  sendInstantMessageInNet(fromMember, message);
+  sendInstantMessageInNet(event, fromMember, message);
 };

@@ -1,50 +1,39 @@
 /* eslint-disable import/no-cycle */
 import * as T from '../../server/types/types';
-import { IClientAppThis, TLoginOrSignup } from '../types';
+import { IClientAppThis } from '../types';
 import { AppStatus } from '../constants';
 
-type IApp = Pick<IClientAppThis,
-  | 'api'
-  | 'setStatus'
-  | 'setError'
-  | 'setUser'
-  | 'emit'
->;
+type IApp = IClientAppThis & {
+  onNewUser: (readChanges?: boolean) => Promise<void>;
+}
 
 export class Account{
   private user: T.IUserResponse = null;
+  private api;
 
-  constructor(private app: IApp) {}
+  constructor(private app: IApp) {
+    this.api = app.api;
+  }
 
   getUser() {
     return this.user;
   }
   
+  async init() {
+    const user = await this.api.user.read();
+    await this.setUser(user);
+  }
+
   private async setUser(user: T.IUserResponse) {
     if (this.user === user) return;
     this.user = user;
-    await this.app.setUser(user);
+    await this.app.onNewUser();
+    this.app.emit('user', user);
   }
 
-  setUserStatus(user_status: T.UserStatusKeys) {
-    if (!this.user) return;
-    this.user = { ...this.user, user_status}
-    this.app.emit('user', this.user);
-  }
-
-  async readUser() {
-    this.app.setStatus(AppStatus.LOADING);
-    try {
-      const user = await this.app.api!.user.read();
-      await this.setUser(user);
-      this.app.setStatus(AppStatus.READY);
-      return user;
-    } catch (e: any) {
-      this.app.setError(e);
-    }
-  }
-
-  async loginOrSignup(...[type, args]: TLoginOrSignup) {
+  async loginOrSignup(
+    type: 'login' | 'signup', args: T.ILoginParams | T.ISignupParams,
+  ) {
     this.app.setStatus(AppStatus.LOADING);
     try {
       const user = await this.app.api.account[type](args as any);

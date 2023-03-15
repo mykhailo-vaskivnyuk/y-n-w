@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import { MessageTypeKeys } from './messages.types';
 import { NetViewKeys } from './net.types';
 

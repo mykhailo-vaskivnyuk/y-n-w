@@ -1,5 +1,5 @@
-import { NetEventToKeys, NetEventKeys } from '../api/types/net.types';
-
+import { NetEventToKeys } from '../api/types/net.types';
+import { NetEventKeys } from '../client/common/server/types/types';
 export const BUILD_PATH = 'js';
 export const MAX_CHAT_MESSAGE_COUNT = 10;
 export const MAX_CHAT_MESSAGE_INDEX = 1000;

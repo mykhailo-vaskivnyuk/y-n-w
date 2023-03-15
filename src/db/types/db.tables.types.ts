@@ -77,6 +77,7 @@ export type ITableEvents = {
   net_id: number | null;
   net_view: 'net' | 'tree' | 'circle' | null; /* NetViewKeys */
   from_node_id: number | null;
+  event_type: string; /* NetEventKeys */
   message: string;
   date: string;
 }

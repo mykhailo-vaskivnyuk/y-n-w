@@ -3,21 +3,16 @@
 import * as T from '../../server/types/types';
 import { IClientAppThis, IMember } from '../types';
 import { AppStatus } from '../constants';
+import { HttpResponseError } from '../connection/errors';
 import { getMemberStatus } from '../../server/utils';
+import { Member } from './member.class';
+import { MemberActions } from './memberActions.class';
 import { NetBoard } from './net.board.class';
 
-type IApp = Pick<IClientAppThis,
-  | 'api'
-  | 'getState'
-  | 'setStatus'
-  | 'setError'
-  | 'account'
-  | 'userNets'
-  | 'setMember'
-  | 'member'
-  | 'chat'
-  | 'emit'
->;
+type IApp = IClientAppThis & {
+  onNewNet: () => void;
+  onNewNets: () => Promise<void>;
+};
 
 export class Net{
   private userNet: T.INetResponse = null;
@@ -25,11 +20,32 @@ export class Net{
   private circle: IMember[] = [];
   private tree: IMember[] = [];
   private netView?: T.NetViewEnum;
-  
+  public member: Member | null = null;
+  public memberActions: MemberActions;
   public board: NetBoard;
 
   constructor(private app: IApp) {
+    this.memberActions = new MemberActions(app, this as any);
     this.board = new NetBoard(app);
+  }
+
+  // async netChanged(nodeId: number) {
+  //   if (this.userNet?.node_id === nodeId) {
+  //     await this.getUserData();
+  //     await this.getCircle();
+  //     return;
+  //   }
+  //   const { netView } = this.app.getState();
+  //   if (netView === 'tree') await this.getTree();
+  //   else await this.getCircle();
+  // }
+
+  async onMemberChanged(member_node_id: number) {
+    const { node_id } = this.userNetData || {};
+    if (this.netView === 'tree') await this.getTree();
+    else await this.getCircle();
+    if (member_node_id === node_id) await this.getUserData();
+    else this.findMember(member_node_id);
   }
 
   getNetState() {
@@ -40,31 +56,38 @@ export class Net{
       tree: this.tree,
       netView: this.netView,
       boardMessages: this.board.getState(),
+      memberData: this.member?.getMember(),
     };
+  }
+
+  findMember(nodeId: number) {
+    const { netView } = this.app.getState();
+    const { [netView!]: netViewData } = this.app.getState();
+    const memberPosition = netViewData
+      .findIndex((item) => item.node_id === nodeId);
+    const member = netViewData[memberPosition];
+    this.member = new Member(member, this.app, this as any);
+    if (!member) this.app.setError(new HttpResponseError(404));
   }
 
   private async setNet(userNet: T.INetResponse = null) {
     if (this.userNet === userNet) return;
     this.userNet = userNet;
     if (userNet) {
-      await this.getUserData(userNet.net_id);
-      const userStatus = this.userNetData!.confirmed ?
-        'INSIDE_NET' :
-        'INVITING';
-      userStatus === 'INSIDE_NET' && await this.board.read();
+      await this.getUserData();
+      const { confirmed } = this.userNetData!;
+      confirmed && await this.board.read();
       await this.getCircle();
       await this.getTree();
-      this.app.account.setUserStatus(userStatus);
     } else {
       this.setUserNetData();
       this.board = new NetBoard(this as any);
       this.setCircle();
       this.setTree();
       this.setView();
-      this.app.setMember();
-      this.app.account.setUserStatus('LOGGEDIN');
+      this.member = null;
     }
-    this.app.userNets.getNets();
+    await this.app.onNewNet();
     this.app.emit('net', userNet);
   }
 
@@ -100,7 +123,7 @@ export class Net{
         ...parentNet,
         ...args,
       });
-      if (net) this.app.userNets.getAllNets();
+      if (net) await this.app.onNewNets();
       this.app.setStatus(AppStatus.READY);
       return net;
     } catch (e: any) {
@@ -123,9 +146,10 @@ export class Net{
     }
   }
 
-  async getUserData(net_id: number) {
+  async getUserData() {
     this.app.setStatus(AppStatus.LOADING);
     try {
+      const net_id = this.userNet!.net_id;
       const userNetData = await this.app.api.user.net.getData({ net_id });
       await this.setUserNetData(userNetData);
       this.app.setStatus(AppStatus.READY);
@@ -154,7 +178,7 @@ export class Net{
       const net = this.userNet;
       const success = await this.app.api.net.leave(net!);
       if (success) {
-        await this.app.userNets.getAllNets();
+        await this.app.onNewNets();
         await this.setNet();
       }
       this.app.setStatus(AppStatus.READY);
@@ -170,8 +194,7 @@ export class Net{
       const result = await this.app.api.net.getCircle(net!);
       const circle: IMember[] = result.map((member, memberPosition) => {
         const memberStatus = getMemberStatus(member);
-        const memberName = this.app
-          .member
+        const memberName = this.memberActions
           .getName('circle', member, memberPosition);
         return { ...member, member_name: memberName, memberStatus };
       });
@@ -183,8 +206,7 @@ export class Net{
       const result = await this.app.api.net.getTree(net!);
       const tree: IMember[] = result.map((member, memberPosition) => {
         const memberStatus = getMemberStatus(member);
-        const memberName = this.app
-          .member
+        const memberName = this.memberActions
           .getName('tree', member, memberPosition);
         return { ...member, member_name: memberName, memberStatus };
       });
@@ -196,7 +218,7 @@ export class Net{
     try {
       const result = await this.app.api.net.connectByToken(args);
       const { error } = result || {};
-      if (!error) await this.app.userNets.getAllNets();
+      if (!error) await this.app.onNewNets();
       this.app.setStatus(AppStatus.READY);
       return result;
     } catch (e: any) {

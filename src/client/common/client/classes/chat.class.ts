@@ -3,31 +3,15 @@
 import * as T from '../../server/types/types';
 import { IClientAppThis, TNetChatIdsMap } from '../types';
 import { AppStatus } from '../constants';
+import { OmitNull } from '../../server/types/types';
 
-type IApp = Pick<IClientAppThis,
-  | 'api'
-  | 'getState'
-  | 'setStatus'
-  | 'setError'
-  | 'changes'
-  | 'emit'
->;
+type IApp = IClientAppThis;
 
 export class Chat {
-  private userChatId?: number;
-  private netChatIds: TNetChatIdsMap;
-  private messages: Map<number, T.IChatMessage[]>;
+  private netChatIds: TNetChatIdsMap = new Map();
+  private messages: Map<number, T.IChatMessage[]> = new Map();
 
-  constructor(private app: IApp) {
-    this.setMessage = this.setMessage.bind(this);
-    this.reset();
-  }
-
-  reset() {
-    this.userChatId = undefined;
-    this.netChatIds = new Map();
-    this.messages = new Map();
-  }
+  constructor(private app: IApp) {}
 
   getChatState() {
     return {
@@ -41,13 +25,13 @@ export class Chat {
   }
 
   async connectAll() {
+    this.netChatIds = new Map();
     await this.app.api.chat.connect.user();
     const allChatIds = await this.app.api.chat.connect.nets();
-    const netChatIdsMap = new Map<number, T.INetChatIds>();
-    allChatIds.forEach(({ net_id: netId, ...netChatIds }) => {
-      netChatIdsMap.set(netId, netChatIds);
+    this.netChatIds = new Map<number, T.INetChatIds>();
+    allChatIds.forEach(({ net_id, ...netChatIds }) => {
+      this.netChatIds.set(net_id, netChatIds);
     });
-    this.setNetChatIds(netChatIdsMap);
   }
 
   async getMessages(chatId: number, index = 1) {
@@ -70,7 +54,7 @@ export class Chat {
       const { node_id: nodeId } = net!;
       chatId && await this.app.api.chat
         .sendMessage({ node_id: nodeId, chatId, message });
-        this.app.setStatus(AppStatus.READY);
+      this.app.setStatus(AppStatus.READY);
       return true;
     } catch (e: any) {
       this.app.setError(e);
@@ -96,17 +80,9 @@ export class Chat {
   }
 
   setMessage<T extends T.MessageTypeKeys>(
-    messageData: T.IMessage<T>,
+    messageData: OmitNull<T.IChatResponseMessage>,
   ) {
-    if (!messageData) return;
-
-    if (this.app.changes.isNewEvents(messageData))
-      return this.app.changes.read();
-    if (this.app.changes.isEvent(messageData))
-      return this.app.changes.update([messageData]);
-
     const { chatId } = messageData;
-
     const chatMessages = this.messages.get(chatId);
     if (chatMessages) {
       const lastMessage = chatMessages.at(-1);
@@ -117,5 +93,4 @@ export class Chat {
     } else this.messages.set(chatId, [messageData as T.IChatMessage]);
     this.app.emit('message', chatId);
   }
-
 }

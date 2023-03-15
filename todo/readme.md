@@ -105,6 +105,7 @@
 - chain user_id with node_id (net_id) ?
 - which data reload on reconnect ?
 - EventEmmiter types
+- handle ERR_CONNECTION_REFUSED, internet connection unavailable
 
 ## UI
 

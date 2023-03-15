@@ -2,12 +2,7 @@
 import * as T from '../../server/types/types';
 import { INITIAL_NETS, IClientAppThis, INets } from '../types';
 
-type IApp = Pick<IClientAppThis,
-  | 'api'
-  | 'getState'
-  | 'chat'
-  | 'emit'
->;
+type IApp = IClientAppThis;
 
 export class UserNets {
   private allNets: T.INetsResponse = [];
@@ -25,18 +20,18 @@ export class UserNets {
   private setAllNets(nets: T.INetsResponse) {
     if (this.allNets === nets) return;
     this.allNets = nets;
+    this.getNets();
   }
 
   private setNets(nets: INets) {
     if (this.nets === nets) return;
     this.nets = nets;
-    this.app.emit('nets', this.nets);
   }
 
   async getAllNets() {
     const nets = await this.app.api.user.nets.get();
-    await this.app.chat.connectAll();
     this.setAllNets(nets);
+    this.app.emit('nets', nets);
   }
 
   getNets() {

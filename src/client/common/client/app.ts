@@ -1,11 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
 import * as T from '../server/types/types';
-// import {
-//   INITIAL_NETS, INets, IMember, TNetChatIdsMap,
-// } from './types';
-// import { ITableBoardMessages } from '../../local/imports';
-import { IMember } from './types';
 import { AppStatus } from './constants';
 import { HttpResponseError } from './connection/errors';
 import { EventEmitter } from './event.emitter';
@@ -14,27 +9,23 @@ import { Account } from './classes/account.class';
 import { UserNets } from './classes/user.nets.class';
 import { Net } from './classes/net.class';
 import { Chat } from './classes/chat.class';
-import { Changes } from './classes/changes.class';
-import { getMemberMethods } from './methods/member';
+import { Events } from './classes/events.class';
 import { getConnection as getHttpConnection } from './connection/http';
 import { getConnection as getWsConnection } from './connection/ws';
+import { IEvents, UserStatusKeys } from '../server/types/types';
 
 export class ClientApp extends EventEmitter {
   private baseUrl = '';
   private api: IClientApi | null;
   private status: AppStatus = AppStatus.INITING;
   private error: HttpResponseError | null = null;
-  private memberData?: IMember;
-  // private netChatIds: TNetChatIdsMap;
-  // private netChanges: T.IEvents;
-  // private boardMessages: ITableBoardMessages[];
+  private userStatus: UserStatusKeys = 'NOT_LOGGEDIN';
 
   account: Account;
   net: Net;
   userNets: UserNets;
   chat: Chat;
-  changes: Changes;
-  member: ReturnType<typeof getMemberMethods>;
+  userEvents: Events;
 
   constructor() {
     super();
@@ -42,8 +33,7 @@ export class ClientApp extends EventEmitter {
     this.account = new Account(this as any);
     this.net = new Net(this as any);
     this.chat = new Chat(this as any);
-    this.changes = new Changes(this as any);
-    this.member = getMemberMethods(this as any);
+    this.userEvents = new Events(this as any);
     this.setInitialValues();
   }
 
@@ -52,11 +42,11 @@ export class ClientApp extends EventEmitter {
       status: this.status,
       error: this.error,
       user: this.account.getUser(),
-      memberData: this.memberData,
+      userStatus: this.userStatus,
       ...this.userNets.getUserNetsState(),
       ...this.net.getNetState(),
       ...this.chat.getChatState(),
-      changes: this.changes.getChanges(),
+      events: this.userEvents.getEvents(),
     };
   }
 
@@ -66,29 +56,33 @@ export class ClientApp extends EventEmitter {
       this.api = getApi(connection);
       await this.api.health();
     } catch (e: any) {
-      if (!(e instanceof HttpResponseError)) return this.setError(e);
-      if (e.statusCode !== 503) return this.setError(e);
       try {
+        if (e.statusCode !== 503) throw new HttpResponseError(503);
         const baseUrl = this.baseUrl.replace('http', 'ws');
         const connection = getWsConnection(
           baseUrl,
           this.handleConnect.bind(this),
-          this.chat.setMessage,
+          this.setMessage.bind(this),
         );
         this.api = getApi(connection);
         await this.api.health();
-      } catch (err: any) {
-        return this.setError(err);
+      } catch (error: any) {
+        return this.setError(error);
       }
     }
-    await this.account.readUser();
-    this.setStatus(AppStatus.INITED);
+
+    try {
+      await this.account.init();
+      this.setStatus(AppStatus.INITED);
+    } catch (e: any) {
+      this.setError(e);
+    }
   }
 
   private setInitialValues() {
     this.userNets = new UserNets(this as any);
-    this.chat.reset();
-    this.changes = new Changes(this as any);
+    this.chat = new Chat(this as any);
+    this.userEvents = new Events(this as any);
   }
 
   private setStatus(status: AppStatus) {
@@ -114,78 +108,102 @@ export class ClientApp extends EventEmitter {
 
   private handleConnect() {
     if (this.status === AppStatus.INITING) return;
-    this.chat.reset();
     this.chat.connectAll().catch((e) => this.setError(e));
-    this.changes.read(true).catch((e) => this.setError(e));
+    this.userEvents.read(true).catch((e) => this.setError(e));
   }
   
-  private async setUser(user: T.IUserResponse, readChanges = true) {
-    if (user && user.user_status !== 'NOT_CONFIRMED') {
-      await this.userNets.getAllNets();
-      this.userNets.getNets();
-      readChanges && await this.changes.read(true);
-    } else this.setInitialValues();
-    this.emit('user', user);
+  private async onNewUser(readChanges = true) {
+    const { user } = this.getState();
+    if (!user) this.setInitialValues();
+    else if (user.confirmed) {
+      await this.onNewNets();
+      readChanges && await this.userEvents.read(true);
+    } 
+    this.setUserStatus();
   }
 
-  private setMember(memberData?: IMember) {
-    this.memberData = memberData;
+  private setUserStatus() {
+    const user = this.account.getUser();
+    if (!user) {
+      this.userStatus = 'NOT_LOGGEDIN';
+      return;
+    }
+    const net = this.net.getNetState();
+    if (net) {
+      const { userNetData } = net;
+      const { confirmed } = userNetData || {}
+      if (confirmed) this.userStatus = 'INSIDE_NET';
+      else this.userStatus = 'INVITING';
+      return;
+    }
+    const { confirmed } = user;
+    if (confirmed) this.userStatus = 'LOGGEDIN';
+    else this.userStatus = 'NOT_CONFIRMED';
   }
 
-  // private handleConnect() {
-  //   if (this.status === AppStatus.INITING) return;
-  //   this.netChatIds = new Map();
-  //   this.messages = new Map();
-  //   this.chat.connectAll().catch((e) => this.setError(e));
-  //   this.changes.read(true).catch((e) => this.setError(e));
-  // }
+  private async onNewNets() {
+    await this.userNets.getAllNets();
+    await this.chat.connectAll();
+  }
 
-  // protected setNetChatIds(netChatIds: TNetChatIdsMap) {
-  //   this.netChatIds = netChatIds;
-  // }
+  private onNewNet() {
+    this.userNets.getNets();
+    this.setUserStatus();
+  }
 
-  // protected setMessage<T extends T.MessageTypeKeys>(
-  //   messageData: T.IMessage<T>,
-  // ) {
-  //   if (!messageData) return;
-  //   if (this.changes.isNewEvents(messageData)) return this.changes.read();
-  //   if (this.changes.isEvent(messageData))
-  //     return this.changes.update([messageData]);
+  async setEvents(events: IEvents) {
+    const { net } = this.getState();
+    const { net_id } = net || {};
+    let updateUser = false;
+    let updateNet = false;
+    for (const event of events) {
+      const { net_id: eventNetId } = event;
+      if (!eventNetId) {
+        updateUser = true;
+        net_id && (updateNet = true);
+        break;
+      }
+      if (eventNetId === net_id) updateNet = true;
+    }
+    if (updateUser) await this.onNewUser(false) // ?
+      .catch(console.log);
+    if (updateNet) await this.net.enter(net_id!, true)
+      .catch(console.log);
+  }
 
-  //   const { chatId } = messageData;
-  //   // if (!messageData.message) return;
-  //   const chatMessages = this.messages.get(chatId);
-  //   if (chatMessages) {
-  //     const lastMessage = chatMessages.at(-1);
-  //     const { index = 1 } = lastMessage || {};
-  //     if (messageData.index > index + 1)
-  //       this.chat.getMessages(chatId, index + 1);
-  //     chatMessages.push(messageData as T.IChatMessage);
-  //   } else this.messages.set(chatId, [messageData as T.IChatMessage]);
-  //   this.emit('message', chatId);
-  // }
+  setMessage<T extends T.MessageTypeKeys>(
+    messageData: T.IMessage<T>,
+  ) {
+    if (!messageData) return;
 
-  // protected setAllMessages(chatId: number, messages: T.IChatMessage[]) {
-  //   if (!messages.length) return;
-  //   const curChatMessages = this.messages.get(chatId);
-  //   let chatMessages: T.IChatMessage[];
-  //   if (curChatMessages) {
-  //     chatMessages = [...curChatMessages, ...messages]
-  //       .sort(({ index: a }, { index: b }) => a - b)
-  //       .filter(({ index }, i, arr) => index !== arr[i + 1]?.index);
-  //   } else chatMessages = [...messages];
-  //   this.messages.set(chatId, chatMessages);
-  //   this.emit('message', chatId);
-  // }
+    if (this.userEvents.isNewEvents(messageData))
+      return this.userEvents.read();
+    if (this.userEvents.isEvent(messageData))
+      return this.setEvents([messageData]);
 
-  // protected setBoardMessages(messages: ITableBoardMessages[] = []) {
-  //   this.boardMessages = messages;
-  // }
-
-  // protected setChanges(changes: T.IEvents) {
-  //   this.netChanges = changes;
-  //   this.emit('changes', changes);
-  // }
+    this.chat.setMessage(messageData);
+  }
 }
 
 export const app = new ClientApp();
+
+/**
+ *  status: this.status,
+ *  error: this.error,
+ *  user: this.account.getUser(),
+ *  ...this.userNets.getUserNetsState(),
+ *  - allNets: this.allNets,
+ *  - nets: this.nets,
+ *  ...this.net.getNetState(),
+ *  - userNetData: this.userNetData,
+ *  - net: this.userNet,
+ *  - circle: this.circle,
+ *  - tree: this.tree,
+ *  - netView: this.netView,
+ *  - boardMessages: this.board.getState(),
+ *  - memberData: this.memberData,
+ *  ...this.chat.getChatState(),
+ *  - messages: this.messages,
+ *  - chatIds: this.netChatIds,
+ *  events: this.events.getEvents(),
+ */

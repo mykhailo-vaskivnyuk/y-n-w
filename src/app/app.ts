@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { IRouterContext, IAppThis } from './types';
+import { IRouterContext } from './types';
 import { IConfig } from '../types/config.types';
 import {
   AppError, handleAppInitError, setUncaughtErrorHandlers,

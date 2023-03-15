@@ -1,6 +1,6 @@
 import { ITableNetsData } from '../../../db/types/db.tables.types';
 import { IMember } from '../../../db/types/member.types';
-import { NetEventKeys } from '../../types/net.types';
+import { NetEventKeys } from '../../../client/common/server/types/types';
 import { createMessagesInTree } from './event.messages.tree';
 import { createMessagesInCircle } from './event.messages.circle';
 import { createInstantMessageInNet } from './event.messages.instant';

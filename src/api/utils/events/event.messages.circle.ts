@@ -1,4 +1,4 @@
-import { NetEventKeys } from '../../types/net.types';
+import { NetEventKeys } from '../../../client/common/server/types/types';
 import {
   IMember, IMemberWithNet
 } from '../../../db/types/member.types';
@@ -40,7 +40,7 @@ const cretaeMessagesToCircleMember = async (
   const { user_id } = user;
   const { node_id: from_node_id, net_id } = fromMember;
   if (INSTANT_EVENTS.includes(event))
-    return sendInstantMessage(user_id, net_id, 'circle');
+    return sendInstantMessage(event, user_id, net_id, 'circle');
   await execQuery.net.message.create([
     user_id,
     net_id,

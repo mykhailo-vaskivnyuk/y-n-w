@@ -1,5 +1,5 @@
 import { IMember } from '../../../db/types/member.types';
-import { NetEventKeys } from '../../types/net.types';
+import { NetEventKeys } from '../../../client/common/server/types/types';
 import { NET_MESSAGES_MAP } from '../../../constants/constants';
 import { commitChanges } from './event.messages.other';
 

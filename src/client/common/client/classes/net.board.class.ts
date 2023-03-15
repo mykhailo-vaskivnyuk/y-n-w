@@ -4,12 +4,7 @@ import { IClientAppThis } from '../types';
 import { AppStatus } from '../constants';
 import { ITableBoardMessages } from '../../../local/imports';
 
-type IApp = Pick<IClientAppThis,
-  | 'api'
-  | 'getState'
-  | 'setStatus'
-  | 'setError'
->;
+type IApp = IClientAppThis;
 
 export class NetBoard {
   private boardMessages: ITableBoardMessages[];

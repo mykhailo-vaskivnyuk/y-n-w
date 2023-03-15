@@ -13,7 +13,7 @@ import { getSessionKey } from '../utils';
 import { excludeNullUndefined } from '../../utils/utils';
 import {
   IMessage, MessageTypeKeys,
-} from '../../client/common/server/types/messages.types';
+} from '../../client/common/server/types/types';
 
 class WsConnection implements IInputConnection {
   private config: IWsConfig;

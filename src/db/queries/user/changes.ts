@@ -1,12 +1,12 @@
 /* eslint-disable max-lines */
-import { ITableEvents } from '../../types/db.tables.types';
+import { IEvent } from '../../../client/common/server/types/types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesUserChanges {
   read: TQuery<[
     ['user_id', number],
     ['date', string | null],
-  ], ITableEvents>;
+  ], IEvent>;
   write: TQuery<[
     ['user_id', number],
     ['date', string],
@@ -44,7 +44,7 @@ export interface IQueriesUserChanges {
 }
 
 export const read = `
-  SELECT *, TRIM(net_view) as net_view
+  SELECT *, TRIM(net_view) as net_view, TRIM(event_type) as event_type
   FROM events
   WHERE
     user_id = $1 AND (

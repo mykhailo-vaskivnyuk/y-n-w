@@ -15,7 +15,7 @@ export const ChatConnectSchema = {
   node_id: Joi.number().required(),
   netView: Joi.string().custom((value, helpers) => {
     if (NET_VIEW_MAP.includes(value)) return value;
-    return helpers.error('invalid netView');
+    return helpers.error('invalid net_view');
   }),
 };
 

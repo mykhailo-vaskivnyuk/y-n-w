@@ -1,7 +1,8 @@
 /* eslint-disable max-lines */
-import { UserStatusKeys } from '../../client/common/server/types/user.types';
 import { IUserNetData, IUserNodeAndNetName } from '../../db/types/member.types';
-import { NetEventKeys } from '../types/net.types';
+import {
+  NetEventKeys, UserStatusKeys,
+} from '../../client/common/server/types/types';
 import { HandlerError } from '../../router/errors';
 import { updateCountOfMembers } from './nodes.utils';
 import { excludeNullUndefined } from '../../utils/utils';

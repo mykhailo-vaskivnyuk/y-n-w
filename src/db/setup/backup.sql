@@ -59,6 +59,7 @@ CREATE TABLE public.events (
     net_id bigint,
     net_view character(10) DEFAULT NULL::bpchar,
     from_node_id bigint,
+    event_type character(20) NOT NULL,
     message character varying(255) NOT NULL,
     date timestamp without time zone NOT NULL
 );
@@ -331,7 +332,7 @@ COPY public.board_messages (message_id, net_id, user_id, message, date) FROM std
 -- Data for Name: events; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.events (event_id, user_id, net_id, net_view, from_node_id, message, date) FROM stdin;
+COPY public.events (event_id, user_id, net_id, net_view, from_node_id, event_type, message, date) FROM stdin;
 \.
 
 

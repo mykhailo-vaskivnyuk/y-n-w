@@ -4,7 +4,7 @@ import { ITableNetsData } from '../../../db/types/db.tables.types';
 import {
   IMember, IUserNodeAndNetName,
 } from '../../../db/types/member.types';
-import { NetEventKeys } from '../../types/net.types';
+import { NetEventKeys } from '../../../client/common/server/types/types';
 import {
   NET_MESSAGES_MAP, SET_USER_NODE_ID_FOR,
 } from '../../../constants/constants';
