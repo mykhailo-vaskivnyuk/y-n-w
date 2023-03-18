@@ -29,23 +29,15 @@ export class Net{
     this.board = new NetBoard(app);
   }
 
-  // async netChanged(nodeId: number) {
-  //   if (this.userNet?.node_id === nodeId) {
-  //     await this.getUserData();
-  //     await this.getCircle();
-  //     return;
-  //   }
-  //   const { netView } = this.app.getState();
-  //   if (netView === 'tree') await this.getTree();
-  //   else await this.getCircle();
-  // }
+  async onNetChanged() {
+    await this.getUserData();
+    await this.onMemberChanged();
+  }
 
-  async onMemberChanged(member_node_id: number) {
-    const { node_id } = this.userNetData || {};
+  async onMemberChanged() {
     if (this.netView === 'tree') await this.getTree();
     else await this.getCircle();
-    if (member_node_id === node_id) await this.getUserData();
-    else this.findMember(member_node_id);
+    if (this.member) this.findMember(this.member.getMember().node_id);
   }
 
   getNetState() {

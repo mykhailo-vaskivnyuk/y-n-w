@@ -15,22 +15,10 @@ export type IClientAppThis =
     setError: (e: HttpResponseError) => void;
   };
 
-// export type IClientAppThis = Pick<ClientApp,
-//   | 'account'
-//   | 'userNets'
-//   | 'net'
-//   | 'chat'
-//   | 'userEvents'
-//   | 'getState'
-//   | 'emit'
-// > & {
-//   api: T.OmitNull<ClientApp['api']>;
-//   setStatus: (status: AppStatus) => void;
-//   setError: (e: HttpResponseError) => void;
-//   setUser: (user: T.IUserResponse, readChanges?: boolean) => Promise<void>;
-//   setNet: (methodName?: keyof Net) => void;
-//   setEvents: (events: IEvents) => void;
-// };
+export interface INetThis {
+  onNetChanged: () => void,
+  onMemberChanged: () => void,
+};
 
 export interface INets {
   parentNets: T.INetsResponse;
@@ -50,8 +38,3 @@ export type IMember = Omit<T.IMemberResponse, 'member_name'> & {
 };
 
 export type TNetChatIdsMap = Map<number, T.INetChatIds>;
-
-// export type INetThis = {
-//   netChanged: (nodeId: number) => Promise<void>;
-//   memberChanged: (nodeId: number) => Promise<void>;
-// };
