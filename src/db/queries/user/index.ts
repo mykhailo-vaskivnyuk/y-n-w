@@ -3,7 +3,7 @@ import { TQuery } from '../../types/types';
 import { IQueriesUserNet } from './net';
 import { IQueriesUserNets } from './nets/get';
 import { IQueriesUserToken } from './token';
-import { IQueriesUserChanges } from './changes';
+import { IQueriesUserEvents } from './events';
 
 export interface IQueriesUser {
   getById: TQuery<[
@@ -31,7 +31,7 @@ export interface IQueriesUser {
   net: IQueriesUserNet;
   nets: IQueriesUserNets;
   token: IQueriesUserToken;
-  changes: IQueriesUserChanges;
+  events: IQueriesUserEvents;
 }
 
 export const getById = `

@@ -12,20 +12,19 @@ import { Chat } from './classes/chat.class';
 import { Events } from './classes/events.class';
 import { getConnection as getHttpConnection } from './connection/http';
 import { getConnection as getWsConnection } from './connection/ws';
-import { IEvents, UserStatusKeys } from '../server/types/types';
 
 export class ClientApp extends EventEmitter {
   private baseUrl = '';
   private api: IClientApi | null;
   private status: AppStatus = AppStatus.INITING;
   private error: Error | null = null;
-  private userStatus: UserStatusKeys = 'NOT_LOGGEDIN';
+  private userStatus: T.UserStatusKeys = 'NOT_LOGGEDIN';
 
   account: Account;
-  net: Net;
   userNets: UserNets;
-  chat: Chat;
   userEvents: Events;
+  net: Net;
+  chat: Chat;
 
   constructor() {
     super();
@@ -43,10 +42,10 @@ export class ClientApp extends EventEmitter {
       error: this.error,
       user: this.account.getUser(),
       userStatus: this.userStatus,
-      ...this.userNets.getUserNetsState(),
+      nets: this.userNets.getUserNets(),
+      events: this.userEvents.getEvents(),
       ...this.net.getNetState(),
       ...this.chat.getChatState(),
-      events: this.userEvents.getEvents(),
     };
   }
 
@@ -156,7 +155,7 @@ export class ClientApp extends EventEmitter {
     this.setUserStatus();
   }
 
-  async setEvents(events: IEvents) {
+  async setEvents(events: T.IEvents) {
     const { net } = this.getState();
     const { net_id } = net || {};
     let updateUser = false;
@@ -191,24 +190,3 @@ export class ClientApp extends EventEmitter {
 }
 
 export const app = new ClientApp();
-
-/**
- *  status: this.status,
- *  error: this.error,
- *  user: this.account.getUser(),
- *  ...this.userNets.getUserNetsState(),
- *  - allNets: this.allNets,
- *  - nets: this.nets,
- *  ...this.net.getNetState(),
- *  - userNetData: this.userNetData,
- *  - net: this.userNet,
- *  - circle: this.circle,
- *  - tree: this.tree,
- *  - netView: this.netView,
- *  - boardMessages: this.board.getState(),
- *  - memberData: this.memberData,
- *  ...this.chat.getChatState(),
- *  - messages: this.messages,
- *  - chatIds: this.netChatIds,
- *  events: this.events.getEvents(),
- */

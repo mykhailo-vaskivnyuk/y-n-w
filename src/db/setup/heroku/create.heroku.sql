@@ -1,33 +1,10 @@
 DROP TABLE IF EXISTS sessions CASCADE;
 DROP TABLE IF EXISTS users_tokens CASCADE;
 DROP TABLE IF EXISTS users_members CASCADE;
-DROP TABLE IF EXISTS users_changes CASCADE;
-
--- del
-DROP TABLE IF EXISTS users_messages_tmp CASCADE;
-DROP TABLE IF EXISTS users_messages CASCADE;
--- ---
-
-DROP TABLE IF EXISTS events_tmp CASCADE;
+DROP TABLE IF EXISTS users_events CASCADE;
 DROP TABLE IF EXISTS events CASCADE;
-
--- del
-DROP TABLE IF EXISTS users_board_messages CASCADE;
--- ---
-
 DROP TABLE IF EXISTS board_messages CASCADE;
-
--- del
-DROP TABLE IF EXISTS nodes_invites CASCADE;
--- ---
-
 DROP TABLE IF EXISTS members_invites CASCADE;
-
--- del
-DROP TABLE IF EXISTS nets_users_data_tmp CASCADE;
-DROP TABLE IF EXISTS nets_users_data CASCADE;
--- ---
-
 DROP TABLE IF EXISTS members_tmp CASCADE;
 DROP TABLE IF EXISTS members CASCADE;
 DROP TABLE IF EXISTS users CASCADE;

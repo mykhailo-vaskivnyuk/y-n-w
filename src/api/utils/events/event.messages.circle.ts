@@ -6,7 +6,7 @@ import {
   NET_MESSAGES_MAP, INSTANT_EVENTS,
 } from '../../../constants/constants';
 import { sendInstantMessage } from './event.messages.instant';
-import { commitChanges } from './event.messages.other';
+import { commitEvents } from './event.messages.other';
 
 const createMessageToFacilitator = async (
   event: NetEventKeys,
@@ -27,7 +27,7 @@ const createMessageToFacilitator = async (
     message,
     date,
   ]);
-  await commitChanges(user_id, date);
+  await commitEvents(user_id, date);
 };
 
 const cretaeMessagesToCircleMember = async (
@@ -51,7 +51,7 @@ const cretaeMessagesToCircleMember = async (
     message,
     date,
   ]);
-  await commitChanges(user_id, date);
+  await commitEvents(user_id, date);
 };
 
 export const createMessagesInCircle = async (

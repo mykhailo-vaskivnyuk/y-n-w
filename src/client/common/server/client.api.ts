@@ -47,6 +47,14 @@ export const getApi = (
     'removeConnection': () => fetch<boolean>('/chat/removeConnection'),
 
   },
+  'events': {
+    'read': (options: Q.TEventsRead) =>
+      fetch<P.IEvents>('/events/read', options),
+
+    'confirm': (options: Q.TEventsConfirm) =>
+      fetch<boolean>('/events/confirm', options),
+
+  },
   'member': {
     'disconnectNotVote': (options: Q.TMemberDisconnectNotVote) =>
       fetch<boolean>('/member/disconnectNotVote', options),
@@ -134,14 +142,6 @@ export const getApi = (
 
     'read': () => fetch<P.IUserResponse>('/user/read'),
 
-    'changes': {
-      'read': (options: Q.TUserChangesRead) =>
-        fetch<P.IEvents>('/user/changes/read', options),
-
-      'confirm': (options: Q.TUserChangesConfirm) =>
-        fetch<boolean>('/user/changes/confirm', options),
-
-    },
     'net': {
       'getData': (options: P.INetEnterParams) =>
         fetch<P.IUserNetDataResponse>('/user/net/getData', options),

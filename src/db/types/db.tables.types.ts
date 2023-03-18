@@ -8,7 +8,7 @@ export const TABLES_MAP = {
   MEMBERS_INVITES: 'members_invites',
   EVENTS: 'events',
   BOARD_MESSAGES: 'board_messages',
-  USERS_CHANGES: 'users_changes',
+  USERS_EVENTS: 'users_events',
   USERS_TOKENS: 'users_tokens',
   USERS_MEMBERS: 'users_members',
   SESSIONS: 'sessions',
@@ -90,9 +90,10 @@ export type ITableBoardMessages = {
   date: string;
 }
 
-export type ITableUsersChanges = {
+export type ITableUsersEvents = {
   user_id: number;
-  date: string;
+  last_event_date: string;
+  read_event_date: string;
 }
 
 export type ITableUsersTokens = {

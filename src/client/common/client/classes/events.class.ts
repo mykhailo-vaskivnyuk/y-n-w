@@ -44,7 +44,7 @@ export class Events {
     !inChain && await this.app.setStatus(AppStatus.LOADING);
     try {
       const newEvents = await this.app.api
-        .user.changes.read({ date: this.lastDate });
+        .events.read({ date: this.lastDate });
       this.setLastDate(newEvents);
       !inChain && await this.setEvents(newEvents);
       if (newEvents.length) this.setEvents([...this.events, ...newEvents]);
@@ -58,7 +58,7 @@ export class Events {
   async confirm(event_id: number) {
     await this.app.setStatus(AppStatus.LOADING);
     try {
-      await this.app.api.user.changes
+      await this.app.api.events
         .confirm({ event_id });
       this.app.setStatus(AppStatus.READY);
     } catch (e: any) {

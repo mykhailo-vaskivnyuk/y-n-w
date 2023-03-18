@@ -111,9 +111,10 @@ Table "board_messages" {
   }
 }
 
-Table "users_changes" {
+Table "users_events" {
   "user_id" bigint [primary key, not null]
-  "date" timestamp [not null]
+  "last_event_date" timestamp [not null]
+  "read_event_date" timestamp [default: NULL]
 }
 
 Table "users_members" {
@@ -149,5 +150,5 @@ Ref "fk_sessions_user":"users"."user_id" < "sessions"."user_id" [delete: cascade
 Ref "fk_events_user": "users"."user_id" < "events"."user_id" [delete: cascade]
 Ref "fk_events_user_net": "members".(user_id, net_id) < "events".(user_id, net_id) [update: cascade, delete: cascade]
 Ref "fk_events_from_node": "nodes"."node_id" < "events"."from_node_id" [delete: cascade]
-Ref "fk_users_changes_user": "users"."user_id" - "users_changes"."user_id" [delete: cascade]
+Ref "fk_users_events_user": "users"."user_id" - "users_events"."user_id" [delete: cascade]
 Ref "fk_board_messages_user_net":"members".(user_id, net_id) - "board_messages".(user_id, net_id) [delete: cascade]

@@ -9,8 +9,8 @@ import {
   NET_MESSAGES_MAP, SET_USER_NODE_ID_FOR,
 } from '../../../constants/constants';
 
-export const commitChanges = async (user_id: number, date: string) => {
-  await execQuery.user.changes.write([user_id, date]);
+export const commitEvents = async (user_id: number, date: string) => {
+  await execQuery.user.events.write([user_id, date]);
   const chatId = chatService.getChatIdOfUser(user_id);
   if (!chatId) return;
   const connectionIds = chatService.getChatConnections(chatId);
@@ -35,7 +35,7 @@ export const createMessagesToConnected = async (
       message,
       date,
     ]);
-    await commitChanges(user_id, date);
+    await commitEvents(user_id, date);
   }
 };
 
@@ -59,5 +59,5 @@ export const createMessageToMember = async (
     message,
     date,
   ]);
-  await commitChanges(user_id, date);
+  await commitEvents(user_id, date);
 };

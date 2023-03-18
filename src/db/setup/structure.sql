@@ -268,16 +268,17 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO merega;
 
 --
--- Name: users_changes; Type: TABLE; Schema: public; Owner: merega
+-- Name: users_events; Type: TABLE; Schema: public; Owner: merega
 --
 
-CREATE TABLE public.users_changes (
+CREATE TABLE public.users_events (
     user_id bigint NOT NULL,
-    date timestamp without time zone NOT NULL
+    last_event_date timestamp without time zone NOT NULL,
+    read_event_date timestamp without time zone
 );
 
 
-ALTER TABLE public.users_changes OWNER TO merega;
+ALTER TABLE public.users_events OWNER TO merega;
 
 --
 -- Name: users_members; Type: TABLE; Schema: public; Owner: merega
@@ -401,11 +402,11 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users_changes pk_users_changes; Type: CONSTRAINT; Schema: public; Owner: merega
+-- Name: users_events pk_users_events; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
-ALTER TABLE ONLY public.users_changes
-    ADD CONSTRAINT pk_users_changes PRIMARY KEY (user_id);
+ALTER TABLE ONLY public.users_events
+    ADD CONSTRAINT pk_users_events PRIMARY KEY (user_id);
 
 
 --
@@ -604,11 +605,11 @@ ALTER TABLE ONLY public.sessions
 
 
 --
--- Name: users_changes fk_users_changes_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
+-- Name: users_events fk_users_events_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
-ALTER TABLE ONLY public.users_changes
-    ADD CONSTRAINT fk_users_changes_user FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.users_events
+    ADD CONSTRAINT fk_users_events_user FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
 
 
 --

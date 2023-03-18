@@ -21,7 +21,7 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
   const { user_id, net_id } = member!;
   await removeConnected('LEAVE_VOTE', member!, date);
   await execQuery.member.data.removeFromTree([user_id, node_id]);
-  await execQuery.user.changes.removeFromTree([user_id, net_id]);
+  await execQuery.events.removeFromTree([user_id, net_id]);
 
   const [parent_member] = await execQuery.member.get([parent_node_id]);
 
@@ -30,13 +30,9 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
     await removeConnected('LEAVE_DISVOTE', parent_member, date);
     await execQuery.member.data
       .removeFromCircle([parentUserId!, parent_node_id]);
-    await execQuery.user.changes
+    await execQuery.events
       .removeFromCircle([parentUserId!, net_id]);
   }
-
-  // await execQuery.member.moveToTmp([node_id, parent_node_id]);
-  // await execQuery.user.changes.moveToTmp([node_id, parent_node_id]);
-  // await execQuery.member.removeVoted([node_id, parent_node_id]);
 
   if (parent_member) {
     await execQuery.member.copyToTmp([parent_node_id]);
@@ -49,25 +45,6 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
   } else {
     await execQuery.member.changeNode([node_id, parent_node_id]);
   }
-
-  // await execQuery.member.change([
-  //   node_id,
-  //   parent_node_id,
-  //   user_id,
-  //   parentUserId,
-  //   net_id,
-  // ]);
-  // await execQuery.member.moveFromTmp([node_id, parent_node_id]);
-  // await execQuery.member.removeFromTmp([node_id, parent_node_id]);
-
-  // await execQuery.user.changes.changeNodes([
-  //   node_id,
-  //   parent_node_id,
-  //   user_id,
-  //   parentUserId,
-  // ]);
-  // await execQuery.user.changes.moveFromTmp([node_id, parent_node_id]);
-  // await execQuery.user.changes.removeFromTmp([node_id, parent_node_id]);
 
   !parent_member && await execQuery.node.updateCountOfMembers([node_id, -1]);
 

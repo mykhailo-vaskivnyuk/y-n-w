@@ -9,7 +9,7 @@
 
 ## ARCHITECTURE
 
-- block data for net changes
+- block data for net events
 
 ## DATA (DB)
 
@@ -20,7 +20,7 @@
 - optimize texts of queries, select identical parts, move them to separate file
 - remove `RETURNING` if unnecessary and add its if necessary
 - ? verify types of queries' results, use `::type` operator
-- changes -> events, messages - > events or chat messages
+- messages -> events or chat messages
 - divide events on users_events / members_events (net, tree, circle)
 - add `event` to events
 - add userName to boardMessage
@@ -80,7 +80,7 @@
 40. combine confirm and restore tokens, add index
 41. at time zone
 42. Tighten messages
-43. changes not loader, board is loader, reconnect load Net if in
+43. events not loader, board is loader, reconnect load Net if in
 44. one user can has several connections
 45. вас видалено? як перегрузити net?
 46. if chatId then min one connection is
@@ -100,7 +100,7 @@
 ## APP
 
 - send only required data in requests
-- confirm changes being loaded date
+- confirm events being loaded date
 - one loading proccess at a time
 - chain user_id with node_id (net_id) ?
 - which data reload on reconnect ?
@@ -182,5 +182,5 @@
 ‌- ‌if chatId no available or circle is not
 ‌- ‌disvote myself and on vote if empty node is available
 ‌- ‌use count of members infront of confirmed
-‌- ‌get changes from date
+‌- ‌get events from date
 ‌- ‌set blocking on net if leave dislike or vote

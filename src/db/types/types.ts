@@ -4,6 +4,7 @@ import { IQueriesNode } from '../queries/node';
 import { IQueriesUser } from '../queries/user';
 import { IQueriesMember } from '../queries/member';
 import { IQueriesSession } from '../queries/session';
+import { IQueriesEvents } from '../queries/events';
 
 export interface IDatabaseConfig {
   path: string;
@@ -38,6 +39,7 @@ export interface IDatabaseQueries {
   net: IQueriesNet;
   member: IQueriesMember;
   session: IQueriesSession;
+  events: IQueriesEvents;
 }
 
 export interface IQueries {

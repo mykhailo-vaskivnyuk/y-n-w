@@ -1,5 +1,11 @@
 import * as P from './types';
 
+export type TEventsRead = {
+  date?: string;
+};
+export type TEventsConfirm = {
+  event_id: number;
+};
 export type TMemberDisconnectNotVote = {
   monthAgo: number;
 };
@@ -18,10 +24,4 @@ export type TScriptsScriptjsResponse = Record<string, any>;
 export type TTestDataResponse = {
   field1: null | number;
   field2: P.ITestResponse;
-};
-export type TUserChangesRead = {
-  date?: string;
-};
-export type TUserChangesConfirm = {
-  event_id: number;
 };

@@ -10,11 +10,8 @@ export class UserNets {
 
   constructor(private app: IApp) {}
 
-  getUserNetsState() {
-    return {
-      allNets: this.allNets,
-      nets: this.nets,
-    };
+  getUserNets() {
+    return this.nets;
   }
 
   private setAllNets(nets: T.INetsResponse) {
