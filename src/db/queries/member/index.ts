@@ -52,25 +52,6 @@ export interface IQueriesMember {
     ['node_id', number],
     ['parent_node_id', number],
   ]>;
-  // moveToTmp: TQuery<[
-  //   ['node_id', number],
-  //   ['parent_node_id', number],
-  // ]>;
-  // removeVoted: TQuery<[
-  //   ['node_id', number],
-  //   ['parent_node_id', number],
-  // ]>;
-  // change: TQuery<[
-  //   ['node_id', number],
-  //   ['parent_node_id', number],
-  //   ['user_id', number],
-  //   ['parent_user_id', number | null],
-  //   ['net_id', number],
-  // ]>;
-  // removeFromTmp: TQuery<[
-  //   ['node_id', number],
-  //   ['parent_node_id', number],
-  // ]>;
   data: IQueriesMemberData;
   invite: IQueriesMemberInvite;
   find: IQueriesMemberFind;
@@ -142,41 +123,17 @@ export const getConnected = `
     members.confirmed = false
 `;
 
-// export const moveToTmp = `
-//   INSERT INTO members_tmp
-//   SELECT * FROM members
-//   WHERE node_id IN ($1, $2)
-// `;
-
 export const copyToTmp = `
   INSERT INTO members_tmp
   SELECT * FROM members
   WHERE node_id = $1
 `;
 
-// export const removeVoted = `
-//   DELETE FROM members
-//   WHERE node_id IN ($1, $2)
-// `;
-
-// export const change = `
-//   UPDATE members_tmp
-//   SET
-//     node_id = CASE WHEN user_id = $3 THEN +$2 ELSE +$1 END
-//   WHERE user_id IN ($3, $4) AND net_id = $5
-// `;
-
 export const changeUser = `
   UPDATE members
   SET user_id = $2
   WHERE node_id = $1
 `;
-
-// export const moveFromTmp = `
-//   INSERT INTO members
-//   SELECT * FROM members_tmp
-//   WHERE node_id IN ($1, $2)
-// `;
 
 export const replace = `
   UPDATE members
@@ -197,11 +154,6 @@ export const replace = `
   WHERE node_id = $1
 `;
 
-// export const removeFromTmp = `
-//   DELETE FROM members_tmp
-//   WHERE node_id IN ($1, $2)
-// `;
-
 export const removeFromTmp = `
   DELETE FROM members_tmp
   WHERE node_id = $1
@@ -216,7 +168,7 @@ export const copy = `
     mobile_show
   ) = (
     SELECT
-      $3 AS user_id,
+      $3::int AS user_id,
       email_show,
       name_show,
       mobile_show

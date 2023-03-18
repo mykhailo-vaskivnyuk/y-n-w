@@ -88,5 +88,5 @@ export const copy = `
     confirmed
   FROM users
   WHERE user_id = $1
-  RETURNING *
+  RETURNING *, user_id::int
 `;

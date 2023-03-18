@@ -30,8 +30,7 @@ export class Net{
   }
 
   async onNetChanged() {
-    await this.getUserData();
-    await this.onMemberChanged();
+    this.enter(this.userNet!.net_id, true);
   }
 
   async onMemberChanged() {
