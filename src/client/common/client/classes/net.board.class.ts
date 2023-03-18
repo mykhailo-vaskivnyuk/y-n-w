@@ -20,7 +20,7 @@ export class NetBoard {
   }
 
   async persist(args: Omit<IBoardSaveParams, 'node_id'>) {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const { net } = this.app.getState();
       const { node_id: nodeId } = net!;

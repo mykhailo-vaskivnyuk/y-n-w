@@ -81,7 +81,7 @@ export class Net{
       await this.getTree();
     } else {
       this.setUserNetData();
-      this.board = new NetBoard(this as any);
+      this.board = new NetBoard(this.app);
       this.setCircle();
       this.setTree();
       this.setView();
@@ -115,7 +115,7 @@ export class Net{
   }
 
   async create(args: Omit<T.INetCreateParams, 'node_id'>) {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const parentNet = this.userNet;
       const net = await this.app.api.net.create({
@@ -132,7 +132,7 @@ export class Net{
   }
 
   async enter(net_id: number, inChain = false) {
-    !inChain && this.app.setStatus(AppStatus.LOADING);
+    !inChain && await this.app.setStatus(AppStatus.LOADING);
     try {
       const net = await this.app.api.net.enter({ net_id });
       await this.setNet(net);
@@ -147,7 +147,7 @@ export class Net{
   }
 
   async getUserData() {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const net_id = this.userNet!.net_id;
       const userNetData = await this.app.api.user.net.getData({ net_id });
@@ -161,7 +161,7 @@ export class Net{
   }
 
   async comeout() {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       await this.setNet();
       this.app.setStatus(AppStatus.READY);
@@ -173,7 +173,7 @@ export class Net{
   }
 
   async leave() {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const net = this.userNet;
       const success = await this.app.api.net.leave(net!);
@@ -214,7 +214,7 @@ export class Net{
   }
 
   async connectByInvite(args: T.ITokenParams) {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const result = await this.app.api.net.connectByToken(args);
       const { error } = result || {};

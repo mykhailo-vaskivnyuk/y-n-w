@@ -19,6 +19,7 @@ export const createMessagesInTree = async (
       net_id,
       'circle',
       from_node_id,
+      event,
       message,
       date,
     ]);

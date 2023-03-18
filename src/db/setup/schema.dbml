@@ -92,6 +92,7 @@ Table "events" {
   "user_id" bigint [not null]
   "net_id" bigint [default: NULL]
   "net_view" "character(10)" [default: NULL]
+  "event_type" "character(20)" [not null]
   "message" "character varying(255)" [not null]
   "date" timestamp [not null]
   Indexes {

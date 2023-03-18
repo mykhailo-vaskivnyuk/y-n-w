@@ -21,7 +21,7 @@ export class Member {
   }
 
   async inviteCreate(args: Pick<T.IMemberInviteParams, 'member_name'>) {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const { net } = this.app.getState();
       const token = await this.app.api.member.invite.create({
@@ -38,7 +38,7 @@ export class Member {
   }
 
   async inviteCancel() {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const { net } = this.app.getState();
       const success = await this.app.api.member.invite
@@ -52,7 +52,7 @@ export class Member {
   }
 
   async inviteConfirm() {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const { net } = this.app.getState();
       const success = await this.app.api.member.invite
@@ -67,7 +67,7 @@ export class Member {
   }
 
   async inviteRefuse() {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const { net } = this.app.getState();
       const success = await this.app.api.member.invite

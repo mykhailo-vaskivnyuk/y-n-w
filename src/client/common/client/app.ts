@@ -18,7 +18,7 @@ export class ClientApp extends EventEmitter {
   private baseUrl = '';
   private api: IClientApi | null;
   private status: AppStatus = AppStatus.INITING;
-  private error: HttpResponseError | null = null;
+  private error: Error | null = null;
   private userStatus: UserStatusKeys = 'NOT_LOGGEDIN';
 
   account: Account;
@@ -85,7 +85,8 @@ export class ClientApp extends EventEmitter {
     this.userEvents = new Events(this as any);
   }
 
-  private setStatus(status: AppStatus) {
+  private async setStatus(status: AppStatus) {
+    if (this.status === status) return 
     if (status === AppStatus.ERROR) {
       this.status = status;
       this.emit('error', this.error);
@@ -96,12 +97,21 @@ export class ClientApp extends EventEmitter {
       this.status = AppStatus.READY;
       return this.emit('statuschanged', this.status);
     }
-    if (this.status === AppStatus.INITING) return;
-    this.status = status;
+    if (this.status === AppStatus.INITING) return;    
+    if (status === AppStatus.READY) {
+      this.status = status;
+      return this.emit('statuschanged', this.status);
+    }
+    if (this.status === AppStatus.LOADING)
+    await new Promise<void>((rv) => {
+      this.once('statuschanged', rv);
+    });
+    this.status = AppStatus.LOADING
     return this.emit('statuschanged', this.status);
   }
 
   private setError(e: HttpResponseError) {
+    if (this.error) return;
     this.error = e;
     this.setStatus(AppStatus.ERROR);
   }
@@ -115,7 +125,7 @@ export class ClientApp extends EventEmitter {
   private async onNewUser(readChanges = true) {
     const { user } = this.getState();
     if (!user) this.setInitialValues();
-    else if (user.confirmed) {
+    else if (user.user_status === 'LOGGEDIN') {
       await this.onNewNets();
       readChanges && await this.userEvents.read(true);
     } 
@@ -124,21 +134,16 @@ export class ClientApp extends EventEmitter {
 
   private setUserStatus() {
     const user = this.account.getUser();
-    if (!user) {
-      this.userStatus = 'NOT_LOGGEDIN';
+    this.userStatus = 'NOT_LOGGEDIN';
+    if (!user) return;
+    const { net, userNetData } = this.net.getNetState();
+    if (!net) {
+      this.userStatus = user.user_status;
       return;
     }
-    const net = this.net.getNetState();
-    if (net) {
-      const { userNetData } = net;
-      const { confirmed } = userNetData || {}
-      if (confirmed) this.userStatus = 'INSIDE_NET';
-      else this.userStatus = 'INVITING';
-      return;
-    }
-    const { confirmed } = user;
-    if (confirmed) this.userStatus = 'LOGGEDIN';
-    else this.userStatus = 'NOT_CONFIRMED';
+    const { confirmed } = userNetData || {}
+    if (confirmed) this.userStatus = 'INSIDE_NET';
+    else this.userStatus = 'INVITING';
   }
 
   private async onNewNets() {

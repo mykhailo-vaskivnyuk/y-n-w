@@ -1,5 +1,5 @@
-import { MEMBER_STATUS_MAP } from '../server/constants';
-import { getEnumFromMap } from '../../local/imports';
+import { MEMBER_STATUS } from '../server/constants';
+import { createEnumFromArray } from '../../local/imports';
 
 export enum AppStatus {
   INITING = 'initing',
@@ -9,7 +9,7 @@ export enum AppStatus {
   ERROR = 'error',
 }
 
-export const MEMBER_STATUS_ENUM = getEnumFromMap(MEMBER_STATUS_MAP);
+export const MEMBER_STATUS_ENUM = createEnumFromArray(MEMBER_STATUS);
 
 export const CONNECTION_ATTEMPT_COUNT = 3;
 export const CONNECTION_ATTEMPT_DELAY = 3000;

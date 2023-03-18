@@ -35,7 +35,7 @@ export class Chat {
   }
 
   async getMessages(chatId: number, index = 1) {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const { node_id: nodeId } = this.app.getState().net!;
       const messages = await this.app.api.chat
@@ -48,7 +48,7 @@ export class Chat {
   }
 
   async sendMessage(message: string, chatId: number) {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const { net } = this.app.getState();
       const { node_id: nodeId } = net!;

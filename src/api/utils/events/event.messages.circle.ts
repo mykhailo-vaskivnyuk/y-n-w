@@ -23,6 +23,7 @@ const createMessageToFacilitator = async (
     net_id,
     'tree',
     from_node_id,
+    event,
     message,
     date,
   ]);
@@ -46,6 +47,7 @@ const cretaeMessagesToCircleMember = async (
     net_id,
     'circle',
     from_node_id,
+    event,
     message,
     date,
   ]);

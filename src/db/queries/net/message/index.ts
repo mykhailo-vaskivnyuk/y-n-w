@@ -1,3 +1,4 @@
+import { NetEventKeys } from '../../../../client/common/server/types/types';
 import { TQuery } from '../../../types/types';
 
 export interface IQueriesNetMessage {
@@ -6,6 +7,7 @@ export interface IQueriesNetMessage {
     ['net_id', number | null],
     ['net_view', string],
     ['from_node_id', number | null],
+    ['event_type', NetEventKeys],
     ['message', string],
     ['date', string],
   ]>;
@@ -17,8 +19,9 @@ export const create = `
     net_id,
     net_view,
     from_node_id,
+    event_type,
     message,
     date
   )
-  VALUES ($1, $2, $3, $4, $5, $6)
+  VALUES ($1, $2, $3, $4, $5, $6, $7)
 `;

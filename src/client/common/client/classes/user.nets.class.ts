@@ -26,12 +26,12 @@ export class UserNets {
   private setNets(nets: INets) {
     if (this.nets === nets) return;
     this.nets = nets;
+    this.app.emit('nets', nets);
   }
 
   async getAllNets() {
-    const nets = await this.app.api.user.nets.get();
-    this.setAllNets(nets);
-    this.app.emit('nets', nets);
+    const allNets = await this.app.api.user.nets.get();
+    this.setAllNets(allNets);
   }
 
   getNets() {

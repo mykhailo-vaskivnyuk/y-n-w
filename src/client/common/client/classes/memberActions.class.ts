@@ -9,11 +9,8 @@ type IApp = IClientAppThis;
 type INet = { onMemberChanged: (member_node_id: number) => void };
 
 export class MemberActions{
-  private api;
 
-  constructor(private app: IApp, private net: INet) {
-    this.api = app.api;
-  }
+  constructor(private app: IApp, private net: INet) {}
 
   getName(
     netView: T.NetViewEnum,
@@ -28,7 +25,7 @@ export class MemberActions{
   }
 
   async setDislike(member_node_id: number) {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const { net } = this.app.getState();
       const success = await this.app.api.member.data.dislike
@@ -42,7 +39,7 @@ export class MemberActions{
   }
 
   async unsetDislike(member_node_id: number) {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const { net } = this.app.getState();
       const success = await this.app.api.member.data.dislike
@@ -56,10 +53,10 @@ export class MemberActions{
   }
 
   async setVote(member_node_id: number) {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const { net } = this.app.getState();
-      const success = await this.api.member.data.vote
+      const success = await this.app.api.member.data.vote
         .set({ ...net!, member_node_id });
       success && await this.net.onMemberChanged(member_node_id);
       this.app.setStatus(AppStatus.READY);
@@ -70,10 +67,10 @@ export class MemberActions{
   }
 
   async unsetVote(member_node_id: number) {
-    this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const { net } = this.app.getState();
-      const success = await this.api.member.data.vote
+      const success = await this.app.api.member.data.vote
         .unSet({ ...net!, member_node_id });
       success && await this.net.onMemberChanged(member_node_id);
       this.app.setStatus(AppStatus.READY);

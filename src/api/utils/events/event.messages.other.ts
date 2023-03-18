@@ -31,6 +31,7 @@ export const createMessagesToConnected = async (
       null,
       'net',
       null,
+      event,
       message,
       date,
     ]);
@@ -54,6 +55,7 @@ export const createMessageToMember = async (
     net_id,
     'net',
     null,
+    event,
     message,
     date,
   ]);

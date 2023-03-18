@@ -1,13 +1,17 @@
+import { createEnumFromMap } from '../../../local/imports';
+
 export const HTTP_RESPONSE_ERROR_MAP = {
-  400: 'Bad request',
+  400: 'BadRequest',
   401: 'Unauthorized',
   403: 'Forbidden',
-  404: 'Not found',
+  404: 'NotFound',
   409: 'Conflict',
-  500: 'Internal server error',
-  503: 'Service unavailable',
+  500: 'InternalServerError',
+  503: 'ServiceUnavailable',
 } as const;
 export type HttpResponseErrorCode = keyof typeof HTTP_RESPONSE_ERROR_MAP;
+
+export const httpResponseErrorEnum = createEnumFromMap(HTTP_RESPONSE_ERROR_MAP);
 
 export class HttpResponseError extends Error {
   statusCode: HttpResponseErrorCode;
@@ -21,3 +25,6 @@ export class HttpResponseError extends Error {
     this.name = this.constructor.name;
   }
 }
+
+export const isHttpResponseError = (error: Error): error is HttpResponseError =>
+  error instanceof HttpResponseError;
