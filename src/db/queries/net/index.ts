@@ -20,18 +20,14 @@ export interface IQueriesNet {
     ['net_id', number],
     ['name', string],
   ], ITableNetsData>;
+  update: TQuery<[
+    ['net_id', number],
+    ['goal', string],
+  ], ITableNetsData>;
   updateCountOfNets: TQuery<[
     ['net_id', number | null],
     ['addCount', number],
   ], ITableNets>;
-  // changeNetNode: TQuery<[
-  //   ['new_net_node', number],
-  //   ['cur_net_node', number],
-  // ]>;
-  // changeDataNetNode: TQuery<[
-  //   ['new_net_node', number],
-  //   ['cur_net_node', number],
-  // ]>;
   remove: TQuery<[
     ['net_id', number],
   ]>;
@@ -77,24 +73,18 @@ export const createData = `
   RETURNING *
 `;
 
+export const update = `
+  UPDATE nets_data
+  SET goal = $2
+  WHERE net_id = $1
+`;
+
 export const updateCountOfNets = `
   UPDATE nets
   SET count_of_nets = count_of_nets + $2
   WHERE net_id = $1
   RETURNING *
 `;
-
-// export const changeNetNode = `
-//   UPDATE nets
-//   SET net_id = $1, first_net_id = $1
-//   WHERE net_id = $2
-// `;
-
-// export const changeDataNetNode = `
-//   UPDATE nets_data
-//   SET net_id = $1
-//   WHERE net_id = $2
-// `;
 
 export const remove = `
   DELETE FROM nets

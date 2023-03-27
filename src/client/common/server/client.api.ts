@@ -114,6 +114,9 @@ export const getApi = (
     'leave': (options: P.INetReadParams) =>
       fetch<boolean>('/net/leave', options),
 
+    'update': (options: P.INetUpdateParams) =>
+      fetch<P.INetResponse>('/net/update', options),
+
     'board': {
       'clear': (options: Q.TNetBoardClear) =>
         fetch<boolean>('/net/board/clear', options),
