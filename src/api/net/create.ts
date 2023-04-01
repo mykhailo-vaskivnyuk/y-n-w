@@ -20,7 +20,7 @@ const create: THandler<INetCreateParams, INetResponse> = async (
     await updateCountOfNets(parentNetId);
   } else {
     [net] = await execQuery.net.createInitial([]);
-    await execQuery.net.setFirstNet([net!.net_id]);
+    [net] = await execQuery.net.setFirstNet([net!.net_id]);
   }
   const { net_id } = net!;
 
@@ -35,7 +35,8 @@ const create: THandler<INetCreateParams, INetResponse> = async (
 
   /* create net user data */
   const user_id = session.read('user_id')!;
-  await execQuery.net.user.createData([net_id, user_id!]);
+  const { node_id } = node!;
+  await execQuery.net.user.createData([node_id, user_id]);
 
   return { ...net!, ...netData!, ...node! };
 };

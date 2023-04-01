@@ -57,6 +57,7 @@ export class Member {
       const success = await this.app.api.member.invite
         .confirm({ member_node_id: this.member.node_id, ...net! });
       if (success) await this.net.onMemberChanged();
+      this.net.onNetChanged();
       this.app.setStatus(AppStatus.READY);
       return success;
     } catch (e: any) {

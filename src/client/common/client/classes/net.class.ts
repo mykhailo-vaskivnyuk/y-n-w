@@ -14,7 +14,7 @@ type IApp = IClientAppThis & {
   onNewNets: () => Promise<void>;
 };
 
-export class Net{
+export class Net {
   private userNet: T.INetResponse = null;
   private userNetData: T.IUserNetDataResponse | null = null;
   private circle: IMember[] = [];
@@ -181,27 +181,27 @@ export class Net{
   }
 
   async getCircle() {
-      const net = this.userNet;
-      const result = await this.app.api.net.getCircle(net!);
-      const circle: IMember[] = result.map((member, memberPosition) => {
-        const memberStatus = getMemberStatus(member);
-        const memberName = this.memberActions
-          .getName('circle', member, memberPosition);
-        return { ...member, member_name: memberName, memberStatus };
-      });
-      this.setCircle(circle);
+    const net = this.userNet;
+    const result = await this.app.api.net.getCircle(net!);
+    const circle: IMember[] = result.map((member, memberPosition) => {
+      const memberStatus = getMemberStatus(member);
+      const memberName = this.memberActions
+        .getName('circle', member, memberPosition);
+      return { ...member, member_name: memberName, memberStatus };
+    });
+    this.setCircle(circle);
   }
 
   async getTree() {
-      const net = this.userNet;
-      const result = await this.app.api.net.getTree(net!);
-      const tree: IMember[] = result.map((member, memberPosition) => {
-        const memberStatus = getMemberStatus(member);
-        const memberName = this.memberActions
-          .getName('tree', member, memberPosition);
-        return { ...member, member_name: memberName, memberStatus };
-      });
-      this.setTree(tree);
+    const net = this.userNet;
+    const result = await this.app.api.net.getTree(net!);
+    const tree: IMember[] = result.map((member, memberPosition) => {
+      const memberStatus = getMemberStatus(member);
+      const memberName = this.memberActions
+        .getName('tree', member, memberPosition);
+      return { ...member, member_name: memberName, memberStatus };
+    });
+    this.setTree(tree);
   }
 
   async connectByInvite(args: T.ITokenParams) {
@@ -212,6 +212,19 @@ export class Net{
       if (!error) await this.app.onNewNets();
       this.app.setStatus(AppStatus.READY);
       return result;
+    } catch (e: any) {
+      this.app.setError(e);
+      throw e;
+    }
+  }
+
+  async update(args: Omit<T.INetUpdateParams, 'node_id'>) {
+    await this.app.setStatus(AppStatus.LOADING);
+    try {
+      const net = await this.app.api.net.update({ ...this.userNet!, ...args });
+      net && this.setNet(net);
+      this.app.setStatus(AppStatus.READY);
+      return net;
     } catch (e: any) {
       this.app.setError(e);
       throw e;

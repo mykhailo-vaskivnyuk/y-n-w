@@ -19,7 +19,10 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
 
   const [member] = await execQuery.member.get([node_id]);
   const { user_id, net_id } = member!;
+  await execQuery.member.invite.removeAll([node_id]);
+  await execQuery.member.invite.removeAll([parent_node_id]);
   await removeConnected('LEAVE_VOTE', member!, date);
+
   await execQuery.member.data.removeFromTree([user_id, node_id]);
   await execQuery.events.removeFromTree([user_id, net_id]);
 

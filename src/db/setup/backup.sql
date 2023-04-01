@@ -105,7 +105,7 @@ ALTER TABLE public.members OWNER TO merega;
 --
 
 CREATE TABLE public.members_invites (
-    user_id bigint NOT NULL,
+    node_id bigint NOT NULL,
     member_node_id bigint NOT NULL,
     member_name character varying(50) NOT NULL,
     token character varying(255) NOT NULL
@@ -353,7 +353,7 @@ COPY public.members (member_id, node_id, net_id, user_id, email_show, name_show,
 -- Data for Name: members_invites; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.members_invites (user_id, member_node_id, member_name, token) FROM stdin;
+COPY public.members_invites (node_id, member_node_id, member_name, token) FROM stdin;
 \.
 
 
@@ -637,14 +637,6 @@ ALTER TABLE ONLY public.members
 
 
 --
--- Name: members uk_members_user; Type: CONSTRAINT; Schema: public; Owner: merega
---
-
-ALTER TABLE ONLY public.members
-    ADD CONSTRAINT uk_members_user UNIQUE (user_id);
-
-
---
 -- Name: members uk_members_user_net; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -687,6 +679,13 @@ CREATE INDEX sk_board_messages_net ON public.board_messages USING btree (net_id)
 --
 
 CREATE INDEX sk_events_user ON public.events USING btree (user_id);
+
+
+--
+-- Name: sk_nodes_parent_node; Type: INDEX; Schema: public; Owner: merega
+--
+
+CREATE INDEX sk_nodes_parent_node ON public.nodes USING btree (parent_node_id NULLS FIRST);
 
 
 --
@@ -736,19 +735,19 @@ ALTER TABLE ONLY public.events
 
 
 --
+-- Name: members_invites fk_members_invites_member_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.members_invites
+    ADD CONSTRAINT fk_members_invites_member_node FOREIGN KEY (member_node_id) REFERENCES public.nodes(node_id);
+
+
+--
 -- Name: members_invites fk_members_invites_node; Type: FK CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.members_invites
-    ADD CONSTRAINT fk_members_invites_node FOREIGN KEY (member_node_id) REFERENCES public.nodes(node_id);
-
-
---
--- Name: members_invites fk_members_invites_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
---
-
-ALTER TABLE ONLY public.members_invites
-    ADD CONSTRAINT fk_members_invites_user FOREIGN KEY (user_id) REFERENCES public.members(user_id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_members_invites_node FOREIGN KEY (node_id) REFERENCES public.members(node_id) ON DELETE CASCADE;
 
 
 --

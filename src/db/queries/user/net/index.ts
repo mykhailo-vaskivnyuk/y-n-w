@@ -37,6 +37,7 @@ export const find = `
     nets.net_id::int,
     nets.net_level,
     nets_data.name,
+    nets_data.goal,
     first_node.count_of_members,
     members.user_id::int,
     members.confirmed
@@ -48,6 +49,7 @@ export const find = `
   INNER JOIN nodes ON
     nodes.node_id = members.node_id
   INNER JOIN nodes AS first_node ON
+    first_node.net_id = nets.net_id AND
     first_node.parent_node_id ISNULL
   WHERE
     members.user_id = $1 AND
@@ -70,6 +72,7 @@ export const read = `
   INNER JOIN nodes ON
     nodes.node_id = members.node_id
   INNER JOIN nodes AS first_node ON
+    first_node.net_id = nets.net_id AND
     first_node.parent_node_id ISNULL
   WHERE
     members.user_id = $1 AND

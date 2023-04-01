@@ -41,6 +41,7 @@ export interface IQueriesNet {
 
 export const createInitial = `
   INSERT INTO nets
+  VALUES (DEFAULT)
   RETURNING *
 `;
 
@@ -48,6 +49,7 @@ export const setFirstNet = `
   UPDATE nets
   SET first_net_id = $1
   WHERE net_id = $1
+  RETURNING *
 `;
 
 export const createChild = `

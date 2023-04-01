@@ -8,6 +8,7 @@ Table "nodes" {
   "updated" timestamp [not null, default: 'now()']
   Indexes {
     (node_id, net_id) [unique, name: "uk_nodes_node_net"]
+    parent_node_id [name: "sk_nodes_parent_node"]
   }
 }
 
@@ -51,7 +52,6 @@ Table "members" {
   "active_date" timestamp [not null, default: 'now()']
   Indexes {
     node_id [unique, name: "uk_members_node"]
-    user_id [unique, name: "uk_members_user"]
     (user_id, net_id) [unique, name: "uk_members_user_net"]
   }
 }
@@ -77,7 +77,7 @@ Table "users_tokens" {
 }
 
 Table "members_invites" {
-  "user_id" bigint [not null]
+  "node_id" bigint [not null]
   "member_node_id" bigint [primary key, not null]
   "member_name" "character varying(50)" [not null]
   "token" "character varying(255)" [not null]
@@ -140,8 +140,8 @@ Ref "fk_nodes_net":"nets"."net_id" < "nodes"."net_id" [delete: cascade]
 Ref "fk_nets_data_net":"nets"."net_id" - "nets_data"."net_id" [delete: cascade]
 Ref "fk_members_node_net":"nodes".(node_id, net_id) - "members".(node_id, net_id)
 Ref "fk_members_user":"users"."user_id" < "members"."user_id" [delete: cascade]
-Ref "fk_members_invites_user":"members"."user_id" < "members_invites"."user_id" [delete: cascade]
-Ref "fk_members_invites_node":"nodes"."node_id" - "members_invites"."member_node_id"
+Ref "fk_members_invites_node":"members"."node_id" < "members_invites"."node_id" [delete: cascade]
+Ref "fk_members_invites_member_node":"nodes"."node_id" - "members_invites"."member_node_id"
 Ref "fk_users_tokens_user":"users"."user_id" < "users_tokens"."user_id" [delete: cascade]
 Ref "fk_users_members_parent_node":"nodes"."node_id" < "users_members"."parent_node_id"
 Ref "fk_users_members_user":"users"."user_id" < "users_members"."user_id" [delete: cascade]

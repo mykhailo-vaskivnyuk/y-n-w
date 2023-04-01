@@ -32,10 +32,6 @@ export interface IQueriesNode {
     ['new_parent_node_id', number | null],
     ['node_position', number],
   ]>;
-  // changeNetNode: TQuery<[
-  //   ['new_net_id', number],
-  //   ['cur_net_id', number],
-  // ]>;
   find: TQuery<[
     ['date', string],
   ], ITableNodes>;
@@ -96,14 +92,6 @@ export const change = `
     node_position = $3
   WHERE node_id = $1
 `;
-
-// export const changeNetNode = `
-//   UPDATE nodes
-//   SET
-//     net_id = $1,
-//     node_level = node_level - 1
-//   WHERE net_id = $2
-// `;
 
 export const find = `
   SELECT nodes.* FROM nodes
