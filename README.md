@@ -1,5 +1,5 @@
-# U & W
-You and World project
+# You and World
+Project documentation
 
-- [Мета](docs/goal/index.md)
-- [Технічне завдання](docs/task/index.md)
+- [Для користувачів](docs/users/index.md)
+- [Для розробників](docs/developers/index.md)
