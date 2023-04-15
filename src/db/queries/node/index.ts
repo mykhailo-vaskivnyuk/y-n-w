@@ -30,7 +30,6 @@ export interface IQueriesNode {
   change: TQuery<[
     ['node_id', number],
     ['new_parent_node_id', number | null],
-    ['node_position', number],
   ]>;
   find: TQuery<[
     ['date', string],
@@ -61,15 +60,15 @@ export const updateCountOfMembers = `
 
 export const createTree = `
   INSERT INTO nodes (
-    node_position, node_level, parent_node_id, net_id
+    node_level, parent_node_id, net_id
   )
   VALUES
-    (1, $1, $2, $3),
-    (2, $1, $2, $3),
-    (3, $1, $2, $3),
-    (4, $1, $2, $3),
-    (5, $1, $2, $3),
-    (6, $1, $2, $3)
+    ($1, $2, $3),
+    ($1, $2, $3),
+    ($1, $2, $3),
+    ($1, $2, $3),
+    ($1, $2, $3),
+    ($1, $2, $3)
 `;
 
 export const removeTree = `
@@ -88,8 +87,7 @@ export const get = `
 export const change = `
   UPDATE nodes
   SET
-    parent_node_id = $2,
-    node_position = $3
+    parent_node_id = $2
   WHERE node_id = $1
 `;
 

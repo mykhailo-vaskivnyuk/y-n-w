@@ -198,7 +198,6 @@ ALTER TABLE public.nets ALTER COLUMN net_id ADD GENERATED ALWAYS AS IDENTITY (
 CREATE TABLE public.nodes (
     node_id bigint NOT NULL,
     node_level integer DEFAULT 0 NOT NULL,
-    node_position integer DEFAULT 0 NOT NULL,
     parent_node_id bigint,
     net_id bigint NOT NULL,
     count_of_members integer DEFAULT 0 NOT NULL,

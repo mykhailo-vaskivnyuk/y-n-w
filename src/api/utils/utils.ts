@@ -8,7 +8,6 @@ export const tightenNodes = async (node_id: number) => {
     user_id,
     count_of_members,
     parent_node_id,
-    node_position,
     net_id,
   } = node;
   if (user_id) return false;
@@ -25,7 +24,7 @@ export const tightenNodes = async (node_id: number) => {
     count_of_members: childCount,
     node_id: childNodeId } = nodeWithMaxCount;
   if (childCount !== count_of_members) return false;
-  await execQuery.node.change([childNodeId, parent_node_id, node_position]);
+  await execQuery.node.change([childNodeId, parent_node_id]);
   await execQuery.node.removeTree([node_id]);
   // if (!parent_node_id) {
   //   await execQuery.node.changeNetNode([childNodeId, node_id]);

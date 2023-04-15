@@ -198,7 +198,6 @@ ALTER TABLE public.nets ALTER COLUMN net_id ADD GENERATED ALWAYS AS IDENTITY (
 CREATE TABLE public.nodes (
     node_id bigint NOT NULL,
     node_level integer DEFAULT 0 NOT NULL,
-    node_position integer DEFAULT 0 NOT NULL,
     parent_node_id bigint,
     net_id bigint NOT NULL,
     count_of_members integer DEFAULT 0 NOT NULL,
@@ -379,7 +378,7 @@ COPY public.nets (net_id, net_level, parent_net_id, first_net_id, count_of_nets)
 --
 
 COPY public.nets_data (net_id, name, goal, resource_name, resource_link) FROM stdin;
-1	My new network	\N	\N	\N
+1	My new network	My network goal	\N	\N
 \.
 
 
@@ -387,26 +386,26 @@ COPY public.nets_data (net_id, name, goal, resource_name, resource_link) FROM st
 -- Data for Name: nodes; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.nodes (node_id, node_level, node_position, parent_node_id, net_id, count_of_members, updated) FROM stdin;
-2	1	1	1	1	0	2023-01-08 13:27:19.209752
-4	1	3	1	1	0	2023-01-08 13:27:19.209752
-6	1	5	1	1	0	2023-01-08 13:27:19.209752
-7	1	6	1	1	0	2023-01-08 13:27:19.209752
-3	1	2	1	1	1	2023-01-08 13:27:19.209752
-8	2	1	3	1	0	2023-01-08 20:15:48.206688
-9	2	2	3	1	0	2023-01-08 20:15:48.206688
-10	2	3	3	1	0	2023-01-08 20:15:48.206688
-11	2	4	3	1	0	2023-01-08 20:15:48.206688
-12	2	5	3	1	0	2023-01-08 20:15:48.206688
-13	2	6	3	1	0	2023-01-08 20:15:48.206688
-5	1	4	1	1	1	2023-01-08 13:27:19.209752
-1	0	0	\N	1	3	2023-01-08 13:27:19.186211
-14	2	1	5	1	0	2023-01-10 21:21:58.740173
-15	2	2	5	1	0	2023-01-10 21:21:58.740173
-16	2	3	5	1	0	2023-01-10 21:21:58.740173
-17	2	4	5	1	0	2023-01-10 21:21:58.740173
-18	2	5	5	1	0	2023-01-10 21:21:58.740173
-19	2	6	5	1	0	2023-01-10 21:21:58.740173
+COPY public.nodes (node_id, node_level, parent_node_id, net_id, count_of_members, updated) FROM stdin;
+2	1	1	1	0	2023-01-08 13:27:19.209752
+4	1	1	1	0	2023-01-08 13:27:19.209752
+6	1	1	1	0	2023-01-08 13:27:19.209752
+7	1	1	1	0	2023-01-08 13:27:19.209752
+3	1	1	1	1	2023-01-08 13:27:19.209752
+8	2	3	1	0	2023-01-08 20:15:48.206688
+9	2	3	1	0	2023-01-08 20:15:48.206688
+10	2	3	1	0	2023-01-08 20:15:48.206688
+11	2	3	1	0	2023-01-08 20:15:48.206688
+12	2	3	1	0	2023-01-08 20:15:48.206688
+13	2	3	1	0	2023-01-08 20:15:48.206688
+5	1	1	1	1	2023-01-08 13:27:19.209752
+1	0	\N	1	3	2023-01-08 13:27:19.186211
+14	2	5	1	0	2023-01-10 21:21:58.740173
+15	2	5	1	0	2023-01-10 21:21:58.740173
+16	2	5	1	0	2023-01-10 21:21:58.740173
+17	2	5	1	0	2023-01-10 21:21:58.740173
+18	2	5	1	0	2023-01-10 21:21:58.740173
+19	2	5	1	0	2023-01-10 21:21:58.740173
 \.
 
 

@@ -1,7 +1,6 @@
 Table "nodes" {
   "node_id" bigint [primary key, not null]
   "node_level" integer [not null, default: 0]
-  "node_position" integer [not null, default: 0]
   "parent_node_id" bigint [default: NULL]
   "net_id" bigint [not null]
   "count_of_members" integer [not null, default: 0]

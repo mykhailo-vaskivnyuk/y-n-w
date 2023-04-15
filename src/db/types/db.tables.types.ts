@@ -21,7 +21,6 @@ export type OuterJoin<T> =
 export type ITableNodes = {
   node_id: number;
   node_level: number;
-  node_position: number;
   parent_node_id: number | null;
   net_id: number;
   count_of_members: number;
