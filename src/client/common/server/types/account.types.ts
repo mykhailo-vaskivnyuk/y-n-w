@@ -13,3 +13,9 @@ export type ISignupParams = {
 export type ILoginParams = ISignupParams & {
   password: string,
 };
+
+export type IUserUpdateParams = {
+  name: string,
+  mobile: string,
+  password: string,
+};

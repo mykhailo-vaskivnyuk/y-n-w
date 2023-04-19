@@ -141,7 +141,8 @@ export const getApi = (
 
   },
   'user': {
-    'update': () => fetch<string>('/user/update'),
+    'update': (options: P.IUserUpdateParams) =>
+      fetch<P.IUserResponse>('/user/update', options),
 
     'read': () => fetch<P.IUserResponse>('/user/read'),
 

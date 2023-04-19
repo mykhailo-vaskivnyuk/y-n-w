@@ -5,16 +5,16 @@ import { THandler } from '../../router/types';
 import {
   SignupParamsSchema, UserResponseSchema,
 } from '../schema/schema';
-import { createHash, createUnicCode } from '../../utils/crypto';
+import { createUnicCode } from '../../utils/crypto';
 
 const signup: THandler<ISignupParams, IUserResponse> = async (
   { session, origin }, { email },
 ) => {
   const [userExists] = await execQuery.user.findByEmail([email]);
   if (userExists) return null;
-  const hashedPassword = await createHash('12345');
+
   const token = createUnicCode(15);
-  const [user] = await execQuery.user.create([email, hashedPassword]);
+  const [user] = await execQuery.user.create([email]);
   const { user_id } = user!;
   let user_status: UserStatusKeys;
   if (env.MAIL_CONFIRM_OFF) {

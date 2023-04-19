@@ -7,7 +7,7 @@ type IApp = IClientAppThis & {
   onNewUser: (readChanges?: boolean) => Promise<void>;
 }
 
-export class Account{
+export class Account {
   private user: T.IUserResponse = null;
 
   constructor(private app: IApp) {}
@@ -15,7 +15,7 @@ export class Account{
   getUser() {
     return this.user;
   }
-  
+
   async init() {
     const user = await this.app.api.user.read();
     await this.setUser(user);
@@ -73,6 +73,19 @@ export class Account{
     await this.app.setStatus(AppStatus.LOADING);
     try {
       const user = await this.app.api.account[type](args);
+      user && await this.setUser(user);
+      this.app.setStatus(AppStatus.READY);
+      return user;
+    } catch (e: any) {
+      this.app.setError(e);
+      throw e;
+    }
+  }
+
+  async update(data: T.IUserUpdateParams): Promise<T.IUserResponse> {
+    await this.app.setStatus(AppStatus.LOADING);
+    try {
+      const user = await this.app.api.user.update(data);
       user && await this.setUser(user);
       this.app.setStatus(AppStatus.READY);
       return user;

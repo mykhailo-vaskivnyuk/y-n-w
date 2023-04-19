@@ -21,3 +21,9 @@ export const LoginParamsSchema = {
   ...SignupParamsSchema,
   password: Joi.string().required(),
 };
+
+export const UserUpdateParamsSchema = {
+  name: Joi.string().empty(''),
+  mobile: Joi.string().empty(''),
+  password: Joi.string().empty(''),
+};

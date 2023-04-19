@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ITableUsers } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
 import { IQueriesUserNet } from './net';
@@ -17,7 +18,6 @@ export interface IQueriesUser {
   ], ITableUsers>;
   create: TQuery<[
     ['email', string],
-    ['password', string],
   ], ITableUsers>;
   confirm: TQuery<[
     ['user_id', number],
@@ -27,6 +27,12 @@ export interface IQueriesUser {
   ]>;
   copy: TQuery<[
     ['user_id', number],
+  ], ITableUsers>;
+  update: TQuery<[
+    ['user_id', number],
+    ['name', string | null],
+    ['mobile', string | null],
+    ['password', string | null],
   ], ITableUsers>;
   net: IQueriesUserNet;
   nets: IQueriesUserNets;
@@ -55,9 +61,9 @@ export const findByToken = `
 
 export const create = `
   INSERT INTO users (
-    email, password
+    email
   )
-  VALUES ($1, $2)
+  VALUES ($1)
   RETURNING *
 `;
 
@@ -89,4 +95,11 @@ export const copy = `
   FROM users
   WHERE user_id = $1
   RETURNING *, user_id::int
+`;
+
+export const update = `
+  UPDATE users
+  SET name = $2, mobile = $3, password = $4
+  WHERE user_id = $1
+  RETURNING *
 `;
