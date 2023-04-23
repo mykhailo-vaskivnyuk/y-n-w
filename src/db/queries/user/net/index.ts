@@ -49,8 +49,7 @@ export const find = `
   INNER JOIN nodes ON
     nodes.node_id = members.node_id
   INNER JOIN nodes AS first_node ON
-    first_node.net_id = nets.net_id AND
-    first_node.parent_node_id ISNULL
+    first_node.node_id = nets.net_id
   WHERE
     members.user_id = $1 AND
     members.node_id = $2
@@ -72,8 +71,7 @@ export const read = `
   INNER JOIN nodes ON
     nodes.node_id = members.node_id
   INNER JOIN nodes AS first_node ON
-    first_node.net_id = nets.net_id AND
-    first_node.parent_node_id ISNULL
+    first_node.node_id = nets.net_id
   WHERE
     members.user_id = $1 AND
     members.net_id = $2
@@ -110,8 +108,8 @@ export const getData = `
       END
     ) AS vote_count
   FROM members
-  INNER JOIN nets ON
-    nets.net_id = members.net_id
+  -- INNER JOIN nets ON
+  --   nets.net_id = members.net_id
   INNER JOIN nodes ON
     nodes.node_id = members.node_id
   LEFT JOIN users_members ON

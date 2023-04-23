@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import { TQuery } from '../../types/types';
+import { userInNetAndItsSubnets } from '../../utils';
 
 export interface IQueriesMemberData {
   setDislike: TQuery<[
@@ -71,7 +72,7 @@ export const remove = `
   WHERE (
       user_id = $1 OR
       member_id = $1
-    ) AND 
+    ) AND
     parent_node_id in (
       SELECT nodes.parent_node_id
       FROM members
@@ -79,13 +80,7 @@ export const remove = `
         nodes.node_id = members.node_id
       INNER JOIN nets ON
         nets.net_id = members.net_id
-      WHERE
-        members.user_id = $1 AND ((
-          ($2 + 1) NOTNULL AND
-          nets.first_net_id = $2 AND
-          nets.net_level >= (SELECT net_level FROM nets WHERE net_id = $2)
-          ) OR ($2 + 1) ISNULL
-        )
+      WHERE ${userInNetAndItsSubnets()}
       ORDER BY nets.net_level DESC
     ) OR
     parent_node_id in (
@@ -93,13 +88,7 @@ export const remove = `
       FROM members
       INNER JOIN nets ON
         nets.net_id = members.net_id
-      WHERE
-        members.user_id = $1 AND ((
-          ($2 + 1) NOTNULL AND
-          nets.first_net_id = $2 AND
-          nets.net_level >= (SELECT net_level FROM nets WHERE net_id = $2)
-          ) OR ($2 + 1) ISNULL
-        )
+      WHERE ${userInNetAndItsSubnets()}
       ORDER BY nets.net_level DESC
     )
 `;

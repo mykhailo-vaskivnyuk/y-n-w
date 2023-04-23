@@ -29,29 +29,6 @@ export interface IQueriesMember {
     user_id: number;
     node_id: number;
   }>;
-  copyToTmp: TQuery<[
-    ['parent_node_id', number],
-  ]>;
-  copy: TQuery<[
-    ['parent_node_id', number],
-    ['node_id', number],
-    ['tmp_user_id', number],
-  ]>;
-  replace: TQuery<[
-    ['node_id', number],
-    ['parent_node_id', number],
-  ]>;
-  changeUser: TQuery<[
-    ['node_id', number],
-    ['user_id', number],
-  ]>;
-  removeFromTmp: TQuery<[
-    ['parent_node_id', number],
-  ]>;
-  changeNode: TQuery<[
-    ['node_id', number],
-    ['parent_node_id', number],
-  ]>;
   data: IQueriesMemberData;
   invite: IQueriesMemberInvite;
   find: IQueriesMemberFind;
@@ -105,10 +82,10 @@ export const get = `
     members.confirmed,
     nets_data.name
   FROM nodes
-  INNER JOIN members ON
-    members.node_id = nodes.node_id
   INNER JOIN nets_data ON
-    members.net_id = nets_data.net_id
+    nodes.net_id = nets_data.net_id
+  LEFT JOIN members ON
+    members.node_id = nodes.node_id
   WHERE nodes.node_id = $1
 `;
 
@@ -121,61 +98,6 @@ export const getConnected = `
   WHERE
     nodes.parent_node_id = $1 AND
     members.confirmed = false
-`;
-
-export const copyToTmp = `
-  INSERT INTO members_tmp
-  SELECT * FROM members
-  WHERE node_id = $1
-`;
-
-export const changeUser = `
-  UPDATE members
-  SET user_id = $2
-  WHERE node_id = $1
-`;
-
-export const replace = `
-  UPDATE members
-  SET (
-    user_id,
-    email_show,
-    name_show,
-    mobile_show
-  ) = (
-    SELECT
-      user_id,
-      email_show,
-      name_show,
-      mobile_show
-    FROM members_tmp
-    WHERE node_id = $2
-  )
-  WHERE node_id = $1
-`;
-
-export const removeFromTmp = `
-  DELETE FROM members_tmp
-  WHERE node_id = $1
-`;
-
-export const copy = `
-  UPDATE members
-  SET (
-    user_id,
-    email_show,
-    name_show,
-    mobile_show
-  ) = (
-    SELECT
-      $3::int AS user_id,
-      email_show,
-      name_show,
-      mobile_show
-    FROM members
-    WHERE node_id = $2
-  )
-  WHERE node_id = $1
 `;
 
 export const changeNode = `

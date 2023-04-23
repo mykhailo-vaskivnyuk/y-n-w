@@ -1,20 +1,32 @@
 import { checkDislikes, updateCountOfNets } from './net.utils';
 import { checkVotes } from './vote.utils';
 
+const changeLevel = async (parentNodeId: number) => {
+  for (let node_position = 0; node_position < 6; node_position++) {
+    const [node] = await execQuery
+      .node.getByParent([parentNodeId, node_position]);
+    const { node_id, count_of_members } = node!;
+    if (count_of_members) await changeLevel(node_id);
+    await execQuery.node.changeLevel([node_id]);
+  }
+};
+
 export const tightenNodes = async (node_id: number) => {
   const [node] = await execQuery.node.get([node_id]);
   if (!node) return false;
   const {
     user_id,
-    count_of_members,
+    node_level,
     parent_node_id,
     net_id,
+    node_position,
+    count_of_members,
   } = node;
   if (user_id) return false;
   if (!count_of_members) {
     if (parent_node_id) return true;
     await updateCountOfNets(net_id, -1);
-    await execQuery.net.remove([node_id]);
+    // await execQuery.net.remove([node_id]);
     return true;
   }
   const [nodeWithMaxCount] = await execQuery.net.tree
@@ -24,13 +36,18 @@ export const tightenNodes = async (node_id: number) => {
     count_of_members: childCount,
     node_id: childNodeId } = nodeWithMaxCount;
   if (childCount !== count_of_members) return false;
-  await execQuery.node.change([childNodeId, parent_node_id]);
+  await execQuery.node.move([
+    childNodeId, node_level, parent_node_id, node_position, count_of_members
+  ]);
+  if (parent_node_id) {
+    changeLevel(childNodeId);
+  } else {
+    await execQuery.node.changeNet([net_id, childNodeId]);
+    await execQuery.net.changeNet([net_id, childNodeId]);
+    await execQuery.net.changeParent([net_id, childNodeId]);
+    await execQuery.net.changeFirstNet([net_id, childNodeId]);
+  }
   await execQuery.node.removeTree([node_id]);
-  // if (!parent_node_id) {
-  //   await execQuery.node.changeNetNode([childNodeId, node_id]);
-  //   await execQuery.net.changeNetNode([childNodeId, node_id]);
-  //   await execQuery.net.changeDataNetNode([childNodeId, node_id]);
-  // }
   await execQuery.node.remove([node_id]);
   return true;
 };

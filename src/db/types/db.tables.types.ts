@@ -22,7 +22,8 @@ export type ITableNodes = {
   node_id: number;
   node_level: number;
   parent_node_id: number | null;
-  net_id: number;
+  net_id: number;  // | null
+  node_position: number;
   count_of_members: number;
   updated: string;
 }
@@ -31,7 +32,7 @@ export type ITableNets = {
   net_id: number;
   net_level: number;
   parent_net_id: number | null;
-  first_net_id: number | null;
+  first_net_id: number;
   count_of_nets: number;
 }
 

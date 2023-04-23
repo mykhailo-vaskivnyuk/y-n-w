@@ -3,8 +3,9 @@ import { ITableMembers, ITableNodes } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNode {
-  createInitial: TQuery<[
-    ['net_id', number]
+  createInitial: TQuery<[], ITableNodes>;
+  setNet: TQuery<[
+    ['net_id', number],
   ], ITableNodes>;
   remove: TQuery<[
     ['node_id', number],
@@ -27,20 +28,45 @@ export interface IQueriesNode {
     ITableNodes &
     Pick<ITableMembers, 'user_id'>
   >;
-  change: TQuery<[
-    ['node_id', number],
-    ['new_parent_node_id', number | null],
-  ]>;
+  getByParent: TQuery<[
+    ['parent_node_id', number],
+    ['node_position', number]
+  ], ITableNodes>;
   find: TQuery<[
     ['date', string],
   ], ITableNodes>;
+  move: TQuery<[
+    ['node_id', number],
+    ['new_node_level', number],
+    ['new_parent_node_id', number | null],
+    ['new_node_position', number],
+    ['new_count_of_members', number],
+  ]>;
+  changeTree: TQuery<[
+    ['parent_node_id', number],
+    ['new_node_id', number],
+  ]>;
+  changeLevel: TQuery<[
+    ['node_id', number],
+  ]>;
+  changeNet: TQuery<[
+    ['net_id', number],
+    ['new_net_id', number],
+  ]>;
 }
 
 export const createInitial = `
   INSERT INTO nodes (
-    net_id, count_of_members
+    count_of_members
   )
-  VALUES ($1, 1)
+  VALUES (1)
+  RETURNING *
+`;
+
+export const setNet = `
+  UPDATE nodes
+  SET net_id = $1
+  WHERE node_id = $1
   RETURNING *
 `;
 
@@ -60,15 +86,15 @@ export const updateCountOfMembers = `
 
 export const createTree = `
   INSERT INTO nodes (
-    node_level, parent_node_id, net_id
+    node_level, parent_node_id, net_id, node_position
   )
   VALUES
-    ($1, $2, $3),
-    ($1, $2, $3),
-    ($1, $2, $3),
-    ($1, $2, $3),
-    ($1, $2, $3),
-    ($1, $2, $3)
+    ($1, $2, $3, 0),
+    ($1, $2, $3, 1),
+    ($1, $2, $3, 2),
+    ($1, $2, $3, 3),
+    ($1, $2, $3, 4),
+    ($1, $2, $3, 5)
 `;
 
 export const removeTree = `
@@ -84,11 +110,10 @@ export const get = `
   WHERE nodes.node_id = $1
 `;
 
-export const change = `
-  UPDATE nodes
-  SET
-    parent_node_id = $2
-  WHERE node_id = $1
+export const getByParent = `
+    SELECT nodes.*
+    FROM nodes
+    WHERE parent_node_id = $1 AND node_position = $2
 `;
 
 export const find = `
@@ -99,4 +124,38 @@ export const find = `
     user_id ISNULL AND
     count_of_members > 0 AND
     updated < $1
+`;
+
+export const move = `
+  UPDATE nodes
+  SET
+    node_level = $2
+    parent_node_id = $3
+    node_position = $4
+    count_of_members = $5
+  WHERE node_id = $1
+`;
+
+export const changeTree = `
+  UPDATE nodes
+  SET parent_node_id =
+    CASE WHEN parent_node_id = $1
+      THEN $2
+      ELSE $1
+    END
+  WHERE parent_node_id IN ($1, $2) AND NOT node_id IN ($1, $2)
+`;
+
+export const changeLevel = `
+  UPDATE nodes
+  SET node_level = node_level - 1
+  WHERE node_id = $1
+`;
+
+export const changeNet = `
+  UPDATE nodes
+  SET 
+    net_id = $2,
+    node_level = node_level - 1
+  WHERE net_id = $1
 `;

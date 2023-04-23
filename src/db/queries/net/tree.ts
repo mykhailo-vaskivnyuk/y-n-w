@@ -39,7 +39,7 @@ export const get = `
   LEFT JOIN members_invites ON
     members_invites.member_node_id = nodes.node_id
   WHERE nodes.parent_node_id = $2
-  ORDER BY nodes.node_id
+  ORDER BY nodes.node_position
 `;
 
 export const getNodes = `

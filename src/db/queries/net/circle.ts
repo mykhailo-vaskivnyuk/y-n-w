@@ -64,7 +64,7 @@ export const get = `
     members.confirmed,
     users_members.dislike,
     users_members.vote
-  ORDER BY nodes.node_level, nodes.node_id
+  ORDER BY nodes.node_level, nodes.node_position
 `;
 
 export const getDislikes = `

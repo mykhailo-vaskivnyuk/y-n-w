@@ -93,6 +93,11 @@
 
 - single member can't vote
 
+### EVENTS
+
+- add tighten event
+- dont write net_id if remove from net
+
 ---
 
 # FRONT
