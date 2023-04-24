@@ -6,9 +6,9 @@ export interface IQueriesNetFind {
     ['token', string],
     ['user_id', number],
   ],
-    ITableNets &
+    Pick<ITableNets, 'parent_net_id'> &
     ITableNodes & {
-      another_user_exists: number | null;
+      // another_user_exists: number | null;
       user_exists: number | null;
     }
   >;
@@ -23,11 +23,11 @@ export const byToken = `
   INNER JOIN nodes ON
     nodes.node_id = members_invites.member_node_id
   INNER JOIN nets ON
-    nets.net_id = nodes.net_id
+    nets.net_id = nodes.root_node_id
   LEFT JOIN members AS another_user ON
     another_user.node_id = nodes.node_id
   LEFT JOIN members AS this_user ON
-    this_user.net_id = nodes.net_id AND
+    this_user.net_id = nodes.root_node_id AND
     this_user.user_id = $2
   WHERE
     members_invites.token = $1 AND

@@ -38,7 +38,7 @@ export const find = `
     nets.net_level,
     nets_data.name,
     nets_data.goal,
-    first_node.count_of_members,
+    root_node.count_of_members,
     members.user_id::int,
     members.confirmed
   FROM members
@@ -48,8 +48,8 @@ export const find = `
     nets_data.net_id = members.net_id
   INNER JOIN nodes ON
     nodes.node_id = members.node_id
-  INNER JOIN nodes AS first_node ON
-    first_node.node_id = nets.net_id
+  INNER JOIN nodes AS root_node ON
+    root_node.node_id = nets.net_id
   WHERE
     members.user_id = $1 AND
     members.node_id = $2
@@ -60,7 +60,7 @@ export const read = `
     nets.*,
     nets_data.*,
     nodes.parent_node_id,
-    first_node.count_of_members,
+    root_node.count_of_members,
     members.node_id,
     members.confirmed
   FROM members
@@ -70,8 +70,8 @@ export const read = `
     nets_data.net_id = nets.net_id
   INNER JOIN nodes ON
     nodes.node_id = members.node_id
-  INNER JOIN nodes AS first_node ON
-    first_node.node_id = nets.net_id
+  INNER JOIN nodes AS root_node ON
+    root_node.node_id = nets.net_id
   WHERE
     members.user_id = $1 AND
     members.net_id = $2
@@ -80,6 +80,7 @@ export const read = `
 export const getNetAndSubnets = `
   SELECT
     nodes.*,
+    nets.net_id::int,
     nets.net_level,
     members.user_id::int,
     members.confirmed,

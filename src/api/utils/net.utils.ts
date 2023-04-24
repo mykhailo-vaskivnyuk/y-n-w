@@ -90,7 +90,7 @@ export const removeConnectedMember = async (
   user_id: number,
   eventDate?: string,
 ) => {
-  const { net_id } = memberNode;
+  const { root_node_id: net_id } = memberNode;
   const date = eventDate || new Date().toUTCString();
   await execQuery.member.data.remove([user_id, net_id]);
   await execQuery.member.remove([user_id, net_id]);

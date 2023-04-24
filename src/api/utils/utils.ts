@@ -18,14 +18,14 @@ export const tightenNodes = async (node_id: number) => {
     user_id,
     node_level,
     parent_node_id,
-    net_id,
+    root_node_id,
     node_position,
     count_of_members,
   } = node;
   if (user_id) return false;
   if (!count_of_members) {
     if (parent_node_id) return true;
-    await updateCountOfNets(net_id, -1);
+    await updateCountOfNets(root_node_id, -1);
     // await execQuery.net.remove([node_id]);
     return true;
   }
@@ -42,10 +42,10 @@ export const tightenNodes = async (node_id: number) => {
   if (parent_node_id) {
     changeLevel(childNodeId);
   } else {
-    await execQuery.node.changeNet([net_id, childNodeId]);
-    await execQuery.net.changeNet([net_id, childNodeId]);
-    await execQuery.net.changeParent([net_id, childNodeId]);
-    await execQuery.net.changeFirstNet([net_id, childNodeId]);
+    await execQuery.node.changeRootNode([root_node_id, childNodeId]);
+    await execQuery.net.changeNet([root_node_id, childNodeId]);
+    await execQuery.net.changeParent([root_node_id, childNodeId]);
+    await execQuery.net.changeFirstNet([root_node_id, childNodeId]);
   }
   await execQuery.node.removeTree([node_id]);
   await execQuery.node.remove([node_id]);

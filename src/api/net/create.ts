@@ -16,7 +16,7 @@ const create: THandler<INetCreateParams, INetResponse> = async (
   /* create root node */
   let [node] = await execQuery.node.createInitial([]);
   const { node_id: net_id } = node!;
-  [node] = await execQuery.node.setNet([net_id]);
+  [node] = await execQuery.node.setRootNode([net_id]);
 
   /* create net */
   let net;

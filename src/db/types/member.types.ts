@@ -2,7 +2,7 @@ import * as T from './db.tables.types';
 
 export type IUserNetData =
   T.ITableNodes &
-  Pick<T.ITableNets, 'net_level'> &
+  Pick<T.ITableNets, 'net_id' | 'net_level'> &
   Pick<T.ITableNetsData, 'name' | 'goal'> &
   Pick<T.ITableMembers, 'user_id' | 'confirmed'>;
 
@@ -16,7 +16,7 @@ export type IMemberWithNet =
 
 export type IMember =
   T.ITableNodes &
-  Pick<T.ITableMembers, 'user_id' | 'confirmed'>;
+  Pick<T.ITableMembers, 'net_id' | 'user_id' | 'confirmed'>;
 
 export type INodeWithUser =
   T.ITableNodes &

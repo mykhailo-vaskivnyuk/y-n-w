@@ -151,7 +151,7 @@ CREATE TABLE public.nodes (
     node_id bigint NOT NULL,
     node_level integer DEFAULT 0 NOT NULL,
     parent_node_id bigint,
-    net_id bigint,
+    root_node_id bigint,
     node_position integer DEFAULT 0 NOT NULL,
     count_of_members integer DEFAULT 0 NOT NULL,
     updated timestamp without time zone DEFAULT now() NOT NULL
@@ -410,11 +410,11 @@ ALTER TABLE ONLY public.nets
 
 
 --
--- Name: nodes uk_nodes_node_net; Type: CONSTRAINT; Schema: public; Owner: merega
+-- Name: nodes uk_nodes_node_root; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.nodes
-    ADD CONSTRAINT uk_nodes_node_net UNIQUE (node_id, net_id);
+    ADD CONSTRAINT uk_nodes_node_root UNIQUE (node_id, root_node_id);
 
 
 --
@@ -520,7 +520,7 @@ ALTER TABLE ONLY public.members_invites
 --
 
 ALTER TABLE ONLY public.members
-    ADD CONSTRAINT fk_members_node_net FOREIGN KEY (node_id, net_id) REFERENCES public.nodes(node_id, net_id) ON UPDATE CASCADE;
+    ADD CONSTRAINT fk_members_node_net FOREIGN KEY (node_id, net_id) REFERENCES public.nodes(node_id, root_node_id) ON UPDATE CASCADE;
 
 
 --

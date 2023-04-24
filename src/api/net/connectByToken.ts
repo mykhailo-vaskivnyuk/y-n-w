@@ -16,7 +16,7 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
     if (!net) return null;
 
     const { parent_net_id, user_exists, ...node } = net;
-    const { net_id, node_id } = node;
+    const { root_node_id: net_id, node_id } = node;
 
     if (user_exists) return { net_id, error: 'already connected' };
 

@@ -78,12 +78,13 @@ export const findInCircle = `
 export const get = `
   SELECT
     nodes.*,
+    members.net_id::int,
     members.user_id::int,
     members.confirmed,
     nets_data.name
   FROM nodes
   INNER JOIN nets_data ON
-    nodes.net_id = nets_data.net_id
+    nodes.root_node_id = nets_data.net_id
   LEFT JOIN members ON
     members.node_id = nodes.node_id
   WHERE nodes.node_id = $1

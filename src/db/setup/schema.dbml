@@ -8,12 +8,12 @@ Table "nodes" {
   "node_id" bigint [primary key, not null]
   "node_level" integer [not null, default: 0]
   "parent_node_id" bigint [default: NULL]
-  "net_id" bigint [default: NULL]
+  "root_node_id" bigint [default: NULL]
   "node_position" integer [not null, default: 0]
   "count_of_members" integer [not null, default: 0]
   "updated" timestamp [not null, default: 'now()']
   Indexes {
-    (node_id, net_id) [unique, name: "uk_nodes_node_net"]
+    (node_id, root_node_id) [unique, name: "uk_nodes_node_root"]
     parent_node_id [name: "sk_nodes_parent_node"]
   }
 }
@@ -49,7 +49,7 @@ Table "nets_data" {
   "resource_link" "character varying(255)" [default: NULL]
 }
 
- Table "members" {
+Table "members" {
   "node_id" bigint [primary key, not null]
   "net_id" bigint [not null]
   "user_id" bigint [not null]
@@ -61,6 +61,7 @@ Table "nets_data" {
   Indexes {
     (user_id, net_id) [unique, name: "uk_members_user_net"]
   }
+}
 
 Table "users_tokens" {
   "user_id" bigint [primary key, not null]
@@ -132,7 +133,7 @@ Table "sessions" {
 
 Ref "fk_nets_node":"nodes"."node_id" - "nets"."net_id" [delete: cascade]
 Ref "fk_nets_data_net":"nets"."net_id" - "nets_data"."net_id" [update: cascade, delete: cascade]
-Ref "fk_members_node_net":"nodes".(node_id, net_id) - "members".(node_id, net_id) [update: cascade]
+Ref "fk_members_node_net":"nodes".(node_id, root_node_id) - "members".(node_id, net_id) [update: cascade]
 Ref "fk_members_user":"users"."user_id" < "members"."user_id" [delete: cascade]
 Ref "fk_members_invites_node":"members"."node_id" < "members_invites"."node_id" [delete: cascade]
 Ref "fk_members_invites_member_node":"nodes"."node_id" - "members_invites"."member_node_id"

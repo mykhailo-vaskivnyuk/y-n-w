@@ -1,6 +1,8 @@
 import Joi from 'joi';
 import { THandler } from '../../../router/types';
-import { IMemberConfirmParams } from '../../../client/common/server/types/types';
+import {
+  IMemberConfirmParams,
+} from '../../../client/common/server/types/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
 import { arrangeNodes } from '../../utils/utils';

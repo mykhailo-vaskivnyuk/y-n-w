@@ -122,6 +122,7 @@ export const getMembers = `
   SELECT
     nodes.*,
     nodes.node_id::int,
+    members.net_id::int,
     members.user_id::int,
     members.confirmed
   FROM nodes

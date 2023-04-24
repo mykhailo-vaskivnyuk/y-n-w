@@ -19,8 +19,8 @@ const get = `
     nets.*,
     nodes.*,
     nodes.node_id::int,
-    nodes.net_id::int,
     nodes.parent_node_id::int,
+    nets.net_id::int,
     nets_data.name,
     members.user_id,
     members.confirmed

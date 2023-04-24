@@ -151,7 +151,7 @@ CREATE TABLE public.nodes (
     node_id bigint NOT NULL,
     node_level integer DEFAULT 0 NOT NULL,
     parent_node_id bigint,
-    net_id bigint,
+    root_node_id bigint,
     node_position integer DEFAULT 0 NOT NULL,
     count_of_members integer DEFAULT 0 NOT NULL,
     updated timestamp without time zone DEFAULT now() NOT NULL
@@ -331,7 +331,7 @@ COPY public.nets_data (net_id, name, goal, resource_name, resource_link) FROM st
 -- Data for Name: nodes; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.nodes (node_id, node_level, parent_node_id, net_id, node_position, count_of_members, updated) FROM stdin;
+COPY public.nodes (node_id, node_level, parent_node_id, root_node_id, node_position, count_of_members, updated) FROM stdin;
 2	1	1	1	0	0	2023-01-08 13:27:19.209752
 4	1	1	1	2	0	2023-01-08 13:27:19.209752
 6	1	1	1	4	0	2023-01-08 13:27:19.209752
@@ -579,7 +579,7 @@ ALTER TABLE ONLY public.nets
 --
 
 ALTER TABLE ONLY public.nodes
-    ADD CONSTRAINT uk_nodes_node_net UNIQUE (node_id, net_id);
+    ADD CONSTRAINT uk_nodes_node_root UNIQUE (node_id, root_node_id);
 
 
 --
@@ -685,7 +685,7 @@ ALTER TABLE ONLY public.members_invites
 --
 
 ALTER TABLE ONLY public.members
-    ADD CONSTRAINT fk_members_node_net FOREIGN KEY (node_id, net_id) REFERENCES public.nodes(node_id, net_id) ON UPDATE CASCADE;
+    ADD CONSTRAINT fk_members_node_net FOREIGN KEY (node_id, net_id) REFERENCES public.nodes(node_id, root_node_id) ON UPDATE CASCADE;
 
 
 --
