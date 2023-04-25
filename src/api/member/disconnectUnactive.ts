@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { ITableMembers } from '../../db/types/db.tables.types';
+import { IMemberWithNetId } from '../../db/types/member.types';
 import { THandler } from '../../router/types';
 import { removeNetUser } from '../utils/net.utils';
 import { arrangeNodes } from '../utils/utils';
@@ -11,7 +11,7 @@ const disconnectUnactive: THandler<{ monthAgo: number }, boolean> =
     const month = date.getMonth();
     date.setMonth(month - monthAgo);
     const strDate = date.toUTCString();
-    let member: ITableMembers | undefined;
+    let member: IMemberWithNetId | undefined;
     do {
       [member] = await execQuery.member.find.unactive([strDate]);
       if (!member) return true;

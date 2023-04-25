@@ -1,18 +1,23 @@
 /* eslint-disable max-lines */
-import { ITableMembers } from '../../types/db.tables.types';
+import { IMemberWithNetId } from '../../types/member.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesMemberFind {
   unactive: TQuery<[
     ['date', string],
-  ], ITableMembers>;
+  ], IMemberWithNetId>;
 }
 
 export const unactive = `
-  SELECT *,
-    members.net_id::int,
-    members.user_id::int
+  SELECT
+    members.*,
+    members.user_id::int,
+    nets.net_id::int,
   FROM members
+  INNER JOIN nodes ON
+    nodes.node_id = members.member_id
+  INNER JOIN nets ON
+    nets.node_id = nodes.root_node_id
   WHERE
     members.active_date < $1 AND
     members.confirmed = true

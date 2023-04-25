@@ -1,5 +1,7 @@
 import * as T from './db.tables.types';
 
+export type IMemberWithNetId = T.ITableMembers & Pick<T.ITableNets, 'net_id'>;
+
 export type IUserNetData =
   T.ITableNodes &
   Pick<T.ITableNets, 'net_id' | 'net_level'> &
@@ -16,7 +18,8 @@ export type IMemberWithNet =
 
 export type IMember =
   T.ITableNodes &
-  Pick<T.ITableMembers, 'net_id' | 'user_id' | 'confirmed'>;
+  Pick<T.ITableMembers, 'user_id' | 'confirmed'> &
+  Pick<T.ITableNets, 'net_id'>;
 
 export type INodeWithUser =
   T.ITableNodes &
@@ -24,11 +27,11 @@ export type INodeWithUser =
   T.OuterJoin<Pick<T.ITableMembers, 'user_id' | 'confirmed'>>;
 
 export type IMemberDislikes =
-  Pick<T.ITableMembers, 'net_id' | 'user_id'> & {
-  dislike_count: number;
-};
+  Pick<T.ITableMembers, 'user_id'> &
+  Pick<T.ITableNets, 'net_id'> &
+  { dislike_count: number };
 
 export type IMemberVotes =
-  Pick<T.ITableMembers, 'node_id'> & {
+  Pick<T.ITableNodes, 'node_id'> & {
   vote_count: number;
 };

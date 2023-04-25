@@ -69,7 +69,7 @@ export const get = `
 
 export const getDislikes = `
   SELECT
-    members.net_id,
+    nets.net_id,
     members.user_id,
     SUM (
       CASE
@@ -78,6 +78,8 @@ export const getDislikes = `
       END
     ) AS dislike_count
   FROM nodes
+  INNER JOIN nets ON
+    nets.node_id = nodes.root_node_id
   INNER JOIN members AS members ON
     members.node_id = nodes.node_id
   LEFT JOIN users_members ON
@@ -97,7 +99,7 @@ export const getDislikes = `
 
 export const getVotes = `
   SELECT
-    members.node_id::int,
+    nodes.node_id::int,
     SUM (
       CASE
         WHEN users_members.vote = true THEN 1
@@ -122,10 +124,12 @@ export const getMembers = `
   SELECT
     nodes.*,
     nodes.node_id::int,
-    members.net_id::int,
+    nets.net_id::int,
     members.user_id::int,
     members.confirmed
   FROM nodes
+  INNER JOIN nets ON
+    nets.node_id = nodes.root_node_id
   INNER JOIN members ON
     members.node_id = nodes.node_id
   WHERE

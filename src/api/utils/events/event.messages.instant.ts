@@ -9,7 +9,10 @@ import {
 } from '../../../constants/constants';
 
 export const sendInstantMessage = (
-  event: NetEventKeys, user_id: number, net_id: number, net_view: NetViewKeys,
+  event: NetEventKeys,
+  user_id: number,
+  member_id: number,
+  net_view: NetViewKeys,
 ) => {
   // change logic as in createMessagesInNet
   const chatId = chatService.getChatIdOfUser(user_id);
@@ -19,7 +22,7 @@ export const sendInstantMessage = (
     type: 'EVENT',
     event_id: 0,
     user_id,
-    net_id,
+    member_id,
     net_view,
     from_node_id: null,
     event_type: event,
@@ -44,7 +47,7 @@ export const sendInstantMessageInNet = (
     type: 'EVENT',
     event_id: 0,
     user_id: 0,
-    net_id: fromMember.net_id,
+    member_id: fromMember.node_id,
     net_view: 'net',
     from_node_id: fromMember.node_id,
     event_type: event,

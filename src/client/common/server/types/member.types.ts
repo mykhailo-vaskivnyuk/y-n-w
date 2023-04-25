@@ -1,6 +1,6 @@
 import {
   ITableUsers, ITableMembersInvites, OuterJoin,
-  ITableUsersMembers, ITableMembers, ITableNodes,
+  ITableMembersToMembers, ITableMembers, ITableNodes,
 } from '../../../local/imports';
 
 export type IMemberInviteParams = {
@@ -17,6 +17,6 @@ export type IMemberResponse =
   OuterJoin<Pick<ITableMembers, 'confirmed'>> &
   OuterJoin<Pick<ITableMembersInvites, 'token' | 'member_name'>> &
   OuterJoin<
-    Omit<ITableUsersMembers, 'parent_node_id' | 'user_id' | 'member_id'>
+    Omit<ITableMembersToMembers, 'parent_node_id' | 'user_id' | 'member_id'>
   > &
   { vote_count: number };

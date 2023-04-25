@@ -18,7 +18,9 @@ export const NET_EVENT_MAP = {
 };
 export type NetEventKeys = keyof typeof NET_EVENT_MAP;
 
-export type IEvent = ITableEvents & { event_type: NetEventKeys };
+export type IEvent =
+  Omit<ITableEvents, 'event_type'> &
+  { event_type: NetEventKeys };
 export type IEvents = IEvent[];
 
 export type IEventMessage = {
