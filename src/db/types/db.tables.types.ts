@@ -10,7 +10,7 @@ export const TABLES_MAP = {
   BOARD_MESSAGES: 'board_messages',
   USERS_EVENTS: 'users_events',
   USERS_TOKENS: 'users_tokens',
-  USERS_MEMBERS: 'users_members',
+  MEMBERS_TO_MEMBERS: 'members_to_members',
   SESSIONS: 'sessions',
 };
 
@@ -29,10 +29,11 @@ export type ITableNodes = {
 }
 
 export type ITableNets = {
+  node_id: number;
   net_id: number;
   net_level: number;
   parent_net_id: number | null;
-  first_net_id: number;
+  root_net_id: number;
   count_of_nets: number;
 }
 
@@ -55,8 +56,6 @@ export type ITableNetsData = {
 
 export type ITableMembers = {
   member_id: number;
-  node_id: number;
-  net_id: number;
   user_id: number;
   email_show: boolean;
   name_show: boolean;
@@ -65,8 +64,8 @@ export type ITableMembers = {
 }
 
 export type ITableMembersInvites = {
-  user_id: number;
-  member_node_id: number;
+  member_id: number;
+  node_id: number;
   member_name: string;
   token: string;
 }
@@ -74,7 +73,7 @@ export type ITableMembersInvites = {
 export type ITableEvents = {
   event_id: number;
   user_id: number;
-  net_id: number | null;
+  member_id: number | null;
   net_view: 'net' | 'tree' | 'circle' | null; /* NetViewKeys */
   from_node_id: number | null;
   event_type: string; /* NetEventKeys */
@@ -85,7 +84,7 @@ export type ITableEvents = {
 export type ITableBoardMessages = {
   message_id: number;
   net_id: number;
-  user_id: number;
+  member_id: number;
   message: string;
   date: string;
 }
@@ -101,10 +100,9 @@ export type ITableUsersTokens = {
   token: string;
 }
 
-export type ITableUsersMembers = {
-  parent_node_id: number;
-  user_id: number;
-  member_id: number;
+export type ITableMembersToMembers = {
+  from_member_id: number;
+  to_member_id: number;
   dislike: boolean;
   vote: boolean;
 }
