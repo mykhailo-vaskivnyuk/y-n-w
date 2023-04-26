@@ -34,7 +34,7 @@ export interface IQueriesNode {
   ], ITableNodes>;
   find: TQuery<[
     ['date', string],
-  ], ITableNodes>;
+  ], ITableNodes & { net_id: number }>;
   move: TQuery<[
     ['node_id', number],
     ['new_node_level', number],
@@ -106,7 +106,7 @@ export const get = `
   SELECT nodes.*, members.user_id
   FROM nodes
   LEFT JOIN members ON
-    members.node_id = nodes.node_id
+    members.member_id = nodes.node_id
   WHERE nodes.node_id = $1
 `;
 
@@ -117,9 +117,11 @@ export const getByParent = `
 `;
 
 export const find = `
-  SELECT nodes.* FROM nodes
+  SELECT nodes.*, nets.net_id FROM nodes
+  INNER JOIN nets ON
+    nets.node_id = nodes.root_node_id
   LEFT JOIN members ON
-    members.node_id = nodes.node_id
+    members.member_id = nodes.node_id
   WHERE
     user_id ISNULL AND
     count_of_members > 0 AND
@@ -152,7 +154,7 @@ export const changeLevel = `
   WHERE node_id = $1
 `;
 
-export const changeNet = `
+export const changeRootNode = `
   UPDATE nodes
   SET 
     root_node_id = $2,

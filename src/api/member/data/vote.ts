@@ -11,7 +11,7 @@ import { createEventMessages } from '../../utils/events/event.messages.create';
 export const set: THandler<IMemberConfirmParams, boolean> = async (
   { session, userNet }, { member_node_id }
 ) => {
-  const { parent_node_id } = userNet!;
+  const { node_id, parent_node_id } = userNet!;
   if (!parent_node_id) return false; // bad request
   const [member] = await execQuery.member
     .findInCircle([parent_node_id, member_node_id]);
@@ -22,7 +22,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
   const user_id = session.read('user_id')!;
   await execQuery.member.data.unsetVote([parent_node_id, user_id]);
   await execQuery.member.data
-    .setVote([parent_node_id, user_id, member.user_id!]);
+    .setVote([node_id, member_node_id]);
   const result = await checkVotes(parent_node_id);
   !result && createEventMessages('VOTE', userNet!);
   return true;
@@ -31,17 +31,16 @@ set.paramsSchema = MemberConfirmParamsSchema;
 set.responseSchema = Joi.boolean();
 
 export const unSet: THandler<IMemberConfirmParams, boolean> = async (
-  { session, userNet }, { member_node_id }
+  { userNet }, { member_node_id }
 ) => {
-  const { parent_node_id } = userNet!;
+  const { node_id, parent_node_id } = userNet!;
   if (!parent_node_id) return false; // bad request
   const [member] = await execQuery.member
     .findInCircle([parent_node_id, member_node_id]);
   if (!member) return false; // bad request
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'ACTIVE') return false; // bad request
-  const user_id = session.read('user_id')!;
-  await execQuery.member.data.unsetVote([parent_node_id, user_id]);
+  await execQuery.member.data.unsetVote([node_id, member_node_id]);
   createEventMessages('VOTE', userNet!);
   return true;
 };

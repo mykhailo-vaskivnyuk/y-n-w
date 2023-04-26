@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.3
--- Dumped by pg_dump version 14.3
+-- Dumped from database version 14.5
+-- Dumped by pg_dump version 14.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -135,7 +135,7 @@ CREATE TABLE public.nets (
     net_id bigint NOT NULL,
     net_level integer DEFAULT 0 NOT NULL,
     parent_net_id bigint,
-    root_net_id bigint NOT NULL,
+    root_net_id bigint,
     count_of_nets integer DEFAULT 1 NOT NULL
 );
 

@@ -12,17 +12,17 @@ export interface IQueriesNetBoard {
   ], ITableNets>;
   create: TQuery<[
     ['net_id', number],
-    ['user_id', number],
+    ['member_id', number],
     ['message', string],
   ]>;
   update: TQuery<[
     ['message_id', number],
-    ['user_id', number],
+    ['member_id', number],
     ['message', string],
   ]>;
   remove: TQuery<[
     ['message_id', number],
-    ['user_id', number],
+    ['member_id', number],
   ]>;
   clear: TQuery<[
     ['date', string],
@@ -45,7 +45,7 @@ export const findUnactive = `
 
 export const create = `
   INSERT INTO board_messages (
-    net_id, user_id, message, date
+    net_id, member_id, message, date
   )
   VALUES ($1, $2, $3, now() at time zone 'UTC')
 `;
@@ -55,14 +55,14 @@ export const update = `
   SET message = $3, date = now() at time zone 'UTC'
   WHERE
     message_id = $1 AND
-    user_id = $2
+    member_id = $2
 `;
 
 export const remove = `
   DELETE FROM board_messages
   WHERE
     message_id = $1 AND
-    user_id = $2
+    member_id = $2
 `;
 
 export const clear = `

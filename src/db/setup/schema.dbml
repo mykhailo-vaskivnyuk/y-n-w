@@ -1,9 +1,3 @@
-/*
-  - структура даних
-  - цілісність (вставка / видалення)
-  - вибірка
-  - зміна структури (спільноти)
-*/
 Table "nodes" {
   "node_id" bigint [primary key, not null]
   "node_level" integer [not null, default: 0]
@@ -23,7 +17,7 @@ Table "nets" {
   "net_id" bigint [primary key, not null]
   "net_level" integer [not null, default: 0]
   "parent_net_id" bigint [default: NULL]
-  "root_net_id" bigint [not null]
+  "root_net_id" bigint [default: NULL]
   "count_of_nets" integer [not null, default: 1]
   Indexes {
     node_id [unique, name: "uk_nets_node"]

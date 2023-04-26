@@ -51,10 +51,6 @@ export const removeNetUser = async (
   const userNets = await execQuery.user.net
     .getNetAndSubnets([user_id, net_id]);
 
-  // 2 - remove member_data from user and to user in net and subnets
-  logger.debug('MEMBER DATA REMOVE');
-  await execQuery.member.data.remove([user_id, net_id]);
-
   // 3 - remove connected users in net and subnets
   for (const userNet of userNets) {
     if (!userNet.confirmed) continue;
@@ -92,7 +88,7 @@ export const removeConnectedMember = async (
 ) => {
   const { root_node_id: net_id } = memberNode;
   const date = eventDate || new Date().toUTCString();
-  await execQuery.member.data.remove([user_id, net_id]);
+  // ? await execQuery.member.data.remove([user_id, net_id]);
   await execQuery.member.remove([user_id, net_id]);
   await createMessagesToConnected(event, memberNode, [user_id], date);
 };

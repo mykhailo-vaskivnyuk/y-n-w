@@ -21,14 +21,16 @@ export const byToken = `
     this_user.user_id AS user_exists
   FROM members_invites
   INNER JOIN nodes ON
-    nodes.node_id = members_invites.member_node_id
+    nodes.node_id = members_invites.node_id
   INNER JOIN nets ON
-    nets.net_id = nodes.root_node_id
+    nets.node_id = nodes.root_node_id
   LEFT JOIN members AS another_user ON
-    another_user.node_id = nodes.node_id
+    another_user.member_id = nodes.node_id
   LEFT JOIN members AS this_user ON
-    this_user.net_id = nodes.root_node_id AND
     this_user.user_id = $2
+  LEFT JOIN nodes AS ns ON
+    ns.node_id = this_user.member_id AND
+    ns.root_node_id = nodes.root_node_id
   WHERE
     members_invites.token = $1 AND
     another_user.user_id ISNULL

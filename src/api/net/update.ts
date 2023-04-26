@@ -7,7 +7,6 @@ import { NetResponseSchema, NetUpdateParamsSchema } from '../schema/schema';
 const update: THandler<INetUpdateParams, INetResponse> =
   async ({ session, userNet }, { goal }) => {
     const { net_id, count_of_members } = userNet!;
-    logger.fatal(userNet);
     if (count_of_members > 1) return null; // bad request
     await execQuery.net.update([net_id, goal]);
     const user_id = session.read('user_id');

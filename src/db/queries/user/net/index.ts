@@ -24,8 +24,7 @@ export interface IQueriesUserNet {
     ['net_id', number],
   ], IUserNetDataResponse>;
   setActiveDate: TQuery<[
-    ['user_id', number],
-    ['net_id', number],
+    ['member_id', number],
   ]>;
 }
 
@@ -42,17 +41,17 @@ export const find = `
     members.user_id::int,
     members.confirmed
   FROM members
-  INNER JOIN nets ON
-    nets.net_id = members.net_id
-  INNER JOIN nets_data ON
-    nets_data.net_id = members.net_id
   INNER JOIN nodes ON
-    nodes.node_id = members.node_id
+    nodes.node_id = members.member_id
+  INNER JOIN nets ON
+    nets.node_id = nodes.root_node_id
+  INNER JOIN nets_data ON
+    nets_data.net_id = nets.net_id
   INNER JOIN nodes AS root_node ON
-    root_node.node_id = nets.net_id
+    root_node.node_id = nets.node_id
   WHERE
     members.user_id = $1 AND
-    members.node_id = $2
+    members.member_id = $2
 `;
 
 export const read = `
@@ -61,20 +60,20 @@ export const read = `
     nets_data.*,
     nodes.parent_node_id,
     root_node.count_of_members,
-    members.node_id,
+    nodes.node_id,
     members.confirmed
   FROM members
+  INNER JOIN nodes ON
+    nodes.node_id = members.member_id
   INNER JOIN nets ON
-    nets.net_id = members.net_id
+    nets.node_id = nodes.root_node_id
   INNER JOIN nets_data ON
     nets_data.net_id = nets.net_id
-  INNER JOIN nodes ON
-    nodes.node_id = members.node_id
   INNER JOIN nodes AS root_node ON
-    root_node.node_id = nets.net_id
+    root_node.node_id = nets.node_id
   WHERE
     members.user_id = $1 AND
-    members.net_id = $2
+    nets.net_id = $2
 `;
 
 export const getNetAndSubnets = `
@@ -86,12 +85,12 @@ export const getNetAndSubnets = `
     members.confirmed,
     nets_data.name
   FROM members
-  INNER JOIN nets ON
-    nets.net_id = members.net_id
-  INNER JOIN nets_data ON
-    nets_data.net_id = members.net_id
   INNER JOIN nodes ON
-    nodes.node_id = members.node_id
+    nodes.node_id = members.member_id
+  INNER JOIN nets ON
+    nets.node_id = nodes.root_node_id
+  INNER JOIN nets_data ON
+    nets_data.net_id = nets.net_id
   WHERE ${userInNetAndItsSubnets()}
   ORDER BY nets.net_level DESC
 `;
@@ -101,38 +100,38 @@ export const getData = `
     nodes.node_id,
     nodes.parent_node_id,
     members.confirmed,
-    users_members.vote,
+    members_to_members.vote,
     SUM (
       CASE
-        WHEN um.vote = true THEN 1
+        WHEN mtm.vote = true THEN 1
         ELSE 0
       END
     ) AS vote_count
   FROM members
-  -- INNER JOIN nets ON
-  --   nets.net_id = members.net_id
   INNER JOIN nodes ON
-    nodes.node_id = members.node_id
-  LEFT JOIN users_members ON
-    users_members.user_id = members.user_id AND
-    users_members.member_id = members.user_id
-  LEFT JOIN users_members as um ON
-    um.member_id = members.user_id AND
-    um.parent_node_id = nodes.parent_node_id
+    nodes.node_id = members.member_id
+  INNER JOIN nets ON
+    nets.node_id = nodes.root_node_id
+  LEFT JOIN members_to_members ON
+    members_to_members.from_member_id = members.member_id AND
+    members_to_members.to_member_id = members.member_id
+  LEFT JOIN members_to_members as mtm ON
+    mtm.to_member_id = members.member_id
+  LEFT JOIN nodes AS ns ON
+    mtm.from_member_id = ns.node_id AND
+    ns.parent_node_id = nodes.parent_node_id
   WHERE
     members.user_id = $1 AND
-    members.net_id = $2
+    nets.net_id = $2
   GROUP BY
     nodes.node_id,
     nodes.parent_node_id,
     members.confirmed,
-    users_members.vote
+    members_to_members.vote
 `;
 
 export const setActiveDate = `
   UPDATE members
   SET active_date = now()
-  WHERE
-    user_id = $1 AND
-    net_id = $2
+  WHERE member_id = $1
 `;

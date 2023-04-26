@@ -25,10 +25,7 @@ export interface IQueriesMember {
   ], IMember & Pick<ITableNetsData, 'name'>>;
   getConnected: TQuery<[
     ['parent_node_id', number],
-  ], {
-    user_id: number;
-    node_id: number;
-  }>;
+  ], { user_id: number }>;
   data: IQueriesMemberData;
   invite: IQueriesMemberInvite;
   find: IQueriesMemberFind;
@@ -36,11 +33,13 @@ export interface IQueriesMember {
 
 export const remove = `
   DELETE FROM members
-  WHERE user_id = $1 AND net_id IN (
-    SELECT members.net_id
+  WHERE user_id = $1 AND member_id IN (
+    SELECT members.member_id
     FROM members
+    INNER JOIN nodes ON
+      nodes.node_id = members.member_id
     INNER JOIN nets ON
-      nets.net_id = members.net_id
+      nets.node_id = nodes.root_node_id
     WHERE ${userInNetAndItsSubnets()}
   )
 `;
@@ -52,9 +51,9 @@ export const findInTree = `
     members.user_id, members.confirmed
   FROM nodes
   LEFT JOIN members ON
-    members.node_id = nodes.node_id
+    members.member_id = nodes.node_id
   LEFT JOIN members_invites ON
-    members_invites.member_node_id = nodes.node_id
+    members_invites.node_id = nodes.node_id
   WHERE nodes.parent_node_id = $1 AND nodes.node_id = $2
 `;
 
@@ -65,9 +64,9 @@ export const findInCircle = `
     members.user_id, members.confirmed
   FROM nodes
   LEFT JOIN members ON
-    members.node_id = nodes.node_id
+    members.member_id = nodes.node_id
   LEFT JOIN members_invites ON
-    members_invites.member_node_id = nodes.node_id
+    members_invites.node_id = nodes.node_id
   WHERE
     nodes.node_id = $2 AND (
       nodes.parent_node_id = $1 OR
@@ -88,23 +87,16 @@ export const get = `
   INNER JOIN nets_data ON
     nets_data.net_id = nets.net_id
   LEFT JOIN members ON
-    members.node_id = nodes.node_id
+    members.member_id = nodes.node_id
   WHERE nodes.node_id = $1
 `;
 
 export const getConnected = `
-  SELECT
-    members.user_id
+  SELECT members.user_id
   FROM nodes
   INNER JOIN members ON
-    members.node_id = nodes.node_id
+    members.member_id = nodes.node_id
   WHERE
     nodes.parent_node_id = $1 AND
     members.confirmed = false
-`;
-
-export const changeNode = `
-  UPDATE members
-  SET node_id = $2
-  WHERE node_id = $1
 `;

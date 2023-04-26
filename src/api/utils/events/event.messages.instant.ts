@@ -47,7 +47,7 @@ export const sendInstantMessageInNet = (
     type: 'EVENT',
     event_id: 0,
     user_id: 0,
-    member_id: fromMember.node_id,
+    member_id: null,
     net_view: 'net',
     from_node_id: fromMember.node_id,
     event_type: event,

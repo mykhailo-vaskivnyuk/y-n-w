@@ -8,7 +8,7 @@ import { getMemberStatus } from '../../../client/common/server/utils';
 import { arrangeNodes } from '../../utils/utils';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
-  { session, userNet }, { node_id, member_node_id }
+  { userNet }, { node_id, member_node_id }
 ) => {
   let parentNodeId: number | null = node_id;
   let [member] = await execQuery.member
@@ -21,17 +21,16 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
   }
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'ACTIVE') return false; // bad request
-  const user_id = session.read('user_id')!;
   await execQuery.member.data
-    .setDislike([parentNodeId!, user_id, member.user_id!]);
-  await arrangeNodes([parentNodeId!]);
+    .setDislike([node_id, member_node_id]);
+  // await arrangeNodes([parentNodeId!]);
   return true;
 };
 set.paramsSchema = MemberConfirmParamsSchema;
 set.responseSchema = Joi.boolean();
 
 export const unSet: THandler<IMemberConfirmParams, boolean> = async (
-  { session, userNet }, { node_id, member_node_id }
+  { userNet }, { node_id, member_node_id }
 ) => {
   let parentNodeId: number | null = node_id;
   let [member] = await execQuery.member
@@ -44,9 +43,8 @@ export const unSet: THandler<IMemberConfirmParams, boolean> = async (
   }
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'ACTIVE') return false; // bad request
-  const user_id = session.read('user_id')!;
   await execQuery.member.data
-    .unsetDislike([parentNodeId!, user_id, member.user_id!]);
+    .unsetDislike([node_id, member_node_id]);
   return true;
 };
 unSet.paramsSchema = MemberConfirmParamsSchema;

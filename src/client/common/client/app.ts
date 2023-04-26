@@ -156,18 +156,19 @@ export class ClientApp extends EventEmitter {
   }
 
   async setEvents(events: T.IEvents) {
-    const { net } = this.getState();
+    const { net, userNetData } = this.getState();
     const { net_id } = net || {};
+    const { node_id } = userNetData || {};
     let updateUser = false;
     let updateNet = false;
     for (const event of events) {
-      const { net_id: eventNetId } = event;
-      if (!eventNetId) {
+      const { member_id: eventNodeId } = event;
+      if (!eventNodeId) {
         updateUser = true;
-        net_id && (updateNet = true);
+        node_id && (updateNet = true);
         break;
       }
-      if (eventNetId === net_id) updateNet = true;
+      if (eventNodeId === node_id) updateNet = true;
     }
     if (updateUser) await this.onNewUser(false) // ?
       .catch(console.log);

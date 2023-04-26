@@ -43,9 +43,7 @@ export const tightenNodes = async (node_id: number) => {
     changeLevel(childNodeId);
   } else {
     await execQuery.node.changeRootNode([root_node_id, childNodeId]);
-    await execQuery.net.changeNet([root_node_id, childNodeId]);
-    await execQuery.net.changeParent([root_node_id, childNodeId]);
-    await execQuery.net.changeFirstNet([root_node_id, childNodeId]);
+    await execQuery.net.changeNode([root_node_id, childNodeId]);
   }
   await execQuery.node.removeTree([node_id]);
   await execQuery.node.remove([node_id]);

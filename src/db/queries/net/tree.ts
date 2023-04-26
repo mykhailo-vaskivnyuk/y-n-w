@@ -5,7 +5,6 @@ import { IMember } from '../../types/member.types';
 
 export interface IQueriesNetTree {
   get: TQuery<[
-    ['user_id', number],
     ['node_id', number],
   ], IMemberResponse>;
   getNodes: TQuery<[
@@ -25,20 +24,21 @@ export const get = `
     members.confirmed,
     members_invites.member_name,
     members_invites.token,
-    users_members.dislike,
-    users_members.vote
+    members_to_members.dislike,
+    members_to_members.vote
   FROM nodes
   LEFT JOIN members AS members ON
-    members.node_id = nodes.node_id
-  LEFT JOIN users_members ON
-    users_members.parent_node_id = $2 AND
-    users_members.user_id = $1 AND
-    users_members.member_id = members.user_id
+    members.member_id = nodes.node_id
+  LEFT JOIN members_to_members ON
+    members_to_members.from_member_id = $1
+  LEFT JOIN nodes AS ns ON
+    ns.node_id = members_to_members.to_member_id AND
+    ns.parent_node_id = $1
   LEFT JOIN users
     ON users.user_id = members.user_id
   LEFT JOIN members_invites ON
-    members_invites.member_node_id = nodes.node_id
-  WHERE nodes.parent_node_id = $2
+    members_invites.node_id = nodes.node_id
+  WHERE nodes.parent_node_id = $1
   ORDER BY nodes.node_position
 `;
 
@@ -59,6 +59,6 @@ export const getMembers = `
   INNER JOIN nets ON
     nets.node_id = nodes.root_node_id
   INNER JOIN members ON
-    members.node_id = nodes.node_id
+    members.member_id = nodes.node_id
   WHERE nodes.parent_node_id = $1
 `;

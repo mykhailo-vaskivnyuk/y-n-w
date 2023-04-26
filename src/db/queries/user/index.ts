@@ -25,9 +25,6 @@ export interface IQueriesUser {
   remove: TQuery<[
     ['user_id', number],
   ]>;
-  // copy: TQuery<[
-  //   ['user_id', number],
-  // ], ITableUsers>;
   update: TQuery<[
     ['user_id', number],
     ['name', string | null],
@@ -77,25 +74,6 @@ export const remove = `
   DELETE FROM users
   WHERE user_id = $1
 `;
-
-// export const copy = `
-//   INSERT INTO users (
-//     email,
-//     name,
-//     mobile,
-//     password,
-//     confirmed
-//   )
-//   SELECT
-//     ('copy:' || email) as email,
-//     name,
-//     mobile,
-//     password,
-//     confirmed
-//   FROM users
-//   WHERE user_id = $1
-//   RETURNING *, user_id::int
-// `;
 
 export const update = `
   UPDATE users

@@ -47,12 +47,12 @@ export const createMessageToMember = async (
   let message = NET_MESSAGES_MAP[event].MEMBER;
   if (!message) return;
   const { name } = fromMember;
-  const { user_id, node_id, net_id } = fromMember;
+  const { user_id, node_id } = fromMember;
   const user_node_id = SET_USER_NODE_ID_FOR.includes(event) ? node_id : null;
   if (!user_node_id) message = format(message, name);
   await execQuery.net.message.create([
     user_id,
-    net_id,
+    user_node_id,
     'net',
     null,
     event,

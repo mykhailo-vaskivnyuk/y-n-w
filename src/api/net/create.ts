@@ -15,17 +15,20 @@ const create: THandler<INetCreateParams, INetResponse> = async (
 
   /* create root node */
   let [node] = await execQuery.node.createInitial([]);
-  const { node_id: net_id } = node!;
-  [node] = await execQuery.node.setRootNode([net_id]);
+  const { node_id: root_node_id } = node!;
+  [node] = await execQuery.node.setRootNode([root_node_id]);
 
   /* create net */
   let net;
   if (parentNetId) {
-    [net] = await execQuery.net.createChild([net_id, parentNetId]);
+    [net] = await execQuery.net.createChild([parentNetId, root_node_id]);
     await updateCountOfNets(parentNetId);
   } else {
-    [net] = await execQuery.net.createInitial([net_id]);
+    [net] = await execQuery.net.createInitial([root_node_id]);
+    const { net_id: root_net_id } = net!;
+    [net] = await execQuery.net.setRootNet([root_net_id]);
   }
+  const { net_id } = net!;
 
   /* create node tree */
   await createTree(node!);
@@ -33,9 +36,9 @@ const create: THandler<INetCreateParams, INetResponse> = async (
   /* create net data */
   const [netData] = await execQuery.net.createData([net_id, name]);
 
-  /* create net user data */
+  /* create first member */
   const user_id = session.read('user_id')!;
-  await execQuery.net.user.createData([net_id, user_id]);
+  await execQuery.net.user.createFirstMember([root_node_id, user_id]);
 
   return { ...net!, ...netData!, ...node! };
 };

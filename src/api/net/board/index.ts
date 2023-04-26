@@ -17,10 +17,9 @@ read.paramsSchema = NetReadParamsSchema;
 read.responseSchema = NetBoardReadResponseSchema;
 
 export const remove: THandler<IBoardRemoveParams, boolean> = async (
-  { session, userNet }, { message_id }
+  { userNet }, { node_id, message_id }
 ) => {
-  const user_id = session.read('user_id')!;
-  await execQuery.net.board.remove([message_id, user_id]);
+  await execQuery.net.board.remove([message_id, node_id]);
   createEventMessages('BOARD_MESSAGE', userNet!);
   return true;
 };

@@ -26,9 +26,9 @@ const get = `
     members.confirmed
   FROM members
   INNER JOIN nodes ON
-    nodes.node_id = members.node_id
+    nodes.node_id = members.member_id
   INNER JOIN nets ON
-    nets.net_id = members.net_id
+    nets.node_id = nodes.root_node_id
   INNER JOIN nets_data ON
     nets_data.net_id = nets.net_id
   WHERE members.user_id = $1
