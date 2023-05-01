@@ -24,13 +24,11 @@ export const NetResponseSchema = [JOI_NULL, {
   net_id: Joi.number(),
   net_level: Joi.number(),
   parent_net_id: [Joi.number(), JOI_NULL],
-  root_net_id: Joi.number(),
-  count_of_nets: Joi.number(),
   name: Joi.string(),
   goal: [Joi.string(), JOI_NULL],
   node_id: Joi.number(),
   parent_node_id: [Joi.number(), JOI_NULL],
-  count_of_members: Joi.number(),
+  total_count_of_members: Joi.number(),
 } as Record<keyof OmitNull<INetResponse>, TJoiSchema>];
 
 export const NetsResponseSchema =

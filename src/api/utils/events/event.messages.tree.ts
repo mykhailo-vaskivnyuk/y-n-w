@@ -5,18 +5,18 @@ import { commitEvents } from './event.messages.other';
 
 export const createMessagesInTree = async (
   event: NetEventKeys,
-  memberNet: IMember,
+  fromMember: IMember,
   date: string,
 ) => {
   const message = NET_MESSAGES_MAP[event]['TREE'];
   if (!message) return;
-  const { node_id: from_node_id, node_id, confirmed } = memberNet;
+  const { node_id: from_node_id, net_id, confirmed } = fromMember;
   if (!confirmed) return;
   const users = await execQuery.net.tree.getMembers([from_node_id]);
   for (const { user_id } of users) {
-    await execQuery.net.message.create([
+    await execQuery.events.create([
       user_id,
-      node_id,
+      net_id,
       'circle',
       from_node_id,
       event,

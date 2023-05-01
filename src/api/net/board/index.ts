@@ -9,18 +9,18 @@ import {
 import { createEventMessages } from '../../utils/events/event.messages.create';
 
 export const read: THandler<INetReadParams, INetBoardReadResponse> =
-  async ({ userNet }) => {
-    const { net_id } = userNet!;
-    return await execQuery.net.board.get([net_id]);
+  async ({ userNetData }) => {
+    const { net_id } = userNetData!;
+    return await execQuery.net.boardMessages.get([net_id]);
   };
 read.paramsSchema = NetReadParamsSchema;
 read.responseSchema = NetBoardReadResponseSchema;
 
 export const remove: THandler<IBoardRemoveParams, boolean> = async (
-  { userNet }, { node_id, message_id }
+  { userNetData }, { node_id, message_id }
 ) => {
-  await execQuery.net.board.remove([message_id, node_id]);
-  createEventMessages('BOARD_MESSAGE', userNet!);
+  await execQuery.net.boardMessages.remove([message_id, node_id]);
+  createEventMessages('BOARD_MESSAGE', userNetData!);
   return true;
 };
 remove.paramsSchema = BoardRemoveParamsSchema;

@@ -1,32 +1,23 @@
-/* eslint-disable max-lines */
-import { ITableNets, ITableNetsData } from '../../types/db.tables.types';
+import {
+  INetResponse, OmitNull,
+} from '../../../client/common/server/types/types';
+import { ITableNets } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
-import { IQueriesNetUser } from './user';
+import { IQueriesNetData } from './data';
 import { IQueriesNetCircle } from './circle';
 import { IQueriesNetTree } from './tree';
+import { IQueriesNetBranch } from './branch';
 import { IQueriesNetFind } from './find';
-import { IQueriesNetMessage } from './message';
-import { IQueriesNetBoard } from './board';
+import { IQueriesNetBoard } from './boardMessages';
 
 export interface IQueriesNet {
-  createInitial: TQuery<[
-    ['node_id', number],
-  ], ITableNets>;
+  createRoot: TQuery<[], ITableNets>;
   setRootNet: TQuery<[
     ['net_id', number],
   ], ITableNets>;
   createChild: TQuery<[
     ['parent_net_id', number],
-    ['node_id', number],
   ], ITableNets>;
-  createData: TQuery<[
-    ['net_id', number],
-    ['name', string],
-  ], ITableNetsData>;
-  update: TQuery<[
-    ['net_id', number],
-    ['goal', string],
-  ], ITableNetsData>;
   updateCountOfNets: TQuery<[
     ['net_id', number | null],
     ['addCount', number],
@@ -34,21 +25,20 @@ export interface IQueriesNet {
   remove: TQuery<[
     ['net_id', number],
   ]>;
-  changeNode: TQuery<[
-    ['node_id', number],
-    ['new_node_id', number],
-  ], ITableNets>;
-  user: IQueriesNetUser;
+  get: TQuery<[
+    ['net_id', number],
+  ], OmitNull<INetResponse>>
+  data: IQueriesNetData;
   circle: IQueriesNetCircle;
   tree: IQueriesNetTree;
+  branch: IQueriesNetBranch;
   find: IQueriesNetFind;
-  message: IQueriesNetMessage;
-  board: IQueriesNetBoard;
+  boardMessages: IQueriesNetBoard;
 }
 
-export const createInitial = `
-  INSERT INTO nets (node_id)
-  VALUES ($1)
+export const createRoot = `
+  INSERT INTO nets *
+  VALUES (DEFAULT)
   RETURNING *
 `;
 
@@ -61,33 +51,12 @@ export const setRootNet = `
 
 export const createChild = `
   INSERT INTO nets (
-    node_id,
-    net_level,
-    parent_net_id,
-    root_net_id
+    parent_net_id, root_net_id, net_level
   )
-  SELECT
-    $2,
-    net_level + 1,
-    $1,
-    root_net_id
-  FROM nets
-  WHERE net_id = $1
+    SELECT $1, root_net_id, net_level + 1
+    FROM nets
+    WHERE net_id = $1
   RETURNING *
-`;
-
-export const createData = `
-  INSERT INTO nets_data (
-    net_id, name
-  )
-  VALUES ($1, $2)
-  RETURNING *
-`;
-
-export const update = `
-  UPDATE nets_data
-  SET goal = $2
-  WHERE net_id = $1
 `;
 
 export const updateCountOfNets = `
@@ -102,8 +71,25 @@ export const remove = `
   WHERE net_id = $1
 `;
 
-export const changeNode = `
-  UPDATE nets
-  SET node_id = $2
-  WHERE node_id = $1
+export const get = `
+  SELECT
+    nodes.node_id::int,
+    nodes.parent_node_id::int,
+    nets.net_id,
+    nets.net_level,
+    nets.parent_net_id,
+    nets_data.name,
+    nets_data.goal,
+    root_node.count_of_members AS total_count_of_members
+  FROM members
+  INNER JOIN nodes ON
+    nodes.node_id = members.member_id
+  INNER JOIN nets ON
+    nets.net_id = nodes.net_id
+  INNER JOIN nets_data ON
+    nets_data.net_id = nets.net_id
+  INNER JOIN nodes AS root_node ON
+    root_node.net_id = nets.net_id AND
+    root_node.parent_node_id ISNULL
+  WHERE nodes.net_id = $1
 `;

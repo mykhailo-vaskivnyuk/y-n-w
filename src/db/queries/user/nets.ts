@@ -1,7 +1,7 @@
 import {
   ITableNets, ITableNetsData, ITableMembers, ITableNodes,
-} from '../../../types/db.tables.types';
-import { TQuery } from '../../../types/types';
+} from '../../types/db.tables.types';
+import { TQuery } from '../../types/types';
 
 export interface IQueriesUserNets {
   get: TQuery<[
@@ -14,7 +14,7 @@ export interface IQueriesUserNets {
   >;
 }
 
-const get = `
+export const get = `
   SELECT
     nets.*,
     nodes.*,
@@ -34,5 +34,3 @@ const get = `
   WHERE members.user_id = $1
   ORDER BY nets.net_level
 `;
-
-export default get;

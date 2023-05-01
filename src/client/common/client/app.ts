@@ -162,13 +162,13 @@ export class ClientApp extends EventEmitter {
     let updateUser = false;
     let updateNet = false;
     for (const event of events) {
-      const { member_id: eventNodeId } = event;
-      if (!eventNodeId) {
+      const { net_id: eventNetId } = event;
+      if (!eventNetId) {
         updateUser = true;
         node_id && (updateNet = true);
         break;
       }
-      if (eventNodeId === node_id) updateNet = true;
+      if (eventNetId === net_id) updateNet = true;
     }
     if (updateUser) await this.onNewUser(false) // ?
       .catch(console.log);

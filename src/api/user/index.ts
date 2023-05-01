@@ -7,11 +7,21 @@ import {
 } from '../schema/account.schema';
 import { createHash } from '../../utils/crypto';
 
-const update: THandler<IUserUpdateParams, IUserResponse> =
+export const read: THandler<never, IUserResponse> = async ({ session }) => {
+  const user_id = session.read('user_id');
+  const user_status = session.read('user_status')!;
+  if (!user_id) return null;
+  const [user] = await execQuery.user.get([user_id]);
+  return { ...user!, user_status };
+};
+read.responseSchema = UserResponseSchema;
+read.allowedForUser = 'NOT_LOGGEDIN';
+
+export const update: THandler<IUserUpdateParams, IUserResponse> =
   async ({ session }, data) => {
     const user_id = session.read('user_id')!;
     const user_status = session.read('user_status')!;
-    let [user] = await execQuery.user.getById([user_id]);
+    let [user] = await execQuery.user.get([user_id]);
     const newUserData = [
       data.name || null,
       data.mobile || null,
@@ -24,5 +34,3 @@ const update: THandler<IUserUpdateParams, IUserResponse> =
   };
 update.paramsSchema = UserUpdateParamsSchema;
 update.responseSchema = UserResponseSchema;
-
-export = { update };

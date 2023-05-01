@@ -77,7 +77,7 @@ export type THandlerSchema = THandler['responseSchema' | 'paramsSchema'];
 export type IContext = {
   session: Session<ISessionContent>;
   origin: string;
-  userNet?: IUserNetData;
+  userNetData?: IUserNetData;
   userNetStatus?: UserStatusKeys;
   connectionId?: number;
   isAdmin?: boolean;

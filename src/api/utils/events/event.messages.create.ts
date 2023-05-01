@@ -1,4 +1,3 @@
-import { ITableNetsData } from '../../../db/types/db.tables.types';
 import { IMember } from '../../../db/types/member.types';
 import { NetEventKeys } from '../../../client/common/server/types/types';
 import { createMessagesInTree } from './event.messages.tree';
@@ -11,13 +10,14 @@ import { createMessageToMember } from './event.messages.other';
  * removeNetUser
  * api.net.board.save
  * api.net.board.remove
+ * api.net.board.clear
  * api.member.data.vote.set
  * api.member.data.vote.unset
  */
 
 export const createEventMessages = async (
   event: NetEventKeys,
-  fromMember: IMember & Pick<ITableNetsData, 'name'>,
+  fromMember: IMember,
   eventDate?: string,
 ) => {
   const date = eventDate || new Date().toUTCString();

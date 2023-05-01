@@ -18,8 +18,8 @@ read.responseSchema = EventsSchema;
 export const confirm: THandler<{ event_id: number }, boolean> =
   async ({ session }, { event_id }) => {
     const user_id = session.read('user_id')!;
-    await execQuery.events
-      .confirm([user_id, event_id]);
+    await execQuery
+      .events.confirm([user_id, event_id]);
     return true;
   };
 confirm.paramsSchema = {

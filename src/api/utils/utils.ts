@@ -1,32 +1,31 @@
-import { checkDislikes, updateCountOfNets } from './net.utils';
+import { checkDislikes } from './dislike.utils';
+import { updateCountOfNets } from './net.utils';
 import { checkVotes } from './vote.utils';
 
-const changeLevel = async (parentNodeId: number) => {
+const changeLevelFromNode = async (parentNodeId: number) => {
   for (let node_position = 0; node_position < 6; node_position++) {
     const [node] = await execQuery
-      .node.getByParent([parentNodeId, node_position]);
+      .node.getChild([parentNodeId, node_position]);
     const { node_id, count_of_members } = node!;
-    if (count_of_members) await changeLevel(node_id);
     await execQuery.node.changeLevel([node_id]);
+    if (count_of_members) await changeLevelFromNode(node_id);
   }
 };
 
 export const tightenNodes = async (node_id: number) => {
-  const [node] = await execQuery.node.get([node_id]);
+  const [node] = await execQuery.node.getIfEmpty([node_id]);
   if (!node) return false;
   const {
-    user_id,
     node_level,
     parent_node_id,
-    root_node_id,
+    net_id,
     node_position,
     count_of_members,
   } = node;
-  if (user_id) return false;
   if (!count_of_members) {
     if (parent_node_id) return true;
-    await updateCountOfNets(root_node_id, -1);
-    // await execQuery.net.remove([node_id]);
+    await updateCountOfNets(net_id, -1);
+    await execQuery.net.remove([net_id]);
     return true;
   }
   const [nodeWithMaxCount] = await execQuery.net.tree
@@ -40,12 +39,11 @@ export const tightenNodes = async (node_id: number) => {
     childNodeId, node_level, parent_node_id, node_position, count_of_members
   ]);
   if (parent_node_id) {
-    changeLevel(childNodeId);
+    changeLevelFromNode(childNodeId);
   } else {
-    await execQuery.node.changeRootNode([root_node_id, childNodeId]);
-    await execQuery.net.changeNode([root_node_id, childNodeId]);
+    await execQuery.node.changeLevelAll([net_id]);
   }
-  await execQuery.node.removeTree([node_id]);
+  await execQuery.node.tree.remove([node_id]);
   await execQuery.node.remove([node_id]);
   return true;
 };

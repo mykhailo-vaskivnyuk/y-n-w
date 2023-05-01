@@ -9,39 +9,38 @@ import { checkVotes } from '../../utils/vote.utils';
 import { createEventMessages } from '../../utils/events/event.messages.create';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
-  { session, userNet }, { member_node_id }
+  { session, userNetData }, { member_node_id }
 ) => {
-  const { node_id, parent_node_id } = userNet!;
+  const { node_id, parent_node_id } = userNetData!;
   if (!parent_node_id) return false; // bad request
   const [member] = await execQuery.member
-    .findInCircle([parent_node_id, member_node_id]);
+    .find.inCircle([parent_node_id, member_node_id]);
   if (!member) return false; // bad request
   if (parent_node_id === member_node_id) return false; // bad request
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'ACTIVE') return false; // bad request
-  const user_id = session.read('user_id')!;
-  await execQuery.member.data.unsetVote([parent_node_id, user_id]);
+  await execQuery.member.data.unsetVote([node_id, member_node_id]);
   await execQuery.member.data
-    .setVote([node_id, member_node_id]);
+    .setVote([parent_node_id, node_id, member_node_id]);
   const result = await checkVotes(parent_node_id);
-  !result && createEventMessages('VOTE', userNet!);
+  !result && createEventMessages('VOTE', userNetData!);
   return true;
 };
 set.paramsSchema = MemberConfirmParamsSchema;
 set.responseSchema = Joi.boolean();
 
 export const unSet: THandler<IMemberConfirmParams, boolean> = async (
-  { userNet }, { member_node_id }
+  { userNetData }, { member_node_id }
 ) => {
-  const { node_id, parent_node_id } = userNet!;
+  const { node_id, parent_node_id } = userNetData!;
   if (!parent_node_id) return false; // bad request
   const [member] = await execQuery.member
-    .findInCircle([parent_node_id, member_node_id]);
+    .find.inCircle([parent_node_id, member_node_id]);
   if (!member) return false; // bad request
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'ACTIVE') return false; // bad request
   await execQuery.member.data.unsetVote([node_id, member_node_id]);
-  createEventMessages('VOTE', userNet!);
+  createEventMessages('VOTE', userNetData!);
   return true;
 };
 unSet.paramsSchema = MemberConfirmParamsSchema;

@@ -14,22 +14,19 @@ export const TABLES_MAP = {
   SESSIONS: 'sessions',
 };
 
-export type OuterJoin<T> =
-  | { [key in keyof T]: T[key] }
-  | { [key in keyof T]: null };
+export type OuterJoin<T> = { [key in keyof T]: T[key] | null }
 
 export type ITableNodes = {
   node_id: number;
   node_level: number;
   parent_node_id: number | null;
-  root_node_id: number;  // | null
+  net_id: number;
   node_position: number;
   count_of_members: number;
   updated: string;
 }
 
 export type ITableNets = {
-  node_id: number;
   net_id: number;
   net_level: number;
   parent_net_id: number | null;
@@ -73,7 +70,7 @@ export type ITableMembersInvites = {
 export type ITableEvents = {
   event_id: number;
   user_id: number;
-  member_id: number | null;
+  net_id: number | null;
   net_view: 'net' | 'tree' | 'circle' | null; /* NetViewKeys */
   from_node_id: number | null;
   event_type: string; /* NetEventKeys */
@@ -101,6 +98,7 @@ export type ITableUsersTokens = {
 }
 
 export type ITableMembersToMembers = {
+  branch_id: number;
   from_member_id: number;
   to_member_id: number;
   dislike: boolean;

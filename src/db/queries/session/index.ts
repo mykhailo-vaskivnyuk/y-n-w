@@ -34,7 +34,7 @@ export const create = `
 
 export const update = `
   UPDATE sessions
-  SET session_value = $2, updated = now()
+  SET session_value = $2, updated = now() at time zone 'UTC'
   WHERE session_key = $1
 `;
 

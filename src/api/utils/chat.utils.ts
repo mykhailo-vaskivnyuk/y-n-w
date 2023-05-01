@@ -4,10 +4,10 @@ import {
 import { IUserNetData } from '../../db/types/member.types';
 
 export const chatIdVerified = (
-  userNet: IUserNetData,
+  userNetData: Pick<IUserNetData, 'net_id' | 'node_id' | 'parent_node_id'>,
   messageData: IChatSendMessage | IChatGetMessages,
 ) => {
-  const { net_id, node_id, parent_node_id } = userNet!;
+  const { net_id, node_id, parent_node_id } = userNetData!;
   const { chatId } = messageData;
   const { net_id: netId, node_id: nodeId } =
     chatService.getUserNetNode(chatId) || {};

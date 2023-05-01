@@ -7,13 +7,13 @@ import { getMemberStatus } from '../../../client/common/server/utils';
 import { createUnicCode } from '../../../utils/crypto';
 
 const create: THandler<IMemberInviteParams, string | null> = async (
-  { userNet }, { node_id, member_node_id, member_name },
+  { userNetData }, { node_id, member_node_id, member_name },
 ) => {
-  const { goal } = userNet!;
+  const { goal } = userNetData!;
   if (!goal) return null; // bad request
 
   const [member] = await execQuery.member
-    .findInTree([node_id, member_node_id]);
+    .find.inTree([node_id, member_node_id]);
   if (!member) return null; // bad request
 
   const memberStatus = getMemberStatus(member);

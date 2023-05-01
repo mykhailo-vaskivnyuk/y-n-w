@@ -1,12 +1,13 @@
 /* eslint-disable max-lines */
 import * as T from '../../client/common/server/types/types';
-import { IMember } from '../../db/types/member.types';
 import { IChatIdMapValue } from './types';
+import { IMemberAndNet } from '../../db/types/member.types';
 import {
   MAX_CHAT_INDEX,
   MAX_CHAT_MESSAGE_COUNT,
   MAX_CHAT_MESSAGE_INDEX,
 } from '../../constants/constants';
+
 
 export class ChatService {
   private messages = new Map<number, T.IChatMessage[]>();
@@ -42,12 +43,12 @@ export class ChatService {
   }
 
   getChatIdsOfNet(
-    userNet: IMember, connectionId?: number,
+    net: IMemberAndNet, connectionId?: number,
   ) {
-    const { net_id } = userNet;
+    const { net_id } = net;
     const netChatIds: T.IChatConnectAll[number] = { net_id };
     for (const netView of T.NET_VIEW_MAP) {
-      const chatId = this.getChatIdMap[netView](userNet);
+      const chatId = this.getChatIdMap[netView](net);
       if (!chatId) continue;
       netChatIds[netView] = chatId;
       connectionId && this.addChatAndConnection(chatId, connectionId);
@@ -55,7 +56,7 @@ export class ChatService {
     return netChatIds;
   }
 
-  private getNetChatId({ net_id }: IMember) {
+  private getNetChatId({ net_id }: IMemberAndNet) {
     let chatId = this.netChatIds.get(net_id);
     if (chatId) return chatId;
     chatId = this.genChatId();
@@ -74,11 +75,11 @@ export class ChatService {
     return chatId;
   }
 
-  private getTreeChatId({ node_id }: IMember) {
+  private getTreeChatId({ node_id }: IMemberAndNet) {
     return this.getNodeChatId(node_id);
   }
 
-  private getCircleChatId({ parent_node_id }: IMember) {
+  private getCircleChatId({ parent_node_id }: IMemberAndNet) {
     return this.getNodeChatId(parent_node_id);
   }
 

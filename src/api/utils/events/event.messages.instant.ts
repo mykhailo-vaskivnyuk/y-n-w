@@ -1,5 +1,4 @@
-/* eslint-disable max-lines */
-import { IMember } from '../../../db/types/member.types';
+import { IMemberAndNet } from '../../../db/types/member.types';
 import { NetEventKeys } from '../../../client/common/server/types/types';
 import {
   IEventMessage, NetViewKeys,
@@ -11,7 +10,7 @@ import {
 export const sendInstantMessage = (
   event: NetEventKeys,
   user_id: number,
-  member_id: number,
+  net_id: number,
   net_view: NetViewKeys,
 ) => {
   // change logic as in createMessagesInNet
@@ -22,7 +21,7 @@ export const sendInstantMessage = (
     type: 'EVENT',
     event_id: 0,
     user_id,
-    member_id,
+    net_id,
     net_view,
     from_node_id: null,
     event_type: event,
@@ -33,7 +32,9 @@ export const sendInstantMessage = (
 };
 
 export const sendInstantMessageInNet = (
-  event: NetEventKeys, fromMember: IMember, message: string,
+  event: NetEventKeys,
+  fromMember: IMemberAndNet,
+  message: string,
 ) => {
   const { net: chatId } = chatService.getChatIdsOfNet(fromMember);
   if (!chatId) return;
@@ -47,7 +48,7 @@ export const sendInstantMessageInNet = (
     type: 'EVENT',
     event_id: 0,
     user_id: 0,
-    member_id: null,
+    net_id: fromMember.net_id,
     net_view: 'net',
     from_node_id: fromMember.node_id,
     event_type: event,
@@ -59,13 +60,9 @@ export const sendInstantMessageInNet = (
   connectionService.sendMessage(response, netConnectionIds);
 };
 
-/**
- * createEventMessages
- * api.net.board.clear
- */
 export const createInstantMessageInNet = (
   event: NetEventKeys,
-  fromMember: IMember,
+  fromMember: IMemberAndNet,
 ) => {
   const message = NET_MESSAGES_MAP[event]['NET'];
   if (message === undefined) return;

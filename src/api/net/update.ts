@@ -5,12 +5,12 @@ import {
 import { NetResponseSchema, NetUpdateParamsSchema } from '../schema/schema';
 
 const update: THandler<INetUpdateParams, INetResponse> =
-  async ({ session, userNet }, { goal }) => {
-    const { net_id, count_of_members } = userNet!;
+  async ({ userNetData }, { goal }) => {
+    const { net_id, parent_node_id, count_of_members } = userNetData!;
+    if (parent_node_id !== null) return null; // bad request
     if (count_of_members > 1) return null; // bad request
-    await execQuery.net.update([net_id, goal]);
-    const user_id = session.read('user_id');
-    const [net] = await execQuery.user.net.read([user_id!, net_id]);
+    await execQuery.net.data.update([net_id, goal]);
+    const [net] = await execQuery.net.get([net_id]);
     return net!;
   };
 update.paramsSchema = NetUpdateParamsSchema;

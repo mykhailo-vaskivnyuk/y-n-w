@@ -13,9 +13,6 @@ export interface IQueriesMemberInvite {
   removeAll: TQuery<[
     ['member_id', number],
   ]>;
-  confirm: TQuery<[
-    ['member_id', number],
-  ]>;
 }
 
 export const create = `
@@ -32,11 +29,5 @@ export const remove = `
 
 export const removeAll = `
   DELETE FROM members_invites
-  WHERE member_id = $1
-`;
-
-export const confirm = `
-  UPDATE members
-  SET confirmed = true
   WHERE member_id = $1
 `;

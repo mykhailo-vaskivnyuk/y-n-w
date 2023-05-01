@@ -2,26 +2,21 @@ Table "nodes" {
   "node_id" bigint [primary key, not null]
   "node_level" integer [not null, default: 0]
   "parent_node_id" bigint [default: NULL]
-  "root_node_id" bigint [default: NULL]
+  "net_id" bigint [not null]
   "node_position" integer [not null, default: 0]
   "count_of_members" integer [not null, default: 0]
   "updated" timestamp [not null, default: 'now()']
   Indexes {
-    (node_id, root_node_id) [unique, name: "uk_nodes_node_root"]
     parent_node_id [name: "sk_nodes_parent_node"]
   }
 }
 
 Table "nets" {
-  "node_id" bigint [not null]
   "net_id" bigint [primary key, not null]
   "net_level" integer [not null, default: 0]
   "parent_net_id" bigint [default: NULL]
   "root_net_id" bigint [default: NULL]
   "count_of_nets" integer [not null, default: 1]
-  Indexes {
-    node_id [unique, name: "uk_nets_node"]
-  }
 }
 
 Table "users" {
@@ -79,7 +74,7 @@ Table "events" {
   "event_id" bigint [primary key, not null]
   "from_node_id" bigint [default: NULL]
   "user_id" bigint [not null]
-  "member_id" bigint [default: NULL]
+  "net_id" bigint [default: NULL]
   "net_view" "character(10)" [default: NULL]
   "event_type" "character(20)" [not null]
   "message" "character varying(255)" [not null]
@@ -107,12 +102,14 @@ Table "users_events" {
 }
 
 Table "members_to_members" {
+  "branch_id" bigint [not null]
   "from_member_id" bigint [not null]
   "to_member_id" bigint [not null]
   "dislike" boolean [not null, default: false]
   "vote" boolean [not null, default: false]
   Indexes {
     (from_member_id, to_member_id) [pk]
+    branch_id [name: "sk_members_to_members_branch"]
   }
 }
 
@@ -124,18 +121,19 @@ Table "sessions" {
   "updated" timestamp [not null, default: 'now()']
 }
 
-Ref "fk_nets_node":"nodes"."node_id" - "nets"."node_id" [delete: cascade]
+Ref "fk_nodes_net":"nets"."net_id" < "nodes"."net_id"
 Ref "fk_nets_data_net":"nets"."net_id" - "nets_data"."net_id" [delete: cascade]
 Ref "fk_members_node":"nodes"."node_id" - "members"."member_id"
 Ref "fk_members_user":"users"."user_id" < "members"."user_id" [delete: cascade] // ON DELETE ?
 Ref "fk_members_invites_member":"members"."member_id" < "members_invites"."member_id" [delete: cascade]
 Ref "fk_members_invites_node":"nodes"."node_id" - "members_invites"."node_id"
 Ref "fk_users_tokens_user":"users"."user_id" < "users_tokens"."user_id" [delete: cascade]
+Ref "fk_members_to_members_branch_node":"nodes"."node_id" < "members_to_members"."branch_id"
 Ref "fk_members_to_members_from_member":"members"."member_id" < "members_to_members"."from_member_id" [delete: cascade]
 Ref "fk_members_to_members_to_member":"members"."member_id" < "members_to_members"."to_member_id" [delete: cascade]
 Ref "fk_sessions_user":"users"."user_id" < "sessions"."user_id" [delete: cascade]
 Ref "fk_events_user": "users"."user_id" < "events"."user_id" [delete: cascade]
-Ref "fk_events_member": "members"."member_id" < "events"."member_id" [delete: cascade]
+Ref "fk_events_net": "nets"."net_id" < "events"."net_id"
 Ref "fk_events_from_node": "nodes"."node_id" < "events"."from_node_id" [delete: cascade] // ON DELETE ?
 Ref "fk_users_events_user": "users"."user_id" - "users_events"."user_id" [delete: cascade]
 Ref "fk_board_messages_member":"members"."member_id" - "board_messages"."member_id" [delete: cascade]

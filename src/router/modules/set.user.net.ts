@@ -17,7 +17,7 @@ const setUserNet: TInputModule = () =>
     const allowedForNetUser = handler.allowedForNetUser || 'INSIDE_NET';
     if (USER_STATUS_MAP[userNetStatus] < USER_STATUS_MAP[allowedForNetUser])
       throw new HandlerError('FORBIDDEN');
-    context.userNet = userNet;
+    context.userNetData = userNet;
     context.userNetStatus = userNetStatus;
     return operation;
   };

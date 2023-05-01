@@ -5,14 +5,14 @@ import { BoardSaveParamsSchema } from '../../schema/schema';
 import { createEventMessages } from '../../utils/events/event.messages.create';
 
 const save: THandler<IBoardSaveParams, boolean> = async (
-  { userNet }, { node_id, message_id, message }
+  { userNetData }, { node_id, message_id, message }
 ) => {
-  const { net_id } = userNet!;
+  const { net_id } = userNetData!;
   if (message_id)
-    await execQuery.net.board.update([message_id, node_id, message]);
+    await execQuery.net.boardMessages.update([message_id, node_id, message]);
   else
-    await execQuery.net.board.create([net_id, node_id, message]);
-  createEventMessages('BOARD_MESSAGE', userNet!);
+    await execQuery.net.boardMessages.create([net_id, node_id, message]);
+  createEventMessages('BOARD_MESSAGE', userNetData!);
   return true;
 };
 save.paramsSchema = BoardSaveParamsSchema;

@@ -1,9 +1,10 @@
 /* eslint-disable max-lines */
 import { removeConnected } from './net.utils';
 import { createEventMessages } from './events/event.messages.create';
+import { IMember } from '../../db/types/member.types';
 
 export const checkVotes = async (parent_node_id: number) => {
-  const members = await execQuery.net.circle.getVotes([parent_node_id]);
+  const members = await execQuery.net.branch.getVotes([parent_node_id]);
   const count = members.length;
   if (!count) return null;
   const [memberWithMaxVotes] = members;
@@ -21,7 +22,7 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
   await execQuery.member.invite.removeAll([node_id]);
   await execQuery.member.invite.removeAll([parent_node_id]);
 
-  const [member] = await execQuery.member.get([node_id]);
+  const [member] = await execQuery.member.get([node_id]) as IMember[];
   const {
     user_id,
     node_level,
@@ -31,9 +32,10 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
   } = member!;
   await removeConnected('LEAVE_VOTE', member!, date);
   await execQuery.member.data.removeFromTree([node_id]);
-  await execQuery.events.removeFromTree([user_id, net_id]);
+  await execQuery.events.removeFromTree([user_id!, net_id]);
 
-  const [parent_member] = await execQuery.member.get([parent_node_id]);
+  const [parent_member] = await execQuery
+    .member.get([parent_node_id]) as IMember[];
   const {
     user_id: parentUserId,
     node_level: parentNodeLevel,
@@ -44,10 +46,10 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
 
   if (parentUserId) {
     await removeConnected('LEAVE_DISVOTE', parent_member!, date);
-    await execQuery.member.data
-      .removeFromCircle([parentUserId!, parent_node_id]);
-    await execQuery.events
-      .removeFromCircle([parentUserId!, net_id]);
+    await execQuery.member
+      .data.removeFromCircle([parentUserId!, parent_node_id]);
+    await execQuery
+      .events.removeFromCircle([parentUserId!, net_id]);
   }
 
   await execQuery.node.move([
@@ -70,11 +72,13 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
     newCountOfMembers,
   ]);
 
-  await execQuery.node.changeTree([parent_node_id, node_id]);
-  if (!newCountOfMembers) await execQuery.node.removeTree([parent_node_id]);
+  await execQuery.node.tree.replace([parent_node_id, node_id]);
+  if (!newCountOfMembers) await execQuery.node.tree.remove([parent_node_id]);
 
   createEventMessages('LEAVE_VOTE', member!, date);
-  parentUserId && createEventMessages('LEAVE_DISVOTE', parent_member!, date);
+  parentUserId && createEventMessages(
+    'LEAVE_DISVOTE', parent_member!, date,
+  );
 
   const voteMemeber = {
     ...member!,

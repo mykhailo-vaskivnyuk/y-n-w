@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
 import { ITableUsers } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
-import { IQueriesUserNet } from './net';
-import { IQueriesUserNets } from './nets/get';
+import { IQueriesUserNetData } from './netData';
+import { IQueriesUserNets } from './nets';
 import { IQueriesUserToken } from './token';
 import { IQueriesUserEvents } from './events';
 
 export interface IQueriesUser {
-  getById: TQuery<[
+  get: TQuery<[
     ['user_id', number],
   ], ITableUsers>;
   findByEmail: TQuery<[
@@ -31,13 +31,13 @@ export interface IQueriesUser {
     ['mobile', string | null],
     ['password', string | null],
   ], ITableUsers>;
-  net: IQueriesUserNet;
+  netData: IQueriesUserNetData;
   nets: IQueriesUserNets;
   token: IQueriesUserToken;
   events: IQueriesUserEvents;
 }
 
-export const getById = `
+export const get = `
   SELECT * FROM users
   WHERE user_id = $1;
 `;
@@ -77,7 +77,10 @@ export const remove = `
 
 export const update = `
   UPDATE users
-  SET name = $2, mobile = $3, password = $4
+  SET
+    name = $2,
+    mobile = $3,
+    password = $4
   WHERE user_id = $1
   RETURNING *
 `;

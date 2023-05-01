@@ -1,8 +1,3 @@
-import {
-  ITableMembers, ITableNodes,
-  ITableMembersToMembers, OuterJoin,
-} from '../../../local/imports';
-
 export const USER_STATUS_MAP = {
   'NOT_LOGGEDIN': 0,
   'NOT_CONFIRMED': 1,
@@ -19,9 +14,3 @@ export type PartialUserNetStatusKeys = Extract<UserStatusKeys,
   'INVITING'
 >;
 export const loggedInState = USER_STATUS_MAP.LOGGEDIN;
-
-export type IUserNetDataResponse =
-  Pick<ITableNodes, 'node_id' | 'parent_node_id'> &
-  Pick<ITableMembers, 'confirmed'> &
-  OuterJoin<Pick<ITableMembersToMembers, 'vote'>> &
-  { vote_count: number };

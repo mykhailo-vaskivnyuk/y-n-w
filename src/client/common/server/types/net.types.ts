@@ -1,5 +1,6 @@
 import {
-  ITableNets, ITableNetsData, ITableNodes
+  ITableMembers, ITableMembersToMembers,
+  ITableNets, ITableNetsData, ITableNodes, OuterJoin,
 } from '../../../local/imports';
 import { IMemberResponse } from './member.types';
 
@@ -17,9 +18,11 @@ export type INetUpdateParams  = {
 };
 
 export type INetResponse = null | (
-  ITableNets &
+  Pick<ITableNets, 'net_id' | 'parent_net_id' | 'net_level'> &
   Pick<ITableNetsData, 'name' | 'goal'> &
-  Pick<ITableNodes, 'node_id' | 'parent_node_id' | 'count_of_members'>
+  Pick<ITableNodes, 'node_id' | 'parent_node_id'> & {
+    total_count_of_members: number;
+  }
 );
 
 export type INetsResponse = (
@@ -31,3 +34,9 @@ export type INetViewResponse = IMemberResponse[];
 export const NET_VIEW_MAP = ['net', 'tree', 'circle'] as const;
 export type NetViewKeys = typeof NET_VIEW_MAP[number];
 export type NetViewEnum = Exclude<NetViewKeys, 'net'>;
+
+export type IUserNetDataResponse =
+  Pick<ITableNodes, 'node_id' | 'parent_node_id' | 'count_of_members'> &
+  Pick<ITableMembers, 'confirmed'> &
+  OuterJoin<Pick<ITableMembersToMembers, 'vote'>> &
+  { vote_count: number };

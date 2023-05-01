@@ -1,4 +1,4 @@
-import { TQuery } from '../../../types/types';
+import { TQuery } from '../../types/types';
 
 export interface IQueriesUserToken {
   create: TQuery<[

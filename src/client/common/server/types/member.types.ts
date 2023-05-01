@@ -13,10 +13,8 @@ export type IMemberConfirmParams = Omit<IMemberInviteParams, 'member_name'>;
 
 export type IMemberResponse =
   Pick<ITableNodes, 'node_id' | 'count_of_members'> &
-  OuterJoin<Pick<ITableUsers, 'user_id' | 'name'>> &
-  OuterJoin<Pick<ITableMembers, 'confirmed'>> &
+  OuterJoin<Pick<ITableMembers, 'user_id'| 'confirmed'>> &
+  OuterJoin<Pick<ITableUsers, 'name'>> &
   OuterJoin<Pick<ITableMembersInvites, 'token' | 'member_name'>> &
-  OuterJoin<
-    Omit<ITableMembersToMembers, 'parent_node_id' | 'user_id' | 'member_id'>
-  > &
+  OuterJoin<Pick<ITableMembersToMembers, 'dislike' | 'vote'>> &
   { vote_count: number };

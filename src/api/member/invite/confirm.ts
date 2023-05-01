@@ -11,12 +11,12 @@ const confirm: THandler<IMemberConfirmParams, boolean> = async (
   _, { node_id, member_node_id }
 ) => {
   const [member] = await execQuery.member
-    .findInTree([node_id, member_node_id]);
+    .find.inTree([node_id, member_node_id]);
   if (!member) return false; // bad request
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'CONNECTED') return false; // bad request
   await execQuery.member.invite.remove([member_node_id]);
-  await execQuery.member.invite.confirm([member_node_id]);
+  await execQuery.member.confirm([member_node_id]);
   await updateCountOfMembers(member_node_id);
   await createTree(member);
   return true;

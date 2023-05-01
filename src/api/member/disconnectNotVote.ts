@@ -13,7 +13,7 @@ const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
     const strDate = date.toUTCString();
     let parentNode: ITableNodes & { net_id: number } | undefined;
     do {
-      [parentNode] = await execQuery.node.find([strDate]);
+      [parentNode] = await execQuery.node.findFreeByDate([strDate]);
       if (!parentNode) return true;
       const { node_id, net_id } = parentNode;
       const members = await execQuery.net.tree.getMembers([node_id]);

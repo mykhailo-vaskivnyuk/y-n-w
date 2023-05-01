@@ -1,7 +1,5 @@
 import { NetEventKeys } from '../../../client/common/server/types/types';
-import {
-  IMember, IMemberWithNet
-} from '../../../db/types/member.types';
+import { IMember } from '../../../db/types/member.types';
 import {
   NET_MESSAGES_MAP, INSTANT_EVENTS,
 } from '../../../constants/constants';
@@ -11,16 +9,16 @@ import { commitEvents } from './event.messages.other';
 const createMessageToFacilitator = async (
   event: NetEventKeys,
   user: IMember,
-  fromMember: IMemberWithNet,
+  fromMember: IMember,
   date: string,
 ) => {
   const message = NET_MESSAGES_MAP[event]['FACILITATOR'];
   if (!message) return;
   const { user_id } = user;
-  const { node_id: from_node_id, node_id } = fromMember;
-  await execQuery.net.message.create([
+  const { node_id: from_node_id, net_id } = fromMember;
+  await execQuery.events.create([
     user_id,
-    node_id,
+    net_id,
     'tree',
     from_node_id,
     event,
@@ -33,18 +31,18 @@ const createMessageToFacilitator = async (
 const cretaeMessagesToCircleMember = async (
   event: NetEventKeys,
   user: IMember,
-  fromMember: IMemberWithNet,
+  fromMember: IMember,
   date: string,
 ) => {
   const message = NET_MESSAGES_MAP[event]['CIRCLE'];
   if (!message) return;
   const { user_id, node_id } = user;
-  const { node_id: from_node_id } = fromMember;
+  const { node_id: from_node_id, net_id } = fromMember;
   if (INSTANT_EVENTS.includes(event))
     return sendInstantMessage(event, user_id, node_id, 'circle');
-  await execQuery.net.message.create([
+  await execQuery.events.create([
     user_id,
-    node_id,
+    net_id,
     'circle',
     from_node_id,
     event,
@@ -56,7 +54,7 @@ const cretaeMessagesToCircleMember = async (
 
 export const createMessagesInCircle = async (
   event: NetEventKeys,
-  fromMember: IMemberWithNet,
+  fromMember: IMember,
   date: string,
 ) => {
   const {

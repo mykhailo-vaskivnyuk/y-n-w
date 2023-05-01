@@ -1,6 +1,7 @@
 /* eslint-disable import/no-cycle */
 import { ITableEvents } from '../../../local/imports';
 import { MessageTypeKeys } from './messages.types';
+import { NetViewKeys } from './net.types';
 
 export const NET_EVENT_MAP = {
   LEAVE: 'leave',
@@ -19,8 +20,10 @@ export const NET_EVENT_MAP = {
 export type NetEventKeys = keyof typeof NET_EVENT_MAP;
 
 export type IEvent =
-  Omit<ITableEvents, 'event_type'> &
-  { event_type: NetEventKeys };
+  Omit<ITableEvents, 'net_view' | 'event_type'> & {
+    net_view: NetViewKeys;
+    event_type: NetEventKeys;
+  };
 export type IEvents = IEvent[];
 
 export type IEventMessage = {

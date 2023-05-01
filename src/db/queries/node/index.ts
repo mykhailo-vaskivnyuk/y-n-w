@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
-import { ITableMembers, ITableNodes } from '../../types/db.tables.types';
+import { ITableNodes } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
+import { IQueriesNodeTree } from './tree';
 
 export interface IQueriesNode {
-  createInitial: TQuery<[], ITableNodes>;
-  setRootNode: TQuery<[
-    ['root_node_id', number],
+  create: TQuery<[
+    ['net_id', number],
   ], ITableNodes>;
   remove: TQuery<[
     ['node_id', number],
@@ -14,27 +14,13 @@ export interface IQueriesNode {
     ['node_id', number],
     ['addCount', number]
   ], ITableNodes>;
-  createTree: TQuery<[
-    ['node_level', number],
-    ['parent_node_id', number],
-    ['root_node_id', number],
-  ]>;
-  removeTree: TQuery<[
-    ['parent_node_id', number],
-  ]>;
-  get: TQuery<[
+  getIfEmpty: TQuery<[
     ['node_id', number],
-  ],
-    ITableNodes &
-    Pick<ITableMembers, 'user_id'>
-  >;
-  getByParent: TQuery<[
+  ], ITableNodes>;
+  getChild: TQuery<[
     ['parent_node_id', number],
     ['node_position', number]
   ], ITableNodes>;
-  find: TQuery<[
-    ['date', string],
-  ], ITableNodes & { net_id: number }>;
   move: TQuery<[
     ['node_id', number],
     ['new_node_level', number],
@@ -42,31 +28,23 @@ export interface IQueriesNode {
     ['new_node_position', number],
     ['new_count_of_members', number],
   ]>;
-  changeTree: TQuery<[
-    ['parent_node_id', number],
-    ['new_node_id', number],
-  ]>;
   changeLevel: TQuery<[
     ['node_id', number],
   ]>;
-  changeRootNode: TQuery<[
-    ['root_node_id', number],
-    ['new_root_node_id', number],
+  changeLevelAll: TQuery<[
+    ['net_id', number],
   ]>;
+  findFreeByDate: TQuery<[
+    ['strDate', string]
+  ], ITableNodes>;
+  tree: IQueriesNodeTree;
 }
 
-export const createInitial = `
+export const create = `
   INSERT INTO nodes (
-    count_of_members
+    net_id, count_of_members
   )
-  VALUES (1)
-  RETURNING *
-`;
-
-export const setRootNode = `
-  UPDATE nodes
-  SET root_node_id = $1
-  WHERE node_id = $1
+  VALUES ($1, 1)
   RETURNING *
 `;
 
@@ -84,48 +62,22 @@ export const updateCountOfMembers = `
   RETURNING *
 `;
 
-export const createTree = `
-  INSERT INTO nodes (
-    node_level, parent_node_id, root_node_id, node_position
-  )
-  VALUES
-    ($1, $2, $3, 0),
-    ($1, $2, $3, 1),
-    ($1, $2, $3, 2),
-    ($1, $2, $3, 3),
-    ($1, $2, $3, 4),
-    ($1, $2, $3, 5)
-`;
-
-export const removeTree = `
-  DELETE FROM nodes
-  WHERE parent_node_id = $1
-`;
-
-export const get = `
-  SELECT nodes.*, members.user_id
+export const getIfEmpty = `
+  SELECT nodes.*
   FROM nodes
   LEFT JOIN members ON
     members.member_id = nodes.node_id
-  WHERE nodes.node_id = $1
-`;
-
-export const getByParent = `
-    SELECT nodes.*
-    FROM nodes
-    WHERE parent_node_id = $1 AND node_position = $2
-`;
-
-export const find = `
-  SELECT nodes.*, nets.net_id FROM nodes
-  INNER JOIN nets ON
-    nets.node_id = nodes.root_node_id
-  LEFT JOIN members ON
-    members.member_id = nodes.node_id
   WHERE
-    user_id ISNULL AND
-    count_of_members > 0 AND
-    updated < $1
+    nodes.node_id = $1 AND
+    members.user_id ISNULL
+`;
+
+export const getChild = `
+  SELECT nodes.*
+  FROM nodes
+  WHERE
+    parent_node_id = $1 AND
+    node_position = $2
 `;
 
 export const move = `
@@ -138,26 +90,27 @@ export const move = `
   WHERE node_id = $1
 `;
 
-export const changeTree = `
-  UPDATE nodes
-  SET parent_node_id =
-    CASE WHEN parent_node_id = $1
-      THEN $2
-      ELSE $1
-    END
-  WHERE parent_node_id IN ($1, $2) AND NOT node_id IN ($1, $2)
-`;
-
 export const changeLevel = `
   UPDATE nodes
   SET node_level = node_level - 1
   WHERE node_id = $1
 `;
 
-export const changeRootNode = `
+export const changeLevelAll = `
   UPDATE nodes
-  SET 
-    root_node_id = $2,
-    node_level = node_level - 1
-  WHERE root_node_id = $1
+  SET node_level = node_level - 1
+  WHERE net_id = $1
+`;
+
+export const findFreeByDate = `
+  SELECT
+    nodes.*,
+    nodes.net_id::int
+  FROM nodes
+  LEFT JOIN members ON
+    members.member_id = nodes.node_id
+  WHERE
+    members.user_id ISNULL AND
+    nodes.count_of_members > 0 AND
+    nodes.updated < $1
 `;
