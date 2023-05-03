@@ -48,7 +48,7 @@ export const byUser = `
   INNER JOIN nets_data ON
     nets_data.net_id = nets.net_id
   INNER JOIN nodes AS root_node ON
-    root_node.node_id = nets.net_id AND
+    root_node.net_id = nets.net_id AND
     root_node.parent_node_id ISNULL
   WHERE
     nets.net_id = $1 AND

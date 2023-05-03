@@ -23,7 +23,7 @@ export const getDislikes = `
       END
     ) AS dislike_count
   FROM nodes
-  INNER JOIN members AS members ON
+  INNER JOIN members ON
     members.member_id = nodes.node_id AND
     members.confirmed = true
   LEFT JOIN members_to_members AS mtm ON

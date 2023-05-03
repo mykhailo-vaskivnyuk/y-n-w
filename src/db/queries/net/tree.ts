@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { IMemberResponse } from '../../../client/common/server/types/types';
 import { ITableNodes } from '../../types/db.tables.types';
 import { TQuery } from '../../types/types';
@@ -30,8 +31,8 @@ export const getData = `
   FROM nodes
   LEFT JOIN members AS members ON
     members.member_id = nodes.node_id
-  LEFT JOIN users
-    ON users.user_id = members.user_id
+  LEFT JOIN users ON
+    users.user_id = members.user_id
   LEFT JOIN members_invites ON
     members_invites.node_id = nodes.node_id
   LEFT JOIN members_to_members ON

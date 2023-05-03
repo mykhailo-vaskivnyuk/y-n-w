@@ -28,7 +28,7 @@ export const get = `
   INNER JOIN nodes ON
     nodes.node_id = members.member_id
   INNER JOIN nets ON
-    nets.node_id = nodes.root_node_id
+    nets.net_id = nodes.net_id
   INNER JOIN nets_data ON
     nets_data.net_id = nets.net_id
   WHERE members.user_id = $1

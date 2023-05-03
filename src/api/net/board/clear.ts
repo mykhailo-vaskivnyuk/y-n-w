@@ -10,12 +10,13 @@ const clear: THandler<{ weekAgo: number }, boolean> =
    const day = date.getDate();
    date.setDate(day - weekAgo * 7);
    const strDate = date.toUTCString();
-   let memberAndNet: IMemberAndNet | undefined;
+   let memberAndNet: IMemberAndNet & { message_id: number} | undefined;
    do {
      [memberAndNet] = await execQuery.net.boardMessages.findUnactive([strDate]);
      if (!memberAndNet) return true;
-     await execQuery.net.boardMessages.clear([strDate]);
-     createEventMessages('BOARD_MESSAGE', memberAndNet as IMember);
+     const { message_id, ...member } = memberAndNet;
+     await execQuery.net.boardMessages.clear([message_id]);
+     createEventMessages('BOARD_MESSAGE', member as IMember);
    } while (memberAndNet);
    return true;
  };

@@ -22,9 +22,9 @@ export interface IQueriesNetBoard {
   ], ITableBoardMessages>;
   findUnactive: TQuery<[
     ['date', string],
-  ], IMemberAndNet>;
+  ], IMemberAndNet & { message_id: number }>;
   clear: TQuery<[
-    ['date', string],
+    ['message_id', number],
   ]>;
 }
 
@@ -59,6 +59,7 @@ export const get = `
 
 export const findUnactive = `
   SELECT
+    bm.message_id,
     nodes.net_id::int,
     nodes.node_id::int,
     nodes.parent_node_id::int
@@ -71,5 +72,5 @@ export const findUnactive = `
 
 export const clear = `
   DELETE FROM board_messages
-  WHERE date < $1
+  WHERE message_id = $1
 `;
