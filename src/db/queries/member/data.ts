@@ -39,11 +39,10 @@ export const setDislike = `
   ON CONFLICT (from_member_id, to_member_id)
     DO UPDATE
     SET
-      branch_id = EXCLUDED.branch_id,
-      dislike = EXCLUDED.dislike
+      dislike = true
     WHERE
-      mtm.from_member_id = $1 AND
-      mtm.to_member_id = $2
+      mtm.from_member_id = $2 AND
+      mtm.to_member_id = $3
 `;
 
 export const unsetDislike = `
@@ -61,15 +60,14 @@ export const setVote = `
     to_member_id,
     vote
   )
-  VALUES ($1, $2, true)
+  VALUES ($1, $2, $3, true)
   ON CONFLICT (from_member_id, to_member_id)
     DO UPDATE
     SET
-      branch_id = EXCLUDED.branch_id,
-      vote = EXCLUDED.vote
+      vote = true
     WHERE
-      mtm.from_member_id = $1 AND
-      mtm.to_member_id = $2
+      mtm.from_member_id = $2 AND
+      mtm.to_member_id = $3
 `;
 
 export const unsetVote = `

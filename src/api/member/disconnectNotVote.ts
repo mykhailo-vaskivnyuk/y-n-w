@@ -23,7 +23,7 @@ const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
         await removeNetUser('NOT_VOTE_DISCONNECT', user_id, net_id);
         nodesToArrange.push(node_id);
       }
-      // await arrangeNodes(nodesToArrange);
+      await arrangeNodes(nodesToArrange);
     } while (parentNode);
     return true;
   };

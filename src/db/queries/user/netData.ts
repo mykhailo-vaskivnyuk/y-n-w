@@ -82,7 +82,7 @@ export const get = `
     members_to_members.to_member_id = members.member_id
   LEFT JOIN members_to_members as mtm ON
     mtm.to_member_id = members.member_id AND
-    branch_id = nodes.parent_node_id
+    mtm.branch_id = nodes.parent_node_id
   WHERE
     members.user_id = $1 AND
     nodes.net_id = $2

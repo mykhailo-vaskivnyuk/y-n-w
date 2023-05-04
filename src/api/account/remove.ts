@@ -7,7 +7,7 @@ const remove: THandler = async ({ session }) => {
   const user_id = session.read('user_id');
   await session.clear();
   const nodesToArrange = await removeNetUser('LEAVE', user_id!, null);
-  // await arrangeNodes(nodesToArrange);
+  await arrangeNodes(nodesToArrange);
   await execQuery.user.remove([user_id!]);
   return true;
 };

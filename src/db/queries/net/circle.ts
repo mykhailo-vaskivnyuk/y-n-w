@@ -41,7 +41,7 @@ export const getData = `
     members_to_members.from_member_id = $1
   LEFT JOIN members_to_members AS votes ON
     votes.to_member_id = members.member_id AND
-    branch_id = $2
+    votes.branch_id = $2
   WHERE
     nodes.node_id = $2 OR
     nodes.parent_node_id = $2 AND

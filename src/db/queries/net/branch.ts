@@ -28,7 +28,7 @@ export const getDislikes = `
     members.confirmed = true
   LEFT JOIN members_to_members AS mtm ON
     mtm.to_member_id = members.member_id AND
-    branch_id = $1
+    mtm.branch_id = $1
   WHERE
     nodes.parent_node_id = $1 OR
     nodes.node_id = $1
@@ -51,9 +51,9 @@ export const getVotes = `
   INNER JOIN members AS members ON
     members.member_id = nodes.node_id AND
     members.confirmed = true
-  LEFT JOIN mtm ON
+  LEFT JOIN members_to_members AS mtm ON
     mtm.to_member_id = members.member_id AND
-    branch_id = $1
+    mtm.branch_id = $1
   WHERE
     nodes.parent_node_id = $1
   GROUP BY

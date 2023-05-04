@@ -22,6 +22,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
   }
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'ACTIVE') return false; // bad request
+  logger.fatal(parentNodeId, node_id, member_node_id);
   await execQuery.member.data
     .setDislike([parentNodeId, node_id, member_node_id]);
   await arrangeNodes([parentNodeId!]);
