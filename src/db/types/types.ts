@@ -26,11 +26,19 @@ export interface IDatabaseConfig {
 export interface IDatabaseConnection {
   connect(): Promise<void>;
   query<T extends any[]>(sql: string, params: T): Promise<any>;
+  startTransaction: () => Promise<IConnectionInstance>;
+}
+
+export interface IConnectionInstance {
+  query<T extends any[]>(sql: string, params: T): Promise<any>;
+  finalize: () => void;
+  cancel: () => void;
 }
 
 export interface IDatabase {
   init(): Promise<this>;
   getQueries(): IDatabaseQueries;
+  startTransaction(): Promise<IConnectionInstance>;
 }
 
 export interface IDatabaseQueries {
@@ -49,6 +57,9 @@ export interface IQueries {
 export type TQuery<
   T extends [string, any][] = [string, any][],
   Q extends Record<string, any> = Record<string, any>,
-> = (params: GetParamsTypes<T>) => Promise<Q[]>;
+> = (
+  params: GetParamsTypes<T>,
+  connectionInstance?: IConnectionInstance,
+) => Promise<Q[]>;
 
 export type TQueriesModule = Record<string, string> | string;

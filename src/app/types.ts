@@ -1,6 +1,6 @@
 import { IConfig } from '../types/config.types';
 import { ILogger } from '../logger/types';
-import { IDatabaseQueries } from '../db/types/types';
+import { IDatabase, IDatabaseQueries } from '../db/types/types';
 import { IRouter } from '../router/types';
 import { IInputConnection, IConnectionService } from '../server/types';
 import { IMailService } from '../services/mail/types';
@@ -19,6 +19,7 @@ export type IAppThis = App & {
 
 export interface IRouterContext {
   execQuery: IDatabaseQueries;
+  startTransaction: IDatabase['startTransaction'];
   logger: ILogger;
   connectionService: IConnectionService;
   console?: typeof console;
@@ -27,6 +28,7 @@ export interface IRouterContext {
 
 export interface IGlobalMixins {
   execQuery: IDatabaseQueries;
+  startTransaction: IDatabase['startTransaction'];
   logger: ILogger;
   connectionService: IConnectionService;
   mailService: IMailService;
@@ -36,6 +38,7 @@ export interface IGlobalMixins {
 
 declare global {
   const execQuery: IDatabaseQueries;
+  const startTransaction: IDatabase['startTransaction'];
   const logger: ILogger;
   const connectionService: IConnectionService;
   const mailService: IMailService;

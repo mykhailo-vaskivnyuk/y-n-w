@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import {
   INetResponse, OmitNull,
 } from '../../../client/common/server/types/types';
@@ -28,6 +29,12 @@ export interface IQueriesNet {
   get: TQuery<[
     ['net_id', number],
   ], OmitNull<INetResponse>>
+  setBlocked: TQuery<[
+    ['net_id', number],
+  ], Pick<ITableNets, 'blocked'>>
+  unsetBlocked: TQuery<[
+    ['net_id', number],
+  ], Pick<ITableNets, 'blocked'>>
   data: IQueriesNetData;
   circle: IQueriesNetCircle;
   tree: IQueriesNetTree;
@@ -37,8 +44,8 @@ export interface IQueriesNet {
 }
 
 export const createRoot = `
-  INSERT INTO nets *
-  VALUES (DEFAULT)
+  INSERT INTO nets
+  DEFAULT VALUES
   RETURNING *
 `;
 
@@ -92,4 +99,18 @@ export const get = `
     root_node.net_id = nets.net_id AND
     root_node.parent_node_id ISNULL
   WHERE nodes.net_id = $1
+`;
+
+export const setBlocked = `
+  UPDATE nets
+  SET blocked = true
+  WHERE net_id = $1 AND blocked = false
+  RETURNING blocked
+`;
+
+export const unsetBlocked = `
+  UPDATE nets
+  SET blocked = false
+  WHERE net_id = $1 AND blocked = true
+  RETURNING blocked
 `;

@@ -88,6 +88,7 @@ export default class App {
     const context: IRouterContext = {
       logger,
       execQuery,
+      startTransaction: () => this.db!.startTransaction(),
       connectionService,
       console,
       env,

@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.3
--- Dumped by pg_dump version 14.3
+-- Dumped from database version 14.5
+-- Dumped by pg_dump version 14.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -136,7 +136,8 @@ CREATE TABLE public.nets (
     net_level integer DEFAULT 0 NOT NULL,
     parent_net_id bigint,
     root_net_id bigint,
-    count_of_nets integer DEFAULT 1 NOT NULL
+    count_of_nets integer DEFAULT 1 NOT NULL,
+    blocked boolean DEFAULT false NOT NULL
 );
 
 
@@ -182,7 +183,7 @@ CREATE TABLE public.nodes (
     net_id bigint NOT NULL,
     node_position integer DEFAULT 0 NOT NULL,
     count_of_members integer DEFAULT 0 NOT NULL,
-    updated timestamp without time zone DEFAULT now() at time zone 'UTC' NOT NULL
+    updated timestamp without time zone DEFAULT now() NOT NULL
 );
 
 

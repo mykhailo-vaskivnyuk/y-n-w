@@ -85,7 +85,7 @@ export class ClientApp extends EventEmitter {
   }
 
   private async setStatus(status: AppStatus) {
-    if (this.status === status) return 
+    if (this.status === status) return;
     if (status === AppStatus.ERROR) {
       this.status = status;
       this.emit('error', this.error);
@@ -96,16 +96,16 @@ export class ClientApp extends EventEmitter {
       this.status = AppStatus.READY;
       return this.emit('statuschanged', this.status);
     }
-    if (this.status === AppStatus.INITING) return;    
+    if (this.status === AppStatus.INITING) return;
     if (status === AppStatus.READY) {
       this.status = status;
       return this.emit('statuschanged', this.status);
     }
     if (this.status === AppStatus.LOADING)
-    await new Promise<void>((rv) => {
-      this.once('statuschanged', rv);
-    });
-    this.status = AppStatus.LOADING
+      await new Promise<void>((rv) => {
+        this.once('statuschanged', rv);
+      });
+    this.status = AppStatus.LOADING;
     return this.emit('statuschanged', this.status);
   }
 
@@ -120,14 +120,14 @@ export class ClientApp extends EventEmitter {
     this.chat.connectAll().catch((e) => this.setError(e));
     this.userEvents.read(true).catch((e) => this.setError(e));
   }
-  
+
   private async onNewUser(readChanges = true) {
     const { user } = this.getState();
     if (!user) this.setInitialValues();
     else if (user.user_status === 'LOGGEDIN') {
       await this.onNewNets();
       readChanges && await this.userEvents.read(true);
-    } 
+    }
     this.setUserStatus();
   }
 
@@ -140,7 +140,7 @@ export class ClientApp extends EventEmitter {
       this.userStatus = user.user_status;
       return;
     }
-    const { confirmed } = userNetData || {}
+    const { confirmed } = userNetData || {};
     if (confirmed) this.userStatus = 'INSIDE_NET';
     else this.userStatus = 'INVITING';
   }
@@ -156,16 +156,15 @@ export class ClientApp extends EventEmitter {
   }
 
   async setEvents(events: T.IEvents) {
-    const { net, userNetData } = this.getState();
+    const { net } = this.getState();
     const { net_id } = net || {};
-    const { node_id } = userNetData || {};
     let updateUser = false;
     let updateNet = false;
     for (const event of events) {
       const { net_id: eventNetId } = event;
       if (!eventNetId) {
         updateUser = true;
-        node_id && (updateNet = true);
+        net_id && (updateNet = true);
         break;
       }
       if (eventNetId === net_id) updateNet = true;

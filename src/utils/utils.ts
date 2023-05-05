@@ -30,9 +30,9 @@ export const runHeavyOperation = (
   const sprint = count / 10;
   for (
     let i = 0;
-    i < sprint && counter < callsCount;
+    i < sprint && counter < count;
     counter++, i++
   ) operation(counter);
-  if (counter >= callsCount) return;
+  if (counter >= count) return;
   setTimeout(runHeavyOperation, 0, operation, count, counter);
 };

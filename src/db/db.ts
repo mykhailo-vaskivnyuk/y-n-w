@@ -1,8 +1,10 @@
+/* eslint-disable max-lines */
 import path from 'node:path';
 import fsp from 'node:fs/promises';
 import {
-  IDatabase, IDatabaseConfig, IDatabaseConnection,
-  IDatabaseQueries, IQueries, TQueriesModule, TQuery,
+  IConnectionInstance, IDatabase, IDatabaseConfig,
+  IDatabaseConnection, IDatabaseQueries, IQueries,
+  TQueriesModule, TQuery,
 } from './types/types';
 import { DatabaseError } from './errors';
 
@@ -39,6 +41,10 @@ class Database implements IDatabase {
   getQueries() {
     if (!this.queries) throw new DatabaseError('DB_INIT_ERROR');
     return this.queries;
+  }
+
+  startTransaction(): Promise<IConnectionInstance> {
+    return this.connection!.startTransaction();
   }
 
   private async readQueries(dirPath: string): Promise<IQueries> {
@@ -83,9 +89,11 @@ class Database implements IDatabase {
   }
 
   private sqlToQuery(sql: string, pathname: string): TQuery {
-    return async (params) => {
+    return async (params, connectionInstance?: IConnectionInstance) => {
       try {
-        return await this.connection!.query(sql, params);
+        return connectionInstance ?
+          await connectionInstance.query(sql, params) :
+          await this.connection!.query(sql, params);
       } catch (e: any) {
         logger.error(e, 'QUERY: ', pathname, sql, '\n', 'PARAMS: ', params);
         throw new DatabaseError('DB_QUERY_ERROR');

@@ -32,6 +32,7 @@ export type ITableNets = {
   parent_net_id: number | null;
   root_net_id: number; // | null
   count_of_nets: number;
+  blocked: boolean;
 }
 
 export type ITableUsers = {

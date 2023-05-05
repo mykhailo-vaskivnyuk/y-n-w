@@ -6,7 +6,10 @@ export const updateCountOfMembers = async (
 ): Promise<void> => {
   const [node] = await execQuery.node.updateCountOfMembers([node_id, addCount]);
   const { parent_node_id, count_of_members } = node!;
-  if (!count_of_members) await execQuery.node.tree.remove([node_id]);
+  if (!count_of_members) {
+    await execQuery.node.tree.remove([node_id]);
+    if (!parent_node_id) await execQuery.node.remove([node_id]);
+  }
   if (!parent_node_id) return;
   return await updateCountOfMembers(parent_node_id, addCount);
 };

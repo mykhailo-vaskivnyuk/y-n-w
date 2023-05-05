@@ -8,6 +8,7 @@ Table "nodes" {
   "updated" timestamp [not null, default: 'now()']
   Indexes {
     parent_node_id [name: "sk_nodes_parent_node"]
+    // updated
   }
 }
 
@@ -17,6 +18,10 @@ Table "nets" {
   "parent_net_id" bigint [default: NULL]
   "root_net_id" bigint [default: NULL]
   "count_of_nets" integer [not null, default: 1]
+  "blocked" boolean [not null, default: false]
+  // Indexes {
+    // root_net_id
+  // }
 }
 
 Table "users" {
@@ -49,6 +54,7 @@ Table "members" {
   "active_date" timestamp [not null, default: 'now()']
   Indexes {
     (user_id) [name: "sk_members_user"]
+    // active_date
   }
 }
 
@@ -67,6 +73,7 @@ Table "members_invites" {
   "token" "character varying(255)" [not null]
   Indexes {
     token [type: btree, unique, name: "uk_members_invites_token_idx"]
+    // node_id
   }
 }
 
@@ -81,6 +88,9 @@ Table "events" {
   "date" timestamp [not null]
   Indexes {
     user_id [name: "sk_events_user"]
+    // date ?
+    // net_id ?
+    // net_view ?
   }
 }
 
@@ -92,6 +102,7 @@ Table "board_messages" {
   "date" timestamp [not null, default: 'now()']
   Indexes {
     net_id [name: "sk_board_messages_net"] // ?
+    // date
   }
 }
 
@@ -119,6 +130,9 @@ Table "sessions" {
   "session_key" "character varying(255)" [not null]
   "session_value" "character varying(255)" [not null]
   "updated" timestamp [not null, default: 'now()']
+  // Indexes {
+  //   session_key
+  // }
 }
 
 Ref "fk_nodes_net":"nets"."net_id" < "nodes"."net_id"

@@ -7,10 +7,21 @@ import { THandler } from '../../router/types';
 import { NetResponseSchema, NetCreateParamsSchema } from '../schema/schema';
 import { updateCountOfNets } from '../utils/net.utils';
 import { createTree } from '../utils/nodes.utils';
+// import { netUnblocked } from '../utils/utils';
 
 const create: THandler<INetCreateParams, INetResponse> = async (
   { session, userNetData }, { name },
 ) => {
+  // {
+  //   const transaction = await startTransaction();
+  //   let [net] = await execQuery.net.createRoot([], transaction);
+  //   const { net_id: root_net_id } = net!;
+  //   [net] = await execQuery.net.setRootNet([root_net_id], transaction);
+  //   transaction.finalize();
+  //   await netUnblocked(net!.net_id);
+  //   logger.fatal(net);
+  // }
+
   const { net_id: parentNetId = null, net_level = 0 } = userNetData || {};
   if (net_level >= MAX_NET_LEVEL) return null;
 
