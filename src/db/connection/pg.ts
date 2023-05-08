@@ -1,6 +1,6 @@
 import pg, { QueryResultRow } from 'pg';
 import {
-  IConnectionInstance, IDatabaseConfig, IDatabaseConnection,
+  ITransactionConnection, IDatabaseConfig, IDatabaseConnection,
 } from '../types/types';
 
 class Connection implements IDatabaseConnection {
@@ -11,7 +11,8 @@ class Connection implements IDatabaseConnection {
   }
 
   async connect() {
-    await this.pool.connect();
+    const client = await this.pool.connect();
+    client.release();
   }
 
   async query(sql: string, params: any[]): Promise<QueryResultRow> {
@@ -19,14 +20,16 @@ class Connection implements IDatabaseConnection {
     return rows;
   }
 
-  async startTransaction(): Promise<IConnectionInstance> {
+  async startTransaction(): Promise<ITransactionConnection> {
     const client = await this.pool.connect();
     await client.query('BEGIN;');
-    const query =
-      async (sql: string, params: any[]): Promise<QueryResultRow> => {
-        const { rows } = await client.query(sql, params);
-        return rows;
-      };
+
+    const query = async (
+      sql: string, params: any[],
+    ): Promise<QueryResultRow> => {
+      const { rows } = await client.query(sql, params);
+      return rows;
+    };
     const finalize = () => {
       client.query('COMMIT;');
       client.release();
@@ -35,6 +38,7 @@ class Connection implements IDatabaseConnection {
       client.query('ROLLBACK;');
       client.release();
     };
+
     return { query, finalize, cancel };
   }
 }

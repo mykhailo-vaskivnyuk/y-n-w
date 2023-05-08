@@ -2,9 +2,9 @@
 import path from 'node:path';
 import fsp from 'node:fs/promises';
 import {
-  IConnectionInstance, IDatabase, IDatabaseConfig,
-  IDatabaseConnection, IDatabaseQueries, IQueries,
-  TQueriesModule, TQuery,
+  IDatabase, IDatabaseConfig, IDatabaseConnection,
+  IDatabaseQueries, IQueries, ITransaction,
+  ITransactionConnection, TQueriesModule, TQuery,
 } from './types/types';
 import { DatabaseError } from './errors';
 
@@ -43,8 +43,27 @@ class Database implements IDatabase {
     return this.queries;
   }
 
-  startTransaction(): Promise<IConnectionInstance> {
-    return this.connection!.startTransaction();
+  async startTransaction(): Promise<ITransaction> {
+    const transactionConnection = await this.connection!.startTransaction();
+    let pointer: any = this.queries!;
+    const handler = {
+      get(
+        target: ITransaction,
+        name: string,
+        receiver: ITransaction,
+      ) {
+        if (!pointer[name]) return;
+        if (typeof pointer[name] !== 'function') {
+          pointer = pointer[name];
+          return receiver;
+        }
+        return (...args: any[]) =>
+          pointer[name](...args, transactionConnection);
+      }
+    };
+    const { finalize, cancel } = transactionConnection;
+    const execQuery = new Proxy({} as IDatabaseQueries, handler as any);
+    return { execQuery, finalize, cancel };
   }
 
   private async readQueries(dirPath: string): Promise<IQueries> {
@@ -89,7 +108,7 @@ class Database implements IDatabase {
   }
 
   private sqlToQuery(sql: string, pathname: string): TQuery {
-    return async (params, connectionInstance?: IConnectionInstance) => {
+    return async (params, connectionInstance?: ITransactionConnection) => {
       try {
         return connectionInstance ?
           await connectionInstance.query(sql, params) :
