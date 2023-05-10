@@ -24,12 +24,6 @@ class Connection implements IDatabaseConnection {
     const client = await this.pool.connect();
     await client.query('BEGIN;');
 
-    const query = async (
-      sql: string, params: any[],
-    ): Promise<QueryResultRow> => {
-      const { rows } = await client.query(sql, params);
-      return rows;
-    };
     const finalize = () => {
       client.query('COMMIT;');
       client.release();
@@ -37,6 +31,17 @@ class Connection implements IDatabaseConnection {
     const cancel = () => {
       client.query('ROLLBACK;');
       client.release();
+    };
+    const query = async (
+      sql: string, params: any[],
+    ): Promise<QueryResultRow> => {
+      try {
+        const { rows } = await client.query(sql, params);
+        return rows;
+      } catch (e) {
+        cancel();
+        throw e;
+      }
     };
 
     return { query, finalize, cancel };

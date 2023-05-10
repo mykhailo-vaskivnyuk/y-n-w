@@ -18,9 +18,9 @@ class Database implements IDatabase {
   }
 
   async init() {
-    const { connectionPath, connection } = this.config;
+    const { connectionPath, connection: connectionConfig } = this.config;
     const Connection = require(connectionPath);
-    this.connection = new Connection(connection);
+    this.connection = new Connection(connectionConfig);
     try {
       await this.connection!.connect();
     } catch (e: any) {
@@ -29,7 +29,8 @@ class Database implements IDatabase {
     }
 
     try {
-      const queries = await this.readQueries(this.config.queriesPath);
+      const { queriesPath } = this.config;
+      const queries = await this.readQueries(queriesPath);
       this.queries = queries as unknown as IDatabaseQueries;
     } catch (e: any) {
       logger.error(e);
@@ -108,11 +109,12 @@ class Database implements IDatabase {
   }
 
   private sqlToQuery(sql: string, pathname: string): TQuery {
-    return async (params, connectionInstance?: ITransactionConnection) => {
+    return async (params, transaction?: ITransactionConnection) => {
       try {
-        return connectionInstance ?
-          await connectionInstance.query(sql, params) :
-          await this.connection!.query(sql, params);
+        if (transaction) {
+          return await transaction.query(sql, params);
+        }
+        return await this.connection!.query(sql, params);
       } catch (e: any) {
         logger.error(e, 'QUERY: ', pathname, sql, '\n', 'PARAMS: ', params);
         throw new DatabaseError('DB_QUERY_ERROR');
