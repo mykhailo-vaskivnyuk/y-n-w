@@ -20,31 +20,39 @@ class Connection implements IDatabaseConnection {
     return rows;
   }
 
-  async startTransaction(): Promise<ITransactionConnection> {
+  async getTransactionConnection(): Promise<ITransactionConnection> {
     const client = await this.pool.connect();
-    await client.query('BEGIN;');
+    let closed = false;
 
-    const finalize = () => {
-      client.query('COMMIT;');
-      client.release();
-    };
-    const cancel = () => {
-      client.query('ROLLBACK;');
-      client.release();
-    };
     const query = async (
       sql: string, params: any[],
     ): Promise<QueryResultRow> => {
+      if (closed) throw new Error('Connection is closed');
       try {
         const { rows } = await client.query(sql, params);
         return rows;
       } catch (e) {
-        cancel();
+        closed = true;
+        client.release();
         throw e;
       }
     };
 
-    return { query, finalize, cancel };
+    await query('BEGIN;', []);
+
+    const commit = async () => {
+      await query('COMMIT;', []);
+      closed = true;
+      client.release();
+    };
+
+    const rollback = async () => {
+      await query('ROLLBACK;', []);
+      closed = true;
+      client.release();
+    };
+
+    return { query, commit, rollback };
   }
 }
 

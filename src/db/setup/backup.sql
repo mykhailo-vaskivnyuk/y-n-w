@@ -136,8 +136,7 @@ CREATE TABLE public.nets (
     net_level integer DEFAULT 0 NOT NULL,
     parent_net_id bigint,
     root_net_id bigint,
-    count_of_nets integer DEFAULT 1 NOT NULL,
-    blocked boolean DEFAULT false NOT NULL
+    count_of_nets integer DEFAULT 1 NOT NULL
 );
 
 
@@ -335,8 +334,8 @@ COPY public.members_to_members (branch_id, from_member_id, to_member_id, dislike
 -- Data for Name: nets; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.nets (net_id, net_level, parent_net_id, root_net_id, count_of_nets, blocked) FROM stdin;
-1	0	\N	1	1	f
+COPY public.nets (net_id, net_level, parent_net_id, root_net_id, count_of_nets) FROM stdin;
+1	0	\N	1	1
 \.
 
 

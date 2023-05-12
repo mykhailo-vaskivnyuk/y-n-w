@@ -136,8 +136,7 @@ CREATE TABLE public.nets (
     net_level integer DEFAULT 0 NOT NULL,
     parent_net_id bigint,
     root_net_id bigint,
-    count_of_nets integer DEFAULT 1 NOT NULL,
-    blocked boolean DEFAULT false NOT NULL
+    count_of_nets integer DEFAULT 1 NOT NULL
 );
 
 

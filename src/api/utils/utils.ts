@@ -1,4 +1,3 @@
-import { setTimeout } from 'node:timers/promises';
 import { checkDislikes } from './dislike.utils';
 import { updateCountOfNets } from './net.utils';
 import { checkVotes } from './vote.utils';
@@ -60,14 +59,4 @@ export const arrangeNodes = async (
     nodesToArrange = [...newNodesToArrange, ...nodesToArrange];
     await checkVotes(node_id!);
   }
-};
-
-export const netUnblocked = async (net_id: number) => {
-  let attempt = 10;
-  do {
-    const [blocked] = await execQuery.net.setBlocked([net_id]);
-    if (blocked) return;
-    await setTimeout(1000);
-  } while (--attempt);
-  throw new Error('net blocked');
 };

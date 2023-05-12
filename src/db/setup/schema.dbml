@@ -18,7 +18,6 @@ Table "nets" {
   "parent_net_id" bigint [default: NULL]
   "root_net_id" bigint [default: NULL]
   "count_of_nets" integer [not null, default: 1]
-  "blocked" boolean [not null, default: false]
   // Indexes {
     // root_net_id
   // }

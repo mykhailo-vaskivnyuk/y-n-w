@@ -1,12 +1,10 @@
-/* eslint-disable max-lines */
-import path from 'node:path';
-import fsp from 'node:fs/promises';
 import {
   IDatabase, IDatabaseConfig, IDatabaseConnection,
-  IDatabaseQueries, IQueries, ITransaction,
-  ITransactionConnection, TQueriesModule, TQuery,
+  IDatabaseQueries, ITransaction, TQuery,
 } from './types/types';
 import { DatabaseError } from './errors';
+import { readQueries } from './utils';
+import { Transaction } from './transaction';
 
 class Database implements IDatabase {
   private config: IDatabaseConfig;
@@ -15,6 +13,7 @@ class Database implements IDatabase {
 
   constructor(config: IDatabaseConfig) {
     this.config = config;
+    this.sqlToQuery = this.sqlToQuery.bind(this);
   }
 
   async init() {
@@ -30,13 +29,12 @@ class Database implements IDatabase {
 
     try {
       const { queriesPath } = this.config;
-      const queries = await this.readQueries(queriesPath);
+      const queries = await readQueries(queriesPath, this.sqlToQuery);
       this.queries = queries as unknown as IDatabaseQueries;
     } catch (e: any) {
       logger.error(e);
       throw new DatabaseError('DB_INIT_ERROR');
     }
-    return this;
   }
 
   getQueries() {
@@ -45,75 +43,19 @@ class Database implements IDatabase {
   }
 
   async startTransaction(): Promise<ITransaction> {
-    const transactionConnection = await this.connection!.startTransaction();
-    let pointer: any = this.queries!;
-    const handler = {
-      get(
-        target: ITransaction,
-        name: string,
-        receiver: ITransaction,
-      ) {
-        if (!pointer[name]) return;
-        if (typeof pointer[name] !== 'function') {
-          pointer = pointer[name];
-          return receiver;
-        }
-        return (...args: any[]) =>
-          pointer[name](...args, transactionConnection);
-      }
-    };
-    const { finalize, cancel } = transactionConnection;
-    const execQuery = new Proxy({} as IDatabaseQueries, handler as any);
-    return { execQuery, finalize, cancel };
-  }
-
-  private async readQueries(dirPath: string): Promise<IQueries> {
-    const query: IQueries = {};
-    const queryPath = path.resolve(dirPath);
-    const dir = await fsp.opendir(queryPath);
-    for await (const item of dir) {
-      const ext = path.extname(item.name);
-      const name = path.basename(item.name, ext);
-      if (item.isDirectory()) {
-        const dirPath = path.join(queryPath, name);
-        query[name] = await this.readQueries(dirPath);
-        continue;
-      }
-
-      if (ext !== '.js') continue;
-
-      const filePath = path.join(queryPath, item.name);
-      const queries = this.createQueries(filePath);
-      if (name === 'index') Object.assign(query, queries);
-      else query[name] = queries;
-
+    try {
+      const connection = await this.connection!.getTransactionConnection();
+      return new Transaction(connection, this.queries!);
+    } catch (e) {
+      logger.error(e);
+      throw new DatabaseError('DB_CONNECTION_ERROR');
     }
-    // dir.close();
-    return query;
-  }
-
-  private createQueries(filePath: string): IQueries | TQuery {
-    let moduleExport = require(filePath);
-    moduleExport = moduleExport.default || moduleExport as TQueriesModule;
-    if (typeof moduleExport === 'string') {
-      return this.sqlToQuery(moduleExport, filePath);
-    }
-    return Object
-      .keys(moduleExport)
-      .reduce<IQueries>((queries, key) => {
-        queries[key] = this.sqlToQuery(
-          moduleExport[key]!, filePath + '/' + key,
-        );
-        return queries;
-      }, {});
   }
 
   private sqlToQuery(sql: string, pathname: string): TQuery {
-    return async (params, transaction?: ITransactionConnection) => {
+    return async (params, connection) => {
       try {
-        if (transaction) {
-          return await transaction.query(sql, params);
-        }
+        if (connection) return await connection.query(sql, params);
         return await this.connection!.query(sql, params);
       } catch (e: any) {
         logger.error(e, 'QUERY: ', pathname, sql, '\n', 'PARAMS: ', params);
