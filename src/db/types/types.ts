@@ -36,7 +36,7 @@ export interface ITransactionConnection {
 }
 
 export interface IDatabase {
-  init(): Promise<void>;
+  init(): Promise<this>;
   getQueries(): IDatabaseQueries;
   startTransaction(): Promise<ITransaction>;
 }

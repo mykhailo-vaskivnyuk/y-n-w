@@ -35,6 +35,7 @@ class Database implements IDatabase {
       logger.error(e);
       throw new DatabaseError('DB_INIT_ERROR');
     }
+    return this;
   }
 
   getQueries() {
