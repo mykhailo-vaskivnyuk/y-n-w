@@ -6,10 +6,10 @@
   "scripts": {
     "build": "tsc",
     "build:front": "cd ../node-u-n-w-front && rimraf build && cross-env NODE_ENV=production npx webpack --config webpack/webpack.config.js",
-    "start": "node js/index.js",
+    "start": "node js/src/index.js",
     "pack": "npm run rmjs && npm run build && cross-env RUN_ONCE=true PORT=8001 npm start && npm run sync && npm run build:front && npm run sync",
-    "dev": "cross-env NODE_ENV=development MAIL_CONFIRM_OFF=true nodemon js/index.js",
-    "debug": "nodemon --inspect js/index.js",
+    "dev": "cross-env NODE_ENV=development MAIL_CONFIRM_OFF=true nodemon js/src/index.js",
+    "debug": "nodemon --inspect js/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "npm run rmjs && tsc --watch",
     "lint": "eslint src",
@@ -49,7 +49,7 @@
     "nodemon": "^2.0.20"
   },
   "dependencies": {
-    "@types/node": "^18.7.23",
+    "@types/node": "^20.2.1",
     "@types/nodemailer": "^6.4.6",
     "@types/pg": "^8.6.5",
     "@types/ws": "^8.5.3",
