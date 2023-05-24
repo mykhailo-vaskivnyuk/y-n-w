@@ -51,7 +51,7 @@ export default class App {
     }
   }
 
-  protected async shutdown(message?: string) {
+  async shutdown(message?: string) {
     const shutdownLogger = this.logger ?
       (message: string) => logger.fatal(message) :
       (message: string) => console.error(message);

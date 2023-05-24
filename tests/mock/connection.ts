@@ -3,17 +3,18 @@ import { IHttpServer } from '../../src/server/http/types';
 import {
   IOperation, TOperationResponse,
 } from '../../src/types/operation.types';
-import { setCallback } from './connection.handleOperation';
+
+type THandleOperation = (operation: IOperation) => Promise<TOperationResponse>;
 
 class HttpConnection implements IInputConnection {
-  private server: IHttpServer;
+  private static exec?: THandleOperation;
 
-  constructor() {
-    this.server = {} as IHttpServer;
+  static handleOperation(operation: IOperation) {
+    return HttpConnection.exec?.(operation);
   }
 
-  onOperation(cb: (operation: IOperation) => Promise<TOperationResponse>) {
-    setCallback(cb);
+  onOperation(cb: THandleOperation) {
+    HttpConnection.exec = cb;
   }
 
   setUnavailable() {
@@ -21,7 +22,7 @@ class HttpConnection implements IInputConnection {
   }
 
   getServer() {
-    return this.server;
+    return {} as IHttpServer;
   }
 
   async start() {
