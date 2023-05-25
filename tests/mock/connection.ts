@@ -6,15 +6,15 @@ import {
 
 type THandleOperation = (operation: IOperation) => Promise<TOperationResponse>;
 
-class HttpConnection implements IInputConnection {
+class Connection implements IInputConnection {
   private static exec?: THandleOperation;
 
   static handleOperation(operation: IOperation) {
-    return HttpConnection.exec?.(operation);
+    return Connection.exec?.(operation);
   }
 
   onOperation(cb: THandleOperation) {
-    HttpConnection.exec = cb;
+    Connection.exec = cb;
   }
 
   setUnavailable() {
@@ -36,4 +36,4 @@ class HttpConnection implements IInputConnection {
   }
 }
 
-export = HttpConnection;
+export = Connection;

@@ -1,9 +1,9 @@
 const { spawn } = require('node:child_process');
 
-const runProcess = (command) => {
-  const commandArr = command.split(/\s/);
+const runProcess = (commandString) => {
+  const [command, ...params] = commandString.split(/\s/);
 
-  const ls = spawn(commandArr[0], commandArr.slice(1));
+  const ls = spawn(command, params);
 
   ls.stdout.on('data', (data) => {
     console.log(`${data}`);

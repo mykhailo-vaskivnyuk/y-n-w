@@ -3,12 +3,14 @@ import test, { after } from 'node:test';
 import assert from 'node:assert';
 import App from '../src/app/app';
 import config from '../src/config';
-import HttpConnection from './mock/connection';
+import Connection from './mock/connection';
 import { API_TEST_DATA } from './api.test.data';
 
-config.inConnection.http.path = path.join(__dirname, './mock/connection'),
-config.inConnection.ws.path = config.inConnection.http.path;
+const connectionPath = path.join(__dirname, './mock/connection');
+config.inConnection.http.path = connectionPath;
+config.inConnection.ws.path = connectionPath;
 config.logger.level = 'FATAL';
+
 const options =  {
   sessionKey: 'sessionKey',
   origin: 'origin',
@@ -26,7 +28,7 @@ test('Test API', async (t) => {
         const { name, params, response: expected } = operation;
         await t.test(async () => {
 
-          const actual = await HttpConnection.handleOperation({
+          const actual = await Connection.handleOperation({
             options,
             names: name.split('/'),
             data: { params },
@@ -38,21 +40,3 @@ test('Test API', async (t) => {
   }
 });
 
-// describe('Test API', async () => {
-//   await app.start();
-//   after((done) => app.shutdown().then(() => done()));
-//   for (const test of API_TEST_DATA) {
-//     it(test.it, async (t) => {
-//       for (const operation of test.operations) {
-//         await t.test(async () => {
-//           const result = await HttpConnection.handleOperation({
-//             options,
-//             names: operation[0].split('/'),
-//             data: { params: operation[1] },
-//           });
-//           assert.strictEqual(result, operation[2]);
-//         });
-//       }
-//     });
-//   }
-// });

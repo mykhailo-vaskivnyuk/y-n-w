@@ -30,11 +30,6 @@ export const API_TEST_DATA: {
           user_status: 'LOGGEDIN',
         },
       },
-      {
-        name: 'health',
-        params: {},
-        response: 'API IS READY',
-      },
     ]
   },
 ];
