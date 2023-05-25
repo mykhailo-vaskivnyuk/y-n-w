@@ -42,7 +42,7 @@ class WsConnection extends EventEmitter {
       this.once('connection', rv);
       this.once('error', rj);
     };
-    
+
     return new Promise(executor);
   }
 
@@ -74,7 +74,7 @@ class WsConnection extends EventEmitter {
       return this.emit('error', new HttpResponseError(503));
     await delay(CONNECTION_ATTEMPT_DELAY);
     this.createConnection();
-  };
+  }
 
   private handleOpen() {
     this.connecting = false;
@@ -117,28 +117,28 @@ class WsConnection extends EventEmitter {
     return new Promise(requestExecutor);
   }
 
-  genId() { 
+  genId() {
     this.id = (this.id % 100) + 1;
     return this.id;
   }
 
   createRequestExecutor(message: string): TPromiseExecutor<void> {
     return (rv, rj) => {
-      let timeout: NodeJS.Timeout;
+      let timeout: NodeJS.Timer | undefined = setTimeout(() => {
+        this.requests.delete(this.id);
+        timeout = undefined;
+        rj(new HttpResponseError(503));
+      }, CONNECTION_TIMEOUT);
 
       const handleResponse = (response: IWsResponse) => {
+        if (!timeout) return;
         clearTimeout(timeout);
         const { data, status } = response;
         if (status === 200) return rv(data);
         rj(new HttpResponseError(status));
       };
+
       this.requests.set(this.id, handleResponse);
-
-      timeout = setTimeout(() => {
-        this.requests.delete(this.id);
-        rj(new HttpResponseError(503));
-      }, CONNECTION_TIMEOUT);
-
       this.socket.send(message);
     };
   }
@@ -151,7 +151,7 @@ export const getConnection = (
   onMessage: (data: any) => void,
 ): TFetch => {
   const connection = new WsConnection(baseUrl);
-  connection.on('connection', onConnection)
-  connection.on('message', onMessage)
+  connection.on('connection', onConnection);
+  connection.on('message', onMessage);
   return connection.sendRequest;
 };
