@@ -83,7 +83,7 @@ const config: IConfig = {
     }],
   },
   inConnection: {
-    transport,
+    transport, // : 'http',
     http: {
       path: resolvePath('server/http/http'),
       modulesPath: resolvePath('server/http/modules'),
