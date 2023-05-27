@@ -32,7 +32,8 @@ export const createRoutes = async (dirPath: string): Promise<IRoutes> => {
 
     if (typeof moduleExport === 'function')
       throw new Error(`Wrong api module: ${filePath}`);
-    else Object.assign(route, moduleExport);
+
+    Object.assign(route, moduleExport);
   }
 
   // dir.close();

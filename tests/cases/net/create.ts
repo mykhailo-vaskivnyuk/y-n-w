@@ -1,24 +1,12 @@
+import { ITestCase } from '../../types/types';
 
-
-export const API_TEST_DATA: {
-  task: string, operations: Array<{ name: string, params: any, response: any }>
-}[] = [
-  {
-    task: 'health',
-    operations: [
-      {
-        name: 'health',
-        params: {},
-        response: 'API IS READY',
-      },
-    ]
-  },
+const login = (state: any): ITestCase => (
   {
     task: 'login',
     operations: [
       {
         name: 'health',
-        params: {},
+        params: { value: state.value },
         response: 'API IS READY',
       },
       {
@@ -33,5 +21,6 @@ export const API_TEST_DATA: {
         },
       },
     ]
-  },
-];
+  });
+
+export = login;

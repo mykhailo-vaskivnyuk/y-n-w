@@ -1,24 +1,12 @@
+import { IOperationData, TTestCase } from '../../types/types';
 
-
-export const API_TEST_DATA: {
-  task: string, operations: Array<{ name: string, params: any, response: any }>
-}[] = [
-  {
-    task: 'health',
-    operations: [
-      {
-        name: 'health',
-        params: {},
-        response: 'API IS READY',
-      },
-    ]
-  },
+export const login: TTestCase = (state) => (
   {
     task: 'login',
     operations: [
       {
         name: 'health',
-        params: {},
+        params: { value: state.value },
         response: 'API IS READY',
       },
       {
@@ -32,6 +20,5 @@ export const API_TEST_DATA: {
           user_status: 'LOGGEDIN',
         },
       },
-    ]
-  },
-];
+    ] as IOperationData[],
+  });

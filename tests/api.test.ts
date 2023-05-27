@@ -3,7 +3,7 @@ import test, { after } from 'node:test';
 import assert from 'node:assert';
 import App from '../src/app/app';
 import config from '../src/config';
-import Connection from './mock/connection';
+import Connection from './connection/link';
 import { API_TEST_DATA } from './api.test.data';
 
 const connectionPath = path.join(__dirname, './mock/connection');
