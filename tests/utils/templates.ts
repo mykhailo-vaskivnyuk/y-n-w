@@ -5,7 +5,7 @@ const tplHeader =
 /* eslint-disable max-len */
 import { TTestCase } from './types';
 
-export interface ITestCases `;
+export interface ITestCasesTree `;
 const tplKey = '\n%s\'%s\': ';
 const tplType = 'TTestCase;';
 const tplFooter = '\n';

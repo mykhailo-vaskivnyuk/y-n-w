@@ -2,7 +2,7 @@ import { ITestCase } from '../../types/types';
 
 const login = (state: any): ITestCase => (
   {
-    task: 'login',
+    task: 'net',
     operations: [
       {
         name: 'health',

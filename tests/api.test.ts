@@ -2,26 +2,33 @@ import path from 'path';
 import test, { after } from 'node:test';
 import assert from 'node:assert';
 import App from '../src/app/app';
-import config from '../src/config';
+import appConfig from '../src/config';
 import Connection from './connection/link';
-import { API_TEST_DATA } from './api.test.data';
+import { createCases } from './utils/create.cases';
+import { config } from './config';
+import { ITestCasesTree } from './types/test.cases.types';
+import { getTestData } from './test.data';
 
-const connectionPath = path.join(__dirname, './mock/connection');
-config.inConnection.http.path = connectionPath;
-config.inConnection.ws.path = connectionPath;
-config.logger.level = 'FATAL';
+const connectionPath = path.join(__dirname, './connection/link');
+appConfig.inConnection.http.path = connectionPath;
+appConfig.inConnection.ws.path = connectionPath;
+appConfig.logger.level = 'FATAL';
 
 const options =  {
   sessionKey: 'sessionKey',
   origin: 'origin',
 };
-const app = new App(config);
+
+const state = {};
 
 test('Test API', async (t) => {
+  const TEST_DATA = await getTestData('restore', state);
+
+  const app = new App(appConfig);
   await app.start();
   after(() => app.shutdown());
 
-  for (const { task, operations } of API_TEST_DATA) {
+  for (const { task, operations } of TEST_DATA) {
     await t.test(task, async (t) => {
 
       for (const operation of operations) {
@@ -39,4 +46,3 @@ test('Test API', async (t) => {
     });
   }
 });
-

@@ -2,7 +2,7 @@
 /* eslint-disable max-len */
 import { TTestCase } from './types';
 
-export interface ITestCases {
+export interface ITestCasesTree {
   'account': {
     'login': {
       'login': TTestCase;

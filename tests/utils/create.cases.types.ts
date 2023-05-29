@@ -19,7 +19,7 @@ export const createCasesTypes = (config: ITestConfig, cases: ITestCases) => {
     stream.on('error', handleError);
     stream.on('finish', handleFinish);
     stream.write(tpl.strHeader());
-    createJs(stream)(cases);
+    createTypes(stream)(cases);
     stream.write(tpl.strFooter());
     stream.close();
   };
@@ -31,9 +31,9 @@ export const isTestCase = (
   testCase?: ITestCases | TTestCase,
 ): testCase is TTestCase => typeof testCase === 'function';
 
-export const createJs = (
+export const createTypes = (
   stream: Writable,
-) => function createJs(cases: ITestCases, pathname = '', indent = '') {
+) => function createTypes(cases: ITestCases, pathname = '', indent = '') {
   stream.write('{');
   const nextIndent = indent + '  ';
   const routesKeys = Object.keys(cases);
@@ -43,7 +43,7 @@ export const createJs = (
     const testCase = cases[key] as TTestCase | ITestCases;
     const nextPathname = pathname + '/' + key;
     if (!isTestCase(testCase)) {
-      createJs(testCase, nextPathname, nextIndent);
+      createTypes(testCase, nextPathname, nextIndent);
       stream.write(';');
       continue;
     }

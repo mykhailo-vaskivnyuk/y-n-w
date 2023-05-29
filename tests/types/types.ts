@@ -9,16 +9,12 @@ export interface ITestCase {
   operations: IOperationData[];
 }
 
+export interface ITestCases {
+  [key: string]: TTestCase | ITestCases;
+}
+
 export interface IOperationData {
   name: string;
   params: IParams;
   response: TOperationResponse;
 }
-
-export interface ITestCases {
-  [key: string]: TTestCase | ITestCases;
-}
-// export interface ITestCases {
-//   account: ICasesAccount;
-//   net: ICasesNet;
-// }
