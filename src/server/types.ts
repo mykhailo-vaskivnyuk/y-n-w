@@ -3,13 +3,15 @@ import { IMessage, MessageTypeKeys } from '../client/common/server/types/types';
 import { IOperation, TOperationResponse } from '../types/operation.types';
 import { IHttpConfig, IHttpServer } from './http/types';
 import { IWsConfig, IWsServer } from './ws/types';
+import { ILinkConfig } from './link/types';
 
 export interface IInputConnectionConfig {
   transport: TTransport;
   http: IHttpConfig;
   ws: IWsConfig;
+  link: ILinkConfig;
 }
-export type TTransport = 'http' | 'ws';
+export type TTransport = 'http' | 'ws' | 'link';
 
 export interface IInputConnection {
   start(): Promise<void>;

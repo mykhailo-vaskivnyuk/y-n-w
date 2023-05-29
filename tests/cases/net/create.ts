@@ -6,7 +6,7 @@ const login = (state: any): ITestCase => (
     operations: [
       {
         name: 'health',
-        params: { value: state.value },
+        params: { value: state.value || null },
         response: 'API IS READY',
       },
       {

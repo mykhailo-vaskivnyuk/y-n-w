@@ -15,13 +15,14 @@ export const createSetInputConnection = (parent: IAppThis) => () => {
 
   const { inConnection } = parent.config;
   const { transport } = inConnection;
-  const server = inConnection['http'];
-  const apiServer = transport === 'ws' && inConnection['ws'];
-  const InConnection = require(server.path);
-  const InApiConnection = apiServer && require(apiServer.path);
-  parent.server = new InConnection(server);
+  const serverConfig = inConnection['http'];
+  const apiServerConfig = transport !== 'http' && inConnection[transport];
+
+  const InConnection = require(serverConfig.path);
+  const InApiConnection = apiServerConfig && require(apiServerConfig.path);
+  parent.server = new InConnection(serverConfig);
   parent.apiServer = InApiConnection &&
-      new InApiConnection(apiServer, parent.server!.getServer());
+      new InApiConnection(apiServerConfig, parent.server!.getServer());
 
   if (parent.apiServer) {
     parent.server!.setUnavailable('api');

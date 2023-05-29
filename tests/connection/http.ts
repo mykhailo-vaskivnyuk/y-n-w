@@ -1,7 +1,6 @@
 let Cookie = '';
 export const getConnection = (baseUrl: string) =>
   async (url: string, data: Record<string, any> = {}) => {
-    console.log(' ');
     // logData(data, 'REQ');
     const options: RequestInit = {
       method: 'POST',

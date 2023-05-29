@@ -1,30 +1,19 @@
-import path from 'path';
 import test, { after } from 'node:test';
 import assert from 'node:assert';
 import App from '../src/app/app';
 import appConfig from '../src/config';
-import Connection from './connection/link';
-import { createCases } from './utils/create.cases';
-import { config } from './config';
-import { ITestCasesTree } from './types/test.cases.types';
+import Connection from '../src/server/link/link';
 import { getTestData } from './test.data';
 
-const connectionPath = path.join(__dirname, './connection/link');
-appConfig.inConnection.http.path = connectionPath;
-appConfig.inConnection.ws.path = connectionPath;
+appConfig.inConnection.transport = 'link';
 appConfig.logger.level = 'FATAL';
+const app = new App(appConfig);
+const version = 'restore';
 
-const options =  {
-  sessionKey: 'sessionKey',
-  origin: 'origin',
-};
+test('Test API over LINK', async (t) => {
+  const state = {};
+  const TEST_DATA = await getTestData(version, state);
 
-const state = {};
-
-test('Test API', async (t) => {
-  const TEST_DATA = await getTestData('restore', state);
-
-  const app = new App(appConfig);
   await app.start();
   after(() => app.shutdown());
 
@@ -36,7 +25,10 @@ test('Test API', async (t) => {
         await t.test(async () => {
 
           const actual = await Connection.handleOperation({
-            options,
+            options: {
+              sessionKey: 'sessionKey',
+              origin: 'origin',
+            },
             names: name.split('/'),
             data: { params },
           });

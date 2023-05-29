@@ -26,3 +26,6 @@ export type TOperationResponse =
   | IObject[]
   | TPrimitiv[]
   | Readable;
+
+export type THandleOperation =
+  (operation: IOperation) => Promise<TOperationResponse>;

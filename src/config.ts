@@ -83,7 +83,7 @@ const config: IConfig = {
     }],
   },
   inConnection: {
-    transport, // : 'http',
+    transport,
     http: {
       path: resolvePath('server/http/http'),
       modulesPath: resolvePath('server/http/modules'),
@@ -103,6 +103,9 @@ const config: IConfig = {
       path: resolvePath('server/ws/ws'),
       modulesPath: resolvePath('server/ws/modules'),
       resModules: ['sendResponse', 'sendChatMessage'],
+    },
+    link: {
+      path: resolvePath('server/link/link'),
     },
   },
 };
