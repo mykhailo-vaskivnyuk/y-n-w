@@ -10,7 +10,7 @@
     "pack": "npm run rmjs && npm run build && cross-env RUN_ONCE=true PORT=8001 npm start && npm run sync && npm run build:front && npm run sync",
     "dev": "cross-env NODE_ENV=development MAIL_CONFIRM_OFF=true nodemon js/src/index.js",
     "debug": "nodemon --inspect js/src/index.js",
-    "test": "node js/tests/api.ws.test.js",
+    "test": "node js/tests/api.test.js",
     "tsc": "npm run rmjs && tsc --watch",
     "lint": "eslint src",
     "db:setup": "cd src/db/setup && sh ./setup.sh",

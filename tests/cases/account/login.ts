@@ -5,12 +5,12 @@ export const login: TTestCase = (state) => (
     task: 'login',
     operations: [
       {
-        name: 'health',
+        name: '/health',
         params: { value: state.value || null },
         response: 'API IS READY',
       },
       {
-        name: 'account/login',
+        name: '/account/login',
         params: { email: 'user02@gmail.com', password: '12345' },
         response: {
           email: 'user02@gmail.com',

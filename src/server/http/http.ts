@@ -66,6 +66,10 @@ class HttpConnection implements IInputConnection {
     return new Promise<void>(executor);
   }
 
+  stop() {
+    this.server.close();
+  }
+
   private async handleRequest(req: IRequest, res: IResponse) {
     const contextParams = {
       staticUnavailable: this.staticUnavailable,

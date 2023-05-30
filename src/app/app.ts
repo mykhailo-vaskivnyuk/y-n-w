@@ -60,6 +60,12 @@ export default class App {
     process.nextTick(() => process.exit());
   }
 
+  async stop() {
+    await this.apiServer?.stop();
+    this.server?.stop();
+    this.db?.disconnect();
+  }
+
   private setLogger() {
     const { logger } = this.config;
     const Logger = require(logger.path);

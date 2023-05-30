@@ -15,6 +15,7 @@ export type TTransport = 'http' | 'ws' | 'link';
 
 export interface IInputConnection {
   start(): Promise<void>;
+  stop(): Promise<void>;
   onOperation(
     cb: (operation: IOperation) => Promise<TOperationResponse>
   ): void;

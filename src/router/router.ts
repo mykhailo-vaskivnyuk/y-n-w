@@ -68,8 +68,8 @@ class Router implements IRouter {
         handler(context, params).catch((e) => logger.error(e));
       if (!interval) return;
       setInterval(() => handler(context, params)
-        .catch((e) => logger.error(e)), interval);
-    }, time || 0);
+        .catch((e) => logger.error(e)), interval).unref();
+    }, time || 0).unref();
   }
 
   async exec(operation: IOperation): Promise<TOperationResponse> {
@@ -77,7 +77,6 @@ class Router implements IRouter {
     const { options: { origin, connectionId }, names } = operation;
     const context = { origin, connectionId } as IContext;
     const handler = this.findRoute(names);
-
     try {
       const { data } =
         await this.execInputModules!(operation, context, handler);

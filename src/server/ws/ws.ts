@@ -14,6 +14,7 @@ import { excludeNullUndefined } from '../../utils/utils';
 import {
   IMessage, MessageTypeKeys,
 } from '../../client/common/server/types/types';
+import { delay } from '../../client/common/client/connection/utils';
 
 class WsConnection implements IInputConnection {
   private config: IWsConfig;
@@ -57,6 +58,11 @@ class WsConnection implements IInputConnection {
     }
   }
 
+  async stop() {
+    this.server.close();
+    while (this.connections.size) await delay(100);
+  }
+
   private handleConnection(connection: IWsConnection, req: IRequest) {
     connection.isAlive = true;
 
@@ -92,12 +98,14 @@ class WsConnection implements IInputConnection {
     connection: IWsConnection,
   ) {
     try {
+      if (connection.readyState === connection.CLOSED) return;
       if (this.apiUnavailable) throw new ServerError('SERVICE_UNAVAILABLE');
       const operation = await this.getOperation(message, options);
       options = operation.options;
       const data = await this.exec!(operation);
       this.resModules.forEach((module) => module(connection, options, data));
     } catch (e) {
+      if (connection.readyState === connection.CLOSED) return;
       handleError(e, options, connection);
       throw e;
     }

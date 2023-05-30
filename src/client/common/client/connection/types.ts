@@ -1,7 +1,7 @@
 import { HttpResponseErrorCode } from './errors';
 
 export type TFetch = <T>(
-  pathname: string, options?: Record<string, any>,
+  pathname: string, data?: Record<string, any>,
 ) => Promise<T>;
 
 export interface IWsResponse {

@@ -15,6 +15,10 @@ class Connection implements IDatabaseConnection {
     client.release();
   }
 
+  disconnect(): void {
+    this.pool.end();
+  }
+
   async query(sql: string, params: any[]): Promise<QueryResultRow> {
     const { rows } = await this.pool!.query(sql, params);
     return rows;

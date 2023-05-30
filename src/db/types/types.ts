@@ -25,6 +25,7 @@ export interface IDatabaseConfig {
 
 export interface IDatabaseConnection {
   connect(): Promise<void>;
+  disconnect(): void;
   query<T extends any[]>(sql: string, params: T): Promise<any>;
   getTransactionConnection: () => Promise<ITransactionConnection>;
 }
@@ -37,6 +38,7 @@ export interface ITransactionConnection {
 
 export interface IDatabase {
   init(): Promise<this>;
+  disconnect(): void;
   getQueries(): IDatabaseQueries;
   startTransaction(): Promise<ITransaction>;
 }

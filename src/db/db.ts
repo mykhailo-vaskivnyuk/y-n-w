@@ -38,6 +38,10 @@ class Database implements IDatabase {
     return this;
   }
 
+  disconnect() {
+    this.connection?.disconnect();
+  }
+
   getQueries() {
     if (!this.queries) throw new DatabaseError('DB_INIT_ERROR');
     return this.queries;

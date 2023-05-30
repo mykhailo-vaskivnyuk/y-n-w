@@ -1,14 +1,21 @@
 import { IInputConnection } from '../types';
 import { IHttpServer } from '../http/types';
-import {
-  IOperation, THandleOperation
-} from '../../types/operation.types';
+import { THandleOperation } from '../../types/operation.types';
 
 class LinkConnection implements IInputConnection {
   private static exec?: THandleOperation;
 
-  static handleOperation(operation: IOperation) {
-    return LinkConnection.exec?.(operation);
+  static handleRequest(
+    name: string, params: Record<string, any> = {},
+  ): Promise<any> {
+    return LinkConnection.exec!({
+      options: {
+        sessionKey: 'sessionKey',
+        origin: 'origin',
+      },
+      names: name.split('/'),
+      data: { params },
+    });
   }
 
   onOperation(cb: THandleOperation) {
@@ -24,6 +31,10 @@ class LinkConnection implements IInputConnection {
   }
 
   async start() {
+    return;
+  }
+
+  stop() {
     return;
   }
 
