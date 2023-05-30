@@ -66,7 +66,7 @@ class HttpConnection implements IInputConnection {
     return new Promise<void>(executor);
   }
 
-  stop() {
+  async stop() {
     this.server.close();
   }
 

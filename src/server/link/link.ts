@@ -34,7 +34,7 @@ class LinkConnection implements IInputConnection {
     return;
   }
 
-  stop() {
+  async stop() {
     return;
   }
 
