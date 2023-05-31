@@ -13,7 +13,7 @@ class LinkConnection implements IInputConnection {
         sessionKey: 'sessionKey',
         origin: 'origin',
       },
-      names: name.split('/'),
+      names: name.split('/').filter(Boolean),
       data: { params },
     });
   }

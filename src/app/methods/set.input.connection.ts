@@ -21,8 +21,11 @@ export const createSetInputConnection = (parent: IAppThis) => () => {
   const InConnection = require(serverConfig.path);
   const InApiConnection = apiServerConfig && require(apiServerConfig.path);
   parent.server = new InConnection(serverConfig);
-  parent.apiServer = InApiConnection &&
-      new InApiConnection(apiServerConfig, parent.server!.getServer());
+  if (InApiConnection) {
+    parent.apiServer = new InApiConnection(
+      apiServerConfig, parent.server!.getServer()
+    );
+  }
 
   if (parent.apiServer) {
     parent.server!.setUnavailable('api');

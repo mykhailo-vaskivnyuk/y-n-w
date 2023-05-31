@@ -62,8 +62,8 @@ export default class App {
 
   async stop() {
     await this.apiServer?.stop();
-    this.server?.stop();
-    this.db?.disconnect();
+    await this.server?.stop();
+    await this.db?.disconnect();
   }
 
   private setLogger() {

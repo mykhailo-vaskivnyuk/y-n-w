@@ -2,7 +2,7 @@ import { IOperationData, TTestCase } from '../../types/types';
 
 export const login: TTestCase = (state) => (
   {
-    task: 'login',
+    title: 'login',
     operations: [
       {
         name: '/health',

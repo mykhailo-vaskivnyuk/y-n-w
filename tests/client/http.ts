@@ -1,7 +1,7 @@
 import { TFetch } from '../../src/client/common/client/connection/types';
 
 let Cookie = '';
-export const getConnection = (baseUrl: string): TFetch =>
+const getConnection = (baseUrl: string): TFetch =>
   async (url: string, data: Record<string, any> = {}) => {
     // logData(data, 'REQ');
     const options: RequestInit = {
@@ -24,3 +24,6 @@ export const getConnection = (baseUrl: string): TFetch =>
       throw e;
     }
   };
+
+export const getHttpConnection = (baseUrl: string) =>
+  [getConnection(baseUrl), () => undefined] as const;

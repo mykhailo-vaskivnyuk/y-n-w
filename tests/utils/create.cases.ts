@@ -1,6 +1,8 @@
 import path from 'node:path';
 import fsp from 'node:fs/promises';
 import { ITestCases, TTestCase } from '../types/types';
+import { createCasesTypes } from './create.cases.types';
+import { config } from '../config';
 
 export const EXCLUDE_CASES: string[] = [];
 
@@ -41,3 +43,7 @@ export const createCases = async (dirPath: string): Promise<ITestCases> => {
   // dir.close();
   return cases;
 };
+
+createCases(config.casesPath)
+  .then((cases) => createCasesTypes(config, cases))
+  .catch(console.error);

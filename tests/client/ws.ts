@@ -13,9 +13,7 @@ import {
   HttpResponseError,
 } from '../../src/client/common/client/connection/errors';
 import { EventEmitter } from '../../src/client/common/client/event.emitter';
-import {
-  logData, delay,
-} from '../../src/client/common/client/connection/utils';
+import { delay } from '../../src/client/common/client/connection/utils';
 
 class WsConnection extends EventEmitter {
   private socket!: WebSocket;
@@ -122,7 +120,7 @@ class WsConnection extends EventEmitter {
   async sendRequest(
     pathname: string,
     data: Record<string, any> = {},
-    doLog = true,
+    // doLog = true,
   ): Promise<any> {
     await this.checkConnection();
     const requestId = this.genId();
@@ -161,7 +159,7 @@ class WsConnection extends EventEmitter {
 
 }
 
-export const getConnection = (
+export const getWsConnection = (
   baseUrl: string,
   onConnection: () => void,
   onMessage: (data: any) => void,
