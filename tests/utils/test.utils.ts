@@ -1,8 +1,5 @@
 import { TTransport } from '../../src/server/types';
-import { config } from '../config';
-import { ITestCasesTree } from '../types/test.cases.types';
 import { ITestData } from '../types/types';
-import { createCases } from './create.cases';
 import { runScript } from './utils';
 import { getHttpConnection } from '../client/http';
 import { getWsConnection } from '../client/ws';
@@ -10,15 +7,15 @@ import appConfig from '../../src/config';
 import App from '../../src/app/app';
 import { delay } from '../../src/client/common/client/connection/utils';
 import { getLinkConnection } from '../client/link';
+import { getCasesTree } from './create.cases';
 
 appConfig.logger.level = 'ERROR';
 
 export const getTestCases = async (testData: ITestData, state: any) => {
   const script = `sh tests/db/${testData.dbData}.sh`;
   await runScript(script);
-  const casesTree = await
-    createCases(config.casesPath) as unknown as ITestCasesTree;
-  return testData.cases(casesTree).map((item) => item(state));
+  const casesTree = await getCasesTree();
+  return testData.cases(casesTree as any).map((item) => item(state));
 };
 
 export const getConnection = (transport: TTransport, port: number) => {

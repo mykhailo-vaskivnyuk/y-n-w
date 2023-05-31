@@ -25,8 +25,11 @@ export interface ITestCases {
 
 export interface IOperationData {
   name: string;
-  params: IParams;
-  response: TOperationResponse;
+  params?: IParams | (() => IParams);
+  expected?:
+    | TOperationResponse
+    | ((actual: any) => void);
+  toState?: (response: any) => void;
 }
 
 export interface ITestRunnerData {

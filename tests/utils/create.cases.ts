@@ -4,9 +4,9 @@ import { ITestCases, TTestCase } from '../types/types';
 import { createCasesTypes } from './create.cases.types';
 import { config } from '../config';
 
-export const EXCLUDE_CASES: string[] = [];
+const EXCLUDE_CASES: string[] = [];
 
-export const createCases = async (dirPath: string): Promise<ITestCases> => {
+const createCases = async (dirPath: string): Promise<ITestCases> => {
   const cases: ITestCases = {};
   const casesPath = path.resolve(dirPath);
   const dir = await fsp.opendir(casesPath);
@@ -44,6 +44,9 @@ export const createCases = async (dirPath: string): Promise<ITestCases> => {
   return cases;
 };
 
-createCases(config.casesPath)
-  .then((cases) => createCasesTypes(config, cases))
-  .catch(console.error);
+export const getCasesTree = async () => {
+  const casesTree = await createCases(config.casesPath);
+  await createCasesTypes(config, casesTree);
+  return casesTree;
+};
+

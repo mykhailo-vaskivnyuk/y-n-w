@@ -10,8 +10,7 @@ export const createCasesTypes = (config: ITestConfig, cases: ITestCases) => {
   const executor: TPromiseExecutor<void> = (rv, rj) => {
     const typesPath = config.casesTypesPath;
     const stream = fs.createWriteStream(typesPath);
-    let done = false;
-    const handleFinish = () => (done ? rv() : done = true);
+    const handleFinish = rv;
     const handleError = (e: Error) => {
       stream.close();
       rj(e);

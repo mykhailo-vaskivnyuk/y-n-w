@@ -14,10 +14,14 @@ const runTest = ({
     for (const { title, operations } of testCases) {
       await t.test(title, async (t) => {
         for (const operation of operations) {
-          const { name, params, response: expected } = operation;
+          const { name, params, expected, toState } = operation;
           await t.test(async () => {
-            const actual = await connection(name, params);
-            assert.deepEqual(actual, expected);
+            const data = typeof params === 'function' ? params() : params;
+            const actual = await connection(name, data);
+            toState?.(actual);
+            if (!expected) return;
+            if (typeof expected === 'function') expected(actual);
+            else assert.deepEqual(actual, expected);
           });
         }
       });

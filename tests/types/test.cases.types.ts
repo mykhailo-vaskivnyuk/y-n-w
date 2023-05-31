@@ -8,6 +8,10 @@ export interface ITestCasesTree {
       'login': TTestCase;
     };
   };
+  'invite': {
+    'connect': TTestCase;
+    'create': TTestCase;
+  };
   'net': {
     'create': TTestCase;
   };

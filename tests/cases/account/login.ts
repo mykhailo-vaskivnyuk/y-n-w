@@ -1,18 +1,17 @@
 import { IOperationData, TTestCase } from '../../types/types';
 
-export const login: TTestCase = (state) => (
+export const login: TTestCase = () => (
   {
     title: 'login',
     operations: [
       {
         name: '/health',
-        params: { value: state.value || null },
-        response: 'API IS READY',
+        expected: 'API IS READY',
       },
       {
         name: '/account/login',
         params: { email: 'user02@gmail.com', password: '12345' },
-        response: {
+        expected: {
           email: 'user02@gmail.com',
           mobile: null,
           name: null,
