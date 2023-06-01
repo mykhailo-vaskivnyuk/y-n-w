@@ -14,6 +14,7 @@ import {
 } from '../../src/client/common/client/connection/errors';
 import { EventEmitter } from '../../src/client/common/client/event.emitter';
 import { delay } from '../../src/client/common/client/connection/utils';
+import { createUnicCode } from '../../src/utils/crypto';
 
 class WsConnection extends EventEmitter {
   private socket!: WebSocket;
@@ -23,14 +24,16 @@ class WsConnection extends EventEmitter {
   private attempts = 0;
   private id = 0;
   private requests!: Map<number, (response: IWsResponse) => void>;
+  private sessionKey: string;
 
-  constructor(private baseUrl: string, private sessionKey?: string) {
+  constructor(private baseUrl: string) {
     super();
     this.handleOpen = this.handleOpen.bind(this);
     this.handleError = this.handleError.bind(this);
     this.handleMessage = this.handleMessage.bind(this);
     this.sendRequest = this.sendRequest.bind(this);
     this.closeConnection = this.closeConnection.bind(this);
+    this.sessionKey = createUnicCode(10);
   }
 
   private checkConnection() {
@@ -55,7 +58,7 @@ class WsConnection extends EventEmitter {
 
   closeConnection() {
     this.closed = true;
-    this.socket.close();
+    this.socket?.close();
   }
 
   async createConnection() {
@@ -77,8 +80,8 @@ class WsConnection extends EventEmitter {
   createSocket() {
     clearTimeout(this.pingTimeout);
     this.requests = new Map();
-    const sessionKeyCookie = `sessionKey=${this.sessionKey}`;
-    const headers = this.sessionKey ? { Cookie: `${sessionKeyCookie}` } : {};
+    const Cookie = `sessionKey=${this.sessionKey}`;
+    const headers = { Cookie };
     this.socket = new WebSocket(this.baseUrl, undefined, { headers });
   }
 
@@ -163,9 +166,8 @@ export const getWsConnection = (
   baseUrl: string,
   onConnection: () => void,
   onMessage: (data: any) => void,
-  sessionKey?: string,
 ): [TFetch, () => void] => {
-  const connection = new WsConnection(baseUrl, sessionKey);
+  const connection = new WsConnection(baseUrl);
   connection.on('connection', onConnection);
   connection.on('message', onMessage);
   return [connection.sendRequest, connection.closeConnection];

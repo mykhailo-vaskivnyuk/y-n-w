@@ -7,17 +7,17 @@ import { runScript } from './utils/utils';
 
 const runTest = ({
   title,
-  connection,
+  connections,
   testCases,
 }: ITestRunnerData) =>
   test(title, async (t) => {
-    for (const { title, operations } of testCases) {
-      await t.test(title, async (t) => {
+    for (const [{ title, operations }, conNumber] of testCases) {
+      await t.test(title + ' [' + conNumber + ']', async (t) => {
         for (const operation of operations) {
           const { name, params, expected, toState } = operation;
-          await t.test(async () => {
+          await t.test(name, async () => {
             const data = typeof params === 'function' ? params() : params;
-            const actual = await connection(name, data);
+            const actual = await connections[conNumber]?.(name, data);
             toState?.(actual);
             if (!expected) return;
             if (typeof expected === 'function') expected(actual);
@@ -31,9 +31,9 @@ const runTest = ({
 const runAllTests = async () => {
   runScript('rm tests/db/log.txt');
   for (const testData of TEST_DATA_ARR) {
-    const { testRunnerData, closeTest } = await prepareTest(testData);
+    const { testRunnerData, finalize } = await prepareTest(testData);
     await runTest(testRunnerData);
-    await closeTest();
+    await finalize();
   }
 };
 

@@ -1,4 +1,4 @@
-echo 'start'
+# echo 'start'
 
 cd tests/db
 
@@ -13,4 +13,4 @@ psql -f create.sql -U postgres &>> $LOG
 export PGPASSWORD=merega
 psql -d $DATABASE -f backup.sql -U $USER &>> $LOG
 
-echo 'end'
+# echo 'end'

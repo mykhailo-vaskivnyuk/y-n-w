@@ -5,7 +5,8 @@ import { TTestCase } from './types';
 export interface ITestCasesTree {
   'account': {
     'login': {
-      'login': TTestCase;
+      'user02': TTestCase;
+      'user03': TTestCase;
     };
   };
   'invite': {
@@ -13,6 +14,9 @@ export interface ITestCasesTree {
     'create': TTestCase;
   };
   'net': {
-    'create': TTestCase;
+    'create': {
+      'first': TTestCase;
+      'second': TTestCase;
+    };
   };
 }

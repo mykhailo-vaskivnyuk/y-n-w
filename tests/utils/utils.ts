@@ -1,29 +1,39 @@
 const { spawn } = require('node:child_process');
 
-const runProcess = (commandString: string) => {
+interface IOptions {
+  showLog?: boolean;
+  showErr?: boolean;
+}
+
+const defaultOptions: IOptions = { showLog: true, showErr: true };
+
+const runProcess = (commandString: string, options = defaultOptions) => {
   const [command, ...params] = commandString.split(/\s/);
 
   const ls = spawn(command, params);
 
   ls.stdout.on('data', (data: Buffer) => {
-    console.log(`${data}`);
+    options.showLog && console.log(`${data}`);
   });
 
   ls.stderr.on('data', (data: Buffer) => {
-    console.error('stderr:', `${data}`);
+    options.showErr && console.error('stderr:', `${data}`);
   });
 
   return new Promise((rv) => {
     ls.on('close', (code: number) => {
-      console.log('Exited with code:', `${code}`);
+      options.showLog && console.log('Exited with code:', `${code}`);
       rv(undefined);
     });
   });
 };
 
-export const runScript = async (script: string) => {
+export const runScript = async (
+  script: string,
+  options?: IOptions,
+) => {
   const commands = script.split('\n');
   for (const command of commands) {
-    await runProcess(command);
+    await runProcess(command, options);
   }
 };

@@ -9,7 +9,8 @@ export interface ITestData {
   title: string;
   dbData: string;
   connection: TTransport;
-  cases: (cases: ITestCasesTree) => TTestCase[];
+  connCount?: number;
+  cases: (cases: ITestCasesTree) => ([TTestCase, number] | TTestCase)[];
 }
 
 export type TTestCase = (state: Record<string, any>) => ITestCase;
@@ -34,6 +35,6 @@ export interface IOperationData {
 
 export interface ITestRunnerData {
   title: string;
-  connection: TFetch;
-  testCases: ITestCase[];
+  connections: TFetch[];
+  testCases: [ITestCase, number][];
 }
