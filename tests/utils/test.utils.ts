@@ -18,17 +18,17 @@ export const getConnection = (transport: TTransport, port: number) => {
 };
 
 export const getTestCases =
-  async (testData: ITestData, state: any): Promise<[ITestCase, number][]> => {
+  async (testData: ITestData): Promise<[ITestCase, number][]> => {
     const script = `sh tests/db/${testData.dbData}.sh`;
     await runScript(script, { showLog: false });
     const casesTree = await getCasesTree();
-    return testData.cases(casesTree as any).map(
-      (item) => {
-        if (Array.isArray(item)) {
-          return [item[0](state), item[1]];
-        }
-        return [item(state), 0];
-      });
+    const { connCount, cases } = testData;
+    const stateArr = Array(connCount).fill(0).map(() => ({}));
+    return cases(casesTree as any).map((item) => {
+      const itemArr = Array.isArray(item) ? item : [item] as const;
+      const [getTestCase, connNumber = 0] = itemArr;
+      return [getTestCase(stateArr[connNumber]!), connNumber];
+    });
   };
 
 export const prepareTest = async (testData: ITestData) => {
@@ -49,8 +49,7 @@ export const prepareTest = async (testData: ITestData) => {
   }
 
   /* testCases */
-  const state = {};
-  const testCases = await getTestCases(testData, state);
+  const testCases = await getTestCases(testData);
 
   /* app */
   const app = new App(config);
