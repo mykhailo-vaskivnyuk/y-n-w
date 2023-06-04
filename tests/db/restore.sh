@@ -6,7 +6,7 @@ export PGCLIENTENCODING=utf8
 export DATABASE=merega
 export USER=merega
 
-export PGPASSWORD=admin
+export PGPASSWORD=postgres
 psql -f create.sql -U postgres
 
 export PGPASSWORD=merega

@@ -9,14 +9,13 @@ export interface ITestCasesTree {
       'user03': TTestCase;
     };
   };
-  'invite': {
-    'connect': TTestCase;
-    'create': TTestCase;
-  };
   'net': {
     'create': {
       'first': TTestCase;
       'second': TTestCase;
     };
+  };
+  'invite': {
+    'create': TTestCase;
   };
 }
