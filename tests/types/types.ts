@@ -1,3 +1,4 @@
+import { mock } from 'node:test';
 import { TFetch } from '../../src/client/common/client/connection/types';
 import { TTransport } from '../../src/server/types';
 import {
@@ -7,7 +8,7 @@ import { ITestCasesTree } from './test.cases.types';
 
 export interface ITestData {
   title: string;
-  dbData: string;
+  dbDataFile: string;
   connection: TTransport;
   connCount?: number;
   cases: (cases: ITestCasesTree) => ([TTestCase, number] | TTestCase)[];
@@ -30,11 +31,16 @@ export interface IOperationData {
   expected?:
     | TOperationResponse
     | ((actual: any) => void);
-  toState?: (response: any) => void;
+  setToState?: (actual: any) => void;
+  query?: () => Promise<Record<string, any>[]>;
+  expectedQueryResult?: Record<string, any>[];
 }
 
 export interface ITestRunnerData {
   title: string;
   connections: TFetch[];
+  onConnMessage: TMockFunction[];
   testCases: [ITestCase, number][];
 }
+
+export type TMockFunction = ReturnType<typeof mock.fn<(data: any) => void>>;

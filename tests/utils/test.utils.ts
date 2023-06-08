@@ -1,26 +1,31 @@
+import { mock } from 'node:test';
 import { TTransport } from '../../src/server/types';
-import { ITestCase, ITestData } from '../types/types';
-import { runScript } from './utils';
+import { TFetch } from '../../src/client/common/client/connection/types';
+import { ITestCase, ITestData, ITestRunnerData } from '../types/types';
 import { getHttpConnection as http } from '../client/http';
 import { getWsConnection as ws } from '../client/ws';
+import { getLinkConnection as link } from '../client/link';
 import config from '../../src/config';
 import App from '../../src/app/app';
 import { delay } from '../../src/client/common/client/connection/utils';
-import { getLinkConnection as link } from '../client/link';
+import { runScript } from './utils';
 import { getCasesTree } from './create.cases';
-import { TFetch } from '../../src/client/common/client/connection/types';
+import { setToGlobal } from '../../src/app/methods/utils';
 
-export const getConnection = (transport: TTransport, port: number) => {
+export const getConnection = (
+  transport: TTransport,
+  port: number,
+  onMessage: (data: any) => void,
+) => {
   const map = { http, ws, link };
   const url = `${transport}://localhost:${port}/api/`;
-  const emptyFn = () => false;
-  return map[transport](url, emptyFn, emptyFn);
+  const emptyFn = () => undefined;
+  const [connection, closeConnection] = map[transport](url, emptyFn, onMessage);
+  return [connection, closeConnection, onMessage] as const;
 };
 
 export const getTestCases =
   async (testData: ITestData): Promise<[ITestCase, number][]> => {
-    const script = `sh tests/db/${testData.dbData}.sh`;
-    await runScript(script, { showLog: false });
     const casesTree = await getCasesTree();
     const { connCount, cases } = testData;
     const stateArr = Array(connCount).fill(0).map(() => ({}));
@@ -39,11 +44,26 @@ export const prepareTest = async (testData: ITestData) => {
   logger.level = 'ERROR';
   inConnection.transport = transport;
 
+  /* db */
+  const script = `sh tests/db/${testData.dbDataFile}`;
+  await runScript(script, { showLog: false });
+  const { database } = config;
+  const Database = require(database.path);
+  const db = await new Database(database).init();
+  setToGlobal('execQuery', db.getQueries());
+
   /* connections */
   const connections: TFetch[] = [];
-  const closeConnections: Array<() => void> = [];
+  const closeConnections: (() => void)[] = [];
+  const onConnMessage: ((data: any) => void)[] = [];
   for (let i = 0; i < connCount; i++) {
-    const [connection, closeConnection] = getConnection(transport, port);
+    const onMessage = () => undefined;
+    const onMessageMock = mock.fn(onMessage);
+    onConnMessage.push(onMessageMock);
+    const [
+      connection,
+      closeConnection,
+    ] = getConnection(transport, port, onMessageMock);
     connections.push(connection);
     closeConnections.push(closeConnection);
   }
@@ -56,10 +76,12 @@ export const prepareTest = async (testData: ITestData) => {
   await app.start();
 
   /* result */
-  const testRunnerData = { title, connections, testCases };
+  const testRunnerData =
+    { title, connections, onConnMessage, testCases } as ITestRunnerData;
   const finalize = async () => {
     closeConnections.forEach((fn) => fn());
     await app.stop();
+    await db.disconnect();
     await delay(5000);
   };
 

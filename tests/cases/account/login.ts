@@ -1,4 +1,4 @@
-import { TTestCase } from '../../types/types';
+import { IOperationData, TTestCase } from '../../types/types';
 
 export const user02: TTestCase = () => (
   {
@@ -6,6 +6,7 @@ export const user02: TTestCase = () => (
     operations: [
       {
         name: '/health',
+        params: {},
         expected: 'API IS READY',
       },
       {
@@ -19,7 +20,15 @@ export const user02: TTestCase = () => (
           user_status: 'LOGGEDIN',
         },
       },
-    ],
+      {
+        name: '/chat/connect/user',
+        params: { node_id: 3 },
+      },
+      {
+        name: '/chat/connect/nets',
+        params: { node_id: 3 }
+      }
+    ] as IOperationData[],
   });
 
 export const user03: TTestCase = () => (
@@ -28,6 +37,7 @@ export const user03: TTestCase = () => (
     operations: [
       {
         name: '/health',
+        params: {},
         expected: 'API IS READY',
       },
       {
@@ -41,5 +51,13 @@ export const user03: TTestCase = () => (
           user_status: 'LOGGEDIN',
         },
       },
-    ],
+      {
+        name: '/chat/connect/user',
+        params: { node_id: 5 },
+      },
+      {
+        name: '/chat/connect/nets',
+        params: { node_id: 5 },
+      }
+    ] as IOperationData[],
   });

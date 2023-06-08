@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
 import { resolve } from 'node:path';
 import { IConfig } from './types/config.types';
-import { BUILD_PATH } from './constants/constants';
+import { BUILD_SRC_PATH } from './constants/constants';
 import { createPathResolve } from './utils/utils';
 import { getEnv } from './utils/env.utils';
 
-const resolvePath  = createPathResolve(BUILD_PATH);
+const resolvePath  = createPathResolve(BUILD_SRC_PATH);
 const {
   TRANSPORT: transport,
   HOST: host,

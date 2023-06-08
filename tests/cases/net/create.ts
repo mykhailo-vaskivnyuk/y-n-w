@@ -17,10 +17,24 @@ export const first = (state: any): ITestCase => (
           parent_node_id: null,
           total_count_of_members: 1
         },
-        toState: (actual) => {
+        setToState: (actual) => {
           state.net_id = actual.net_id;
           state.node_id = actual.node_id;
         },
+      },
+      {
+        name: 'query net',
+        query: () => execQuery.net.get([state.net_id]),
+        expectedQueryResult: [{
+          goal: null,
+          name: 'test net',
+          net_id: 2,
+          net_level: 0,
+          node_id: 20,
+          parent_net_id: null,
+          parent_node_id: null,
+          total_count_of_members: 1,
+        }],
       },
       {
         name: '/net/update',
@@ -28,8 +42,8 @@ export const first = (state: any): ITestCase => (
       },
       {
         name: '/net/getTree',
-        params: () => ({ node_id: state?.node_id }),
-        toState: (actual) => state.tree = actual,
+        params: () => ({ node_id: state.node_id }),
+        setToState: (actual) => state.tree = actual,
       }
     ]
   });
@@ -41,17 +55,7 @@ export const second = (state: any): ITestCase => (
       {
         name: '/net/create',
         params: { net_id: null, name: 'test net second' },
-        // expected: {
-        //   goal: null,
-        //   name: 'test net',
-        //   net_id: 2,
-        //   net_level: 0,
-        //   node_id: 20,
-        //   parent_net_id: null,
-        //   parent_node_id: null,
-        //   total_count_of_members: 1
-        // },
-        toState: (actual) => {
+        setToState: (actual) => {
           state.net_id = actual.net_id;
           state.node_id = actual.node_id;
         },
@@ -62,8 +66,8 @@ export const second = (state: any): ITestCase => (
       },
       {
         name: '/net/getTree',
-        params: () => ({ node_id: state?.node_id }),
-        toState: (actual) => state.tree = actual,
+        params: () => ({ node_id: state.node_id }),
+        setToState: (actual) => state.tree = actual,
       }
     ]
   });

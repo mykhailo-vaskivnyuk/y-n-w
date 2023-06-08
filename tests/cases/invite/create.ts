@@ -13,7 +13,7 @@ const create: TTestCase = (state) => (
           member_name: 'first member',
         }),
         expected: (actual) => assert.equal(actual.length > 10, true),
-        toState: (actual) => state.invite = actual,
+        setToState: (actual) => state.invite = actual,
       },
     ],
   });
