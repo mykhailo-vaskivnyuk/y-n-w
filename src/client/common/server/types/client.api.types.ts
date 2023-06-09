@@ -1,5 +1,10 @@
 import * as P from './types';
 
+export type TAccountMessengerLinkGetResponse = string | null;
+export type TAccountMessengerLinkConnect = {
+  chatId: string;
+  token: string;
+};
 export type TEventsRead = {
   date?: string;
 };

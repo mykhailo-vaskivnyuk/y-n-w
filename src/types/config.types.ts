@@ -22,5 +22,6 @@ export interface ICleanedEnv {
   API_UNAVAILABLE: boolean;
   EXIT_ON_ERROR: boolean;
   MAIL_CONFIRM_OFF: boolean;
+  TG_BOT_TOKEN: string;
 }
 export type CleanedEnvKeys = keyof ICleanedEnv;

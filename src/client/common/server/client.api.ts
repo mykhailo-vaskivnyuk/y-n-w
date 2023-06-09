@@ -17,6 +17,15 @@ export const getApi = (
 
     'logout': () => fetch<boolean>('/account/logout'),
 
+    'messenger': {
+      'link': {
+        'get': () => fetch<Q.TAccountMessengerLinkGetResponse>('/account/messenger/link/get'),
+
+        'connect': (options: Q.TAccountMessengerLinkConnect) =>
+          fetch<boolean>('/account/messenger/link/connect', options),
+
+      },
+    },
     'overmail': (options: P.ISignupParams) =>
       fetch<boolean>('/account/overmail', options),
 

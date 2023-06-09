@@ -1,7 +1,9 @@
+/* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
 import * as T from '../../server/types/types';
 import { IClientAppThis } from '../types';
 import { AppStatus } from '../constants';
+import { Messenger } from './messenger.class';
 
 type IApp = IClientAppThis & {
   onNewUser: (readChanges?: boolean) => Promise<void>;
@@ -9,8 +11,11 @@ type IApp = IClientAppThis & {
 
 export class Account {
   private user: T.IUserResponse = null;
+  public messenger: Messenger;
 
-  constructor(private app: IApp) {}
+  constructor(private app: IApp) {
+    this.messenger = new Messenger(app);
+  }
 
   getUser() {
     return this.user;

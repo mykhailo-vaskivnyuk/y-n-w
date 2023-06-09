@@ -1,13 +1,15 @@
 /* eslint-disable max-lines */
 import { IRouterContext } from './types';
 import { IConfig } from '../types/config.types';
-import {
-  AppError, handleAppInitError, setUncaughtErrorHandlers,
-} from './errors';
+import { IOperation } from '../types/operation.types';
 import { ILogger } from '../logger/types';
 import { IDatabase } from '../db/types/types';
 import { IRouter } from '../router/types';
 import { IInputConnection } from '../server/types';
+import {
+  AppError, handleAppInitError,
+  handleOperationError, setUncaughtErrorHandlers,
+} from './errors';
 import { setToGlobal } from './methods/utils';
 import { createSetInputConnection } from './methods/set.input.connection';
 import { loadModule } from '../loader/require';
@@ -19,6 +21,7 @@ export default class App {
   protected router?: IRouter;
   protected server?: IInputConnection;
   protected apiServer?: IInputConnection;
+  private messenger?: IInputConnection;
   protected setInputConnection: () => void;
 
   constructor(config: IConfig) {
@@ -42,6 +45,8 @@ export default class App {
       logger.info('SERVER IS READY TO START');
       await this.setRouter();
       logger.info('ROUTER IS READY');
+      this.setMessenger();
+      logger.info('MESSENGER IS READY');
       this.apiServer && await this.apiServer.start();
       await this.server!.start();
       logger.info('SERVER IS RUNNING');
@@ -63,6 +68,7 @@ export default class App {
   async stop() {
     await this.apiServer?.stop();
     await this.server?.stop();
+    await this.messenger?.stop();
     await this.db?.disconnect();
   }
 
@@ -101,6 +107,25 @@ export default class App {
     };
     const Router = loadModule(__dirname, router.path, context);
     this.router = await new Router(router).init();
+    return this;
+  }
+
+  private setMessenger() {
+    const { tg } = this.config.inConnection;
+    const Messenger = require(tg.path);
+    this.messenger = new Messenger(tg);
+
+    const handleOperation = async (operation: IOperation) => {
+      try {
+        return await this.router!.exec(operation);
+      } catch (e: any) {
+        return handleOperationError(e);
+      }
+    };
+    this.messenger?.onOperation(handleOperation);
+
+    this.messenger?.start();
+
     return this;
   }
 }

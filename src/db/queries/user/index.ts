@@ -5,6 +5,7 @@ import { IQueriesUserNetData } from './netData';
 import { IQueriesUserNets } from './nets';
 import { IQueriesUserToken } from './token';
 import { IQueriesUserEvents } from './events';
+import { IQueriesUserMessenger } from './messenger';
 
 export interface IQueriesUser {
   get: TQuery<[
@@ -35,6 +36,7 @@ export interface IQueriesUser {
   nets: IQueriesUserNets;
   token: IQueriesUserToken;
   events: IQueriesUserEvents;
+  messenger: IQueriesUserMessenger;
 }
 
 export const get = `

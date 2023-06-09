@@ -1,8 +1,10 @@
 import { env } from 'node:process';
+import  envLocal from '../.env';
 import { CleanedEnvKeys, ICleanedEnv } from '../types/config.types';
 
 export const getEnv = () => {
   const DEV = env.NODE_ENV === 'development';
+  Object.assign(env, envLocal);
   const {
     TRANSPORT = 'ws',
     HOST = 'localhost',
@@ -13,6 +15,7 @@ export const getEnv = () => {
     API_UNAVAILABLE = false,
     EXIT_ON_ERROR = false,
     MAIL_CONFIRM_OFF = false,
+    TG_BOT_TOKEN = '',
   } = env as Record<CleanedEnvKeys, any>;
 
   const cleanedEnvObj: ICleanedEnv = {
@@ -26,6 +29,7 @@ export const getEnv = () => {
     API_UNAVAILABLE,
     EXIT_ON_ERROR,
     MAIL_CONFIRM_OFF,
+    TG_BOT_TOKEN,
   };
 
   return cleanedEnvObj;
