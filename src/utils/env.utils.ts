@@ -1,9 +1,17 @@
 import { env } from 'node:process';
-import  envLocal from '../.env';
+import fs from 'node:fs';
 import { CleanedEnvKeys, ICleanedEnv } from '../types/config.types';
 
 export const getEnv = () => {
   const DEV = env.NODE_ENV === 'development';
+  let envLocal;
+  try {
+    const data = fs.readFileSync('.env.json');
+    envLocal = JSON.parse(data.toString());
+  } catch {
+    envLocal = {};
+  }
+
   Object.assign(env, envLocal);
   const {
     TRANSPORT = 'ws',
