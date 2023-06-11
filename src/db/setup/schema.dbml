@@ -30,8 +30,11 @@ Table "users" {
   "mobile" "character varying(50)" [default: NULL]
   "password" "character varying(255)" [default: NULL]
   "confirmed" boolean [not null, default: false]
+  // 10 character ?
+  "chat_id" "character varying(255)" [default: NULL]
   Indexes {
     email [type: btree, unique, name: "users_email_idx"]
+    chat_id [type: btree, unique, name: "users_chat_idx"]
   }
 }
 
@@ -107,8 +110,9 @@ Table "board_messages" {
 
 Table "users_events" {
   "user_id" bigint [primary key, not null]
-  "last_event_date" timestamp [not null]
-  "read_event_date" timestamp [default: NULL]
+  "notification_date" timestamp [not null]
+  // "last_event_date" timestamp [not null]
+  // "read_event_date" timestamp [default: NULL]
 }
 
 Table "members_to_members" {

@@ -9,6 +9,6 @@ export interface IQueriesUserMessenger {
 
 export const connect = `
   UPDATE users
-  SET chatId = $2
+  SET chat_id = $2
   WHERE user_id = $1
 `;

@@ -8,7 +8,7 @@ export const get: THandler<never, string | null> =
     const user_id = session.read('user_id')!;
     const token = createUnicCode(15);
     await execQuery.user.token.create([user_id, token]);
-    return `tg://resolve?domain=u_n_w_bot&start=${12345}`;
+    return `tg://resolve?domain=u_n_w_bot&start=${token}`;
   };
 get.responseSchema = [Joi.string(), JOI_NULL];
 
@@ -17,16 +17,15 @@ type TMessengerLinkConnectParams = {
   token: string;
 }
 
-export const connect: THandler<TMessengerLinkConnectParams, boolean> = async (
-  _, { chatId, token },
-) => {
-  const [user] = await execQuery.user.findByToken([token]);
-  if (!user) return false;
-  const { user_id } = user;
-  await execQuery.user.token.remove([user_id]);
-  await execQuery.user.messenger.connect([user_id, chatId]);
-  return true;
-};
+export const connect: THandler<TMessengerLinkConnectParams, boolean> =
+  async (_, { chatId, token }) => {
+    const [user] = await execQuery.user.findByToken([token]);
+    if (!user) return false;
+    const { user_id } = user;
+    await execQuery.user.token.remove([user_id]);
+    await execQuery.user.messenger.connect([user_id, chatId]);
+    return true;
+  };
 connect.paramsSchema = {
   chatId: Joi.string().required(),
   token: Joi.string().required(),

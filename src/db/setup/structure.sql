@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.5
--- Dumped by pg_dump version 14.5
+-- Dumped from database version 15.1
+-- Dumped by pg_dump version 15.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -241,7 +241,8 @@ CREATE TABLE public.users (
     name character varying(50) DEFAULT NULL::character varying,
     mobile character varying(50) DEFAULT NULL::character varying,
     password character varying(255) DEFAULT NULL::character varying,
-    confirmed boolean DEFAULT false NOT NULL
+    confirmed boolean DEFAULT false NOT NULL,
+    chat_id character varying(255) DEFAULT NULL::character varying
 );
 
 
@@ -253,8 +254,7 @@ ALTER TABLE public.users OWNER TO merega;
 
 CREATE TABLE public.users_events (
     user_id bigint NOT NULL,
-    last_event_date timestamp without time zone NOT NULL,
-    read_event_date timestamp without time zone
+    notification_date timestamp without time zone NOT NULL
 );
 
 
@@ -383,6 +383,14 @@ ALTER TABLE ONLY public.users_tokens
 
 
 --
+-- Name: users uk_chat_id; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT uk_chat_id UNIQUE (chat_id);
+
+
+--
 -- Name: users uk_email; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -446,6 +454,13 @@ CREATE INDEX sk_members_user ON public.members USING btree (user_id);
 --
 
 CREATE INDEX sk_nodes_parent_node ON public.nodes USING btree (parent_node_id NULLS FIRST);
+
+
+--
+-- Name: users_chat_idx; Type: INDEX; Schema: public; Owner: merega
+--
+
+CREATE UNIQUE INDEX users_chat_idx ON public.users USING btree (chat_id);
 
 
 --

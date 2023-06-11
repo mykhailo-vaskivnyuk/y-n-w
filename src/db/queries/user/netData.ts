@@ -23,11 +23,11 @@ export interface IQueriesUserNetData {
 export const findByNode = `
   SELECT
     nodes.*,
-    nodes.net_id::int,
     nodes.node_id::int,
     nodes.parent_node_id::int,
     nets.net_level,
     nets_data.*,
+    nodes.net_id::int,
     members.user_id::int,
     members.confirmed
   FROM members
@@ -45,9 +45,9 @@ export const findByNode = `
 export const getNetAndSubnets = `
   SELECT
     nodes.*,
-    nodes.net_id::int,
     nets.net_level,
     nets_data.*,
+    nodes.net_id::int,
     members.user_id::int,
     members.confirmed
   FROM members

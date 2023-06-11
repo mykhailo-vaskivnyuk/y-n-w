@@ -84,6 +84,7 @@ class LinkConnection implements IInputConnection {
   getConnectionService() {
     return {
       sendMessage: LinkConnection.sendMessage,
+      sendNotification: () => false,
     };
   }
 }

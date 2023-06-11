@@ -72,9 +72,16 @@ class TgConnection implements IInputConnection {
     };
   }
 
+  private sendNotification(chatId: string) {
+    const message = 'There are new events on https://merega.herokuapp.com';
+    this.server.api.sendMessage(chatId, message);
+    return true;
+  }
+
   getConnectionService() {
     return {
       sendMessage: () => false,
+      sendNotification: this.sendNotification.bind(this),
     };
   }
 }

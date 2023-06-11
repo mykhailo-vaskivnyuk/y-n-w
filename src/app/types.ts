@@ -22,6 +22,7 @@ export interface IRouterContext {
   startTransaction: IDatabase['startTransaction'];
   logger: ILogger;
   connectionService: IConnectionService;
+  messengerService: IConnectionService;
   console?: typeof console;
   env?: IConfig['env'];
 }
@@ -31,6 +32,7 @@ export interface IGlobalMixins {
   startTransaction: IDatabase['startTransaction'];
   logger: ILogger;
   connectionService: IConnectionService;
+  messengerService: IConnectionService;
   mailService: IMailService;
   chatService: ChatService;
   env: IConfig['env'];
@@ -41,6 +43,7 @@ declare global {
   const startTransaction: IDatabase['startTransaction'];
   const logger: ILogger;
   const connectionService: IConnectionService;
+  const messengerService: IConnectionService;
   const mailService: IMailService;
   const chatService: ChatService;
   const env: IConfig['env'];

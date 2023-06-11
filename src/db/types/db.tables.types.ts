@@ -42,6 +42,7 @@ export type ITableUsers = {
   mobile: string | null;
   password: string | null;
   confirmed: boolean;
+  chat_id: string | null;
 }
 
 export type ITableNetsData = {
@@ -89,8 +90,7 @@ export type ITableBoardMessages = {
 
 export type ITableUsersEvents = {
   user_id: number;
-  last_event_date: string;
-  read_event_date: string;
+  notification_date: string;
 }
 
 export type ITableUsersTokens = {

@@ -1,4 +1,4 @@
-import { Bot } from 'grammy';
+import { Api, Bot, Context } from 'grammy';
 
 export interface ITgConfig {
   path: string;
@@ -6,5 +6,4 @@ export interface ITgConfig {
   user_name: string;
 }
 
-export type ITgServer = Bot<any, any>;
-
+export type ITgServer = Bot<Context, Api>;

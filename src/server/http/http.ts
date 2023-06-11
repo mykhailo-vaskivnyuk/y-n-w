@@ -101,6 +101,7 @@ class HttpConnection implements IInputConnection {
   getConnectionService() {
     return {
       sendMessage: () => false,
+      sendNotification: () => false,
     };
   }
 }

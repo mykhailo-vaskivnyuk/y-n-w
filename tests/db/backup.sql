@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.5
--- Dumped by pg_dump version 14.5
+-- Dumped from database version 15.1
+-- Dumped by pg_dump version 15.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -241,7 +241,8 @@ CREATE TABLE public.users (
     name character varying(50) DEFAULT NULL::character varying,
     mobile character varying(50) DEFAULT NULL::character varying,
     password character varying(255) DEFAULT NULL::character varying,
-    confirmed boolean DEFAULT false NOT NULL
+    confirmed boolean DEFAULT false NOT NULL,
+    chat_id character varying(255) DEFAULT NULL::character varying
 );
 
 
@@ -253,8 +254,7 @@ ALTER TABLE public.users OWNER TO merega;
 
 CREATE TABLE public.users_events (
     user_id bigint NOT NULL,
-    last_event_date timestamp without time zone NOT NULL,
-    read_event_date timestamp without time zone
+    notification_date timestamp without time zone NOT NULL
 );
 
 
@@ -387,11 +387,11 @@ COPY public.sessions (session_id, user_id, session_key, session_value, updated) 
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.users (user_id, email, name, mobile, password, confirmed) FROM stdin;
-1	user01@gmail.com	\N	\N	ee5d3bb0f5f23cf735caea21a4321116:53be5841d206ea53f4aab75bbe1072dac00f203dcc812ca77c0fab776e566a6cb519348d4a2a9eeb26d549d46792e9fa70092254a1cbc4bb58df316662147fbb	t
-2	user02@gmail.com	\N	\N	8317b53f9189781a5aec6b8c4d1fdd83:235c7d0fff5c8d74fa0de478da7b1269397f6f14cc81f9f1f1d04d96637cfc41de78a375e728eaf0ab985877c5fcfdf40becaf2a458f52c1f36eea5fb96ca9d3	t
-3	user03@gmail.com	\N	\N	428505ea613e395075de8335d6c11f1a:801e1098928a65226c5ea0edb379c5bedfd81e07211b15b80ad5e48e4efc89bb2de79e038da105aaf70a19d59e318c0c45648b1f4c38a14fc1e8a6aadae3ba56	t
-4	user04@gmail.com	\N	\N	72f7b8c5e2f2a7eca7d4f86667274ef2:83ea46cd83030580f8d97fa4d622de348c536377228a759472419275630cd91be64db1bdf304795988b539f35f836883f6f8618ad5aaeb6c50bf5aaf538682ef	t
+COPY public.users (user_id, email, name, mobile, password, confirmed, chat_id) FROM stdin;
+1	user01@gmail.com	\N	\N	ee5d3bb0f5f23cf735caea21a4321116:53be5841d206ea53f4aab75bbe1072dac00f203dcc812ca77c0fab776e566a6cb519348d4a2a9eeb26d549d46792e9fa70092254a1cbc4bb58df316662147fbb	t	\N
+2	user02@gmail.com	\N	\N	8317b53f9189781a5aec6b8c4d1fdd83:235c7d0fff5c8d74fa0de478da7b1269397f6f14cc81f9f1f1d04d96637cfc41de78a375e728eaf0ab985877c5fcfdf40becaf2a458f52c1f36eea5fb96ca9d3	t	\N
+3	user03@gmail.com	\N	\N	428505ea613e395075de8335d6c11f1a:801e1098928a65226c5ea0edb379c5bedfd81e07211b15b80ad5e48e4efc89bb2de79e038da105aaf70a19d59e318c0c45648b1f4c38a14fc1e8a6aadae3ba56	t	\N
+4	user04@gmail.com	\N	\N	72f7b8c5e2f2a7eca7d4f86667274ef2:83ea46cd83030580f8d97fa4d622de348c536377228a759472419275630cd91be64db1bdf304795988b539f35f836883f6f8618ad5aaeb6c50bf5aaf538682ef	t	\N
 \.
 
 
@@ -399,7 +399,7 @@ COPY public.users (user_id, email, name, mobile, password, confirmed) FROM stdin
 -- Data for Name: users_events; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.users_events (user_id, last_event_date, read_event_date) FROM stdin;
+COPY public.users_events (user_id, notification_date) FROM stdin;
 \.
 
 
@@ -550,6 +550,14 @@ ALTER TABLE ONLY public.users_tokens
 
 
 --
+-- Name: users uk_chat_id; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT uk_chat_id UNIQUE (chat_id);
+
+
+--
 -- Name: users uk_email; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -613,6 +621,13 @@ CREATE INDEX sk_members_user ON public.members USING btree (user_id);
 --
 
 CREATE INDEX sk_nodes_parent_node ON public.nodes USING btree (parent_node_id NULLS FIRST);
+
+
+--
+-- Name: users_chat_idx; Type: INDEX; Schema: public; Owner: merega
+--
+
+CREATE UNIQUE INDEX users_chat_idx ON public.users USING btree (chat_id);
 
 
 --

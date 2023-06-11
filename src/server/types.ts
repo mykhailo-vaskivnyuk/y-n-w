@@ -33,4 +33,5 @@ export interface IConnectionService {
   sendMessage: <T extends MessageTypeKeys>(
     data: IMessage<T>, connectionIds?: Set<number>,
   ) => boolean;
+  sendNotification: (chatId: string) => boolean,
 }

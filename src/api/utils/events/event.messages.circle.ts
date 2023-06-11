@@ -4,7 +4,7 @@ import {
   NET_MESSAGES_MAP, INSTANT_EVENTS,
 } from '../../../constants/constants';
 import { sendInstantMessage } from './event.messages.instant';
-import { commitEvents } from './event.messages.other';
+import { commitEvents } from './event.messages.notify';
 
 const createMessageToFacilitator = async (
   event: NetEventKeys,

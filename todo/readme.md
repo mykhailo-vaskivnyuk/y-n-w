@@ -31,6 +31,7 @@
 - combine `getMemberStatus()` on backend with `app.member.getStatus()` on frontend
 - add metadata `handler.allowedForNetUser` and error type `HandlerError('FORBIDDEN')`
 - confirm event - additionaly verify user_id
+- `tg://resolve?domain=u_n_w_bot&start=${token}`
 
 ## CONNECTION
 

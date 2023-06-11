@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.5
--- Dumped by pg_dump version 14.5
+-- Dumped from database version 15.1
+-- Dumped by pg_dump version 15.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -254,8 +254,7 @@ ALTER TABLE public.users OWNER TO merega;
 
 CREATE TABLE public.users_events (
     user_id bigint NOT NULL,
-    last_event_date timestamp without time zone NOT NULL,
-    read_event_date timestamp without time zone
+    notification_date timestamp without time zone NOT NULL
 );
 
 
@@ -400,7 +399,7 @@ COPY public.users (user_id, email, name, mobile, password, confirmed, chat_id) F
 -- Data for Name: users_events; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.users_events (user_id, last_event_date, read_event_date) FROM stdin;
+COPY public.users_events (user_id, notification_date) FROM stdin;
 \.
 
 
@@ -551,14 +550,21 @@ ALTER TABLE ONLY public.users_tokens
 
 
 --
+-- Name: users uk_chat_id; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT uk_chat_id UNIQUE (chat_id);
+
+
+--
 -- Name: users uk_email; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT uk_email UNIQUE (email);
 
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT uk_chat_id UNIQUE (chat_id);
+
 --
 -- Name: members_invites uk_members_invites_token; Type: CONSTRAINT; Schema: public; Owner: merega
 --
@@ -618,11 +624,18 @@ CREATE INDEX sk_nodes_parent_node ON public.nodes USING btree (parent_node_id NU
 
 
 --
+-- Name: users_chat_idx; Type: INDEX; Schema: public; Owner: merega
+--
+
+CREATE UNIQUE INDEX users_chat_idx ON public.users USING btree (chat_id);
+
+
+--
 -- Name: users_email_idx; Type: INDEX; Schema: public; Owner: merega
 --
 
 CREATE UNIQUE INDEX users_email_idx ON public.users USING btree (email);
-CREATE UNIQUE INDEX users_chat_idx ON public.users USING btree (chat_id);
+
 
 --
 -- Name: users_tokens_token_idx; Type: INDEX; Schema: public; Owner: merega

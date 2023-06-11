@@ -13,6 +13,7 @@ import { createMessageToMember } from './event.messages.other';
  * api.net.board.clear
  * api.member.data.vote.set
  * api.member.data.vote.unset
+ * tighten net
  */
 
 export const createEventMessages = async (
@@ -24,5 +25,5 @@ export const createEventMessages = async (
   await createMessagesInTree(event, fromMember, date);
   await createMessagesInCircle(event, fromMember, date);
   createMessageToMember(event, fromMember, date);
-  createInstantMessageInNet(event, fromMember);
+  createInstantMessageInNet(event, fromMember, date);
 };

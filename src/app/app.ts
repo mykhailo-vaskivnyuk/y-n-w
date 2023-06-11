@@ -43,10 +43,12 @@ export default class App {
       logger.info('DATABASE IS READY');
       this.setInputConnection();
       logger.info('SERVER IS READY TO START');
+      this.setMessenger();
+      logger.info('MESSENGER IS READY TO START');
       await this.setRouter();
       logger.info('ROUTER IS READY');
-      this.setMessenger();
-      logger.info('MESSENGER IS READY');
+      this.messenger!.start();
+      logger.info('MESSENGER IS RUNNING');
       this.apiServer && await this.apiServer.start();
       await this.server!.start();
       logger.info('SERVER IS RUNNING');
@@ -94,14 +96,19 @@ export default class App {
     const server = this.apiServer || this.server;
     if (!server)
       throw new AppError('INIT_ERROR', 'SERVER is not INITIALIZED');
-    const connectionService = server.getConnectionService();
 
+    if (!this.messenger)
+      throw new AppError('INIT_ERROR', 'MESSENGER is not INITIALIZED');
+
+    const connectionService = server.getConnectionService();
+    const messengerService = this.messenger!.getConnectionService();
     const { router, env } = this.config;
     const context: IRouterContext = {
       logger,
       execQuery,
       startTransaction: () => this.db!.startTransaction(),
       connectionService,
+      messengerService,
       console,
       env,
     };
@@ -122,10 +129,8 @@ export default class App {
         return handleOperationError(e);
       }
     };
-    this.messenger?.onOperation(handleOperation);
 
-    this.messenger?.start();
-
+    this.messenger!.onOperation(handleOperation);
     return this;
   }
 }

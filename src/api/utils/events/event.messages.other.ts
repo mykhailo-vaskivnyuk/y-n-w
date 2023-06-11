@@ -1,18 +1,11 @@
 import { format } from 'node:util';
 import { IMember } from '../../../db/types/member.types';
 import { NetEventKeys } from '../../../client/common/server/types/types';
+import { ITableNetsData } from '../../../db/types/db.tables.types';
 import {
   NET_MESSAGES_MAP, SET_USER_NODE_ID_FOR,
 } from '../../../constants/constants';
-import { ITableNetsData } from '../../../db/types/db.tables.types';
-
-export const commitEvents = async (user_id: number, date: string) => {
-  await execQuery.user.events.write([user_id, date]);
-  const chatId = chatService.getChatIdOfUser(user_id);
-  if (!chatId) return;
-  const connectionIds = chatService.getChatConnections(chatId);
-  connectionService.sendMessage({ type: 'NEW_EVENTS' }, connectionIds);
-};
+import { commitEvents } from './event.messages.notify';
 
 export const createMessagesToConnected = async (
   event: NetEventKeys,

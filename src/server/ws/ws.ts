@@ -189,6 +189,7 @@ class WsConnection implements IInputConnection {
   getConnectionService() {
     return {
       sendMessage: this.sendMessage.bind(this),
+      sendNotification: () => false,
     };
   }
 }
