@@ -2,9 +2,10 @@ import Joi from 'joi';
 import { THandler } from '../../router/types';
 
 const logout: THandler<never, boolean> = async (
-  { session },
+  { session, connectionId },
 ) => {
   await session.clear();
+  connectionId && chatService.removeConnection(connectionId);
   return true;
 };
 logout.responseSchema = Joi.boolean();

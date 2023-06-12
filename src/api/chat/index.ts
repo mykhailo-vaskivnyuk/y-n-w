@@ -33,3 +33,4 @@ getMessages.responseSchema = ChatGetMessagesResponseSchema;
 export const removeConnection: THandler<never, boolean> =
   async ({ connectionId }) => chatService.removeConnection(connectionId!);
 removeConnection.responseSchema = Joi.boolean();
+removeConnection.allowedForUser = 'NOT_LOGGEDIN';
