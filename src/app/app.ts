@@ -47,7 +47,7 @@ export default class App {
       logger.info('MESSENGER IS READY TO START');
       await this.setRouter();
       logger.info('ROUTER IS READY');
-      this.messenger!.start();
+      await this.messenger!.start();
       logger.info('MESSENGER IS RUNNING');
       this.apiServer && await this.apiServer.start();
       await this.server!.start();

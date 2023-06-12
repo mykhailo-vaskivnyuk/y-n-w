@@ -1,18 +1,17 @@
-import { Bot, Context } from 'grammy';
+import { Bot, BotError, Context } from 'grammy';
 import { THandleOperation } from '../../types/operation.types';
 import { IInputConnection } from '../types';
 import { ITgConfig, ITgServer } from './types';
 import { ServerError } from '../errors';
 
 class TgConnection implements IInputConnection {
-  private config: ITgConfig;
   private exec?: THandleOperation;
   private server: ITgServer;
 
   constructor(config: ITgConfig) {
-    this.config = config;
     this.server = new Bot(config.token);
     this.server.on('message', this.handleRequest.bind(this));
+    this.server.catch(this.handleError.bind(this));
   }
 
   onOperation(cb: THandleOperation) {
@@ -35,7 +34,9 @@ class TgConnection implements IInputConnection {
     }
 
     try {
-      await this.server.start();
+      await new Promise((onStart, onError) => {
+        this.server.start({ onStart }).catch(onError);
+      });
     } catch (e: any) {
       logger.error(e);
       throw new ServerError('LISTEN_ERROR');
@@ -73,9 +74,16 @@ class TgConnection implements IInputConnection {
   }
 
   private sendNotification(chatId: string) {
-    const message = 'There are new events on https://merega.herokuapp.com';
-    this.server.api.sendMessage(chatId, message);
+    const link = '<a href=\'https://merega.herokuapp.com\'>You & World</a>';
+    const message = `There are new events on ${link}`;
+    const parse_mode = 'HTML';
+    this.server.api.sendMessage(chatId, message, { parse_mode });
     return true;
+  }
+
+  private handleError(error: BotError) {
+    const details = (error.error as any)?.message || {};
+    throw new ServerError('SERVER_ERROR', details);
   }
 
   getConnectionService() {

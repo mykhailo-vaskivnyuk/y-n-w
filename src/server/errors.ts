@@ -11,7 +11,6 @@ export const ServerErrorMap = {
   NO_CALLBACK: 'onOperation callback is not set',
   LISTEN_ERROR: 'Can\'t start server',
 } as const;
-
 export type ServerErrorCode = keyof typeof ServerErrorMap;
 
 export const ErrorStatusCodeMap: Partial<Record<ServerErrorCode, number>> = {
