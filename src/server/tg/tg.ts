@@ -1,4 +1,5 @@
-import { Bot, BotError, Context } from 'grammy';
+/* eslint-disable max-lines */
+import { Bot, BotError, Context, InlineKeyboard } from 'grammy';
 import { THandleOperation } from '../../types/operation.types';
 import { IInputConnection } from '../types';
 import { ITgConfig, ITgServer } from './types';
@@ -74,10 +75,14 @@ class TgConnection implements IInputConnection {
   }
 
   private sendNotification(chatId: string) {
-    const link = '<a href=\'https://merega.herokuapp.com\'>You & World</a>';
-    const message = `There are new events on ${link}`;
-    const parse_mode = 'HTML';
-    this.server.api.sendMessage(chatId, message, { parse_mode });
+    const appName = 'You & World';
+    const message = `На сайті ${appName} нові події`;
+    const link = 'https://merega.herokuapp.com';
+    const inlineKyeboard = new InlineKeyboard()
+      .url(appName, link);
+    this.server.api.sendMessage(chatId, message, {
+      reply_markup: inlineKyeboard,
+    });
     return true;
   }
 
