@@ -13,6 +13,8 @@ class TgConnection implements IInputConnection {
     this.server = new Bot(config.token);
     this.server.on('message', this.handleRequest.bind(this));
     this.server.catch(this.handleError.bind(this));
+    // this.server.api.setChatMenuButton();
+    // this.server.callbackQuery('open-app', () => console.log('HERE'));
   }
 
   onOperation(cb: THandleOperation) {
@@ -50,7 +52,11 @@ class TgConnection implements IInputConnection {
 
   private async handleRequest(ctx: Context) {
     const operation = this.getOparation(ctx);
-    if (!operation) return ctx.reply('unknown command');
+    if (!operation) {
+      return ctx.reply('unknown command');
+      // const inlineKyeboard = new InlineKeyboard([[{ text: 'open_app', web_app: { url: 'https://mykhailo-vaskivnyuk.github.io/telegram-web-app-bot-example/index.html' }  }]]);
+      // return ctx.reply('Open App', { reply_markup: inlineKyeboard });
+    }
     try {
       const result = await this.exec!(operation);
       if (!result) await ctx.reply('bad command');
