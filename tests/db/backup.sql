@@ -237,12 +237,12 @@ ALTER TABLE public.sessions ALTER COLUMN session_id ADD GENERATED ALWAYS AS IDEN
 
 CREATE TABLE public.users (
     user_id bigint NOT NULL,
-    email character varying(50) NOT NULL,
+    email character varying(50) DEFAULT NULL::character varying,
     name character varying(50) DEFAULT NULL::character varying,
     mobile character varying(50) DEFAULT NULL::character varying,
     password character varying(255) DEFAULT NULL::character varying,
     confirmed boolean DEFAULT false NOT NULL,
-    chat_id character varying(255) DEFAULT NULL::character varying
+    chat_id character varying(50) DEFAULT NULL::character varying
 );
 
 
