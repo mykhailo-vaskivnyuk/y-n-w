@@ -2,7 +2,7 @@ import { ITableUsers } from '../../../local/imports';
 import { UserStatusKeys } from './user.types';
 
 export type IUserResponse = null |
-  Omit<ITableUsers, 'password'> & {
+  Omit<ITableUsers, 'password' | 'confirmed'> & {
     user_status: UserStatusKeys;
   };
 

@@ -1,12 +1,11 @@
 import Joi from 'joi';
 import { THandler } from '../../../router/types';
-import { createUnicCode } from '../../../utils/crypto';
 import { JOI_NULL } from '../../../router/constants';
 
 export const get: THandler<never, string | null> =
   async ({ session }) => {
     const user_id = session.read('user_id')!;
-    const token = createUnicCode(15);
+    const token = cryptoService.createUnicCode(15);
     await execQuery.user.token.create([user_id, token]);
     return `tg://resolve?domain=u_n_w_bot&start=${token}`;
   };

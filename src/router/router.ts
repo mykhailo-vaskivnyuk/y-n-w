@@ -12,6 +12,8 @@ import { createClientApi } from './methods/create.client.api';
 import { createInputModules, createOutputModules } from './methods/modules';
 import { getServices } from './methods/services';
 import { createRoutes } from './methods/create.routes';
+import { setToGlobal } from '../app/methods/utils';
+import * as cryptoService from '../utils/crypto';
 
 class Router implements IRouter {
   private routes?: IRoutes;
@@ -25,6 +27,7 @@ class Router implements IRouter {
     try {
       const services = getServices(this.config);
       Object.assign(globalThis, services);
+      setToGlobal('cryptoService', cryptoService);
     } catch (e: any) {
       logger.error(e);
       throw new RouterError('SERVICE_ERROR');

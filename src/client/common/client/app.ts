@@ -40,7 +40,7 @@ export class ClientApp extends EventEmitter {
     return {
       status: this.status,
       error: this.error,
-      user: this.account.getUser(),
+      ...this.account.getUser(),
       userStatus: this.userStatus,
       nets: this.userNets.getUserNets(),
       events: this.userEvents.getEvents(),
@@ -132,7 +132,7 @@ export class ClientApp extends EventEmitter {
   }
 
   private setUserStatus() {
-    const user = this.account.getUser();
+    const { user } = this.account.getUser();
     this.userStatus = 'NOT_LOGGEDIN';
     if (!user) return;
     const { net, userNetData } = this.net.getNetState();

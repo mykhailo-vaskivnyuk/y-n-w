@@ -23,7 +23,9 @@ const validateOutput: TOutputModule = () =>
     }
 
     const { responseSchema } = handler || {};
-    if (!responseSchema) throw new Error('Handler is not put');
+    if (!responseSchema) throw new Error('Response schema is not define');
+    const isAny = Object.keys(responseSchema).length === 0;
+    if (isAny) return response;
     const schema = outputSchemaToSchema(responseSchema);
     let result;
     if (Array.isArray(schema)) {

@@ -5,7 +5,6 @@ import {
 import {
   UserResponseSchema, UserUpdateParamsSchema,
 } from '../schema/account.schema';
-import { createHash } from '../../utils/crypto';
 
 export const read: THandler<never, IUserResponse> = async ({ session }) => {
   const user_id = session.read('user_id');
@@ -26,7 +25,7 @@ export const update: THandler<IUserUpdateParams, IUserResponse> =
       data.name || null,
       data.mobile || null,
       data.password ?
-        await createHash(data.password) :
+        await cryptoService.createHash(data.password) :
         user!.password,
     ] as const;
     [user] = await execQuery.user.update([user_id, ...newUserData]);

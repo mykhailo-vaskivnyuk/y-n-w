@@ -1,3 +1,4 @@
+export * from './index.schema';
 export * from './common.schema';
 export * from './account.schema';
 export * from './net.schema';

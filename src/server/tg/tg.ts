@@ -53,9 +53,11 @@ class TgConnection implements IInputConnection {
   private async handleRequest(ctx: Context) {
     const operation = this.getOparation(ctx);
     if (!operation) {
-      return ctx.reply('unknown command');
-      // const inlineKyeboard = new InlineKeyboard([[{ text: 'open_app', web_app: { url: 'https://mykhailo-vaskivnyuk.github.io/telegram-web-app-bot-example/index.html' }  }]]);
-      // return ctx.reply('Open App', { reply_markup: inlineKyeboard });
+      const inlineKyeboard = new InlineKeyboard([
+        [{ text: 'Open App', web_app: { url: 'https://mykhailo-vaskivnyuk.github.io/telegram-web-app-bot-example/index.html' } }],
+        [{ text: 'Login', login_url: { url: 'https://mykhailo-vaskivnyuk.github.io/telegram-web-app-bot-example/index.html'  } }],
+      ]);
+      return ctx.reply('MENU', { reply_markup: inlineKyeboard, });
     }
     try {
       const result = await this.exec!(operation);
@@ -74,7 +76,7 @@ class TgConnection implements IInputConnection {
     const token = text.match(/^\/start (.+)/)?.[1];
     if (!token) return;
     return {
-      options: { sessionKey: 'messenger', origin: 't.me' },
+      options: { sessionKey: 'messenger', origin: 'https://t.me' },
       names: 'account/messenger/link/connect'.split('/'),
       data: { params: { chatId, token } },
     };

@@ -5,7 +5,6 @@ import { THandler } from '../../router/types';
 import {
   SignupParamsSchema, UserResponseSchema,
 } from '../schema/schema';
-import { createUnicCode } from '../../utils/crypto';
 
 const signup: THandler<ISignupParams, IUserResponse> = async (
   { session, origin }, { email },
@@ -13,7 +12,7 @@ const signup: THandler<ISignupParams, IUserResponse> = async (
   const [userExists] = await execQuery.user.findByEmail([email]);
   if (userExists) return null;
 
-  const token = createUnicCode(15);
+  const token = cryptoService.createUnicCode(15);
   const [user] = await execQuery.user.create([email]);
   const { user_id } = user!;
   let user_status: UserStatusKeys;

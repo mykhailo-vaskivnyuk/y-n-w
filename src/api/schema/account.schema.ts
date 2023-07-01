@@ -7,10 +7,11 @@ import { JOI_NULL } from '../../router/constants';
 
 export const UserResponseSchema = [JOI_NULL, {
   user_id: Joi.number(),
-  email: Joi.string(),
+  email: [Joi.string(), JOI_NULL],
   name: [Joi.string(), JOI_NULL],
   mobile: [Joi.string(), JOI_NULL],
   user_status: Joi.string(),
+  chat_id: [Joi.string(), JOI_NULL],
 } as Record<keyof OmitNull<IUserResponse>, TJoiSchema>];
 
 export const SignupParamsSchema = {

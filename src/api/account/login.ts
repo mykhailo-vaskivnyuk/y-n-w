@@ -5,7 +5,6 @@ import { THandler } from '../../router/types';
 import {
   LoginParamsSchema, UserResponseSchema,
 } from '../schema/schema';
-import { verifyHash } from '../../utils/crypto';
 
 const login: THandler<ILoginParams, IUserResponse> =
 async ({ session }, { email, password }) => {
@@ -13,7 +12,7 @@ async ({ session }, { email, password }) => {
   if (!user) return null;
   const { user_id, password: savedPassword, confirmed } = user;
   if (!savedPassword) return null;
-  const verified = await verifyHash(password, savedPassword);
+  const verified = await cryptoService.verifyHash(password, savedPassword);
   if (!verified) return null;
   const user_status: UserStatusKeys = confirmed ?
     'LOGGEDIN' :

@@ -4,7 +4,6 @@ import { THandler } from '../../../router/types';
 import { IMemberInviteParams } from '../../../client/common/server/types/types';
 import { MemberInviteParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
-import { createUnicCode } from '../../../utils/crypto';
 
 const create: THandler<IMemberInviteParams, string | null> = async (
   { userNetData }, { node_id, member_node_id, member_name },
@@ -19,7 +18,7 @@ const create: THandler<IMemberInviteParams, string | null> = async (
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'EMPTY') return null; // bad request
 
-  const token = createUnicCode(15);
+  const token = cryptoService.createUnicCode(15);
   await execQuery.member.invite
     .create([node_id, member_node_id, member_name, token]);
 

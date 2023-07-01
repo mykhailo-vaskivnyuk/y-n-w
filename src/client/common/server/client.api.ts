@@ -10,6 +10,9 @@ export const getApi = (
 ) => ({
   'health': () => fetch<string>('/health'),
 
+  'echo': (options: P.IEchoData) =>
+    fetch<P.IEchoData>('/echo', options),
+
   'account': {
     'confirm': (options: P.ITokenParams) =>
       fetch<P.IUserResponse>('/account/confirm', options),
@@ -22,6 +25,9 @@ export const getApi = (
     'overmail': (options: P.ISignupParams) =>
       fetch<boolean>('/account/overmail', options),
 
+    'overtg': (options: Q.TAccountOvertg) =>
+      fetch<P.IUserResponse>('/account/overtg', options),
+
     'remove': () => fetch<boolean>('/account/remove'),
 
     'restore': (options: P.ITokenParams) =>
@@ -29,6 +35,9 @@ export const getApi = (
 
     'signup': (options: P.ISignupParams) =>
       fetch<P.IUserResponse>('/account/signup', options),
+
+    'signupTg': (options: Q.TAccountSignupTg) =>
+      fetch<P.IUserResponse>('/account/signupTg', options),
 
     'messenger': {
       'link': {

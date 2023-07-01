@@ -17,8 +17,14 @@ export interface IQueriesUser {
   findByToken: TQuery<[
     ['token', string],
   ], ITableUsers>;
+  findByChatId: TQuery<[
+    ['chatId', string],
+  ], ITableUsers>;
   create: TQuery<[
     ['email', string],
+  ], ITableUsers>;
+  createByChatId: TQuery<[
+    ['chat_id', string],
   ], ITableUsers>;
   confirm: TQuery<[
     ['user_id', number],
@@ -58,11 +64,25 @@ export const findByToken = `
   WHERE token = $1
 `;
 
+export const findByChatId = `
+  SELECT *, users.user_id::int
+  FROM users
+  WHERE chat_id = $1
+`;
+
 export const create = `
   INSERT INTO users (
     email
   )
   VALUES ($1)
+  RETURNING *
+`;
+
+export const createByChatId = `
+  INSERT INTO users (
+    chat_id, confirmed
+  )
+  VALUES ($1, true)
   RETURNING *
 `;
 

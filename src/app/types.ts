@@ -33,6 +33,7 @@ export interface IGlobalMixins {
   logger: ILogger;
   connectionService: IConnectionService;
   messengerService: IConnectionService;
+  cryptoService: typeof import('../utils/crypto');
   mailService: IMailService;
   chatService: ChatService;
   env: IConfig['env'];
@@ -44,6 +45,7 @@ declare global {
   const logger: ILogger;
   const connectionService: IConnectionService;
   const messengerService: IConnectionService;
+  const cryptoService: typeof import('../utils/crypto');
   const mailService: IMailService;
   const chatService: ChatService;
   const env: IConfig['env'];

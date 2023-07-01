@@ -11,7 +11,6 @@ const {
   HOST: host,
   PORT: port,
   DATABASE_URL: dbUrl,
-  TG_BOT_TOKEN,
   ...restEnv
 } = getEnv();
 const connection = {
@@ -110,7 +109,7 @@ const config: IConfig = {
     },
     tg: {
       path: resolvePath('server/tg/tg'),
-      token: TG_BOT_TOKEN,
+      token: restEnv.TG_BOT_TOKEN,
       user_name: 'u_n_w_bot',
     }
   },

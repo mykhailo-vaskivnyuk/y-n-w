@@ -4,6 +4,9 @@ import * as T from '../../server/types/types';
 import { IClientAppThis } from '../types';
 import { AppStatus } from '../constants';
 import { Messenger } from './messenger.class';
+import { tgObj } from './tg';
+
+const IS_DEV = process.env.NODE_ENV === 'development';
 
 type IApp = IClientAppThis & {
   onNewUser: (readChanges?: boolean) => Promise<void>;
@@ -12,17 +15,27 @@ type IApp = IClientAppThis & {
 export class Account {
   private user: T.IUserResponse = null;
   public messenger: Messenger;
+  private tg: WebApp | undefined;
 
   constructor(private app: IApp) {
     this.messenger = new Messenger(app);
+    this.tg = IS_DEV ? tgObj.WebApp : Telegram.WebApp;
   }
 
   getUser() {
-    return this.user;
+    return {
+      user: this.user,
+      tg: this.tg,
+    };
   }
 
   async init() {
-    const user = await this.app.api.user.read();
+    let user;
+    if (this.tg) {
+      user = await this.app.api.account.overtg(this.tg);
+    } else {
+      user = await this.app.api.user.read();
+    }
     await this.setUser(user);
   }
 
@@ -69,6 +82,19 @@ export class Account {
       return success;
     } catch (e: any) {
       this.app.setError(e);
+    }
+  }
+
+  async signupTg() {
+    await await this.app.setStatus(AppStatus.LOADING);
+    try {
+      const user = await this.app.api.account.signupTg(this.tg!);
+      user && await this.setUser(user);
+      this.app.setStatus(AppStatus.READY);
+      return user;
+    } catch (e: any) {
+      this.app.setError(e);
+      throw e;
     }
   }
 
