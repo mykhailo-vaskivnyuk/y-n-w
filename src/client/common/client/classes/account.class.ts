@@ -15,11 +15,11 @@ type IApp = IClientAppThis & {
 export class Account {
   private user: T.IUserResponse = null;
   public messenger: Messenger;
-  private tg: WebApp | undefined;
+  private tg: WebApp;
 
   constructor(private app: IApp) {
     this.messenger = new Messenger(app);
-    this.tg = IS_DEV ? tgObj.WebApp : Telegram?.WebApp?.initData;
+    this.tg = IS_DEV ? tgObj.WebApp : Telegram.WebApp;
   }
 
   getUser() {
@@ -31,7 +31,7 @@ export class Account {
 
   async init() {
     let user;
-    if (this.tg) {
+    if (this.tg?.initData) {
       user = await this.app.api.account.overtg(this.tg);
     } else {
       user = await this.app.api.user.read();
