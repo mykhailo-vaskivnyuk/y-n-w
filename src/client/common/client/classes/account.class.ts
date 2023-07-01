@@ -19,7 +19,7 @@ export class Account {
 
   constructor(private app: IApp) {
     this.messenger = new Messenger(app);
-    this.tg = IS_DEV ? tgObj.WebApp : Telegram.WebApp;
+    this.tg = IS_DEV ? tgObj.WebApp : Telegram?.WebApp?.initData;
   }
 
   getUser() {
