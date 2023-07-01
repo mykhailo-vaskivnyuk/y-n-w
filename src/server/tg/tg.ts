@@ -54,7 +54,7 @@ class TgConnection implements IInputConnection {
     const operation = this.getOparation(ctx);
     if (!operation) {
       const inlineKyeboard = new InlineKeyboard([
-        [{ text: 'Open App', web_app: { url: 'https://mykhailo-vaskivnyuk.github.io/telegram-web-app-bot-example/index.html' } }],
+        [{ text: 'Open App', web_app: { url: 'https://merega.herokuapp.com' } }],
         [{ text: 'Login', login_url: { url: 'https://mykhailo-vaskivnyuk.github.io/telegram-web-app-bot-example/index.html'  } }],
       ]);
       return ctx.reply('MENU', { reply_markup: inlineKyeboard, });
