@@ -46,7 +46,7 @@ export const create = `
 
 export const connect = `
   INSERT INTO members (
-    node_id, user_id
+    member_id, user_id
   )
   VALUES ($1, $2)
   RETURNING *

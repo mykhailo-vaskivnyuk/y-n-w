@@ -17,12 +17,12 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
 
     const { parent_net_id, net_id, node_id } = net;
 
-    const [user_exists] = await execQuery.net.find.byUser([user_id, net_id]);
+    const [user_exists] = await execQuery.net.find.byUser([net_id, user_id]);
     if (user_exists) return { net_id, error: 'already connected' };
 
     if (parent_net_id) {
       const [parentNet] = await execQuery
-        .net.find.byUser([user_id, parent_net_id]);
+        .net.find.byUser([parent_net_id, user_id]);
       if (!parentNet) return { net_id, error: 'not parent net member' };
     }
 
