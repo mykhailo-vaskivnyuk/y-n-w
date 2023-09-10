@@ -55,12 +55,20 @@ class TgConnection implements IInputConnection {
     if (!operation) {
       const inlineKyeboard = new InlineKeyboard([
         [{ text: 'Open App', web_app: { url: 'https://merega.herokuapp.com' } }],
-        [{ text: 'Login', login_url: { url: 'https://mykhailo-vaskivnyuk.github.io/telegram-web-app-bot-example/index.html'  } }],
+        [{ text: 'Open TestApp', web_app: { url: 'https://mykhailo-vaskivnyuk.github.io/telegram-web-app-bot-example/index.html'  } }],
+      ]);
+      return ctx.reply('MENU', { reply_markup: inlineKyeboard, });
+    }
+    const { type, data } = operation;
+    if (type === 'open_app') {
+      const { token } = data.data.params;
+      const inlineKyeboard = new InlineKeyboard([
+        [{ text: 'Open App', web_app: { url: token } }],
       ]);
       return ctx.reply('MENU', { reply_markup: inlineKyeboard, });
     }
     try {
-      const result = await this.exec!(operation);
+      const result = await this.exec!(data);
       if (!result) await ctx.reply('bad command');
       else await ctx.reply('success');
     } catch {
@@ -75,10 +83,14 @@ class TgConnection implements IInputConnection {
     if (!text) return;
     const token = text.match(/^\/start (.+)/)?.[1];
     if (!token) return;
+    const type = /^http/.test(token) ? 'open_app' : 'api';
     return {
-      options: { sessionKey: 'messenger', origin: 'https://t.me' },
-      names: 'account/messenger/link/connect'.split('/'),
-      data: { params: { chatId, token } },
+      type,
+      data: {
+        options: { sessionKey: 'messenger', origin: 'https://t.me' },
+        names: 'account/messenger/link/connect'.split('/'),
+        data: { params: { chatId, token } },
+      },
     };
   }
 
