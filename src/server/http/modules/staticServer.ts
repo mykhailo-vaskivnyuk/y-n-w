@@ -33,7 +33,7 @@ export const createStaticServer = (staticPath: string) =>
   ): Promise<void> => {
     const { staticUnavailable } = context.contextParams;
     const { url, headers } = req;
-    const pathname = getUrlInstance(url, headers.host).pathname;
+    const { pathname } = getUrlInstance(url, headers.host);
     const path = pathname.replace(/\/$/, '');
     const {
       found, ext, stream,

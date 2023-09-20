@@ -32,6 +32,6 @@ export type IRequest = http.IncomingMessage;
 export interface IConnectionService {
   sendMessage: <T extends MessageTypeKeys>(
     data: IMessage<T>, connectionIds?: Set<number>,
-  ) => boolean;
-  sendNotification: (chatId: string) => boolean,
+  ) => Promise<boolean>;
+  sendNotification: (chatId: string) => Promise<boolean>,
 }

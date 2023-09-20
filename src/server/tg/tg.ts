@@ -4,12 +4,15 @@ import { THandleOperation } from '../../types/operation.types';
 import { IInputConnection } from '../types';
 import { ITgConfig, ITgServer } from './types';
 import { ServerError } from '../errors';
+import { getOparation } from './getOperation';
+
+const TEST_URL = 'https://mykhailo-vaskivnyuk.github.io/telegram-web-app-bot-example/index.html';
 
 class TgConnection implements IInputConnection {
   private exec?: THandleOperation;
   private server: ITgServer;
 
-  constructor(config: ITgConfig) {
+  constructor(private config: ITgConfig) {
     this.server = new Bot(config.token);
     this.server.on('message', this.handleRequest.bind(this));
     this.server.catch(this.handleError.bind(this));
@@ -51,69 +54,54 @@ class TgConnection implements IInputConnection {
   }
 
   private async handleRequest(ctx: Context) {
-    const operation = this.getOparation(ctx);
-    if (!operation) {
+    const { operation, url } = getOparation(ctx, this.config) || {};
+
+    if (url) {
       const inlineKyeboard = new InlineKeyboard([
-        [{ text: 'Open App', web_app: { url: 'https://merega.herokuapp.com' } }],
-        [{ text: 'Open TestApp', web_app: { url: 'https://mykhailo-vaskivnyuk.github.io/telegram-web-app-bot-example/index.html'  } }],
+        [{ text: 'Open App', web_app: { url } }],
       ]);
       return ctx.reply('MENU', { reply_markup: inlineKyeboard, });
     }
-    const { type, data } = operation;
-    if (type === 'open_app') {
-      const { token } = data.data.params;
-      const inlineKyeboard = new InlineKeyboard([
-        [{ text: 'Open App', web_app: { url: token } }],
-      ]);
-      return ctx.reply('MENU', { reply_markup: inlineKyeboard, });
+
+    if (operation) {
+      try {
+        const result = await this.exec!(operation);
+        if (result) return ctx.reply('success');
+        else return ctx.reply('bad command');
+      } catch (e) {
+        logger.warn(e);
+        return ctx.reply('error');
+      }
     }
-    try {
-      const result = await this.exec!(data);
-      if (!result) await ctx.reply('bad command');
-      else await ctx.reply('success');
-    } catch {
-      await ctx.reply('error');
-    }
+
+    const { origin } = this.config;
+    const inlineKyeboard = new InlineKeyboard([
+      [{ text: 'Open App', web_app: { url: origin } }],
+      [{ text: 'Open TestApp', web_app: { url: TEST_URL  } }],
+    ]);
+    return ctx.reply('MENU', { reply_markup: inlineKyeboard, });
+
   }
 
-  private getOparation(ctx: Context) {
-    const chatId = ctx.chat?.id.toString();
-    if (!chatId) return;
-    const { text } = ctx.message || {};
-    if (!text) return;
-    const token = text.match(/^\/start (.+)/)?.[1];
-    if (!token) return;
-    const type = /^http/.test(token) ? 'open_app' : 'api';
-    return {
-      type,
-      data: {
-        options: { sessionKey: 'messenger', origin: 'https://t.me' },
-        names: 'account/messenger/link/connect'.split('/'),
-        data: { params: { chatId, token } },
-      },
-    };
-  }
-
-  private sendNotification(chatId: string) {
+  private async sendNotification(chatId: string) {
     const appName = 'You & World';
     const message = `На сайті ${appName} нові події`;
-    const link = 'https://merega.herokuapp.com';
-    const inlineKyeboard = new InlineKeyboard()
-      .url(appName, link);
-    this.server.api.sendMessage(chatId, message, {
-      reply_markup: inlineKyeboard,
-    });
+    const { origin } = this.config;
+    const inlineKyeboard = new InlineKeyboard().url(appName, origin);
+    await this.server.api
+      .sendMessage(chatId, message, { reply_markup: inlineKyeboard });
     return true;
   }
 
   private handleError(error: BotError) {
     const details = (error.error as any)?.message || {};
-    throw new ServerError('SERVER_ERROR', details);
+    logger.warn(details);
+    // throw new ServerError('SERVER_ERROR', details);
   }
 
   getConnectionService() {
     return {
-      sendMessage: () => false,
+      sendMessage: () => Promise.resolve(false),
       sendNotification: this.sendNotification.bind(this),
     };
   }

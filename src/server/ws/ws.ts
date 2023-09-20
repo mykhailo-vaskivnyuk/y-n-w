@@ -170,7 +170,7 @@ class WsConnection implements IInputConnection {
     this.isAlive = true;
   }
 
-  private sendMessage<T extends MessageTypeKeys>(
+  private async sendMessage<T extends MessageTypeKeys>(
     data: IMessage<T>, connectionIds?: Set<number>,
   ) {
     try {
@@ -189,7 +189,7 @@ class WsConnection implements IInputConnection {
   getConnectionService() {
     return {
       sendMessage: this.sendMessage.bind(this),
-      sendNotification: () => false,
+      sendNotification: () => Promise.resolve(false),
     };
   }
 }

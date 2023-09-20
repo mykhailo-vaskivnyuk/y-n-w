@@ -65,7 +65,7 @@ class LinkConnection implements IInputConnection {
     return LinkConnection.connections.get(connectionId);
   }
 
-  private static sendMessage<T extends MessageTypeKeys>(
+  private static async sendMessage<T extends MessageTypeKeys>(
     data: IMessage<T>, connectionIds?: Set<number>,
   ) {
     if (!connectionIds) return false;
@@ -84,7 +84,7 @@ class LinkConnection implements IInputConnection {
   getConnectionService() {
     return {
       sendMessage: LinkConnection.sendMessage,
-      sendNotification: () => false,
+      sendNotification: () => Promise.resolve(false),
     };
   }
 }
