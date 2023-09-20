@@ -1,12 +1,15 @@
 import { Readable } from 'node:stream';
-import { IOperation, IParams } from '../../../types/operation.types';
-import { ServerError } from '../../errors';
-import { IRequest } from '../../types';
 import {
-  JSON_TRANSFORM_LENGTH, ReqMimeTypesKeys,
-  REQ_MIME_TYPES_MAP } from '../constants';
+  JSON_TRANSFORM_LENGTH, ReqMimeTypesKeys, REQ_MIME_TYPES_MAP,
+} from '../constants';
+import { IOperation, IParams } from '../../../types/operation.types';
+import { IRequest } from '../../types';
 import { IHttpConfig, IHttpContext, THttpReqModule } from '../types';
+import { ServerError } from '../../errors';
+
+
 import { getJson, getUrlInstance } from '../methods/utils';
+import { pathToArray } from '../../../utils/utils';
 
 let thisConfig: IHttpConfig;
 
@@ -32,42 +35,36 @@ export const getOperation: THttpReqModule = (
       throw new ServerError('BED_REQUEST');
     }
 
+    const isNotJson =
+      contentType !== 'application/json' ||
+      length > JSON_TRANSFORM_LENGTH;
+
+    if (isNotJson) {
+      const content = Readable.from(req);
+      data.stream = { type: contentType, content };
+      return { options, names, data, contextParams };
+    }
+
     try {
-      if (
-        contentType === 'application/json' &&
-        length < JSON_TRANSFORM_LENGTH
-      ) {
-        Object.assign(params, await getJson(req));
-        return { options, names, data, contextParams };
-      }
+      Object.assign(params, await getJson(req));
+      return { options, names, data, contextParams };
     } catch (e: any) {
       logger.error(e);
       throw new ServerError('BED_REQUEST');
     }
-
-    const content = Readable.from(req);
-    data.stream = { type: contentType, content };
-
-    return { options, names, data, contextParams };
   };
 };
 
 const getRequestParams = (req: IRequest, context: IHttpContext) => {
+  const { headers, url } = req;
+  const { origin = '' } = headers;
+  const { pathname, searchParams } = getUrlInstance(url, origin);
   const { options, contextParams } = context;
-  const { origin } = req.headers;
-  const { pathname, searchParams } = getUrlInstance(req.url, origin);
+  const { apiPathname } = thisConfig;
+  const strNames = pathname.replace(`/${apiPathname}/`, '');
+  const names = pathToArray(strNames || 'index');
+  const params: IParams = Object.fromEntries(searchParams);
+  options.origin = origin;
 
-  const names = (pathname
-    .replace('/' + thisConfig?.apiPathname, '')
-    .slice(1) || 'index')
-    .split('/')
-    .filter((path) => Boolean(path));
-
-  const params = {} as IParams;
-  const queryParams = searchParams.entries();
-  for (const [key, value] of queryParams) params[key] = value;
-
-  options.origin = origin || '';
-
-  return { options, names, params, contextParams };
+  return { names, params, options, contextParams };
 };

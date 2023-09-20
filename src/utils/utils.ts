@@ -60,6 +60,12 @@ export const excludeNullUndefined = <T>(
   value: T | null | undefined
 ): value is T => value !== null && value !== undefined;
 
+/**
+ * '/path1/path2/path3/' => ['path1', 'path2', 'path3']
+ */
+export const pathToArray =
+  (pathname: string) => pathname.split('/').filter(Boolean);
+
 export const runHeavyOperation = (
   operation: (index: number) => void,
   callsCount: number | (() => number),

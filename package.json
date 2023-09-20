@@ -23,7 +23,8 @@
     "sync": "npm run rmjs && npm run build && cross-env RUN_ONCE=true PORT=8001 npm start && node src/scripts/js/sync.back.front.js",
     "copy:tofront": "node src/scripts/js/copy.all.to.front.js",
     "copy:toback": "node src/scripts/js/copy.all.to.back.js",
-    "rmjs": "node src/scripts/js/remove.js.js"
+    "rmjs": "node src/scripts/js/remove.js.js",
+    "tunel": "node scripts/tunel.js"
   },
   "repository": {
     "type": "git",

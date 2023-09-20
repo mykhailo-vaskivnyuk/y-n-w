@@ -11,6 +11,8 @@ const {
   HOST: host,
   PORT: port,
   DATABASE_URL: dbUrl,
+  ORIGIN: origin,
+  STATIC_PATH: staticPath,
   ...restEnv
 } = getEnv();
 const connection = {
@@ -66,20 +68,20 @@ const config: IConfig = {
       },
     },
     tasks: [{
-      names: ['member', 'disconnectUnactive'],
-      time: 86_400_000,
-      interval: 86_400_000,
+      path: 'member/disconnectUnactive',
       params: { monthAgo: 2 },
-    }, {
-      names: ['member', 'disconnectNotVote'],
       time: 86_400_000,
       interval: 86_400_000,
+    }, {
+      path: 'member/disconnectNotVote',
       params: { monthAgo: 2 },
-    }, {
-      names: ['net', 'board', 'clear'],
       time: 86_400_000,
       interval: 86_400_000,
+    }, {
+      path: 'net/board/clear',
       params: { weekAgo: 0 },
+      time: 86_400_000,
+      interval: 86_400_000,
     }],
   },
   inConnection: {
@@ -87,7 +89,7 @@ const config: IConfig = {
     http: {
       path: resolvePath('server/http/http'),
       modulesPath: resolvePath('server/http/modules'),
-      staticPath: resolve('public'),
+      staticPath: resolve(staticPath),
       apiPathname: 'api',
       reqModules: [
         'allowCors',
@@ -111,6 +113,7 @@ const config: IConfig = {
       path: resolvePath('server/tg/tg'),
       token: restEnv.TG_BOT_TOKEN,
       user_name: 'u_n_w_bot',
+      origin,
     }
   },
 };

@@ -36,10 +36,10 @@ export interface IRouterConfig {
 }
 
 export interface ITask {
+  path: string,
+  params: IOperation['data']['params'],
   time?: number,
   interval?: number,
-  params: IOperation['data']['params'],
-  names: string[],
 }
 
 export interface IRouter {

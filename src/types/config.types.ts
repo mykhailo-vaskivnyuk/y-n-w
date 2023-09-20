@@ -23,5 +23,7 @@ export interface ICleanedEnv {
   EXIT_ON_ERROR: boolean;
   MAIL_CONFIRM_OFF: boolean;
   TG_BOT_TOKEN: string;
+  ORIGIN: string;
+  STATIC_PATH: string;
 }
 export type CleanedEnvKeys = keyof ICleanedEnv;

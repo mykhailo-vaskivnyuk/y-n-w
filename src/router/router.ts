@@ -13,6 +13,7 @@ import { createInputModules, createOutputModules } from './methods/modules';
 import { getServices } from './methods/services';
 import { createRoutes } from './methods/create.routes';
 import { setToGlobal } from '../app/methods/utils';
+import { pathToArray } from '../utils/utils';
 import * as cryptoService from '../utils/crypto';
 
 class Router implements IRouter {
@@ -63,9 +64,10 @@ class Router implements IRouter {
   }
 
   private async execTask(task: ITask) {
-    const { time, interval = 0, params, names } = task;
-    const context = { isAdmin: true } as IContext;
+    const { time, interval = 0, params, path } = task;
+    const names = pathToArray(path);
     const handler = this.findRoute(names);
+    const context = { isAdmin: true } as IContext;
     setTimeout(() => {
       time !== undefined &&
         handler(context, params).catch((e) => logger.error(e));
