@@ -14,7 +14,7 @@ const getUrlFromArg = (arg: string) => {
 export const getOparation = (ctx: Context, config: ITgConfig) => {
   thisConfig = config;
   const { chat, message } = ctx;
-  const chatId = chat?.id;
+  const chatId = chat?.id.toString();
   if (!chatId) return;
   const { text } = message || {};
   if (!text) return;

@@ -69,7 +69,6 @@ class TgConnection implements IInputConnection {
         if (result) return ctx.reply('success');
         else return ctx.reply('bad command');
       } catch (e) {
-        logger.warn(e);
         return ctx.reply('error');
       }
     }
