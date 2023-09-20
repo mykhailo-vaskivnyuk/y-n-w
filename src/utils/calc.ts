@@ -1,5 +1,5 @@
 export class SyncCalc {
-  constructor(private data: unknown, private error?: unknown) {}
+  constructor(private data?: unknown, private error?: unknown) {}
 
   next(fn: (arg: any) => unknown) {
     if (this.error) return this;

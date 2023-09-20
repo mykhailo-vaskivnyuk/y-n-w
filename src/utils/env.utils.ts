@@ -5,8 +5,10 @@ import { SyncCalc } from './calc';
 
 export const getEnv = () => {
   const DEV = env.NODE_ENV === 'development';
-  new SyncCalc(fs.readFileSync('.env.json'))
-    .next((v) => JSON.parse(v.toString()))
+  new SyncCalc('.env.json')
+    .next((v) => fs.readFileSync(v))
+    .next((v) => v.toString())
+    .next(JSON.parse)
     .next((v) => Object.assign(env, v))
     .onerror(() => env);
 
