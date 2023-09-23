@@ -3,7 +3,7 @@ import { WebSocket } from 'ws';
 import {
   IWsResponse, TFetch,
 } from '../../src/client/common/client/connection/types';
-import { TPromiseExecutor } from '../../src/types/types';
+import { TPromiseExecutor } from '../../src/client/common/types';
 import {
   CONNECTION_ATTEMPT_COUNT, CONNECTION_ATTEMPT_DELAY,
   CONNECTION_TIMEOUT,

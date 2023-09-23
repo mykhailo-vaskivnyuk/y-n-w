@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import { URLSearchParams } from 'node:url';
-import { TPromiseExecutor } from '../types/types';
+import { TPromiseExecutor } from '../../src/client/common/types';
 
 export const createUnicCode = (
   length: number,

@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
 import * as T from '../server/types/types';
+import { TPromiseExecutor } from '../types';
 import { AppStatus } from './constants';
 import { HttpResponseError } from './connection/errors';
 import { EventEmitter } from './event.emitter';
@@ -19,6 +20,7 @@ export class ClientApp extends EventEmitter {
   private status: AppStatus = AppStatus.INITING;
   private error: Error | null = null;
   private userStatus: T.UserStatusKeys = 'NOT_LOGGEDIN';
+  private loadingQueue: (() => void)[] = [];
 
   account: Account;
   userNets: UserNets;
@@ -72,7 +74,8 @@ export class ClientApp extends EventEmitter {
 
     try {
       await this.account.init();
-      this.setStatus(AppStatus.INITED);
+      await this.setStatus(AppStatus.INITED);
+      await this.setStatus(AppStatus.READY);
     } catch (e: any) {
       this.setError(e);
     }
@@ -84,7 +87,7 @@ export class ClientApp extends EventEmitter {
     this.userEvents = new Events(this as any);
   }
 
-  private async setStatus(status: AppStatus) {
+  private async setStatus(status: AppStatus): Promise<void> {
     if (this.status === status) return;
     if (status === AppStatus.ERROR) {
       this.status = status;
@@ -93,20 +96,26 @@ export class ClientApp extends EventEmitter {
     }
     this.error = null;
     if (status === AppStatus.INITED) {
-      this.status = AppStatus.READY;
+      this.status = status;
       return this.emit('statuschanged', this.status);
     }
     if (this.status === AppStatus.INITING) return;
     if (status === AppStatus.READY) {
+      if (this.loadingQueue.length)
+        return this.loadingQueue.shift()!();
       this.status = status;
       return this.emit('statuschanged', this.status);
     }
-    if (this.status === AppStatus.LOADING)
-      await new Promise<void>((rv) => {
-        this.once('statuschanged', rv);
-      });
-    this.status = AppStatus.LOADING;
-    return this.emit('statuschanged', this.status);
+    const executor: TPromiseExecutor<void> = (rv) => {
+      if (this.loadingQueue.length) {
+        this.loadingQueue.push(rv);
+        return;
+      }
+      this.status = status;
+      this.emit('statuschanged', this.status);
+      rv();
+    }
+    return new Promise(executor);
   }
 
   private setError(e: HttpResponseError) {

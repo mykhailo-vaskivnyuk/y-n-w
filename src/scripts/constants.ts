@@ -5,6 +5,7 @@ export const FRONT_PATH = '../node-u-n-w-front/src/app';
 export const BACK_STATIC_PATH = './public';
 export const FRONT_STATIC_PATH = '../node-u-n-w-front/build';
 export const FROM_BACK_TO_FRONT = [
+  'common',
   'common/server',
   'common/server/types',
 ].map((i) => join(BACK_PATH, i));

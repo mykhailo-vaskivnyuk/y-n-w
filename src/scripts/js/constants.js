@@ -6,6 +6,7 @@ exports.frontPath = '../node-u-n-w-front/src/app';
 exports.backStaticPath = './public';
 exports.frontStaticPath = '../node-u-n-w-front/build';
 exports.fromBackToFront = [
+  'common',
   'common/server',
   'common/server/types',
 ].map((i) => join(exports.backPath, i));

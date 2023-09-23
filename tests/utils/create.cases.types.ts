@@ -1,7 +1,7 @@
 
 import fs from 'node:fs';
 import { Writable } from 'node:stream';
-import { TPromiseExecutor } from '../../src/types/types';
+import { TPromiseExecutor } from '../../src/client/common/types';
 import { ITestCases, TTestCase } from '../types/types';
 import { ITestConfig } from '../config';
 import * as tpl from './templates';

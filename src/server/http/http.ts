@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
-import { TPromiseExecutor } from '../../types/types';
+import { TPromiseExecutor } from '../../../src/client/common/types';
 import { IOperation, TOperationResponse } from '../../types/operation.types';
 import {
   IInputConnection, IRequest, TServerService } from '../types';

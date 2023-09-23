@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
+import { TPromiseExecutor } from '../../types';
 import { IWsResponse, TFetch } from './types';
-import { TPromiseExecutor } from '../../../local/imports';
 import {
   CONNECTION_ATTEMPT_COUNT, CONNECTION_ATTEMPT_DELAY,
   CONNECTION_TIMEOUT,

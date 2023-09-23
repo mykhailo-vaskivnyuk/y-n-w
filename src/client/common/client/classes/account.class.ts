@@ -13,11 +13,13 @@ type IApp = IClientAppThis & {
 export class Account {
   private user: T.IUserResponse = null;
   public messenger: Messenger;
-  private tg: WebApp;
+  private tg?: WebApp;
 
   constructor(private app: IApp) {
     this.messenger = new Messenger(app);
-    this.tg = Telegram.WebApp; // IS_DEV ? tgObj.WebApp : Telegram.WebApp;
+    const { WebApp: webApp } = Telegram;
+    // IS_DEV ? tgObj.WebApp : Telegram.WebApp;
+    this.tg = webApp.initData ? webApp : undefined;
   }
 
   getUser() {
@@ -29,7 +31,7 @@ export class Account {
 
   async init() {
     let user;
-    if (this.tg?.initData) {
+    if (this.tg) {
       user = await this.app.api.account.overtg(this.tg);
     } else {
       user = await this.app.api.user.read();
@@ -47,7 +49,7 @@ export class Account {
   async loginOrSignup(
     type: 'login' | 'signup', args: T.ILoginParams | T.ISignupParams,
   ) {
-    await await this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const user = await this.app.api.account[type](args as any);
       user && await this.setUser(user);
@@ -60,7 +62,7 @@ export class Account {
   }
 
   async logoutOrRemove(type: 'logout' | 'remove') {
-    await await this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const success = await this.app.api.account[type]();
       success && await this.setUser(null);
@@ -84,7 +86,7 @@ export class Account {
   }
 
   async signupTg() {
-    await await this.app.setStatus(AppStatus.LOADING);
+    await this.app.setStatus(AppStatus.LOADING);
     try {
       const user = await this.app.api.account.signupTg(this.tg!);
       user && await this.setUser(user);
