@@ -58,7 +58,7 @@ class TgConnection implements IInputConnection {
 
     if (url) {
       const inlineKyeboard = new InlineKeyboard([
-        [{ text: 'Open App', web_app: { url } }],
+        [{ text: url, web_app: { url } }],
       ]);
       return ctx.reply('MENU', { reply_markup: inlineKyeboard, });
     }
@@ -75,7 +75,7 @@ class TgConnection implements IInputConnection {
 
     const { origin } = this.config;
     const inlineKyeboard = new InlineKeyboard([
-      [{ text: 'Open App', web_app: { url: origin } }],
+      [{ text: origin, web_app: { url: origin } }],
       [{ text: 'Open TestApp', web_app: { url: TEST_URL  } }],
     ]);
     return ctx.reply('MENU', { reply_markup: inlineKyeboard, });
