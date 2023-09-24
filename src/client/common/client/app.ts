@@ -119,7 +119,7 @@ export class ClientApp extends EventEmitter {
       this.status = status;
       this.emit('statuschanged', this.status);
       rv();
-    }
+    };
     return new Promise(executor);
   }
 
