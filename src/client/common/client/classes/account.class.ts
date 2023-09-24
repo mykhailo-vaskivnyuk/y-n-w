@@ -2,9 +2,9 @@
 /* eslint-disable import/no-cycle */
 import * as T from '../../server/types/types';
 import { IClientAppThis } from '../types';
-import { AppStatus } from '../constants';
+import { AppStatus, TELEGRAM } from '../constants';
+import { USE_TG } from '../../../local/imports';
 import { Messenger } from './messenger.class';
-// import { tgObj } from './tg';
 
 type IApp = IClientAppThis & {
   onNewUser: (readChanges?: boolean) => Promise<void>;
@@ -17,8 +17,7 @@ export class Account {
 
   constructor(private app: IApp) {
     this.messenger = new Messenger(app);
-    const { WebApp: webApp } = Telegram;
-    // IS_DEV ? tgObj.WebApp : Telegram.WebApp;
+    const { WebApp: webApp } = USE_TG ? TELEGRAM : Telegram;
     this.tg = webApp.initData ? webApp : undefined;
   }
 
