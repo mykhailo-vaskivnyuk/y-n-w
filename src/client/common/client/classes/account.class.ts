@@ -49,8 +49,8 @@ export class Account {
   async loginOrSignup(
     type: 'login' | 'signup', args: T.ILoginParams | T.ISignupParams,
   ) {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const user = await this.app.api.account[type](args as any);
       user && await this.setUser(user);
       this.app.setStatus(AppStatus.READY);
@@ -62,8 +62,8 @@ export class Account {
   }
 
   async logoutOrRemove(type: 'logout' | 'remove') {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const success = await this.app.api.account[type]();
       success && await this.setUser(null);
       this.app.setStatus(AppStatus.READY);
@@ -75,8 +75,8 @@ export class Account {
   }
 
   async overmail(args: T.ISignupParams) {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const success = await this.app.api.account.overmail(args);
       this.app.setStatus(AppStatus.READY);
       return success;
@@ -86,8 +86,8 @@ export class Account {
   }
 
   async signupTg() {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const user = await this.app.api.account.signupTg(this.tg!);
       user && await this.setUser(user);
       this.app.setStatus(AppStatus.READY);
@@ -101,8 +101,8 @@ export class Account {
   async loginOverLink(
     type: 'confirm' | 'restore', args: T.ITokenParams,
   ): Promise<T.IUserResponse> {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const user = await this.app.api.account[type](args);
       user && await this.setUser(user);
       this.app.setStatus(AppStatus.READY);
@@ -114,8 +114,8 @@ export class Account {
   }
 
   async update(data: T.IUserUpdateParams): Promise<T.IUserResponse> {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const user = await this.app.api.user.update(data);
       user && await this.setUser(user);
       this.app.setStatus(AppStatus.READY);

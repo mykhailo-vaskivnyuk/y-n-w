@@ -9,8 +9,8 @@ export class Messenger {
   constructor(private app: IApp) {}
 
   async getLink() {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const token = await this.app.api.account.messenger.link.get();
       this.app.setStatus(AppStatus.READY);
       return token;

@@ -20,7 +20,7 @@ export class ClientApp extends EventEmitter {
   private status: AppStatus = AppStatus.INITING;
   private error: Error | null = null;
   private userStatus: T.UserStatusKeys = 'NOT_LOGGEDIN';
-  private loadingQueue: (() => void)[] = [];
+  private loadingQueue: (Parameters<TPromiseExecutor<void>>)[] = [];
 
   account: Account;
   userNets: UserNets;
@@ -91,6 +91,9 @@ export class ClientApp extends EventEmitter {
     if (this.status === status) return;
     if (status === AppStatus.ERROR) {
       this.status = status;
+      const e = new Error('break');
+      this.loadingQueue.forEach(([, rj]) => rj(e));
+      this.loadingQueue = [];
       this.emit('error', this.error);
       return this.emit('statuschanged', this.status);
     }
@@ -101,14 +104,16 @@ export class ClientApp extends EventEmitter {
     }
     if (this.status === AppStatus.INITING) return;
     if (status === AppStatus.READY) {
-      if (this.loadingQueue.length)
-        return this.loadingQueue.shift()!();
+      if (this.loadingQueue.length) {
+        const [rv] = this.loadingQueue.shift()!;
+        return rv();
+      }
       this.status = status;
       return this.emit('statuschanged', this.status);
     }
-    const executor: TPromiseExecutor<void> = (rv) => {
+    const executor: TPromiseExecutor<void> = (rv, rj) => {
       if (this.loadingQueue.length) {
-        this.loadingQueue.push(rv);
+        this.loadingQueue.push([rv, rj]);
         return;
       }
       this.status = status;

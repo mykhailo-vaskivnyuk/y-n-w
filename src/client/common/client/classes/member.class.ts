@@ -20,8 +20,8 @@ export class Member {
   }
 
   async inviteCreate(args: Pick<T.IMemberInviteParams, 'member_name'>) {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const { net } = this.app.getState();
       const token = await this.app.api.member.invite.create({
         ...args,
@@ -37,8 +37,8 @@ export class Member {
   }
 
   async inviteCancel() {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const { net } = this.app.getState();
       const success = await this.app.api.member.invite
         .cancel({ member_node_id: this.member.node_id, ...net! });
@@ -51,8 +51,8 @@ export class Member {
   }
 
   async inviteConfirm() {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const { net } = this.app.getState();
       const success = await this.app.api.member.invite
         .confirm({ member_node_id: this.member.node_id, ...net! });
@@ -67,8 +67,8 @@ export class Member {
   }
 
   async inviteRefuse() {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const { net } = this.app.getState();
       const success = await this.app.api.member.invite
         .refuse({ member_node_id: this.member.node_id, ...net! });

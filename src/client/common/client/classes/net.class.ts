@@ -106,8 +106,8 @@ export class Net {
   }
 
   async create(args: Omit<T.INetCreateParams, 'node_id'>) {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const parentNet = this.userNet;
       const net = await this.app.api.net.create({
         node_id: null,
@@ -123,8 +123,8 @@ export class Net {
   }
 
   async enter(net_id: number, inChain = false) {
-    !inChain && await this.app.setStatus(AppStatus.LOADING);
     try {
+      !inChain && await this.app.setStatus(AppStatus.LOADING);
       const net = await this.app.api.net.enter({ net_id });
       await this.setNet(net);
       !inChain && this.app.setStatus(AppStatus.READY);
@@ -138,8 +138,8 @@ export class Net {
   }
 
   async getUserData() {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const net_id = this.userNet!.net_id;
       const userNetData = await this.app.api.user.net.getData({ net_id });
       await this.setUserNetData(userNetData);
@@ -152,8 +152,8 @@ export class Net {
   }
 
   async comeout() {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       await this.setNet();
       this.app.setStatus(AppStatus.READY);
       return true;
@@ -164,8 +164,8 @@ export class Net {
   }
 
   async leave() {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const net = this.userNet;
       const success = await this.app.api.net.leave(net!);
       if (success) {
@@ -205,8 +205,8 @@ export class Net {
   }
 
   async connectByInvite(args: T.ITokenParams) {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const result = await this.app.api.net.connectByToken(args);
       const { error } = result || {};
       if (!error) await this.app.onNewNets();
@@ -219,8 +219,8 @@ export class Net {
   }
 
   async update(args: Omit<T.INetUpdateParams, 'node_id'>) {
-    await this.app.setStatus(AppStatus.LOADING);
     try {
+      await this.app.setStatus(AppStatus.LOADING);
       const net = await this.app.api.net.update({ ...this.userNet!, ...args });
       net && this.setNet(net);
       this.app.setStatus(AppStatus.READY);
