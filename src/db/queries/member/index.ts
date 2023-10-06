@@ -1,7 +1,8 @@
+/* eslint-disable max-lines */
 import { TQuery } from '../../types/types';
 import { INodeWithUser } from '../../types/member.types';
 import { ITableMembers } from '../../types/db.tables.types';
-import { userInNetAndItsSubnets } from '../../utils';
+import { userInNet } from '../../utils';
 import { IQueriesMemberData } from './data';
 import { IQueriesMemberInvite } from './invite';
 import { IQueriesMemberFind } from './find';
@@ -67,7 +68,7 @@ export const remove = `
       nodes.node_id = members.member_id
     INNER JOIN nets ON
       nets.net_id = nodes.net_id
-    WHERE ${userInNetAndItsSubnets()}
+    WHERE ${userInNet()}
   )
 `;
 

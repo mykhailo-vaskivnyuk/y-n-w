@@ -7,7 +7,7 @@ import { createMessageToMember } from './event.messages.other';
 
 /**
  * voteNetUser
- * removeNetUser
+ * removeMemberFromNetAndSubnets
  * api.net.board.save
  * api.net.board.remove
  * api.net.board.clear
@@ -16,14 +16,14 @@ import { createMessageToMember } from './event.messages.other';
  * tighten net
  */
 
-export const createEventMessages = async (
+export const createEventMessages = (
   event: NetEventKeys,
   fromMember: IMember,
   eventDate?: string,
 ) => {
   const date = eventDate || new Date().toUTCString();
-  await createMessagesInTree(event, fromMember, date);
-  await createMessagesInCircle(event, fromMember, date);
+  createMessagesInTree(event, fromMember, date);
+  createMessagesInCircle(event, fromMember, date);
   createMessageToMember(event, fromMember, date);
   createInstantMessageInNet(event, fromMember, date);
 };

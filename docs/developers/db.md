@@ -25,8 +25,11 @@
 
 ## LOCK NET
 
-- voute
-- dislike
-- minimize
-- confirm invite
-- remove
+- account/remove
+- net/leave
+- member/data/vote/set
+- member/data/dislik/set
+- member/disconnectNotVote
+- member/disconnectUnactive
+- todo: net/connectByToken
+- todo: member/invite/confirm

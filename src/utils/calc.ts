@@ -5,9 +5,9 @@ export class SyncCalc {
     if (this.error) return this;
     try {
       const data = fn(this.data);
-      return new SyncCalc(data);
+      return this.withData(data);
     } catch (e) {
-      return new SyncCalc(undefined, e);
+      return this.withError(e);
     }
   }
 
@@ -15,10 +15,31 @@ export class SyncCalc {
     if (!this.error) return this;
     try {
       const data = fn(this.error);
-      return new SyncCalc(data);
+      return this.withData(data);
     } catch (e) {
-      return new SyncCalc(undefined, e);
+      return this.withError(e);
     }
+  }
+
+  debug(fn: (data?: any, error?: any) => void) {
+    try {
+      fn(this.data, this.error);
+      return this;
+    } catch {
+      return this;
+    }
+  }
+
+  private withData(data: unknown) {
+    this.error = undefined;
+    this.data = data;
+    return this;
+  }
+
+  private withError(error: unknown) {
+    this.error = error;
+    this.data = undefined;
+    return this;
   }
 
   end() {

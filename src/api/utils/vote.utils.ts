@@ -85,7 +85,7 @@ export const voteNetUser = async (node_id: number, parent_node_id: number) => {
     node_id: parent_node_id,
     parent_node_id: parent_member?.parent_node_id || null,
   };
-  await createEventMessages('CONNECT_VOTE', voteMemeber, date);
+  createEventMessages('CONNECT_VOTE', voteMemeber, date);
 
   if (!parentUserId) return;
 
