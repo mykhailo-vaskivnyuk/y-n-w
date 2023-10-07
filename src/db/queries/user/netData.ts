@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { TQuery } from '../../types/types';
 import {
   IUserNetDataResponse,
@@ -10,7 +11,7 @@ export interface IQueriesUserNetData {
     ['user_id', number],
     ['node_id', number],
   ], IUserNetData>
-  getNetAndSubnets: TQuery<[
+  getFurthestNet: TQuery<[
     ['user_id', number],
     ['net_id', number | null],
   ], IUserNetData>;
@@ -42,7 +43,26 @@ export const findByNode = `
     members.member_id = $2
 `;
 
-export const getNetAndSubnets = `
+// export const getNetAndSubnets = `
+//   SELECT
+//     nodes.*,
+//     nets.net_level,
+//     nets_data.*,
+//     nodes.net_id::int,
+//     members.user_id::int,
+//     members.confirmed
+//   FROM members
+//   INNER JOIN nodes ON
+//     nodes.node_id = members.member_id
+//   INNER JOIN nets ON
+//     nets.net_id = nodes.net_id
+//   INNER JOIN nets_data ON
+//     nets_data.net_id = nets.net_id
+//   WHERE ${userInNetAndItsSubnets()}
+//   ORDER BY nets.net_level DESC
+// `;
+
+export const getFurthestNet = `
   SELECT
     nodes.*,
     nets.net_level,
@@ -59,6 +79,7 @@ export const getNetAndSubnets = `
     nets_data.net_id = nets.net_id
   WHERE ${userInNetAndItsSubnets()}
   ORDER BY nets.net_level DESC
+  LIMIT 1
 `;
 
 export const get = `

@@ -12,7 +12,7 @@
 ## ОПЕРАЦІЇ
 - перестановка вузлів
 - стискання спільноти
-- відєднання юзера від спільноту
+- відєднання юзера від спільноти
 - вхід в спільноту
 - дані юзера по спільноті + кількість отриманих голосів в колі
 - відбір всіх учасників спільноти
@@ -22,3 +22,18 @@
 - відбір всіх учасників дерева
 - відбір учасників з кількістю діслайків в колі / дереві
 - відбір учасників з кількістю голосів в колі
+
+## LOCK NET
+
+- account/remove
+- net/leave
+- net/create
+- member/data/vote/set
+- member/data/dislik/set
+- member/disconnectNotVote
+- member/disconnectUnactive
+- member/invite/confirm
+- net/connectByToken
+- todo: ? net/board/save
+
+? retry receiving net data after locking?

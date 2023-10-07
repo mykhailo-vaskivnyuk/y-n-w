@@ -30,12 +30,9 @@ export interface IQueriesNet {
   get: TQuery<[
     ['net_id', number],
   ], OmitNull<INetResponse>>
-  setBlocked: TQuery<[
+  lock: TQuery<[
     ['net_id', number],
-  ], Pick<ITableNets, 'blocked'>>
-  unsetBlocked: TQuery<[
-    ['net_id', number],
-  ], Pick<ITableNets, 'blocked'>>
+  ]>;
   data: IQueriesNetData;
   circle: IQueriesNetCircle;
   tree: IQueriesNetTree;
@@ -103,16 +100,8 @@ export const get = `
   WHERE nodes.net_id = $1
 `;
 
-export const setBlocked = `
-  UPDATE nets
-  SET blocked = true
-  WHERE net_id = $1 AND blocked = false
-  RETURNING blocked
-`;
-
-export const unsetBlocked = `
-  UPDATE nets
-  SET blocked = false
-  WHERE net_id = $1 AND blocked = true
-  RETURNING blocked
+export const lock = `
+  SELECT * FROM nets
+  WHERE net_id = $1
+  FOR UPDATE
 `;
