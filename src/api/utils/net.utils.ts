@@ -4,6 +4,7 @@ import {
   NetEventKeys, UserStatusKeys,
 } from '../../client/common/server/types/types';
 import { ITableNetsData } from '../../db/types/db.tables.types';
+import { ITransaction } from '../../db/types/types';
 import { HandlerError } from '../../router/errors';
 import { updateCountOfMembers } from './nodes.utils';
 import { createMessagesToConnected } from './events/event.messages.other';
@@ -21,14 +22,14 @@ export const findUserNet = async (
 };
 
 export const updateCountOfNets = async (
-  net_id: number, addCount = 1,
+  t: ITransaction, net_id: number, addCount = 1,
 ): Promise<void> => {
-  const [net] = await execQuery.net.updateCountOfNets(
+  const [net] = await t.execQuery.net.updateCountOfNets(
     [net_id, addCount],
   );
   const { parent_net_id } = net!;
   if (!parent_net_id) return;
-  await updateCountOfNets(parent_net_id, addCount);
+  await updateCountOfNets(t, parent_net_id, addCount);
 };
 
 export const removeConnectedMember = async (

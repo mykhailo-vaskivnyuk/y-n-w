@@ -1,3 +1,4 @@
+import { ITransaction } from '../../db/types/types';
 import { updateCountOfNets } from './net.utils';
 
 const changeLevelFromNode = async (parentNodeId: number) => {
@@ -10,7 +11,7 @@ const changeLevelFromNode = async (parentNodeId: number) => {
   }
 };
 
-export const tightenNodes = async (node_id: number) => {
+export const tightenNodes = async (t: ITransaction, node_id: number) => {
   const [node] = await execQuery.node.getIfEmpty([node_id]);
   if (!node) return false;
   const {
@@ -22,8 +23,9 @@ export const tightenNodes = async (node_id: number) => {
   } = node;
   if (!count_of_members) {
     if (parent_node_id) return true;
-    await updateCountOfNets(net_id, -1);
-    await execQuery.net.remove([net_id]);
+    await execQuery.node.remove([node_id]);
+    await updateCountOfNets(t, net_id, -1);
+    await t.execQuery.net.remove([net_id]);
     return true;
   }
   const [nodeWithMaxCount] = await execQuery.net.tree

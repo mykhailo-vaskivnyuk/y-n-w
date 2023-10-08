@@ -12,7 +12,7 @@ const confirm: THandler<IMemberConfirmParams, boolean> = async (
   { userNetData }, { member_node_id }
 ) => {
   const { net_id, node_id } = userNetData!;
-  await exeWithNetLock(net_id, async () => {
+  return exeWithNetLock(net_id, async (t) => {
     const [member] = await execQuery
       .member.find.inTree([node_id, member_node_id]);
     if (!member) return false; // bad request
@@ -20,9 +20,9 @@ const confirm: THandler<IMemberConfirmParams, boolean> = async (
     if (memberStatus !== 'CONNECTED') return false; // bad request
     await execQuery.member.confirm([member_node_id]);
     await updateCountOfMembers(member_node_id);
-    await createTree(member);
+    await createTree(t, member);
+    return true;
   });
-  return true;
 };
 confirm.paramsSchema = MemberConfirmParamsSchema;
 confirm.responseSchema = Joi.boolean();

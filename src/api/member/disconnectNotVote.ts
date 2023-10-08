@@ -19,7 +19,7 @@ const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
       if (!parentNode) return true;
       const { node_id, net_id } = parentNode;
       // eslint-disable-next-line no-loop-func
-      await exeWithNetLock(net_id, async () => {
+      await exeWithNetLock(net_id, async (t) => {
         const members = await execQuery.net.tree.getMembers([node_id]);
         const nodesToArrange = [node_id];
         for (const member of members) {
@@ -27,7 +27,7 @@ const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
           await removeMemberFromNetAndSubnets(event, user_id, net_id);
           nodesToArrange.push(node_id);
         }
-        await arrangeNodes(nodesToArrange);
+        await arrangeNodes(t, nodesToArrange);
       });
     } while (parentNode);
     return true;

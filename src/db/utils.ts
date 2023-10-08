@@ -16,10 +16,6 @@ export const userInNetAndItsSubnets = (userIndex = 1, netIndex = 2) => `
   )
 `;
 
-export const userInNet = (userIndex = 1, netIndex = 2) => `
-  members.user_id = $${userIndex} AND net_id = $${netIndex}
-`;
-
 const createQueries = (
   filePath: string,
   sqlToQuery: (sql: string, filePath: string) => TQuery,

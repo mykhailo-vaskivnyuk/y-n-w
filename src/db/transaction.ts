@@ -4,29 +4,25 @@ import {
 } from './types/types';
 
 export class Transaction implements ITransaction {
-  public execQuery: IDatabaseQueries;
 
   constructor(
     private connection: ITransactionConnection,
-    queries: IDatabaseQueries,
+    public execQuery: IDatabaseQueries,
   ) {
-    let pointer: any = queries;
     const handler = {
       get(
-        target: ITransaction,
-        name: string,
-        receiver: ITransaction,
+        target: IDatabaseQueries,
+        name: keyof IDatabaseQueries,
       ) {
-        if (!pointer[name]) return;
-        if (typeof pointer[name] !== 'function') {
-          pointer = pointer[name];
-          return receiver;
-        }
-        return (...args: any[]) =>
-          pointer[name](...args, connection);
+        if (!(name in target)) return;
+        const newTarget = target[name];
+        if (typeof newTarget !== 'function')
+          return new Proxy(newTarget, handler as any);
+        const func = newTarget as any;
+        return (...args: any[]) => func(...args, connection);
       }
     };
-    this.execQuery = new Proxy({} as IDatabaseQueries, handler as any);
+    this.execQuery = new Proxy(execQuery, handler as any);
   }
 
   public async commit() {

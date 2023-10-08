@@ -14,7 +14,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
 ) => {
   const { net_id, node_id, parent_node_id } = userNetData!;
   if (!parent_node_id) return false; // bad request
-  const result = await exeWithNetLock(net_id, async () => {
+  return await exeWithNetLock(net_id, async () => {
     const [member] = await execQuery
       .member.find.inCircle([parent_node_id, member_node_id]);
     if (!member) return false; // bad request
@@ -24,10 +24,10 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
     await execQuery.member.data.unsetVote([node_id, member_node_id]);
     await execQuery.member.data
       .setVote([parent_node_id, node_id, member_node_id]);
-    return checkVotes(parent_node_id);
+    const result = await checkVotes(parent_node_id);
+    !result && createEventMessages('VOTE', userNetData!);
+    return true;
   });
-  !result && createEventMessages('VOTE', userNetData!);
-  return true;
 };
 set.paramsSchema = MemberConfirmParamsSchema;
 set.responseSchema = Joi.boolean();

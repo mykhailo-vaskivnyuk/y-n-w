@@ -11,7 +11,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
   { userNetData }, { node_id, member_node_id }
 ) => {
   const { net_id, parent_node_id } = userNetData!;
-  await exeWithNetLock(net_id, async () => {
+  return exeWithNetLock(net_id, async (t) => {
     let [member] = await execQuery
       .member.find.inTree([node_id, member_node_id]);
     const parentNodeId = member ? node_id : parent_node_id;
@@ -25,9 +25,9 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
     if (memberStatus !== 'ACTIVE') return false; // bad request
     await execQuery.member.data
       .setDislike([parentNodeId!, node_id, member_node_id]);
-    await arrangeNodes([parentNodeId]);
+    await arrangeNodes(t, [parentNodeId]);
+    return true;
   });
-  return true;
 };
 set.paramsSchema = MemberConfirmParamsSchema;
 set.responseSchema = Joi.boolean();

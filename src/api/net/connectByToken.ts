@@ -17,7 +17,7 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
     if (!net) return null;
     const { parent_net_id, net_id, node_id } = net;
 
-    await exeWithNetLock(net_id, async () => {
+    return exeWithNetLock(net_id, async () => {
       const [user_exists] = await execQuery.net.find.byUser([net_id, user_id]);
       if (user_exists) return { net_id, error: 'already connected' };
 
@@ -34,9 +34,8 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
       await execQuery.member.connect([node_id, user_id]);
 
       // createEventMessages
+      return { net_id };
     });
-
-    return { net_id };
   };
 connectByToken.paramsSchema = TokenParamsSchema;
 connectByToken.responseSchema = [JOI_NULL, {

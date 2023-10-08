@@ -26,5 +26,6 @@ export class HttpResponseError extends Error {
   }
 }
 
-export const isHttpResponseError = (error: Error): error is HttpResponseError =>
-  error instanceof HttpResponseError;
+export const isHttpResponseError =
+  (error?: Error | null): error is HttpResponseError =>
+    error instanceof HttpResponseError;
