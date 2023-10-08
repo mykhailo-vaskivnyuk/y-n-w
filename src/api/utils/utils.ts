@@ -22,7 +22,7 @@ export const exeWithNetLock =
   };
 
 export const checkDislikes = async (
-  parent_node_id: number,
+  t: ITransaction, parent_node_id: number,
 ): Promise<(number | null)[]> => {
   const members = await execQuery.net.branch.getDislikes([parent_node_id]);
   const count = members.length;
@@ -32,7 +32,7 @@ export const checkDislikes = async (
   const disliked = Math.ceil(dislike_count / (count - dislike_count)) > 1;
   if (!disliked) return [];
   const event = 'DISLIKE';
-  return removeMemberFromNetAndSubnets(event, user_id, net_id);
+  return removeMemberFromNetAndSubnets(t, event, user_id, net_id);
 };
 
 export const arrangeNodes = async (
@@ -44,13 +44,14 @@ export const arrangeNodes = async (
     if (!node_id) continue;
     const isTighten = await tightenNodes(t, node_id);
     if (isTighten) continue;
-    const newNodesToArrange = await checkDislikes(node_id);
+    const newNodesToArrange = await checkDislikes(t, node_id);
     nodesToArrange = [...newNodesToArrange, ...nodesToArrange];
     await checkVotes(node_id);
   }
 };
 
 export const removeMemberFromNetAndSubnets = async (
+  t: ITransaction,
   event: NetEventKeys,
   user_id: number,
   root_net_id: number | null,
@@ -67,25 +68,22 @@ export const removeMemberFromNetAndSubnets = async (
     }
     const { net_id } = userNetData;
     if (net_id === root_net_id) break;
-    // eslint-disable-next-line no-loop-func
-    await exeWithNetLock(net_id, async (t) =>
-      removeMemberFromNet(event, userNetData!, date)
-        .then((nodesToArrange) => arrangeNodes(t, nodesToArrange))
-    );
-
+    const nodesToArrange = await removeMemberFromNet(event, userNetData!, date);
+    await arrangeNodes(t, nodesToArrange);
   } while (userNetData);
 
   return removeMemberFromNet(event, userNetData, date);
 };
 
-export const removeMember = async (
+export const removeMember = (
   event: NetEventKeys,
   user_id: number,
   net_id: number | null = null,
 ) => {
   const date = new Date().toUTCString();
-  await exeWithNetLock(net_id, async (t) => {
-    await removeMemberFromNetAndSubnets(event, user_id, net_id, date)
-      .then((nodesToArrange) => arrangeNodes(t, nodesToArrange));
+  return exeWithNetLock(net_id, async (t) => {
+    const nodesToArrange =
+      await removeMemberFromNetAndSubnets(t, event, user_id, net_id, date);
+    await arrangeNodes(t, nodesToArrange);
   });
 };

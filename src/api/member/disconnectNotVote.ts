@@ -24,7 +24,7 @@ const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
         const nodesToArrange = [node_id];
         for (const member of members) {
           const { user_id, node_id } = member;
-          await removeMemberFromNetAndSubnets(event, user_id, net_id);
+          await removeMemberFromNetAndSubnets(t, event, user_id, net_id);
           nodesToArrange.push(node_id);
         }
         await arrangeNodes(t, nodesToArrange);
