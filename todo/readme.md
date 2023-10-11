@@ -116,6 +116,7 @@
 ## UI
 
 - create `<IconMenuItem />`
+- clip text if long;
 
 ## ROUTING
 
