@@ -10,11 +10,12 @@ import {
   PartialUserNetStatusKeys, PartialUserStatusKeys, UserStatusKeys,
 } from '../client/common/server/types/types';
 import { IMailService } from '../services/mail/types';
+import { ChatService } from '../services/chat/chat';
+import { Session } from '../services/session/session';
+import { NotificationService } from '../services/notification/notification';
 import {
   TInputModulesKeys, TOutputModulesKeys, TServicesKeys,
 } from './constants';
-import { ChatService } from '../services/chat/chat';
-import { Session } from '../services/session/session';
 
 export interface IRouterConfig {
   path: string;
@@ -91,6 +92,7 @@ export type ISessionContent = Partial<{
 export interface IServices {
   mailService?: IMailService,
   chatService?: ChatService,
+  notificationService?: NotificationService,
 }
 
 export type TInputModule<T = any> = (config: T) =>

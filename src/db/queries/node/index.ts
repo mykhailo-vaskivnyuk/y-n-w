@@ -83,9 +83,9 @@ export const getChild = `
 export const move = `
   UPDATE nodes
   SET
-    node_level = $2
-    parent_node_id = $3
-    node_position = $4
+    node_level = $2,
+    parent_node_id = $3,
+    node_position = $4,
     count_of_members = $5
   WHERE node_id = $1
 `;

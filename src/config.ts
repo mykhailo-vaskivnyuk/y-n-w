@@ -49,7 +49,11 @@ const config: IConfig = {
     servicesPath: resolvePath('services'),
     modulesPath: resolvePath('router/modules'),
     clientApiPath: resolve('src/client/common/server/client.api.ts'),
-    services: ['mailService', 'chatService'],
+    services: [
+      'mailService',
+      'chatService',
+      'notificationService',
+    ],
     inputModules: [
       'setSession',
       'checkAuthorized',
@@ -57,7 +61,10 @@ const config: IConfig = {
       'validateInput',
       'setUserNet',
     ],
-    outputModules: ['validateOutput'],
+    outputModules: [
+      'validateOutput',
+      'sendEvents',
+    ],
     modulesConfig: {
       mailService: {
         service: 'gmail',

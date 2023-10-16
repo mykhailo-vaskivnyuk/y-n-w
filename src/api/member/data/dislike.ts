@@ -3,6 +3,7 @@ import { THandler } from '../../../router/types';
 import {
   IMemberConfirmParams,
 } from '../../../client/common/server/types/types';
+import { NetEvent } from '../../../services/event/event';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
 import { arrangeNodes, exeWithNetLock } from '../../utils/utils';
@@ -25,7 +26,9 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
     if (memberStatus !== 'ACTIVE') return false; // bad request
     await execQuery.member.data
       .setDislike([parentNodeId!, node_id, member_node_id]);
-    await arrangeNodes(t, [parentNodeId]);
+    const event = new NetEvent(net_id, 'DISLIKE');
+    await arrangeNodes(t, event, [parentNodeId]);
+    await event.write(t);
     return true;
   });
 };

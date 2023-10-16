@@ -3,6 +3,7 @@ import { THandler } from '../../../router/types';
 import {
   IMemberConfirmParams,
 } from '../../../client/common/server/types/types';
+import { NetEvent } from '../../../services/event/event';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
 import { removeConnectedMember } from '../../utils/net.utils';
@@ -17,8 +18,10 @@ const refuse: THandler<IMemberConfirmParams, boolean> = async (
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'CONNECTED') return false; // bad request
 
-  const { user_id } = member;
-  await removeConnectedMember('REFUSE', userNetData!, user_id!);
+  const { user_id, net_id } = member;
+  const event = new NetEvent(net_id, 'REFUSE');
+  await removeConnectedMember(event, userNetData!, user_id!);
+  await event.write();
   return true;
 };
 refuse.paramsSchema = MemberConfirmParamsSchema;

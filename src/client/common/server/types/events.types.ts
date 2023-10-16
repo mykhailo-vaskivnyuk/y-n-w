@@ -24,6 +24,12 @@ export type IEvent =
     net_view: NetViewKeys;
     event_type: NetEventKeys;
   };
+export type IEventRecord = Omit<IEvent,
+  | 'event_id'
+  | 'event_type'
+  | 'net_id'
+  | 'date'
+>;
 export type IEvents = IEvent[];
 
 export type IEventMessage = {

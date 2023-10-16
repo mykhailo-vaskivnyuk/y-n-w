@@ -10,11 +10,7 @@ export type IMember =
   T.ITableNodes &
   Pick<T.ITableMembers, 'user_id' | 'confirmed'>;
 
-export interface IMemberAndNet {
-  node_id: number;
-  parent_node_id: number | null;
-  net_id: number;
-}
+export type IMemberNode = T.ITableNodes;
 
 export type INodeWithUser =
   T.ITableNodes &

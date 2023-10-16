@@ -5,6 +5,7 @@ import { IRouter } from '../router/types';
 import { IInputConnection, IConnectionService } from '../server/types';
 import { IMailService } from '../services/mail/types';
 import { ChatService } from '../services/chat/chat';
+import { NotificationService } from '../services/notification/notification';
 import App from './app';
 
 export type IAppThis = App & {
@@ -48,5 +49,6 @@ declare global {
   const cryptoService: typeof import('../utils/crypto');
   const mailService: IMailService;
   const chatService: ChatService;
+  const notificationService: NotificationService;
   const env: IConfig['env'];
 }

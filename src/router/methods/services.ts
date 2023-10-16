@@ -10,7 +10,7 @@ export const getServices = (config: IRouterConfig) => {
       const moduleConfig = modulesConfig[service];
       const servicePath = resolvePath(SERVICES_MAP[service]);
       const moduleExport = require(servicePath).default;
-      contextObj[service] = moduleExport(moduleConfig);
+      contextObj[service] = moduleExport(moduleConfig, contextObj);
       return contextObj;
     }, {});
 };

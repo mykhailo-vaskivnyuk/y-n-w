@@ -1,6 +1,7 @@
 import Joi from 'joi';
-import { IMember, IMemberAndNet } from '../../../db/types/member.types';
+import { IMember, IMemberNode } from '../../../db/types/member.types';
 import { THandler } from '../../../router/types';
+import { NetEvent } from '../../../services/event/event';
 import { createEventMessages } from '../../utils/events/event.messages.create';
 
 const clear: THandler<{ weekAgo: number }, boolean> =
@@ -10,14 +11,17 @@ const clear: THandler<{ weekAgo: number }, boolean> =
    const day = date.getDate();
    date.setDate(day - weekAgo * 7);
    const strDate = date.toUTCString();
-   let memberAndNet: IMemberAndNet & { message_id: number} | undefined;
+   let memberMessage: (IMemberNode & { message_id: number}) | undefined;
    do {
-     [memberAndNet] = await execQuery.net.boardMessages.findUnactive([strDate]);
-     if (!memberAndNet) return true;
-     const { message_id, ...member } = memberAndNet;
+     [memberMessage] =
+       await execQuery.net.boardMessages.findUnactive([strDate]);
+     if (!memberMessage) return true;
+     const { message_id, ...memberNode } = memberMessage;
      await execQuery.net.boardMessages.clear([message_id]);
-     createEventMessages('BOARD_MESSAGE', member as IMember);
-   } while (memberAndNet);
+     const event = new NetEvent(memberNode.net_id, 'BOARD_MESSAGE');
+     await createEventMessages(event, memberNode as IMember);
+     await event.write();
+   } while (memberMessage);
    return true;
  };
 clear.paramsSchema = { weekAgo: Joi.number().required() };

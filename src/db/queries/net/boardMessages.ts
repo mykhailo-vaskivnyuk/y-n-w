@@ -1,6 +1,6 @@
 import { TQuery } from '../../types/types';
 import { ITableBoardMessages } from '../../types/db.tables.types';
-import { IMemberAndNet } from '../../types/member.types';
+import { IMemberNode } from '../../types/member.types';
 
 export interface IQueriesNetBoard {
   create: TQuery<[
@@ -22,7 +22,7 @@ export interface IQueriesNetBoard {
   ], ITableBoardMessages>;
   findUnactive: TQuery<[
     ['date', string],
-  ], IMemberAndNet & { message_id: number }>;
+  ], IMemberNode & { message_id: number }>;
   clear: TQuery<[
     ['message_id', number],
   ]>;
@@ -60,9 +60,10 @@ export const get = `
 export const findUnactive = `
   SELECT
     bm.message_id,
+    nodes.*,
     nodes.net_id::int,
     nodes.node_id::int,
-    nodes.parent_node_id::int
+    nodes.parent_node_id::int,
   FROM board_messages AS bm
   INNER JOIN nodes ON
     nodes.node_id = bm.member_id

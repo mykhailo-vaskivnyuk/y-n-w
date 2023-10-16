@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { THandler } from '../../../router/types';
 import { IBoardSaveParams } from '../../../client/common/server/types/types';
+import { NetEvent } from '../../../services/event/event';
 import { BoardSaveParamsSchema } from '../../schema/schema';
 import { createEventMessages } from '../../utils/events/event.messages.create';
 
@@ -12,7 +13,9 @@ const save: THandler<IBoardSaveParams, boolean> = async (
     await execQuery.net.boardMessages.update([message_id, node_id, message]);
   else
     await execQuery.net.boardMessages.create([net_id, node_id, message]);
-  createEventMessages('BOARD_MESSAGE', userNetData!);
+  const event = new NetEvent(net_id, 'BOARD_MESSAGE');
+  await createEventMessages(event, userNetData!);
+  await event.write();
   return true;
 };
 save.paramsSchema = BoardSaveParamsSchema;
