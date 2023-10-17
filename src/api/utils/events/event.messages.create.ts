@@ -1,8 +1,8 @@
 import { IMember } from '../../../db/types/member.types';
-import { NetEventKeys } from '../../../client/common/server/types/types';
+import { NetEvent } from '../../../services/event/event';
 import { createMessagesInTree } from './event.messages.tree';
 import { createMessagesInCircle } from './event.messages.circle';
-import { createInstantMessageInNet } from './event.messages.instant';
+import { createInstantMessageInNet } from './event.messages.other';
 import { createMessageToMember } from './event.messages.other';
 
 /**
@@ -16,14 +16,31 @@ import { createMessageToMember } from './event.messages.other';
  * tighten net
  */
 
-export const createEventMessages = (
-  event: NetEventKeys,
-  fromMember: IMember,
-  eventDate?: string,
+/*
+createMessagesInTree
+  execQuery.events.create
+  commitEvents(user_id, date)
+createMessagesInCircle
+  createMessageToFacilitator
+  cretaeMessagesToCircleMember
+    sendInstantMessage
+    execQuery.events.create
+    commitEvents(user_id, date)
+    execQuery.events.create
+    commitEvents(user_id, date)
+createMessageToMember
+  execQuery.events.create
+  commitEvents(user_id, date)
+createInstantMessageInNet
+  sendInstantMessageInNet
+*/
+
+export const createEventMessages = async (
+  event: NetEvent,
+  from: IMember,
 ) => {
-  const date = eventDate || new Date().toUTCString();
-  createMessagesInTree(event, fromMember, date);
-  createMessagesInCircle(event, fromMember, date);
-  createMessageToMember(event, fromMember, date);
-  createInstantMessageInNet(event, fromMember, date);
+  await createMessagesInCircle(event, from);
+  await createMessagesInTree(event, from);
+  await createMessageToMember(event, from);
+  createInstantMessageInNet(event, from);
 };

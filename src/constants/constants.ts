@@ -23,7 +23,8 @@ export const NET_MESSAGES_MAP:
     REFUSE: {
       CONNECTED: 'Вас від\'єднано від мережі %s через відмову координатора',
     },
-    DISLIKE: {
+    DISLIKE: {},
+    DISLIKE_DISCONNECT: {
       TREE: 'Вашого координатора від\'єднано через діслайки',
       CONNECTED: `Вас від'єднано від мережі %s
         через від'єднання координатора через діслайки`,

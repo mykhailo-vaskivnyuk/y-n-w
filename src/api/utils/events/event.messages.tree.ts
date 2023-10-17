@@ -1,28 +1,18 @@
 import { IMember } from '../../../db/types/member.types';
-import { NetEventKeys } from '../../../client/common/server/types/types';
+import { NetEvent } from '../../../services/event/event';
 import { NET_MESSAGES_MAP } from '../../../constants/constants';
-import { commitEvents } from './event.messages.notify';
 
 export const createMessagesInTree = async (
-  event: NetEventKeys,
-  fromMember: IMember,
-  date: string,
+  event: NetEvent,
+  from: IMember,
 ) => {
-  const message = NET_MESSAGES_MAP[event]['TREE'];
+  const { event_type } = event;
+  const message = NET_MESSAGES_MAP[event_type]['TREE'];
   if (!message) return;
-  const { node_id: from_node_id, net_id, confirmed } = fromMember;
+  const { node_id: from_node_id, confirmed } = from;
   if (!confirmed) return;
-  const users = await execQuery.net.tree.getMembers([from_node_id]);
-  for (const { user_id } of users) {
-    await execQuery.events.create([
-      user_id,
-      net_id,
-      'circle',
-      from_node_id,
-      event,
-      message,
-      date,
-    ]);
-    await commitEvents(user_id, date);
+  const members = await execQuery.net.tree.getMembers([from_node_id]);
+  for (const { user_id } of members) {
+    event.addEvent({ user_id, net_view: 'circle', from_node_id, message });
   }
 };

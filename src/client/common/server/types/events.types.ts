@@ -8,6 +8,7 @@ export const NET_EVENT_MAP = {
   LEAVE_CONNECTED: 'leave_connected',
   REFUSE: 'refuse',
   DISLIKE: 'dislike',
+  DISLIKE_DISCONNECT: 'dislike_disconnect',
   VOTE: 'vote',
   LEAVE_VOTE: 'leave_vote',
   LEAVE_DISVOTE: 'leave_disvote',
@@ -21,13 +22,12 @@ export type NetEventKeys = keyof typeof NET_EVENT_MAP;
 
 export type IEvent =
   Omit<ITableEvents, 'net_view' | 'event_type'> & {
-    net_view: NetViewKeys;
+    net_view: NetViewKeys | null;
     event_type: NetEventKeys;
   };
 export type IEventRecord = Omit<IEvent,
   | 'event_id'
   | 'event_type'
-  | 'net_id'
   | 'date'
 >;
 export type IEvents = IEvent[];

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { IUserNetData } from '../../db/types/member.types';
-import { NetEventKeys } from '../../client/common/server/types/types';
+import { NetEvent } from '../../services/event/event';
 import { ITransaction } from '../../db/types/types';
 import { HandlerError } from '../../router/errors';
 import { removeMemberFromNet } from './net.utils';
@@ -22,21 +22,22 @@ export const exeWithNetLock =
   };
 
 export const checkDislikes = async (
-  t: ITransaction, parent_node_id: number,
+  event: NetEvent, parent_node_id: number,
 ): Promise<(number | null)[]> => {
   const members = await execQuery.net.branch.getDislikes([parent_node_id]);
   const count = members.length;
   if (!count) return [];
   const [memberWithMaxDislikes] = members;
-  const { dislike_count, user_id, net_id } = memberWithMaxDislikes!;
+  const { dislike_count, user_id } = memberWithMaxDislikes!;
   const disliked = Math.ceil(dislike_count / (count - dislike_count)) > 1;
   if (!disliked) return [];
-  const event = 'DISLIKE';
-  return removeMemberFromNetAndSubnets(t, event, user_id, net_id);
+  return removeMemberFromNetAndSubnets(
+    event.createChild('DISLIKE_DISCONNECT'), user_id);
 };
 
 export const arrangeNodes = async (
   t: ITransaction,
+  event: NetEvent,
   [...nodesToArrange]: (number | null)[] = [],
 ) => {
   while (nodesToArrange.length) {
@@ -44,20 +45,18 @@ export const arrangeNodes = async (
     if (!node_id) continue;
     const isTighten = await tightenNodes(t, node_id);
     if (isTighten) continue;
-    const newNodesToArrange = await checkDislikes(t, node_id);
+    const newNodesToArrange =
+      await checkDislikes(event, node_id);
     nodesToArrange = [...newNodesToArrange, ...nodesToArrange];
-    await checkVotes(node_id);
+    await checkVotes(event, node_id);
   }
 };
 
 export const removeMemberFromNetAndSubnets = async (
-  t: ITransaction,
-  event: NetEventKeys,
+  event: NetEvent,
   user_id: number,
-  root_net_id: number | null,
-  eventDate?: string,
 ) => {
-  const date = eventDate || new Date().toUTCString();
+  const root_net_id = event.net_id;
   let userNetData: IUserNetData | undefined;
   do {
     [userNetData] = await execQuery
@@ -66,24 +65,27 @@ export const removeMemberFromNetAndSubnets = async (
       if (root_net_id) throw new HandlerError('NOT_FOUND');
       return [];
     }
-    const { net_id } = userNetData;
+    const { net_id, confirmed } = userNetData;
     if (net_id === root_net_id) break;
-    const nodesToArrange = await removeMemberFromNet(event, userNetData!, date);
-    await arrangeNodes(t, nodesToArrange);
+    // eslint-disable-next-line no-loop-func
+    await exeWithNetLock(net_id, async (t) => {
+      const event_type = confirmed ? 'LEAVE' : 'LEAVE_CONNECTED';
+      const event = new NetEvent(net_id, event_type);
+      const nodesToArrange = await removeMemberFromNet(event, userNetData!);
+      await arrangeNodes(t, event, nodesToArrange);
+      await event.write(t);
+    });
   } while (userNetData);
 
-  return removeMemberFromNet(event, userNetData, date);
+  return removeMemberFromNet(event, userNetData);
 };
 
 export const removeMember = (
-  event: NetEventKeys,
+  event: NetEvent,
   user_id: number,
-  net_id: number | null = null,
-) => {
-  const date = new Date().toUTCString();
-  return exeWithNetLock(net_id, async (t) => {
-    const nodesToArrange =
-      await removeMemberFromNetAndSubnets(t, event, user_id, net_id, date);
-    await arrangeNodes(t, nodesToArrange);
-  });
-};
+) => exeWithNetLock(event.net_id, async (t) => {
+  const nodesToArrange =
+    await removeMemberFromNetAndSubnets(event, user_id);
+  await arrangeNodes(t, event, nodesToArrange);
+  await event.write(t);
+});

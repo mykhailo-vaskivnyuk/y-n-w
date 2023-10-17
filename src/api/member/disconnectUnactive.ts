@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { IMember } from '../../db/types/member.types';
 import { THandler } from '../../router/types';
+import { NetEvent } from '../../services/event/event';
 import { removeMember } from '../utils/utils';
 
 const disconnectUnactive: THandler<{ monthAgo: number }, boolean> =
@@ -10,13 +11,13 @@ const disconnectUnactive: THandler<{ monthAgo: number }, boolean> =
     const month = date.getMonth();
     date.setMonth(month - monthAgo);
     const strDate = date.toUTCString();
-    const event = 'UNACTIVE_DISCONNECT';
     let member: IMember | undefined;
     do {
       [member] = await execQuery.member.find.unactive([strDate]);
       if (!member) return true;
       const { user_id, net_id } = member;
-      await removeMember(event, user_id, net_id);
+      const event = new NetEvent(net_id, 'UNACTIVE_DISCONNECT');
+      await removeMember(event, user_id);
     } while (member);
     return true;
   };

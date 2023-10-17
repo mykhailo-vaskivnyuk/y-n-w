@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { ITableNodes } from '../../db/types/db.tables.types';
 import { THandler } from '../../router/types';
+import { NetEvent } from '../../services/event/event';
 import {
   arrangeNodes, exeWithNetLock, removeMemberFromNetAndSubnets,
 } from '../utils/utils';
@@ -12,7 +13,6 @@ const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
     const month = date.getMonth();
     date.setMonth(month - monthAgo);
     const strDate = date.toUTCString();
-    const event = 'NOT_VOTE_DISCONNECT';
     let parentNode: ITableNodes | undefined;
     do {
       [parentNode] = await execQuery.node.findFreeByDate([strDate]);
@@ -22,12 +22,14 @@ const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
       await exeWithNetLock(net_id, async (t) => {
         const members = await execQuery.net.tree.getMembers([node_id]);
         const nodesToArrange = [node_id];
+        const event = new NetEvent(net_id, 'NOT_VOTE_DISCONNECT');
         for (const member of members) {
           const { user_id, node_id } = member;
-          await removeMemberFromNetAndSubnets(t, event, user_id, net_id);
+          await removeMemberFromNetAndSubnets(event, user_id);
           nodesToArrange.push(node_id);
         }
-        await arrangeNodes(t, nodesToArrange);
+        await arrangeNodes(t, event, nodesToArrange);
+        await event.write(t);
       });
     } while (parentNode);
     return true;
