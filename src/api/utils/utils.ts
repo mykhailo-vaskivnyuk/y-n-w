@@ -56,20 +56,19 @@ export const removeMemberFromNetAndSubnets = async (
   event: NetEvent,
   user_id: number,
 ) => {
-  const root_net_id = event.net_id;
+  const { event_type, net_id: root_net_id } = event;
   let userNetData: IUserNetData | undefined;
   do {
     [userNetData] = await execQuery
       .user.netData.getFurthestNet([user_id, root_net_id]);
     if (!userNetData) {
-      if (root_net_id) throw new HandlerError('NOT_FOUND');
-      return [];
+      if (!root_net_id) return [];
+      throw new HandlerError('NOT_FOUND');
     }
-    const { net_id, confirmed } = userNetData;
+    const { net_id } = userNetData;
     if (net_id === root_net_id) break;
     // eslint-disable-next-line no-loop-func
     await exeWithNetLock(net_id, async (t) => {
-      const event_type = confirmed ? 'LEAVE' : 'LEAVE_CONNECTED';
       const event = new NetEvent(net_id, event_type);
       const nodesToArrange = await removeMemberFromNet(event, userNetData!);
       await arrangeNodes(t, event, nodesToArrange);

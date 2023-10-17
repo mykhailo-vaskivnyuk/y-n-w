@@ -23,7 +23,7 @@ export const remove: THandler<IBoardRemoveParams, boolean> = async (
   await execQuery.net.boardMessages.remove([message_id, node_id]);
   const { net_id } = userNetData!;
   const event = new NetEvent(net_id, 'BOARD_MESSAGE');
-  await createEventMessages(event, userNetData!);
+  await event.createEventMessages(userNetData!);
   await event.write();
   return true;
 };

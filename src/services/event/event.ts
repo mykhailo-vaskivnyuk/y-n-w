@@ -1,6 +1,10 @@
 import {
+  createEventMessages,
+} from '../../api/utils/events/event.messages.create';
+import {
   IEventRecord, NetEventKeys,
 } from '../../client/common/server/types/types';
+import { IMember } from '../../db/types/member.types';
 import { ITransaction } from '../../db/types/types';
 
 export class NetEvent {
@@ -18,6 +22,10 @@ export class NetEvent {
     this.net_id = net_id;
     this.event_type = event_type;
     this.date = date || new Date().toUTCString();
+  }
+
+  createEventMessages(member: IMember) {
+    createEventMessages(this, member);
   }
 
   addEvent(record: Omit<IEventRecord, 'net_id'>) {

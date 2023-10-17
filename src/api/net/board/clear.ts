@@ -19,7 +19,7 @@ const clear: THandler<{ weekAgo: number }, boolean> =
      const { message_id, ...memberNode } = memberMessage;
      await execQuery.net.boardMessages.clear([message_id]);
      const event = new NetEvent(memberNode.net_id, 'BOARD_MESSAGE');
-     await createEventMessages(event, memberNode as IMember);
+     await event.createEventMessages(memberNode as IMember);
      await event.write();
    } while (memberMessage);
    return true;

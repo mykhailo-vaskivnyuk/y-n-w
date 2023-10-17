@@ -3,7 +3,6 @@ import { THandler } from '../../../router/types';
 import { IBoardSaveParams } from '../../../client/common/server/types/types';
 import { NetEvent } from '../../../services/event/event';
 import { BoardSaveParamsSchema } from '../../schema/schema';
-import { createEventMessages } from '../../utils/events/event.messages.create';
 
 const save: THandler<IBoardSaveParams, boolean> = async (
   { userNetData }, { node_id, message_id, message }
@@ -14,7 +13,7 @@ const save: THandler<IBoardSaveParams, boolean> = async (
   else
     await execQuery.net.boardMessages.create([net_id, node_id, message]);
   const event = new NetEvent(net_id, 'BOARD_MESSAGE');
-  await createEventMessages(event, userNetData!);
+  await event.createEventMessages(userNetData!);
   await event.write();
   return true;
 };

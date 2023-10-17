@@ -9,7 +9,6 @@ import { NetEvent } from '../../services/event/event';
 import { HandlerError } from '../../router/errors';
 import { updateCountOfMembers } from './nodes.utils';
 import { createMessagesToConnected } from './events/event.messages.other';
-import { createEventMessages } from './events/event.messages.create';
 
 export const findUserNet = async (
   user_id: number, user_node_id: number,
@@ -73,7 +72,7 @@ export const removeMemberFromNet = async (
 
   // 5 - create messages
   logger.debug('CREATE MESSAGES');
-  createEventMessages(event, userNetData);
+  event.createEventMessages(userNetData);
 
   return [parent_node_id, node_id];
 };

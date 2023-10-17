@@ -2,7 +2,6 @@
 import { IMember } from '../../db/types/member.types';
 import { NetEvent } from '../../services/event/event';
 import { removeConnected } from './net.utils';
-import { createEventMessages } from './events/event.messages.create';
 
 export const checkVotes = async (event: NetEvent, parent_node_id: number) => {
   const members = await execQuery.net.branch.getVotes([parent_node_id]);
@@ -78,17 +77,16 @@ export const voteNetUser = async (
   await execQuery.node.tree.replace([parent_node_id, node_id]);
   if (!newCountOfMembers) await execQuery.node.tree.remove([parent_node_id]);
 
-  await createEventMessages(event.createChild('LEAVE_VOTE'), member!);
-  parentUserId &&
-    await createEventMessages(
-      event.createChild('LEAVE_DISVOTE'), parent_member!);
+  await event.createChild('LEAVE_VOTE').createEventMessages(member!);
+  parentUserId && await event.createChild('LEAVE_DISVOTE')
+    .createEventMessages(parent_member!);
 
   const voteMemeber = {
     ...member!,
     node_id: parent_node_id,
     parent_node_id: parent_member?.parent_node_id || null,
   };
-  await createEventMessages(event.createChild('CONNECT_VOTE'), voteMemeber);
+  await event.createChild('CONNECT_VOTE').createEventMessages(voteMemeber);
 
   if (!parentUserId) return;
 
@@ -97,6 +95,5 @@ export const voteNetUser = async (
     node_id,
     parent_node_id,
   };
-  await createEventMessages(
-    event.createChild('CONNECT_DISVOTE'), disvoteMember);
+  await event.createChild('CONNECT_DISVOTE').createEventMessages(disvoteMember);
 };
