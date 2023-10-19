@@ -8,7 +8,6 @@ import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
 import { exeWithNetLock } from '../../utils/utils';
 import { checkVotes } from '../../utils/vote.utils';
-import { createEventMessages } from '../../utils/events/event.messages.create';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
   { userNetData }, { member_node_id }
@@ -27,7 +26,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
       .setVote([parent_node_id, node_id, member_node_id]);
     const event = new NetEvent(net_id, 'VOTE');
     const result = checkVotes(event, parent_node_id);
-    !result && await event.createEventMessages(userNetData!);
+    !result && await event.messages.create(userNetData!);
     await event.write(t);
     return result;
   });
@@ -47,7 +46,7 @@ export const unSet: THandler<IMemberConfirmParams, boolean> = async (
   if (memberStatus !== 'ACTIVE') return false; // bad request
   await execQuery.member.data.unsetVote([node_id, member_node_id]);
   const event = new NetEvent(net_id, 'VOTE');
-  await event.createEventMessages(userNetData!);
+  await event.messages.create(userNetData!);
   await event.write();
   return true;
 };

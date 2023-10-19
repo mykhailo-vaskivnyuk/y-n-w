@@ -77,16 +77,16 @@ export const voteNetUser = async (
   await execQuery.node.tree.replace([parent_node_id, node_id]);
   if (!newCountOfMembers) await execQuery.node.tree.remove([parent_node_id]);
 
-  await event.createChild('LEAVE_VOTE').createEventMessages(member!);
+  await event.createChild('LEAVE_VOTE').messages.create(member!);
   parentUserId && await event.createChild('LEAVE_DISVOTE')
-    .createEventMessages(parent_member!);
+    .messages.create(parent_member!);
 
   const voteMemeber = {
     ...member!,
     node_id: parent_node_id,
     parent_node_id: parent_member?.parent_node_id || null,
   };
-  await event.createChild('CONNECT_VOTE').createEventMessages(voteMemeber);
+  await event.createChild('CONNECT_VOTE').messages.create(voteMemeber);
 
   if (!parentUserId) return;
 
@@ -95,5 +95,5 @@ export const voteNetUser = async (
     node_id,
     parent_node_id,
   };
-  await event.createChild('CONNECT_DISVOTE').createEventMessages(disvoteMember);
+  await event.createChild('CONNECT_DISVOTE').messages.create(disvoteMember);
 };

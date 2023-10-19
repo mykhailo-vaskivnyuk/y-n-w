@@ -13,7 +13,7 @@ const save: THandler<IBoardSaveParams, boolean> = async (
   else
     await execQuery.net.boardMessages.create([net_id, node_id, message]);
   const event = new NetEvent(net_id, 'BOARD_MESSAGE');
-  await event.createEventMessages(userNetData!);
+  await event.messages.create(userNetData!);
   await event.write();
   return true;
 };

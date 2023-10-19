@@ -2,7 +2,6 @@ import Joi from 'joi';
 import { IMember, IMemberNode } from '../../../db/types/member.types';
 import { THandler } from '../../../router/types';
 import { NetEvent } from '../../../services/event/event';
-import { createEventMessages } from '../../utils/events/event.messages.create';
 
 const clear: THandler<{ weekAgo: number }, boolean> =
  async ({ isAdmin }, { weekAgo }) => {
@@ -19,7 +18,7 @@ const clear: THandler<{ weekAgo: number }, boolean> =
      const { message_id, ...memberNode } = memberMessage;
      await execQuery.net.boardMessages.clear([message_id]);
      const event = new NetEvent(memberNode.net_id, 'BOARD_MESSAGE');
-     await event.createEventMessages(memberNode as IMember);
+     await event.messages.create(memberNode as IMember);
      await event.write();
    } while (memberMessage);
    return true;

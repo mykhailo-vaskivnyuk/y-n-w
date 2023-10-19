@@ -8,7 +8,6 @@ import { ITransaction } from '../../db/types/types';
 import { NetEvent } from '../../services/event/event';
 import { HandlerError } from '../../router/errors';
 import { updateCountOfMembers } from './nodes.utils';
-import { createMessagesToConnected } from './events/event.messages.other';
 
 export const findUserNet = async (
   user_id: number, user_node_id: number,
@@ -39,7 +38,7 @@ export const removeConnectedMember = async (
 ) => {
   const { net_id } = netData;
   await execQuery.member.remove([user_id, net_id]);
-  await createMessagesToConnected(event, netData, [user_id]);
+  await event.messages.createToConnected(user_id);
 };
 
 export const removeConnected = async (event: NetEvent, memberNode: IMember) => {
@@ -72,7 +71,7 @@ export const removeMemberFromNet = async (
 
   // 5 - create messages
   logger.debug('CREATE MESSAGES');
-  event.createEventMessages(userNetData);
+  event.messages.create(userNetData);
 
   return [parent_node_id, node_id];
 };

@@ -7,7 +7,6 @@ import { NetEvent } from '../../../services/event/event';
 import {
   NetReadParamsSchema, NetBoardReadResponseSchema, BoardRemoveParamsSchema,
 } from '../../schema/schema';
-import { createEventMessages } from '../../utils/events/event.messages.create';
 
 export const read: THandler<INetReadParams, INetBoardReadResponse> =
   async ({ userNetData }) => {
@@ -23,7 +22,7 @@ export const remove: THandler<IBoardRemoveParams, boolean> = async (
   await execQuery.net.boardMessages.remove([message_id, node_id]);
   const { net_id } = userNetData!;
   const event = new NetEvent(net_id, 'BOARD_MESSAGE');
-  await event.createEventMessages(userNetData!);
+  await event.messages.create(userNetData!);
   await event.write();
   return true;
 };

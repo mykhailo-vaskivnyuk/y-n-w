@@ -28,8 +28,9 @@ export type IEvent =
 export type IEventRecord = Omit<IEvent,
   | 'event_id'
   | 'event_type'
+  | 'net_id'
   | 'date'
->;
+> & { net_id?: null };
 export type IEvents = IEvent[];
 
 export type IEventMessage = {

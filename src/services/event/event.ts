@@ -1,18 +1,15 @@
 import {
-  createEventMessages,
-} from '../../api/utils/events/event.messages.create';
-import {
-  IEventRecord, NetEventKeys,
+  NetEventKeys,
 } from '../../client/common/server/types/types';
-import { IMember } from '../../db/types/member.types';
 import { ITransaction } from '../../db/types/types';
+import { EventMessages } from './event.messages';
 
 export class NetEvent {
-  private records: IEventRecord[] = [];
   private children: NetEvent[] = [];
   public net_id: number | null = null;
   public event_type: NetEventKeys;
   public date;
+  public messages: EventMessages;
 
   constructor(
     net_id: number | null,
@@ -22,22 +19,7 @@ export class NetEvent {
     this.net_id = net_id;
     this.event_type = event_type;
     this.date = date || new Date().toUTCString();
-  }
-
-  createEventMessages(member: IMember) {
-    createEventMessages(this, member);
-  }
-
-  addEvent(record: Omit<IEventRecord, 'net_id'>) {
-    this.records.push({ ...record, net_id: this.net_id });
-  }
-
-  addOutNetEvent(
-    record: Omit<IEventRecord, 'net_id' | 'from_node_id' | 'net_view'>
-  ) {
-    this.records.push({
-      ...record, net_id: null, net_view: null, from_node_id: null,
-    });
+    this.messages = new EventMessages(this);
   }
 
   createChild(event_type: NetEventKeys) {
@@ -50,10 +32,10 @@ export class NetEvent {
     for (const child of this.children) {
       if (child.children.length) await child.write(t);
     }
-    for (const record of this.records) {
+    for (const record of this.messages.records) {
       const params = [
         record.user_id,
-        this.net_id,
+        record.net_id === null ? null : this.net_id,
         record.net_view,
         record.from_node_id,
         this.event_type,
