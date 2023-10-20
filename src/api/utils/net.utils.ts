@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { IMember, IUserNetData } from '../../db/types/member.types';
+import { IUserNetData } from '../../db/types/member.types';
 import {
   UserStatusKeys,
 } from '../../client/common/server/types/types';
@@ -41,26 +41,24 @@ export const removeConnectedMember = async (
   await event.messages.createToConnected(user_id);
 };
 
-export const removeConnected = async (event: NetEvent, memberNode: IMember) => {
-  const { node_id, net_id } = memberNode;
+export const removeConnectedAll = async (event: NetEvent) => {
+  const { node_id, net_id } = event.member!;
   const [netData] = await execQuery.net.data.get([net_id]);
   const users = await execQuery.member.getConnected([node_id]);
-  for (const { user_id } of users)
+  for (const { user_id } of users) {
     await removeConnectedMember(event, netData!, user_id);
+  }
 };
 
-export const removeMemberFromNet = async (
-  event: NetEvent,
-  userNetData: IUserNetData,
-) => {
-  const { user_id, net_id, node_id, parent_node_id, confirmed } = userNetData;
+export const removeMemberFromNet = async (event: NetEvent) => {
+  const { user_id, net_id, node_id, parent_node_id, confirmed } = event.member!;
   logger.debug('START REMOVE FROM NET:', net_id);
 
   // 1 - remove events
   confirmed && await execQuery.events.removeFromNet([user_id, net_id]);
 
   // 2 - remove connected users in net and subnets
-  confirmed && await removeConnected(event, userNetData);
+  confirmed && await removeConnectedAll(event);
 
   // 3 - remove member in net
   logger.debug('MEMBER REMOVE');
@@ -71,7 +69,7 @@ export const removeMemberFromNet = async (
 
   // 5 - create messages
   logger.debug('CREATE MESSAGES');
-  event.messages.create(userNetData);
+  event.messages.create();
 
   return [parent_node_id, node_id];
 };

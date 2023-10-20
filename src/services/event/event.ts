@@ -1,6 +1,7 @@
 import {
   NetEventKeys,
 } from '../../client/common/server/types/types';
+import { IMember } from '../../db/types/member.types';
 import { ITransaction } from '../../db/types/types';
 import { EventMessages } from './event.messages';
 
@@ -8,22 +9,25 @@ export class NetEvent {
   private children: NetEvent[] = [];
   public net_id: number | null = null;
   public event_type: NetEventKeys;
+  public member: IMember | null;
   public date;
   public messages: EventMessages;
 
   constructor(
     net_id: number | null,
     event_type: NetEventKeys,
+    member: IMember | null = null,
     date?: string,
   ) {
     this.net_id = net_id;
     this.event_type = event_type;
+    this.member = member;
     this.date = date || new Date().toUTCString();
     this.messages = new EventMessages(this);
   }
 
-  createChild(event_type: NetEventKeys) {
-    const event = new NetEvent(this.net_id, event_type, this.date);
+  createChild(event_type: NetEventKeys, member: IMember | null = null) {
+    const event = new NetEvent(this.net_id, event_type, member, this.date);
     this.children.push(event);
     return event;
   }

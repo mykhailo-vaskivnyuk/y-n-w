@@ -11,15 +11,16 @@ import {
 export class EventMessages {
   private event: NetEvent;
   private net:  INetResponse = null;
-  private member!: IMember;
-  public records: IEventRecord[] = [];
+  private member: IMember | null;
+  public readonly records: IEventRecord[] = [];
 
   constructor(event: NetEvent) {
     this.event = event;
+    this.member = event.member;
   }
 
-  async create(member: IMember) {
-    this.member = member;
+  async create() {
+    if (!this.member) return;
     await this.createInCircle();
     await this.createInTree();
     await this.createMessageToMember();
@@ -40,7 +41,7 @@ export class EventMessages {
       node_id: member_node_id,
       parent_node_id,
       confirmed: member_confirmed,
-    } = this.member;
+    } = this.member!;
     if (!parent_node_id) return;
     const messageToFacilitator = NET_MESSAGES_MAP[event_type]['FACILITATOR'];
     const messageToCircleMember = NET_MESSAGES_MAP[event_type]['CIRCLE'];
@@ -64,7 +65,7 @@ export class EventMessages {
     const message = NET_MESSAGES_MAP[event_type]['FACILITATOR'];
     if (!message) return [];
     const { user_id } = user;
-    const { node_id: from_node_id } = this.member;
+    const { node_id: from_node_id } = this.member!;
     this.records.push({ user_id, net_view: 'tree', from_node_id, message });
   }
 
@@ -73,7 +74,7 @@ export class EventMessages {
     const message = NET_MESSAGES_MAP[event_type]['CIRCLE'];
     if (!message) return;
     const { user_id } = user;
-    const { node_id: from_node_id, net_id } = this.member;
+    const { node_id: from_node_id, net_id } = this.member!;
     if (INSTANT_EVENTS.includes(event_type)) {
       notificationService.addEvent({
         event_type,
@@ -90,7 +91,7 @@ export class EventMessages {
     const { event_type } = this.event;
     const message = NET_MESSAGES_MAP[event_type]['TREE'];
     if (!message) return;
-    const { node_id: from_node_id, confirmed } = this.member;
+    const { node_id: from_node_id, confirmed } = this.member!;
     if (!confirmed) return;
     const members = await execQuery.net.tree.getMembers([from_node_id]);
     for (const { user_id } of members) {
@@ -102,7 +103,7 @@ export class EventMessages {
     const { event_type } = this.event;
     let message = NET_MESSAGES_MAP[event_type].MEMBER;
     if (!message) return;
-    const { user_id, node_id, net_id } = this.member;
+    const { user_id, node_id, net_id } = this.member!;
     const [net] = await execQuery.net.data.get([net_id]);
     const { name } = net!;
     const user_node_id =
@@ -121,7 +122,7 @@ export class EventMessages {
     if (!INSTANT_EVENTS.includes(event_type)) return;
     const message = NET_MESSAGES_MAP[event_type]['NET'];
     if (message === undefined) return;
-    notificationService.addNetEvent({ event_type, message }, this.member);
+    notificationService.addNetEvent({ event_type, message }, this.member!);
   }
 
   async createToConnected(user_id: number) {

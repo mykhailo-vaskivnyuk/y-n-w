@@ -69,14 +69,15 @@ export const removeMemberFromNetAndSubnets = async (
     if (net_id === root_net_id) break;
     // eslint-disable-next-line no-loop-func
     await exeWithNetLock(net_id, async (t) => {
-      const event = new NetEvent(net_id, event_type);
-      const nodesToArrange = await removeMemberFromNet(event, userNetData!);
+      const event = new NetEvent(net_id, event_type, userNetData);
+      const nodesToArrange = await removeMemberFromNet(event);
       await arrangeNodes(t, event, nodesToArrange);
       await event.write(t);
     });
   } while (userNetData);
 
-  return removeMemberFromNet(event, userNetData);
+  event.member = userNetData;
+  return removeMemberFromNet(event);
 };
 
 export const removeMember = (
