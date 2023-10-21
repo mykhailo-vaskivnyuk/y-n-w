@@ -16,8 +16,8 @@ export interface IQueriesMemberData {
     ['to_member_id', number],
   ]>;
   unsetVote: TQuery<[
+    ['branch_id', number],
     ['from_member_id', number],
-    ['to_member_id', number],
   ]>;
   removeFromCircle: TQuery<[
     ['node_id', number],
@@ -62,7 +62,7 @@ export const setVote = `
   )
   VALUES ($1, $2, $3, true)
   ON CONFLICT (from_member_id, to_member_id)
-    DO UPDATE
+  DO UPDATE
     SET
       vote = true
     WHERE
@@ -74,8 +74,8 @@ export const unsetVote = `
   UPDATE members_to_members
   SET vote = false
   WHERE
-    from_member_id = $1 AND
-    to_member_id = $2
+    branch_id = $1 AND
+    from_member_id = $2
 `;
 
 export const removeFromCircle = `
