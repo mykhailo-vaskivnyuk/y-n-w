@@ -8,7 +8,7 @@ type IApp = IClientAppThis;
 
 export class NetBoard {
   private boardMessages: ITableBoardMessages[];
-  
+
   constructor(private app: IApp) {}
 
   getState() {
@@ -28,7 +28,7 @@ export class NetBoard {
       let success = false;
       if (!message) {
         if (!messageId) success = true;
-        else { 
+        else {
           success = await this.app.api.net.board
             .remove({ message_id: messageId, node_id: nodeId });
         }

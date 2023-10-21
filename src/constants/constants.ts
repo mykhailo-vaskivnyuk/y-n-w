@@ -1,4 +1,4 @@
-import { NetEventToKeys } from '../api/types/net.types';
+import { INetEventTo } from '../api/types/net.types';
 import { NetEventKeys } from '../client/common/server/types/types';
 export const BUILD_PATH = 'js';
 export const BUILD_SRC_PATH = 'js/src';
@@ -7,9 +7,7 @@ export const MAX_CHAT_MESSAGE_INDEX = 1000;
 export const MAX_CHAT_INDEX = 1_000_000;
 
 export const NET_MESSAGES_MAP:
-  Record<NetEventKeys, Partial<
-    Record<NetEventToKeys, string>
-  >> = {
+  Record<NetEventKeys, INetEventTo> = {
     LEAVE: {
       TREE: 'У вашому колі від\'єднався координатор',
       CONNECTED:

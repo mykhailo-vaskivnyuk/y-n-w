@@ -7,10 +7,10 @@ import { getWsConnection as ws } from '../client/ws';
 import { getLinkConnection as link } from '../client/link';
 import config from '../../src/config';
 import App from '../../src/app/app';
-import { delay } from '../../src/client/common/client/connection/utils';
-import { runScript } from './utils';
 import { getCasesTree } from './create.cases';
+import { runScript } from './utils';
 import { setToGlobal } from '../../src/app/methods/utils';
+import { delay } from '../../src/utils/utils';
 
 export const getConnection = (
   transport: TTransport,

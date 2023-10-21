@@ -24,9 +24,9 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
     await execQuery.member.data.unsetVote([node_id, member_node_id]);
     await execQuery.member.data
       .setVote([parent_node_id, node_id, member_node_id]);
-    const event = new NetEvent(net_id, 'VOTE');
+    const event = new NetEvent(net_id, 'VOTE', userNetData!);
     const result = checkVotes(event, parent_node_id);
-    !result && await event.messages.create(userNetData!);
+    !result && await event.messages.create();
     await event.write(t);
     return result;
   });
@@ -45,8 +45,8 @@ export const unSet: THandler<IMemberConfirmParams, boolean> = async (
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'ACTIVE') return false; // bad request
   await execQuery.member.data.unsetVote([node_id, member_node_id]);
-  const event = new NetEvent(net_id, 'VOTE');
-  await event.messages.create(userNetData!);
+  const event = new NetEvent(net_id, 'VOTE', userNetData!);
+  await event.messages.create();
   await event.write();
   return true;
 };

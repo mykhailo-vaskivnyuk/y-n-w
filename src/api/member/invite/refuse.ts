@@ -19,8 +19,8 @@ const refuse: THandler<IMemberConfirmParams, boolean> = async (
   if (memberStatus !== 'CONNECTED') return false; // bad request
 
   const { user_id, net_id } = member;
-  const event = new NetEvent(net_id, 'REFUSE');
-  await removeConnectedMember(event, userNetData!, user_id!);
+  const event = new NetEvent(net_id, 'REFUSE', userNetData);
+  await removeConnectedMember(event, user_id!);
   await event.write();
   return true;
 };

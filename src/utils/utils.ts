@@ -82,3 +82,8 @@ export const runHeavyOperation = (
   if (counter >= count) return;
   setTimeout(runHeavyOperation, 0, operation, count, counter);
 };
+
+export const delay = (time: number) =>
+  new Promise((rv) => {
+    setTimeout(rv, time);
+  });

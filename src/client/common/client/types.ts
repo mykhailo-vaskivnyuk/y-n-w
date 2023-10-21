@@ -18,7 +18,7 @@ export type IClientAppThis =
 export interface INetThis {
   onNetChanged: () => void,
   onMemberChanged: () => void,
-};
+}
 
 export interface INets {
   parentNets: T.INetsResponse;

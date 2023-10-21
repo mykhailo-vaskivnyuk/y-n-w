@@ -3,6 +3,7 @@ import { format } from 'node:util';
 import { IEventRecord, INetResponse,
 } from '../../client/common/server/types/types';
 import { IMember } from '../../db/types/member.types';
+import { INetEventTo } from '../../api/types/net.types';
 import { NetEvent } from './event';
 import {
   INSTANT_EVENTS, NET_MESSAGES_MAP, SET_USER_NODE_ID_FOR,
@@ -10,13 +11,16 @@ import {
 
 export class EventMessages {
   private event: NetEvent;
+  private eventToMessages: INetEventTo;
   private net:  INetResponse = null;
   private member: IMember | null;
   public readonly records: IEventRecord[] = [];
 
   constructor(event: NetEvent) {
     this.event = event;
-    this.member = event.member;
+    const { member, event_type } = event;
+    this.eventToMessages = NET_MESSAGES_MAP[event_type];
+    this.member = member;
   }
 
   async create() {
@@ -27,25 +31,25 @@ export class EventMessages {
     this.createInstantMessageInNet();
   }
 
-  async getNet() {
+  private async getNet() {
     if (this.net) return this.net;
     const { net_id } = this.event;
     if (!net_id) return null;
     const [net] = await execQuery.net.get([net_id]);
     this.net = net || null;
+    return this.net;
   }
 
   async createInCircle() {
-    const { event_type } = this.event;
     const {
       node_id: member_node_id,
       parent_node_id,
       confirmed: member_confirmed,
     } = this.member!;
     if (!parent_node_id) return;
-    const messageToFacilitator = NET_MESSAGES_MAP[event_type]['FACILITATOR'];
-    const messageToCircleMember = NET_MESSAGES_MAP[event_type]['CIRCLE'];
-    if (!messageToFacilitator && !messageToCircleMember) return;
+    const toFacilitator = this.eventToMessages.FACILITATOR;
+    const toCircleMember = this.eventToMessages.CIRCLE;
+    if (!toFacilitator && !toCircleMember) return;
     const users = await execQuery.net.circle
       .getMembers([member_node_id, parent_node_id]);
     for (const user of users) {
@@ -61,8 +65,7 @@ export class EventMessages {
   }
 
   createMessageToFacilitator(user: IMember) {
-    const { event_type } = this.event;
-    const message = NET_MESSAGES_MAP[event_type]['FACILITATOR'];
+    const message = this.eventToMessages.FACILITATOR;
     if (!message) return [];
     const { user_id } = user;
     const { node_id: from_node_id } = this.member!;
@@ -71,7 +74,7 @@ export class EventMessages {
 
   cretaeMessagesToCircleMember(user: IMember) {
     const { event_type } = this.event;
-    const message = NET_MESSAGES_MAP[event_type]['CIRCLE'];
+    const message = this.eventToMessages.CIRCLE;
     if (!message) return;
     const { user_id } = user;
     const { node_id: from_node_id, net_id } = this.member!;
@@ -88,8 +91,7 @@ export class EventMessages {
   }
 
   async createInTree() {
-    const { event_type } = this.event;
-    const message = NET_MESSAGES_MAP[event_type]['TREE'];
+    const message = this.eventToMessages.TREE;
     if (!message) return;
     const { node_id: from_node_id, confirmed } = this.member!;
     if (!confirmed) return;
@@ -101,7 +103,7 @@ export class EventMessages {
 
   async createMessageToMember() {
     const { event_type } = this.event;
-    let message = NET_MESSAGES_MAP[event_type].MEMBER;
+    let message = this.eventToMessages.MEMBER;
     if (!message) return;
     const { user_id, node_id, net_id } = this.member!;
     const [net] = await execQuery.net.data.get([net_id]);
@@ -120,15 +122,14 @@ export class EventMessages {
   async createInstantMessageInNet() {
     const { event_type } = this.event;
     if (!INSTANT_EVENTS.includes(event_type)) return;
-    const message = NET_MESSAGES_MAP[event_type]['NET'];
+    const message = this.eventToMessages.NET;
     if (message === undefined) return;
     notificationService.addNetEvent({ event_type, message }, this.member!);
   }
 
   async createToConnected(user_id: number) {
     const { name } = (await this.getNet()) || {};
-    const { event_type } = this.event;
-    const message = format(NET_MESSAGES_MAP[event_type]['CONNECTED'], name);
+    const message = format(this.eventToMessages.CONNECTED, name);
     this.records.push({
       user_id,
       net_id: null,
@@ -147,7 +148,7 @@ export class EventMessages {
  * api.net.board.clear
  * api.member.data.vote.set
  * api.member.data.vote.unset
- * tighten net
+ * tighten
  */
 
 /*

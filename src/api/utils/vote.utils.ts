@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { IMember } from '../../db/types/member.types';
 import { NetEvent } from '../../services/event/event';
-import { removeConnected } from './net.utils';
+import { removeConnectedAll } from './net.utils';
 
 export const checkVotes = async (event: NetEvent, parent_node_id: number) => {
   const members = await execQuery.net.branch.getVotes([parent_node_id]);
@@ -32,7 +32,7 @@ export const voteNetUser = async (
     node_position,
     count_of_members,
   } = member!;
-  await removeConnected(event.createChild('LEAVE_VOTE', member!));
+  await removeConnectedAll(event.createChild('LEAVE_VOTE', member));
   await execQuery.member.data.removeFromTree([node_id]);
   await execQuery.events.removeFromTree([user_id!, net_id]);
 
@@ -47,7 +47,7 @@ export const voteNetUser = async (
   } = parent_member!;
 
   if (parentUserId) {
-    await removeConnected(event.createChild('LEAVE_DISVOTE', parent_member!));
+    await removeConnectedAll(event.createChild('LEAVE_DISVOTE', parent_member));
     await execQuery.member
       .data.removeFromCircle([parentUserId!, parent_node_id]);
     await execQuery

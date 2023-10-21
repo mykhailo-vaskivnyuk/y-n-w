@@ -7,7 +7,7 @@ import { AppStatus } from '../constants';
 type IApp = IClientAppThis;
 type INet = INetThis;
 
-export class MemberActions{
+export class MemberActions {
 
   constructor(private app: IApp, private net: INet) {}
 

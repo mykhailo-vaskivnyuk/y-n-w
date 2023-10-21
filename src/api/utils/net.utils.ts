@@ -3,7 +3,6 @@ import { IUserNetData } from '../../db/types/member.types';
 import {
   UserStatusKeys,
 } from '../../client/common/server/types/types';
-import { ITableNetsData } from '../../db/types/db.tables.types';
 import { ITransaction } from '../../db/types/types';
 import { NetEvent } from '../../services/event/event';
 import { HandlerError } from '../../router/errors';
@@ -33,20 +32,18 @@ export const updateCountOfNets = async (
 
 export const removeConnectedMember = async (
   event: NetEvent,
-  netData: ITableNetsData,
   user_id: number,
 ) => {
-  const { net_id } = netData;
+  const { net_id } = event; // netData;
   await execQuery.member.remove([user_id, net_id]);
   await event.messages.createToConnected(user_id);
 };
 
 export const removeConnectedAll = async (event: NetEvent) => {
-  const { node_id, net_id } = event.member!;
-  const [netData] = await execQuery.net.data.get([net_id]);
+  const { node_id } = event.member!;
   const users = await execQuery.member.getConnected([node_id]);
   for (const { user_id } of users) {
-    await removeConnectedMember(event, netData!, user_id);
+    await removeConnectedMember(event, user_id);
   }
 };
 

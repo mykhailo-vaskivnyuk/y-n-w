@@ -10,7 +10,7 @@ export class EventEmitter {
     const onceCb: typeof cb = (data) => {
       this.remove(event, onceCb);
       cb(data);
-    }
+    };
     this.on(event, onceCb);
   }
 

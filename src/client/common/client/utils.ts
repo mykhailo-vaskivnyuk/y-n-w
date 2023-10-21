@@ -11,10 +11,10 @@ const isAsync = (fn: (...args: any[]) => any) =>
 export const decorateAsync = <
   T extends { new(...args: any[]): any},
 > (
-  target: T,
-  methodName: string,
-  operation: () => void | Promise<void>,
-) => {
+    target: T,
+    methodName: string,
+    operation: () => void | Promise<void>,
+  ) => {
   const method = target.prototype[methodName];
 
   if (isAsync(method) || isAsync(operation)) {
@@ -27,7 +27,7 @@ export const decorateAsync = <
       if (isAsync(operation)) await operation();
       else operation();
       return result;
-    }
+    };
   }
 
   target.prototype[methodName] = function(
@@ -36,5 +36,5 @@ export const decorateAsync = <
     const result = method.apply(this, args);
     operation();
     return result;
-  }
-}
+  };
+};
