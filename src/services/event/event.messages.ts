@@ -11,17 +11,17 @@ import {
 
 export class EventMessages {
   private event: NetEvent;
-  private eventToMessages: INetEventTo;
-  private net:  INetResponse = null;
   private member: IMember | null;
+  private eventToMessages: INetEventTo;
+  private net: INetResponse = null;
   public readonly records: IEventRecord[] = [];
   public readonly instantRecords: IEventRecord[] = [];
 
   constructor(event: NetEvent) {
-    this.event = event;
     const { member, event_type } = event;
-    this.eventToMessages = NET_MESSAGES_MAP[event_type];
+    this.event = event;
     this.member = member;
+    this.eventToMessages = NET_MESSAGES_MAP[event_type];
   }
 
   async create() {
@@ -122,17 +122,21 @@ export class EventMessages {
   }
 
   async createInstantMessageInNet() {
-    const { event_type } = this.event;
+    const { event_type, member } = this.event;
     if (!INSTANT_EVENTS.includes(event_type)) return;
     const message = this.eventToMessages.NET;
     if (message === undefined) return;
-    const { net_id } = this.event;
-    notificationService.addEvent({ event_type, net_id, net_view: 'net' });
+    this.instantRecords.push({
+      user_id: 0,
+      net_view: 'net',
+      from_node_id: member && member.node_id,
+      message,
+    });
   }
 
   async createToConnected(user_id: number) {
-    const { name } = (await this.getNet()) || {};
-    const message = format(this.eventToMessages.CONNECTED, name);
+    const net = await this.getNet();
+    const message = format(this.eventToMessages.CONNECTED, net?.name);
     this.records.push({
       user_id,
       net_id: null,

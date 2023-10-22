@@ -4,9 +4,7 @@ import { IServices } from '../../router/types';
 import { IConnectionService } from '../../server/types';
 import { ChatService } from '../chat/chat';
 
-type IInstantEvent = Pick<T.IEventMessage,
-  'event_type' | 'net_id' | 'net_view'
-> & { user_id?: number };
+type IInstantEvent = Omit<T.IEventMessage, 'type' | 'event_id' | 'date'>;
 
 export class NotificationService {
   private connection: IConnectionService;
@@ -51,41 +49,30 @@ export class NotificationService {
     const event = this.eventsToSend.shift();
     if (!event) return;
     const { user_id } = event;
+    const message: T.IEventMessage = {
+      type: 'EVENT',
+      event_id: 0,
+      date: '',
+      ...event,
+    };
     if (!user_id) {
-      this.sendNetEvent(event);
+      this.sendNetEvent(message);
       this.sendEvents();
       return;
     }
     const chatId = chatService.getChatIdOfUser(user_id);
     if (!chatId) return;
-    const message: T.IEventMessage = {
-      type: 'EVENT',
-      event_id: 0,
-      user_id: 0,
-      from_node_id: null,
-      message: '',
-      date: '',
-      ...event,
-    };
+
     const connectionIds = chatService.getChatConnections(chatId);
     connectionService.sendMessage(message, connectionIds);
     this.sendEvents();
   }
 
-  private sendNetEvent(event: IInstantEvent) {
-    const { net_id } = event;
+  private sendNetEvent(message: T.IEventMessage) {
+    const { net_id } = message;
     if (!net_id) return;
     const chatId = chatService.getChatIdOfNet(net_id);
     if (!chatId) return;
-    const message: T.IEventMessage = {
-      type: 'EVENT',
-      event_id: 0,
-      user_id: 0,
-      from_node_id: null, // ?
-      message: '',
-      date: '',
-      ...event,
-    };
     const connectionIds = chatService.getChatConnections(chatId);
     connectionService.sendMessage(message, connectionIds);
   }

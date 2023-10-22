@@ -34,6 +34,13 @@ export class NetEvent {
 
   async write(t?: ITransaction) {
     for (const child of this.children) await child.write(t);
+    for (const record of this.messages.instantRecords) {
+      notificationService.addEvent({
+        net_id: this.net_id,
+        event_type: this.event_type,
+        ...record,
+      });
+    }
     for (const record of this.messages.records) {
       const params = [
         record.user_id,
