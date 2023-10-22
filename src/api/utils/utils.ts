@@ -48,6 +48,7 @@ export const arrangeNodes = async (
     const newNodesToArrange =
       await checkDislikes(event, node_id);
     nodesToArrange = [...newNodesToArrange, ...nodesToArrange];
+    if (newNodesToArrange.length) continue;
     await checkVotes(event, node_id);
   }
 };

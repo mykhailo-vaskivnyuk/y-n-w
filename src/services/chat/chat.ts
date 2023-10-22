@@ -62,6 +62,10 @@ export class ChatService {
     return netChatIds;
   }
 
+  getChatIdOfNet(net_id: number) {
+    return this.netChatIds.get(net_id);
+  }
+
   private getNetChatId({ net_id }: IMemberNode) {
     let chatId = this.netChatIds.get(net_id);
     if (chatId) return chatId;

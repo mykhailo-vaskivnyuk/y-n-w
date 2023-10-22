@@ -15,6 +15,7 @@ export class EventMessages {
   private net:  INetResponse = null;
   private member: IMember | null;
   public readonly records: IEventRecord[] = [];
+  public readonly instantRecords: IEventRecord[] = [];
 
   constructor(event: NetEvent) {
     this.event = event;
@@ -77,16 +78,17 @@ export class EventMessages {
     const message = this.eventToMessages.CIRCLE;
     if (!message) return;
     const { user_id } = user;
-    const { node_id: from_node_id, net_id } = this.member!;
+    const { node_id: from_node_id } = this.member!;
+    const record: IEventRecord = {
+      user_id,
+      net_view: 'circle',
+      from_node_id,
+      message,
+    };
     if (INSTANT_EVENTS.includes(event_type)) {
-      notificationService.addEvent({
-        event_type,
-        user_id,
-        net_id,
-        net_view: 'circle',
-      });
+      this.instantRecords.push(record);
     } else {
-      this.records.push({ user_id, net_view: 'circle', from_node_id, message });
+      this.records.push(record);
     }
   }
 
@@ -124,7 +126,8 @@ export class EventMessages {
     if (!INSTANT_EVENTS.includes(event_type)) return;
     const message = this.eventToMessages.NET;
     if (message === undefined) return;
-    notificationService.addNetEvent({ event_type, message }, this.member!);
+    const { net_id } = this.event;
+    notificationService.addEvent({ event_type, net_id, net_view: 'net' });
   }
 
   async createToConnected(user_id: number) {

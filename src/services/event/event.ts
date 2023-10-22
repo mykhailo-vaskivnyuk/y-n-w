@@ -7,10 +7,10 @@ import { EventMessages } from './event.messages';
 
 export class NetEvent {
   private children: NetEvent[] = [];
-  public net_id: number | null = null;
+  public net_id: number | null;
   public event_type: NetEventKeys;
   public member: IMember | null;
-  public date;
+  public date: string;
   public messages: EventMessages;
 
   constructor(
@@ -33,9 +33,7 @@ export class NetEvent {
   }
 
   async write(t?: ITransaction) {
-    for (const child of this.children) {
-      if (child.children.length) await child.write(t);
-    }
+    for (const child of this.children) await child.write(t);
     for (const record of this.messages.records) {
       const params = [
         record.user_id,

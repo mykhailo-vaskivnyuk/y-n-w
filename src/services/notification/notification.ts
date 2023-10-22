@@ -1,19 +1,12 @@
 /* eslint-disable max-lines */
 import * as T from '../../client/common/server/types/types';
-import { IMemberNode } from '../../db/types/member.types';
 import { IServices } from '../../router/types';
 import { IConnectionService } from '../../server/types';
 import { ChatService } from '../chat/chat';
 
-type IInstantEvent = Pick<
-  T.IEventMessage,
-  'event_type' | 'user_id' | 'net_id' | 'net_view'
->;
-
-type IInstantNetEvent = Pick<
-  T.IEventMessage,
-  'event_type' | 'message'
->;
+type IInstantEvent = Pick<T.IEventMessage,
+  'event_type' | 'net_id' | 'net_view'
+> & { user_id?: number };
 
 export class NotificationService {
   private connection: IConnectionService;
@@ -22,7 +15,6 @@ export class NotificationService {
   private notifDates = new Map<number, string>();
   private notifsToSend: number[] = [];
   private eventsToSend: IInstantEvent[] = [];
-  private netEventsToSend: (readonly [IInstantNetEvent, IMemberNode])[] = [];
 
   constructor(services: IServices) {
     const { chatService } = services;
@@ -46,10 +38,6 @@ export class NotificationService {
     this.eventsToSend.push(event);
   }
 
-  addNetEvent(event: IInstantNetEvent, member: IMemberNode) {
-    this.netEventsToSend.push([event, member]);
-  }
-
   public async sendNotifs() {
     const user_id = this.notifsToSend.shift();
     if (!user_id) return;
@@ -63,11 +51,17 @@ export class NotificationService {
     const event = this.eventsToSend.shift();
     if (!event) return;
     const { user_id } = event;
+    if (!user_id) {
+      this.sendNetEvent(event);
+      this.sendEvents();
+      return;
+    }
     const chatId = chatService.getChatIdOfUser(user_id);
     if (!chatId) return;
     const message: T.IEventMessage = {
       type: 'EVENT',
       event_id: 0,
+      user_id: 0,
       from_node_id: null,
       message: '',
       date: '',
@@ -78,25 +72,22 @@ export class NotificationService {
     this.sendEvents();
   }
 
-  public async sendNetEvents() {
-    const eventItem = this.netEventsToSend.shift();
-    if (!eventItem) return;
-    const [event, member] = eventItem;
-    const { net: chatId } = chatService.getChatIdsOfNet(member);
+  private sendNetEvent(event: IInstantEvent) {
+    const { net_id } = event;
+    if (!net_id) return;
+    const chatId = chatService.getChatIdOfNet(net_id);
     if (!chatId) return;
     const message: T.IEventMessage = {
       type: 'EVENT',
       event_id: 0,
       user_id: 0,
-      net_id: member.net_id,
-      net_view: 'net',
-      from_node_id: member.node_id,
+      from_node_id: null, // ?
+      message: '',
       date: '',
       ...event,
     };
     const connectionIds = chatService.getChatConnections(chatId);
     connectionService.sendMessage(message, connectionIds);
-    this.sendEvents();
   }
 
   private commitEvents(user_id: number, date: string) {
