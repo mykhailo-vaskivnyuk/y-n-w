@@ -3,6 +3,7 @@ import {
 } from '../../client/common/server/types/types';
 import { IMember } from '../../db/types/member.types';
 import { ITransaction } from '../../db/types/types';
+import { NotificationService } from '../notification/notification';
 import { EventMessages } from './event.messages';
 
 export class NetEvent {
@@ -32,8 +33,10 @@ export class NetEvent {
     return event;
   }
 
-  async write(t?: ITransaction) {
-    for (const child of this.children) await child.write(t);
+  async commit(notificationService: NotificationService, t?: ITransaction) {
+    for (const child of this.children) {
+      await child.commit(notificationService, t);
+    }
     for (const record of this.messages.instantRecords) {
       notificationService.addEvent({
         net_id: this.net_id,

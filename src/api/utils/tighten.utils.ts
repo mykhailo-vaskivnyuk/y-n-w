@@ -1,5 +1,4 @@
 import { ITransaction } from '../../db/types/types';
-import { updateCountOfNets } from './net.utils';
 
 const changeLevelFromNode = async (parentNodeId: number) => {
   for (let node_position = 0; node_position < 6; node_position++) {
@@ -9,6 +8,17 @@ const changeLevelFromNode = async (parentNodeId: number) => {
     await execQuery.node.changeLevel([node_id]);
     if (count_of_members) await changeLevelFromNode(node_id);
   }
+};
+
+export const updateCountOfNets = async (
+  t: ITransaction, net_id: number, addCount = 1,
+): Promise<void> => {
+  const [net] = await t.execQuery.net.updateCountOfNets(
+    [net_id, addCount],
+  );
+  const { parent_net_id } = net!;
+  if (!parent_net_id) return;
+  await updateCountOfNets(t, parent_net_id, addCount);
 };
 
 export const tightenNodes = async (t: ITransaction, node_id: number) => {

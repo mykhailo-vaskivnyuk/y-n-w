@@ -21,7 +21,7 @@ const clear: THandler<{ weekAgo: number }, boolean> =
         memberNode.net_id, 'BOARD_MESSAGE', memberNode as IMember
       );
       await event.messages.create();
-      await event.write();
+      await event.commit(notificationService);
     } while (memberMessage);
     return true;
   };

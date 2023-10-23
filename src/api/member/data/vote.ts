@@ -27,7 +27,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
     const event = new NetEvent(net_id, 'VOTE', userNetData!);
     const result = await checkVotes(event, parent_node_id);
     !result && await event.messages.create();
-    await event.write(t);
+    await event.commit(notificationService, t);
     return true;
   });
 };
@@ -47,7 +47,7 @@ export const unSet: THandler<IMemberConfirmParams, boolean> = async (
   await execQuery.member.data.unsetVote([parent_node_id, node_id]);
   const event = new NetEvent(net_id, 'VOTE', userNetData!);
   await event.messages.create();
-  await event.write();
+  await event.commit(notificationService);
   return true;
 };
 unSet.paramsSchema = MemberConfirmParamsSchema;

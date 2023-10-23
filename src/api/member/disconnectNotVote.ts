@@ -2,9 +2,10 @@ import Joi from 'joi';
 import { ITableNodes } from '../../db/types/db.tables.types';
 import { THandler } from '../../router/types';
 import { NetEvent } from '../../services/event/event';
+import { exeWithNetLock } from '../utils/utils';
 import {
-  arrangeNodes, exeWithNetLock, removeMemberFromNetAndSubnets,
-} from '../utils/utils';
+  arrangeNodes, removeMemberFromNetAndSubnets,
+} from '../utils/net.utils';
 
 const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
   async ({ isAdmin }, { monthAgo }) => {
@@ -29,7 +30,7 @@ const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
           nodesToArrange.push(node_id);
         }
         await arrangeNodes(t, event, nodesToArrange);
-        await event.write(t);
+        await event.commit(notificationService, t);
       });
     } while (parentNode);
     return true;

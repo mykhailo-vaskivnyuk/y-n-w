@@ -1,40 +1,50 @@
 /* eslint-disable max-lines */
 import { IUserNetData } from '../../db/types/member.types';
-import {
-  UserStatusKeys,
-} from '../../client/common/server/types/types';
 import { ITransaction } from '../../db/types/types';
 import { NetEvent } from '../../services/event/event';
 import { HandlerError } from '../../router/errors';
 import { updateCountOfMembers } from './nodes.utils';
+import { checkVotes } from './vote.utils';
+import { tightenNodes } from './tighten.utils';
+import { exeWithNetLock } from './utils';
 
-export const findUserNet = async (
-  user_id: number, user_node_id: number,
-): Promise<readonly [IUserNetData, UserStatusKeys]> => {
-  const [userNet] = await execQuery
-    .user.netData.findByNode([user_id, user_node_id]);
-  if (!userNet) throw new HandlerError('NOT_FOUND');
-  const { confirmed } = userNet;
-  const userNetStatus = confirmed ? 'INSIDE_NET' : 'INVITING';
-  return [userNet, userNetStatus];
+export const checkDislikes = async (
+  event: NetEvent, parent_node_id: number,
+): Promise<(number | null)[]> => {
+  const members = await execQuery.net.branch.getDislikes([parent_node_id]);
+  const count = members.length;
+  if (!count) return [];
+  const [memberWithMaxDislikes] = members;
+  const { dislike_count, user_id } = memberWithMaxDislikes!;
+  const disliked = Math.ceil(dislike_count / (count - dislike_count)) > 1;
+  if (!disliked) return [];
+  return removeMemberFromNetAndSubnets(
+    event.createChild('DISLIKE_DISCONNECT'), user_id);
 };
 
-export const updateCountOfNets = async (
-  t: ITransaction, net_id: number, addCount = 1,
-): Promise<void> => {
-  const [net] = await t.execQuery.net.updateCountOfNets(
-    [net_id, addCount],
-  );
-  const { parent_net_id } = net!;
-  if (!parent_net_id) return;
-  await updateCountOfNets(t, parent_net_id, addCount);
+export const arrangeNodes = async (
+  t: ITransaction,
+  event: NetEvent,
+  [...nodesToArrange]: (number | null)[] = [],
+) => {
+  while (nodesToArrange.length) {
+    const node_id = nodesToArrange.shift();
+    if (!node_id) continue;
+    const isTighten = await tightenNodes(t, node_id);
+    if (isTighten) continue;
+    const newNodesToArrange =
+      await checkDislikes(event, node_id);
+    nodesToArrange = [...newNodesToArrange, ...nodesToArrange];
+    if (newNodesToArrange.length) continue;
+    await checkVotes(event, node_id);
+  }
 };
 
 export const removeConnectedMember = async (
   event: NetEvent,
   user_id: number,
 ) => {
-  const { net_id } = event; // netData;
+  const { net_id } = event;
   await execQuery.member.remove([user_id, net_id]);
   await event.messages.createToConnected(user_id);
 };
@@ -70,3 +80,41 @@ export const removeMemberFromNet = async (event: NetEvent) => {
 
   return [parent_node_id, node_id];
 };
+
+export const removeMemberFromNetAndSubnets = async (
+  event: NetEvent,
+  user_id: number,
+) => {
+  const { event_type, net_id: root_net_id } = event;
+  let userNetData: IUserNetData | undefined;
+  do {
+    [userNetData] = await execQuery
+      .user.netData.getFurthestNet([user_id, root_net_id]);
+    if (!userNetData) {
+      if (!root_net_id) return [];
+      throw new HandlerError('NOT_FOUND');
+    }
+    const { net_id } = userNetData;
+    if (net_id === root_net_id) break;
+    // eslint-disable-next-line no-loop-func
+    await exeWithNetLock(net_id, async (t) => {
+      const event = new NetEvent(net_id, event_type, userNetData);
+      const nodesToArrange = await removeMemberFromNet(event);
+      await arrangeNodes(t, event, nodesToArrange);
+      await event.commit(notificationService, t);
+    });
+  } while (userNetData);
+
+  event.member = userNetData;
+  return removeMemberFromNet(event);
+};
+
+export const removeMember = (
+  event: NetEvent,
+  user_id: number,
+) => exeWithNetLock(event.net_id, async (t) => {
+  const nodesToArrange =
+    await removeMemberFromNetAndSubnets(event, user_id);
+  await arrangeNodes(t, event, nodesToArrange);
+  await event.commit(notificationService, t);
+});

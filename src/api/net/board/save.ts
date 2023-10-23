@@ -14,7 +14,7 @@ const save: THandler<IBoardSaveParams, boolean> = async (
     await execQuery.net.boardMessages.create([net_id, node_id, message]);
   const event = new NetEvent(net_id, 'BOARD_MESSAGE', userNetData);
   await event.messages.create();
-  await event.write();
+  await event.commit(notificationService);
   return true;
 };
 save.paramsSchema = BoardSaveParamsSchema;

@@ -21,7 +21,7 @@ const refuse: THandler<IMemberConfirmParams, boolean> = async (
   const { user_id, net_id } = member;
   const event = new NetEvent(net_id, 'REFUSE', userNetData);
   await removeConnectedMember(event, user_id!);
-  await event.write();
+  await event.commit(notificationService);
   return true;
 };
 refuse.paramsSchema = MemberConfirmParamsSchema;

@@ -5,7 +5,7 @@ import { ITableNets } from '../../db/types/db.tables.types';
 import { MAX_NET_LEVEL } from '../../client/common/server/constants';
 import { THandler } from '../../router/types';
 import { NetResponseSchema, NetCreateParamsSchema } from '../schema/schema';
-import { updateCountOfNets } from '../utils/net.utils';
+import { updateCountOfNets } from '../utils/tighten.utils';
 import { createTree } from '../utils/nodes.utils';
 import { exeWithNetLock } from '../utils/utils';
 

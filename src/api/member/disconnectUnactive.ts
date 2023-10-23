@@ -2,7 +2,7 @@ import Joi from 'joi';
 import { IMember } from '../../db/types/member.types';
 import { THandler } from '../../router/types';
 import { NetEvent } from '../../services/event/event';
-import { removeMember } from '../utils/utils';
+import { removeMember } from '../utils/net.utils';
 
 const disconnectUnactive: THandler<{ monthAgo: number }, boolean> =
   async ({ isAdmin }, { monthAgo }) => {

@@ -6,7 +6,8 @@ import {
 import { NetEvent } from '../../../services/event/event';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
-import { arrangeNodes, exeWithNetLock } from '../../utils/utils';
+import { exeWithNetLock } from '../../utils/utils';
+import { arrangeNodes } from '../../utils/net.utils';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
   { userNetData }, { node_id, member_node_id }
@@ -28,7 +29,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
       .setDislike([parentNodeId!, node_id, member_node_id]);
     const event = new NetEvent(net_id, 'DISLIKE');
     await arrangeNodes(t, event, [parentNodeId]);
-    await event.write(t);
+    await event.commit(notificationService, t);
     return true;
   });
 };

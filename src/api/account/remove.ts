@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import { THandler } from '../../router/types';
-import { removeMember } from '../utils/utils';
+import { removeMember } from '../utils/net.utils';
 import { NetEvent } from '../../services/event/event';
 
 const remove: THandler = async ({ session }) => {
