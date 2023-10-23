@@ -1,7 +1,6 @@
-/* eslint-disable max-lines */
 import { IMember } from '../../db/types/member.types';
 import { NetEvent } from '../../services/event/event';
-import { removeConnectedAll } from './net.utils';
+import { removeConnectedAll } from './connected.utils';
 
 export const checkVotes = async (event: NetEvent, parent_node_id: number) => {
   const members = await execQuery.net.branch.getVotes([parent_node_id]);
