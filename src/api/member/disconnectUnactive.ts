@@ -2,7 +2,7 @@ import Joi from 'joi';
 import { IMember } from '../../db/types/member.types';
 import { THandler } from '../../router/types';
 import { NetEvent } from '../../services/event/event';
-import { removeMember } from '../utils/net.utils';
+import { removeMemberFromNet } from '../utils/net.utils';
 
 const disconnectUnactive: THandler<{ monthAgo: number }, boolean> =
   async ({ isAdmin }, { monthAgo }) => {
@@ -15,9 +15,9 @@ const disconnectUnactive: THandler<{ monthAgo: number }, boolean> =
     do {
       [member] = await execQuery.member.find.unactive([strDate]);
       if (!member) return true;
-      const { user_id, net_id } = member;
-      const event = new NetEvent(net_id, 'UNACTIVE_DISCONNECT');
-      await removeMember(event, user_id);
+      const { net_id } = member;
+      const event = new NetEvent(net_id, 'UNACTIVE_DISCONNECT', member);
+      await removeMemberFromNet(event);
     } while (member);
     return true;
   };

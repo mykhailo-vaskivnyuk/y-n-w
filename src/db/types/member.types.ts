@@ -18,8 +18,7 @@ export type INodeWithUser =
   T.OuterJoin<Pick<T.ITableMembers, 'user_id' | 'confirmed'>>;
 
 export type IBranchDislikes =
-  Pick<T.ITableMembers, 'user_id'> &
-  Pick<T.ITableNodes, 'net_id'> &
+  Pick<T.ITableMembers, 'member_id' | 'user_id'> &
   { dislike_count: number };
 
 export type IBranchVotes =

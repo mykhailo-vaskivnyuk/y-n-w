@@ -7,7 +7,7 @@ import { NetEvent } from '../../../services/event/event';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
 import { exeWithNetLock } from '../../utils/utils';
-import { checkVotes } from '../../utils/vote.utils';
+import { Net } from '../../../services/net/net';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
   { userNetData }, { member_node_id }
@@ -25,7 +25,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
     await execQuery
       .member.data.setVote([parent_node_id, node_id, member_node_id]);
     const event = new NetEvent(net_id, 'VOTE', userNetData!);
-    const result = await checkVotes(event, parent_node_id);
+    const result = await new Net().checkVotes(event, parent_node_id);
     !result && await event.messages.create();
     await event.commit(notificationService, t);
     return true;

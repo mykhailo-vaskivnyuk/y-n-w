@@ -14,7 +14,7 @@ export interface IQueriesNetBranch {
 
 export const getDislikes = `
   SELECT
-    nodes.net_id,
+    members.member_id,
     members.user_id,
     SUM (
       CASE
@@ -33,7 +33,7 @@ export const getDislikes = `
     nodes.parent_node_id = $1 OR
     nodes.node_id = $1
   GROUP BY
-    nodes.net_id,
+    members.member_id,
     members.user_id
   ORDER BY dislike_count DESC
 `;

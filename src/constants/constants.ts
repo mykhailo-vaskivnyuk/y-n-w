@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { INetEventTo } from '../api/types/net.types';
 import { NetEventKeys } from '../client/common/server/types/types';
 export const BUILD_PATH = 'js';
@@ -76,6 +77,8 @@ map.UNACTIVE_DISCONNECT = {
   FACILITATOR: 'Від\'єднався учасник вашого дерева через неактивність',
   MEMBER: 'Вас від\'єднано від мережі %s через неактивність',
 };
+
+map.NOT_VOTE = {};
 
 map.NOT_VOTE_DISCONNECT = {
   TREE: 'У вашому колі від\'єднався координатор через невибори',

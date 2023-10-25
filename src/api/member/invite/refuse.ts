@@ -6,7 +6,7 @@ import {
 import { NetEvent } from '../../../services/event/event';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
-import { removeConnectedMember } from '../../utils/net.utils';
+import { Net } from '../../../services/net/net';
 
 const refuse: THandler<IMemberConfirmParams, boolean> = async (
   { userNetData }, { node_id, member_node_id }
@@ -20,7 +20,7 @@ const refuse: THandler<IMemberConfirmParams, boolean> = async (
 
   const { user_id, net_id } = member;
   const event = new NetEvent(net_id, 'REFUSE', userNetData);
-  await removeConnectedMember(event, user_id!);
+  await new Net().removeConnectedMember(event, user_id!);
   await event.commit(notificationService);
   return true;
 };

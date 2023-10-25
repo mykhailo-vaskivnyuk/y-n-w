@@ -15,6 +15,7 @@ export const NET_EVENT_MAP = {
   CONNECT_VOTE: 'connect_vote',
   CONNECT_DISVOTE: 'connect_disvote',
   UNACTIVE_DISCONNECT: 'unactive_disconnect',
+  NOT_VOTE: 'not_vote',
   NOT_VOTE_DISCONNECT: 'not_vote_disconnect',
   BOARD_MESSAGE: 'board_message',
 };

@@ -5,9 +5,9 @@ import { ITableNets } from '../../db/types/db.tables.types';
 import { MAX_NET_LEVEL } from '../../client/common/server/constants';
 import { THandler } from '../../router/types';
 import { NetResponseSchema, NetCreateParamsSchema } from '../schema/schema';
-import { updateCountOfNets } from '../utils/tighten.utils';
 import { createTree } from '../utils/nodes.utils';
 import { exeWithNetLock } from '../utils/utils';
+import { Net } from '../../services/net/net';
 
 const create: THandler<INetCreateParams, INetResponse> = async (
   { session, userNetData }, { name },
@@ -20,7 +20,7 @@ const create: THandler<INetCreateParams, INetResponse> = async (
     let net: ITableNets | undefined;
     if (parentNetId) {
       [net] = await t.execQuery.net.createChild([parentNetId]);
-      await updateCountOfNets(t, parentNetId);
+      await new Net().updateCountOfNets(t, parentNetId);
     } else {
       [net] = await execQuery.net.createRoot([]);
       const { net_id: root_net_id } = net!;

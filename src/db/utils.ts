@@ -2,18 +2,11 @@ import path from 'node:path';
 import fsp from 'node:fs/promises';
 import { IQueries, TQueriesModule, TQuery } from './types/types';
 
-export const userInNetAndItsSubnets = (userIndex = 1, netIndex = 2) => `
+export const userInSubnets = (userIndex = 1, netIndex = 2) => `
   members.user_id = $${userIndex} AND
-  (
-    $${netIndex}::int ISNULL OR
-    (
-      nets.root_net_id = $${netIndex} AND
-      nets.net_level >=
-      (
-        SELECT net_level FROM nets WHERE net_id = $${netIndex}
-      )
-    )
-  )
+  nets.root_net_id = $${netIndex} AND
+  nets.net_level >
+    SELECT net_level FROM nets WHERE net_id = $${netIndex}
 `;
 
 const createQueries = (
