@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import { IEvents } from '../../client/common/server/types/types';
-import { THandler } from '../../router/types';
+import { THandler } from '../../controller/types';
 import { EventsSchema } from '../schema/schema';
 
 export const read: THandler<{ date?: string }, IEvents> =

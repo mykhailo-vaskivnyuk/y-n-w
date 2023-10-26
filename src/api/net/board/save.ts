@@ -1,7 +1,7 @@
 import Joi from 'joi';
-import { THandler } from '../../../router/types';
+import { THandler } from '../../../controller/types';
 import { IBoardSaveParams } from '../../../client/common/server/types/types';
-import { NetEvent } from '../../../services/event/event';
+import { NetEvent } from '../../../domain/event/event';
 import { BoardSaveParamsSchema } from '../../schema/schema';
 
 const save: THandler<IBoardSaveParams, boolean> = async (

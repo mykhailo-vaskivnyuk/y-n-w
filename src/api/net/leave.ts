@@ -1,9 +1,9 @@
 import Joi from 'joi';
 import { INetReadParams } from '../../client/common/server/types/types';
-import { THandler } from '../../router/types';
+import { THandler } from '../../controller/types';
 import { NetReadParamsSchema } from '../schema/schema';
 import { removeMemberFromNet } from '../utils/net.utils';
-import { NetEvent } from '../../services/event/event';
+import { NetEvent } from '../../domain/event/event';
 
 const leave: THandler<INetReadParams> = async (
   { userNetData },

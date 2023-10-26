@@ -1,5 +1,5 @@
 import { INetsResponse } from '../../../client/common/server/types/types';
-import { THandler } from '../../../router/types';
+import { THandler } from '../../../controller/types';
 import { NetsResponseSchema } from '../../schema/schema';
 
 const get: THandler<never, INetsResponse> = async ({ session }) => {

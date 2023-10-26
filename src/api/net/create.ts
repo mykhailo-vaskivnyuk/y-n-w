@@ -3,11 +3,11 @@ import {
 } from '../../client/common/server/types/types';
 import { ITableNets } from '../../db/types/db.tables.types';
 import { MAX_NET_LEVEL } from '../../client/common/server/constants';
-import { THandler } from '../../router/types';
+import { THandler } from '../../controller/types';
 import { NetResponseSchema, NetCreateParamsSchema } from '../schema/schema';
 import { createTree } from '../utils/nodes.utils';
 import { exeWithNetLock } from '../utils/utils';
-import { Net } from '../../services/net/net';
+import { Net } from '../../domain/net/net';
 
 const create: THandler<INetCreateParams, INetResponse> = async (
   { session, userNetData }, { name },

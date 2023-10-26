@@ -1,7 +1,7 @@
 import { IAppThis } from './types';
 import { DatabaseError } from '../db/errors';
 import {
-  RouterError, RouterErrorCode, TRouterErrorDetails } from '../router/errors';
+  RouterError, RouterErrorCode, TRouterErrorDetails } from '../controller/errors';
 import { ServerError } from '../server/errors';
 
 export const AppErrorMap = {

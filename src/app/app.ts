@@ -4,7 +4,7 @@ import { IConfig } from '../types/config.types';
 import { IOperation } from '../types/operation.types';
 import { ILogger } from '../logger/types';
 import { IDatabase } from '../db/types/types';
-import { IRouter } from '../router/types';
+import { IRouter } from '../controller/types';
 import { IInputConnection } from '../server/types';
 import {
   AppError, handleAppInitError,

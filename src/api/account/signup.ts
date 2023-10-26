@@ -1,7 +1,7 @@
 import {
   ISignupParams, IUserResponse, UserStatusKeys,
 } from '../../client/common/server/types/types';
-import { THandler } from '../../router/types';
+import { THandler } from '../../controller/types';
 import {
   SignupParamsSchema, UserResponseSchema,
 } from '../schema/schema';

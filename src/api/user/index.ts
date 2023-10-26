@@ -1,4 +1,4 @@
-import { THandler } from '../../router/types';
+import { THandler } from '../../controller/types';
 import {
   IUserResponse, IUserUpdateParams,
 } from '../../client/common/server/types/types';

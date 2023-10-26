@@ -2,7 +2,7 @@ import Joi from 'joi';
 import {
   IUserResponse,
 } from '../../client/common/server/types/types';
-import { THandler } from '../../router/types';
+import { THandler } from '../../controller/types';
 import { UserResponseSchema } from '../schema/schema';
 
 const signupTg: THandler<{ initData: string }, IUserResponse> = async (

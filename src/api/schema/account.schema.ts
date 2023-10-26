@@ -2,8 +2,8 @@ import Joi from 'joi';
 import {
   IUserResponse, OmitNull,
 } from '../../client/common/server/types/types';
-import { TJoiSchema } from '../../router/types';
-import { JOI_NULL } from '../../router/constants';
+import { TJoiSchema } from '../../controller/types';
+import { JOI_NULL } from '../../controller/constants';
 
 export const UserResponseSchema = [JOI_NULL, {
   user_id: Joi.number(),

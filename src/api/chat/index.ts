@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { THandler } from '../../router/types';
+import { THandler } from '../../controller/types';
 import {
   IChatSendMessage, IChatGetMessages, IChatGetMessagesResponse,
 } from '../../client/common/server/types/types';

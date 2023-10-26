@@ -3,8 +3,8 @@ import {
   IChatGetMessages, IChatMessage, OmitNull,
   IChatResponseMessage, IChatSendMessage, NET_VIEW_MAP,
 } from '../../client/common/server/types/types';
-import { TJoiSchema } from '../../router/types';
-import { JOI_NULL } from '../../router/constants';
+import { TJoiSchema } from '../../controller/types';
+import { JOI_NULL } from '../../controller/constants';
 
 const ChatMessageSchema = {
   chatId: Joi.number().required(),

@@ -3,7 +3,7 @@ import {
 } from '../../client/common/server/types/types';
 import { IMember } from '../../db/types/member.types';
 import { ITransaction } from '../../db/types/types';
-import { NotificationService } from '../notification/notification';
+import { NotificationService } from '../../services/notification/notification';
 import { EventMessages } from './event.messages';
 
 export class NetEvent {

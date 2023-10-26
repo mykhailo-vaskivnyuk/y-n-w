@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import { IMember, IMemberNode } from '../../../db/types/member.types';
-import { THandler } from '../../../router/types';
-import { NetEvent } from '../../../services/event/event';
+import { THandler } from '../../../controller/types';
+import { NetEvent } from '../../../domain/event/event';
 
 const clear: THandler<{ weekAgo: number }, boolean> =
   async ({ isAdmin }, { weekAgo }) => {

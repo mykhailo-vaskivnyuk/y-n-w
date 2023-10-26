@@ -2,12 +2,12 @@ import Joi from 'joi';
 import {
   IMemberConfirmParams,
 } from '../../../client/common/server/types/types';
-import { THandler } from '../../../router/types';
+import { THandler } from '../../../controller/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
 import { createTree } from '../../utils/nodes.utils';
 import { exeWithNetLock } from '../../utils/utils';
-import { Net } from '../../../services/net/net';
+import { Net } from '../../../domain/net/net';
 
 const confirm: THandler<IMemberConfirmParams, boolean> = async (
   { userNetData }, { member_node_id }

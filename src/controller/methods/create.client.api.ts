@@ -2,7 +2,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import { Writable } from 'node:stream';
-import { TPromiseExecutor } from '../../../src/client/common/types';
+import { TPromiseExecutor } from '../../client/common/types';
 import { IRouterConfig, IRoutes, TJoiSchema, THandler } from '../types';
 import * as tpl from './templates';
 import { isHandler, getTypeName, getTypeNameFromPathname } from '../utils';

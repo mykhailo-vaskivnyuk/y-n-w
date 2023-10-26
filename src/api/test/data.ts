@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import { ITestResponse } from '../../client/common/server/types/types';
-import { JOI_NULL } from '../../router/constants';
-import { THandler } from '../../router/types';
+import { JOI_NULL } from '../../controller/constants';
+import { THandler } from '../../controller/types';
 import { TestResponseSchema } from '../schema/test.schema';
 
 type ITestDataResponse = {

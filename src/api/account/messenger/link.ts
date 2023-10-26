@@ -1,6 +1,6 @@
 import Joi from 'joi';
-import { THandler } from '../../../router/types';
-import { JOI_NULL } from '../../../router/constants';
+import { THandler } from '../../../controller/types';
+import { JOI_NULL } from '../../../controller/constants';
 
 export const get: THandler<never, string | null> =
   async ({ session }) => {

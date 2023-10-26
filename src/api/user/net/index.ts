@@ -2,8 +2,8 @@ import {
   INetEnterParams,
   IUserNetDataResponse,
 } from '../../../client/common/server/types/types';
-import { THandler } from '../../../router/types';
-import { HandlerError } from '../../../router/errors';
+import { THandler } from '../../../controller/types';
+import { HandlerError } from '../../../controller/errors';
 import {
   NetEnterParamsSchema, UserNetDataResponseSchema,
 } from '../../schema/schema';

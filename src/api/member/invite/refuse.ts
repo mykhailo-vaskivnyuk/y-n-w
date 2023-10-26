@@ -1,12 +1,12 @@
 import Joi from 'joi';
-import { THandler } from '../../../router/types';
+import { THandler } from '../../../controller/types';
 import {
   IMemberConfirmParams,
 } from '../../../client/common/server/types/types';
-import { NetEvent } from '../../../services/event/event';
+import { NetEvent } from '../../../domain/event/event';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
-import { Net } from '../../../services/net/net';
+import { Net } from '../../../domain/net/net';
 
 const refuse: THandler<IMemberConfirmParams, boolean> = async (
   { userNetData }, { node_id, member_node_id }

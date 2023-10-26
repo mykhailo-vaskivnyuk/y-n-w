@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import { IMember } from '../../db/types/member.types';
-import { THandler } from '../../router/types';
-import { NetEvent } from '../../services/event/event';
+import { THandler } from '../../controller/types';
+import { NetEvent } from '../../domain/event/event';
 import { removeMemberFromNet } from '../utils/net.utils';
 
 const disconnectUnactive: THandler<{ monthAgo: number }, boolean> =

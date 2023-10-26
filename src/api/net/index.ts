@@ -1,7 +1,7 @@
 import {
   INetReadParams, INetViewResponse,
 } from '../../client/common/server/types/types';
-import { THandler } from '../../router/types';
+import { THandler } from '../../controller/types';
 import { NetReadParamsSchema, NetViewResponseSchema } from '../schema/schema';
 
 export const getCircle: THandler<INetReadParams, INetViewResponse> =

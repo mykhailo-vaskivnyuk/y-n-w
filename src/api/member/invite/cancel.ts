@@ -2,7 +2,7 @@ import Joi from 'joi';
 import {
   IMemberConfirmParams,
 } from '../../../client/common/server/types/types';
-import { THandler } from '../../../router/types';
+import { THandler } from '../../../controller/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
 

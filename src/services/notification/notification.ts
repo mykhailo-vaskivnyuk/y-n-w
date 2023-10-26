@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import * as T from '../../client/common/server/types/types';
-import { IServices } from '../../router/types';
+import { IServices } from '../../controller/types';
 import { IConnectionService } from '../../server/types';
 import { ChatService } from '../chat/chat';
 

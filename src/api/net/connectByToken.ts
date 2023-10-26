@@ -1,7 +1,7 @@
 import Joi from 'joi';
-import { THandler } from '../../router/types';
+import { THandler } from '../../controller/types';
 import { ITokenParams } from '../../client/common/server/types/types';
-import { JOI_NULL } from '../../router/constants';
+import { JOI_NULL } from '../../controller/constants';
 import { TokenParamsSchema } from '../schema/schema';
 import { exeWithNetLock } from '../utils/utils';
 

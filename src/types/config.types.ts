@@ -1,6 +1,6 @@
 import { ILoggerConfig } from '../logger/types';
 import { IDatabaseConfig } from '../db/types/types';
-import { IRouterConfig } from '../router/types';
+import { IRouterConfig } from '../controller/types';
 import { IInputConnectionConfig, TTransport } from '../server/types';
 
 export interface IConfig {

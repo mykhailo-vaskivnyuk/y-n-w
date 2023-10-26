@@ -1,7 +1,7 @@
 import { IConfig } from '../types/config.types';
 import { ILogger } from '../logger/types';
 import { IDatabase, IDatabaseQueries } from '../db/types/types';
-import { IRouter } from '../router/types';
+import { IRouter } from '../controller/types';
 import { IInputConnection, IConnectionService } from '../server/types';
 import { IMailService } from '../services/mail/types';
 import { ChatService } from '../services/chat/chat';

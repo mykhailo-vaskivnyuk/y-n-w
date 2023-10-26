@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { THandler } from '../router/types';
+import { THandler } from '../controller/types';
 import { IEchoData } from '../client/common/server/types/types';
 import { EchoDataSchema } from './schema/schema';
 

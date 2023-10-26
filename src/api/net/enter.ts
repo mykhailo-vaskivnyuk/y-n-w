@@ -1,8 +1,8 @@
-import { THandler } from '../../router/types';
+import { THandler } from '../../controller/types';
 import {
   INetEnterParams, INetResponse,
 } from '../../client/common/server/types/types';
-import { HandlerError } from '../../router/errors';
+import { HandlerError } from '../../controller/errors';
 import { NetResponseSchema, NetEnterParamsSchema } from '../schema/schema';
 
 const enter: THandler<INetEnterParams, INetResponse> =

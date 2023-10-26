@@ -1,9 +1,9 @@
 import Joi from 'joi';
-import { THandler } from '../../../router/types';
+import { THandler } from '../../../controller/types';
 import {
   IBoardRemoveParams, INetBoardReadResponse, INetReadParams,
 } from '../../../client/common/server/types/types';
-import { NetEvent } from '../../../services/event/event';
+import { NetEvent } from '../../../domain/event/event';
 import {
   NetReadParamsSchema, NetBoardReadResponseSchema, BoardRemoveParamsSchema,
 } from '../../schema/schema';

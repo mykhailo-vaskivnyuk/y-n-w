@@ -1,8 +1,8 @@
 import Joi from 'joi';
-import { THandler } from '../../router/types';
-import { NetEvent } from '../../services/event/event';
+import { THandler } from '../../controller/types';
+import { NetEvent } from '../../domain/event/event';
 import { exeWithNetLock } from '../utils/utils';
-import { Net } from '../../services/net/net';
+import { Net } from '../../domain/net/net';
 
 const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
   async ({ isAdmin }, { monthAgo }) => {

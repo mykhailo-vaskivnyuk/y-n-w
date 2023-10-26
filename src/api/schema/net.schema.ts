@@ -3,8 +3,8 @@ import {
   IMemberResponse, INetCreateParams, INetResponse,
   INetsResponse, INetUpdateParams, OmitNull,
 } from '../../client/common/server/types/types';
-import { TJoiSchema } from '../../router/types';
-import { JOI_NULL } from '../../router/constants';
+import { TJoiSchema } from '../../controller/types';
+import { JOI_NULL } from '../../controller/constants';
 
 export const NetCreateParamsSchema = {
   node_id: [Joi.number(), JOI_NULL],

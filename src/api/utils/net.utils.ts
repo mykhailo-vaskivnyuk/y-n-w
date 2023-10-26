@@ -1,8 +1,8 @@
 import { IUserNetData } from '../../db/types/member.types';
 import { UserStatusKeys } from '../../client/common/server/types/types';
-import { HandlerError } from '../../router/errors';
-import { NetEvent } from '../../services/event/event';
-import { Net } from '../../services/net/net';
+import { HandlerError } from '../../controller/errors';
+import { NetEvent } from '../../domain/event/event';
+import { Net } from '../../domain/net/net';
 import { exeWithNetLock } from './utils';
 
 export const findUserNet = async (
