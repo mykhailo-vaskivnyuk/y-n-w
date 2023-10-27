@@ -2,35 +2,44 @@ import { format } from 'node:util';
 import { TLoggerParameters } from './types';
 import { COLORS_MAP } from './constants';
 
-export const createLog = (message: TLoggerParameters): any[] => {
-  const [firstParameter, ...rest] = message;
-  if (typeof firstParameter === 'object')
-    return [firstParameter, format(...rest)];
-  return [{}, format(...message)];
-};
-
-export const createErrorlog = (message: TLoggerParameters) => {
-  const [e, errorMessage] = createLog(message);
-  let stack = (e.stack || '') as string;
-  stack = stack
-    .split('\n')
-    .slice(1, 4)
-    .map((item) => item.replace('at', '').trim())
-    .join('\n');
-  if (e instanceof Error) {
-    e.stack = stack;
-    return [e, errorMessage];
-  }
-  const name = (e.name as string || '').toLowerCase();
-  const type = (e.type as string || '').toLowerCase();
-  const isError = name.includes('error') || type.includes('error');
-  if (!isError) return [e, errorMessage];
-  const error = new Error();
-  Object.assign(error, e);
-  error.stack = stack;
-  return [error, errorMessage];
-};
-
 export const colorize = (
   message: string, color: keyof typeof COLORS_MAP,
 ) => '\x1b[' + COLORS_MAP[color] + message + '\x1b[0m';
+
+export const getFormatLog = (isColor: boolean) =>
+  (message: TLoggerParameters, color: keyof typeof COLORS_MAP,): any[] => {
+    let first = {};
+    let second = '';
+    if (typeof message[0] === 'object') {
+      first = message[0];
+      second = format(...message.slice(1));
+    } else {
+      second = format(...message);
+    }
+    if (isColor) second = colorize(second, color);
+    return [first, second];
+  };
+
+export const createErrorlog = (message: TLoggerParameters) => {
+  const [e] = message;
+  if (typeof e !== 'object') return message;
+  let stack = e.stack as string;
+  if (stack) {
+    stack = stack
+      .split('\n')
+      .slice(1, 4)
+      .map((item) => item.replace('at', '').trim())
+      .join('\n');
+    e.stack = stack;
+  }
+  if (e instanceof Error) return message;
+  const isError = /error/i.test(e.name) || /error/i.test(e.type);
+  if (!isError) return message;
+
+  const error = new Error();
+  error.message = e.message;
+  error.stack = stack;
+  message[0] = error;
+
+  return message;
+};

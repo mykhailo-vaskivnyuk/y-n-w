@@ -1,12 +1,12 @@
 import { env } from 'node:process';
-import fs from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { CleanedEnvKeys, ICleanedEnv } from '../types/config.types';
 import { SyncCalc } from './calc';
 
 export const getEnv = () => {
   const DEV = env.NODE_ENV === 'development';
   new SyncCalc('.env.json')
-    .next((v) => fs.readFileSync(v))
+    .next(readFileSync)
     .next((v) => v.toString())
     .next(JSON.parse)
     .next((v) => Object.assign(env, v))
@@ -25,6 +25,7 @@ export const getEnv = () => {
     TG_BOT_TOKEN = '',
     ORIGIN = 'https://merega.herokuapp.com',
     STATIC_PATH = 'public',
+    LOGGER_COLORIZE = false,
   } = env as Record<CleanedEnvKeys, any>;
 
   const cleanedEnvObj: ICleanedEnv = {
@@ -41,6 +42,7 @@ export const getEnv = () => {
     TG_BOT_TOKEN,
     ORIGIN,
     STATIC_PATH,
+    LOGGER_COLORIZE,
   };
 
   return cleanedEnvObj;

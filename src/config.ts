@@ -13,6 +13,7 @@ const {
   DATABASE_URL: dbUrl,
   ORIGIN: origin,
   STATIC_PATH: staticPath,
+  LOGGER_COLORIZE: colorize,
   ...restEnv
 } = getEnv();
 const connection = {
@@ -36,6 +37,7 @@ const config: IConfig = {
     path: resolvePath('logger/logger'),
     level: 'DEBUG',
     target: 'console',
+    colorize,
   },
   database: {
     path: resolvePath('db/db'),

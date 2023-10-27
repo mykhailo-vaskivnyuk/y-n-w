@@ -25,5 +25,6 @@ export interface ICleanedEnv {
   TG_BOT_TOKEN: string;
   ORIGIN: string;
   STATIC_PATH: string;
+  LOGGER_COLORIZE: boolean;
 }
 export type CleanedEnvKeys = keyof ICleanedEnv;

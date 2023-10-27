@@ -4,6 +4,7 @@ export interface ILoggerConfig {
   path: string;
   level: TLoggerLevelKeys,
   target: TLoggerTarget,
+  colorize: boolean,
 }
 
 type TLoggerTarget = 'console' | 'stdout'
