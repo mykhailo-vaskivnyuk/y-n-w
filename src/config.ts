@@ -46,10 +46,10 @@ const config: IConfig = {
     connection,
   },
   router: {
-    path: resolvePath('router/router'),
+    path: resolvePath('controller/router'),
     apiPath: resolvePath('api'),
     servicesPath: resolvePath('services'),
-    modulesPath: resolvePath('router/modules'),
+    modulesPath: resolvePath('controller/modules'),
     clientApiPath: resolve('src/client/common/server/client.api.ts'),
     services: [
       'mailService',
