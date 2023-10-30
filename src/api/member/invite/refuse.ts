@@ -3,10 +3,8 @@ import { THandler } from '../../../controller/types';
 import {
   IMemberConfirmParams,
 } from '../../../client/common/server/types/types';
-import { NetEvent } from '../../../domain/event/event';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
-import { Net } from '../../../domain/net/net';
 
 const refuse: THandler<IMemberConfirmParams, boolean> = async (
   { userNetData }, { node_id, member_node_id }
@@ -19,8 +17,8 @@ const refuse: THandler<IMemberConfirmParams, boolean> = async (
   if (memberStatus !== 'CONNECTED') return false; // bad request
 
   const { user_id, net_id } = member;
-  const event = new NetEvent(net_id, 'REFUSE', userNetData);
-  await new Net().removeConnectedMember(event, user_id!);
+  const event = new domain.event.NetEvent(net_id, 'REFUSE', userNetData);
+  await new domain.net.NetArrange().removeConnectedMember(event, user_id!);
   await event.commit(notificationService);
   return true;
 };

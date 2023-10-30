@@ -1,7 +1,6 @@
 import Joi from 'joi';
 import { IMember, IMemberNode } from '../../../db/types/member.types';
 import { THandler } from '../../../controller/types';
-import { NetEvent } from '../../../domain/event/event';
 
 const clear: THandler<{ weekAgo: number }, boolean> =
   async ({ isAdmin }, { weekAgo }) => {
@@ -17,7 +16,7 @@ const clear: THandler<{ weekAgo: number }, boolean> =
       if (!memberMessage) return true;
       const { message_id, ...memberNode } = memberMessage;
       await execQuery.net.boardMessages.clear([message_id]);
-      const event = new NetEvent(
+      const event = new domain.event.NetEvent(
         memberNode.net_id, 'BOARD_MESSAGE', memberNode as IMember
       );
       await event.messages.create();

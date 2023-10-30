@@ -7,7 +7,6 @@ import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
 import { createTree } from '../../utils/nodes.utils';
 import { exeWithNetLock } from '../../utils/utils';
-import { Net } from '../../../domain/net/net';
 
 const confirm: THandler<IMemberConfirmParams, boolean> = async (
   { userNetData }, { member_node_id }
@@ -20,7 +19,7 @@ const confirm: THandler<IMemberConfirmParams, boolean> = async (
     const memberStatus = getMemberStatus(member);
     if (memberStatus !== 'CONNECTED') return false; // bad request
     await execQuery.member.confirm([member_node_id]);
-    await new Net().updateCountOfMembers(member_node_id);
+    await new domain.net.NetArrange().updateCountOfMembers(member_node_id);
     await createTree(t, member);
     return true;
   });

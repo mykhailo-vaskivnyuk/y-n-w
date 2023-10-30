@@ -3,11 +3,9 @@ import { THandler } from '../../../controller/types';
 import {
   IMemberConfirmParams,
 } from '../../../client/common/server/types/types';
-import { NetEvent } from '../../../domain/event/event';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
 import { exeWithNetLock } from '../../utils/utils';
-import { Net } from '../../../domain/net/net';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
   { userNetData }, { node_id, member_node_id }
@@ -27,8 +25,8 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
     if (memberStatus !== 'ACTIVE') return false; // bad request
     await execQuery.member.data
       .setDislike([parentNodeId!, node_id, member_node_id]);
-    const event = new NetEvent(net_id, 'DISLIKE');
-    await new Net().arrangeNodes(t, event, [parentNodeId]);
+    const event = new domain.event.NetEvent(net_id, 'DISLIKE');
+    await new domain.net.NetArrange().arrangeNodes(t, event, [parentNodeId]);
     await event.commit(notificationService, t);
     return true;
   });

@@ -15,6 +15,7 @@ import { createRoutes } from './methods/create.routes';
 import { setToGlobal } from '../app/methods/utils';
 import { pathToArray } from '../utils/utils';
 import * as cryptoService from '../utils/crypto';
+import * as domain from '../domain/index';
 
 class Router implements IRouter {
   private routes?: IRoutes;
@@ -29,6 +30,7 @@ class Router implements IRouter {
       const services = getServices(this.config);
       Object.assign(globalThis, services);
       setToGlobal('cryptoService', cryptoService);
+      setToGlobal('domain', domain);
     } catch (e: any) {
       logger.error(e);
       throw new RouterError('SERVICE_ERROR');

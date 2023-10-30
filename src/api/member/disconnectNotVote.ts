@@ -1,8 +1,6 @@
 import Joi from 'joi';
 import { THandler } from '../../controller/types';
-import { NetEvent } from '../../domain/event/event';
 import { exeWithNetLock } from '../utils/utils';
-import { Net } from '../../domain/net/net';
 
 const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
   async ({ isAdmin }, { monthAgo }) => {
@@ -16,8 +14,8 @@ const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
       const [parentNode] = await execQuery.node.findFreeByDate([strDate]);
       if (!parentNode) return true;
       const { node_id, net_id } = parentNode;
-      const net = new Net();
-      const event = new NetEvent(net_id, 'NOT_VOTE');
+      const net = new domain.net.NetArrange();
+      const event = new domain.event.NetEvent(net_id, 'NOT_VOTE');
       // eslint-disable-next-line no-loop-func
       await exeWithNetLock(net_id, async (t) => {
         const members = await execQuery.net.tree.getMembers([node_id]);

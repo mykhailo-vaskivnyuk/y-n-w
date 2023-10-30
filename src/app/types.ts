@@ -7,6 +7,7 @@ import { IMailService } from '../services/mail/types';
 import { ChatService } from '../services/chat/chat';
 import { NotificationService } from '../services/notification/notification';
 import App from './app';
+import { IDomain } from '../domain/types';
 
 export type IAppThis = App & {
   config: IConfig;
@@ -38,6 +39,7 @@ export interface IGlobalMixins {
   mailService: IMailService;
   chatService: ChatService;
   env: IConfig['env'];
+  domain: IDomain;
 }
 
 declare global {
@@ -51,4 +53,5 @@ declare global {
   const chatService: ChatService;
   const notificationService: NotificationService;
   const env: IConfig['env'];
+  const domain: IDomain;
 }

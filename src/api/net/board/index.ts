@@ -3,7 +3,6 @@ import { THandler } from '../../../controller/types';
 import {
   IBoardRemoveParams, INetBoardReadResponse, INetReadParams,
 } from '../../../client/common/server/types/types';
-import { NetEvent } from '../../../domain/event/event';
 import {
   NetReadParamsSchema, NetBoardReadResponseSchema, BoardRemoveParamsSchema,
 } from '../../schema/schema';
@@ -21,7 +20,7 @@ export const remove: THandler<IBoardRemoveParams, boolean> = async (
 ) => {
   await execQuery.net.boardMessages.remove([message_id, node_id]);
   const { net_id } = userNetData!;
-  const event = new NetEvent(net_id, 'BOARD_MESSAGE', userNetData);
+  const event = new domain.event.NetEvent(net_id, 'BOARD_MESSAGE', userNetData);
   await event.messages.create();
   await event.commit(notificationService);
   return true;
