@@ -1,47 +1,5 @@
 // 'use strict';
 
-// class Queue {
-//   constructor() {
-//     this.head = null;
-//     this.tail = null;
-//     this._size = 0;
-//   }
-
-//   add(item) {
-//     const first = this.head;
-//     this.head = { item, next: first, prev: null };
-//     if (!first) this.tail = this.head;
-//     else first.prev = this.head;
-//     this._size++;
-//   }
-
-//   get() {
-//     const last = this.tail;
-//     if (!last) return null;
-//     const { item, prev } = last;
-//     this.tail = prev;
-//     if (prev) prev.next = null;
-//     else this.head = null;
-//     this._size--;
-//     return item;
-//   }
-
-//   remove(item) {
-//     let v = this.head;
-//     while (v) {
-//       if (v.item === item) break;
-//       v = v.next;
-//     }
-//     if (!v) return;
-//     if (v.prev) v.prev.next = v.next;
-//     if (v.next) v.next.prev = v.prev;
-//   }
-
-//   get size() {
-//     return this._size;
-//   }
-// }
-
 class Queue {
   constructor() {
     this.head = null;
@@ -61,6 +19,7 @@ class Queue {
     if (!this.head) return null;
     const { item, next } = this.head;
     this.head = next;
+    if (!this.head) this.tail = this.head;
     this._size--;
     return item;
   }
@@ -79,6 +38,17 @@ class Queue {
     if (!cur.next) this.tail = this.head;
     this._size--;
     return item;
+  }
+
+  has(item) {
+    let cur = this.head;
+    while (cur) {
+      if (cur.item === item) {
+        return true;
+      }
+      cur = cur.next;
+    }
+    return false;
   }
 
   get size() {
