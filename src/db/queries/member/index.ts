@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { TQuery } from '../../types/types';
-import { INodeWithUser } from '../../../domain/types/member.types';
+import { IMember } from '../../../domain/types/member.types';
 import { ITableMembers } from '../../../domain/types/db.tables.types';
 import { IQueriesMemberData } from './data';
 import { IQueriesMemberInvite } from './invite';
@@ -24,7 +24,7 @@ export interface IQueriesMember {
   ]>;
   get: TQuery<[
     ['node_id', number],
-  ], Omit<INodeWithUser, 'token'>>;
+  ], IMember>;
   getConnected: TQuery<[
     ['parent_node_id', number],
   ], Pick<ITableMembers, 'user_id'>>;
@@ -75,10 +75,10 @@ export const get = `
   SELECT
     nodes.*,
     nodes.net_id::int,
-    members.user_id::int,
-    members.confirmed
+    members.*,
+    members.user_id::int
   FROM nodes
-  LEFT JOIN members ON
+  INNER JOIN members ON
     members.member_id = nodes.node_id
   WHERE nodes.node_id = $1
 `;

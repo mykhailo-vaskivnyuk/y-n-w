@@ -3,6 +3,7 @@ import {
   INetResponse, OmitNull,
 } from '../../../client/common/server/types/types';
 import { ITableNets } from '../../../domain/types/db.tables.types';
+import { INet } from '../../../domain/types/net.types';
 import { TQuery } from '../../types/types';
 import { IQueriesNetData } from './data';
 import { IQueriesNetCircle } from './circle';
@@ -30,6 +31,9 @@ export interface IQueriesNet {
   get: TQuery<[
     ['net_id', number],
   ], OmitNull<INetResponse>>
+  getData: TQuery<[
+    ['net_id', number],
+  ], INet>
   lock: TQuery<[
     ['net_id', number],
   ]>;
@@ -98,6 +102,19 @@ export const get = `
     root_node.net_id = nets.net_id AND
     root_node.parent_node_id ISNULL
   WHERE nodes.net_id = $1
+`;
+
+export const getData = `
+  SELECT
+    nets.*,
+    nets.net_id::int,
+    nets.net_level::int,
+    nets.parent_net_id::int,
+    nets_data.*
+  FROM nets
+  INNER JOIN nets_data ON
+    nets_data.net_id = nets.net_id
+  WHERE nets.net_id = $1
 `;
 
 export const lock = `

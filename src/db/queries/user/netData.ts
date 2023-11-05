@@ -3,18 +3,18 @@ import { TQuery } from '../../types/types';
 import {
   IUserNetDataResponse,
 } from '../../../client/common/server/types/types';
-import { IMemberNet } from '../../../domain/types/member.types';
+import { IMember } from '../../../domain/types/member.types';
 import { userInSubnets } from '../../utils';
 
 export interface IQueriesUserNetData {
   findByNode: TQuery<[
     ['user_id', number],
     ['node_id', number],
-  ], IMemberNet>
+  ], IMember>
   getFurthestSubnet: TQuery<[
     ['user_id', number],
     ['net_id', number | null],
-  ], IMemberNet>;
+  ], IMember>;
   get: TQuery<[
     ['user_id', number],
     ['net_id', number],
@@ -27,19 +27,11 @@ export const findByNode = `
     nodes.node_id::int,
     nodes.parent_node_id::int,
     nodes.net_id::int,
-    nets.*,
-    nets.net_level::int,
-    nets_data.*,
     members.*,
-    members.user_id::int,
-    members.confirmed
+    members.user_id::int
   FROM members
   INNER JOIN nodes ON
     nodes.node_id = members.member_id
-  INNER JOIN nets ON
-    nets.net_id = nodes.net_id
-  INNER JOIN nets_data ON
-    nets_data.net_id = nets.net_id
   WHERE
     members.user_id = $1 AND
     members.member_id = $2
@@ -51,19 +43,13 @@ export const getFurthestSubnet = `
     nodes.node_id::int,
     nodes.parent_node_id::int,
     nodes.net_id::int,
-    nets.*,
-    nets.net_level::int,
-    nets_data.*,
     members.*,
-    members.user_id::int,
-    members.confirmed
+    members.user_id::int
   FROM members
   INNER JOIN nodes ON
     nodes.node_id = members.member_id
   INNER JOIN nets ON
     nets.net_id = nodes.net_id
-  INNER JOIN nets_data ON
-    nets_data.net_id = nets.net_id
   WHERE ${userInSubnets()}
   ORDER BY nets.net_level DESC
   LIMIT 1

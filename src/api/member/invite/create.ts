@@ -8,7 +8,7 @@ import { getMemberStatus } from '../../../client/common/server/utils';
 const create: THandler<IMemberInviteParams, string | null> = async (
   { member: actionMember }, { node_id, member_node_id, member_name },
 ) => {
-  const { goal } = actionMember!.get();
+  const { goal } = await actionMember!.getNet();
   if (!goal) return null; // bad request
 
   const [member] = await execQuery.member

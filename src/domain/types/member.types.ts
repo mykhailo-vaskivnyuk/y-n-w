@@ -2,19 +2,15 @@ import * as T from './db.tables.types';
 
 export type IMember = T.ITableNodes & T.ITableMembers;
 export type IMemberNode = T.ITableNodes;
-export type IMemberNet =
-  IMember &
-  T.ITableNets &
-  T.ITableNetsData;
-
-export type INodeWithUser =
+export type INodeMember =
   T.ITableNodes &
-  T.OuterJoin<Pick<T.ITableMembersInvites, 'token'>> &
-  T.OuterJoin<Pick<T.ITableMembers, 'user_id' | 'confirmed'>>;
+  T.ITableMembers &
+  T.ITableMembersInvites;
 
 export type IBranchDislikes =
-  Pick<T.ITableMembers, 'member_id' | 'user_id'> &
-  { dislike_count: number };
+  Pick<T.ITableNodes, 'node_id'> & {
+  dislike_count: number;
+};
 
 export type IBranchVotes =
   Pick<T.ITableNodes, 'node_id'> & {

@@ -14,7 +14,7 @@ const setUserNet: TInputModule = () =>
 
     const member = new domain.member.Member();
     await member.init(user_id, node_id);
-    const status = member.getStatus();
+    const status = member.status();
     const allowedForNetUser = handler.allowedForNetUser || 'INSIDE_NET';
     if (USER_STATUS_MAP[status] < USER_STATUS_MAP[allowedForNetUser])
       throw new HandlerError('FORBIDDEN');

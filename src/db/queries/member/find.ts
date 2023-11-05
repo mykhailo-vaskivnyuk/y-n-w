@@ -1,4 +1,4 @@
-import { IMember, INodeWithUser } from '../../../domain/types/member.types';
+import { IMember, INodeMember } from '../../../domain/types/member.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesMemberFind {
@@ -8,11 +8,11 @@ export interface IQueriesMemberFind {
   inTree: TQuery<[
     ['user_node_id', number],
     ['member_node_id', number],
-  ], INodeWithUser>;
+  ], INodeMember>;
   inCircle: TQuery<[
     ['parent_node_id', number],
     ['member_node_id', number],
-  ], INodeWithUser>;
+  ], INodeMember>;
 }
 
 export const unactive = `
@@ -32,10 +32,10 @@ export const unactive = `
 
 export const inTree = `
   SELECT
-    members_invites.*,
     nodes.*,
-    members.user_id,
-    members.confirmed
+    members.*,
+    members.user_id::int,
+    members_invites.*
   FROM nodes
   LEFT JOIN members ON
     members.member_id = nodes.node_id
@@ -48,10 +48,10 @@ export const inTree = `
 
 export const inCircle = `
   SELECT
-    members_invites.*,
     nodes.*,
-    members.user_id,
-    members.confirmed
+    members.*,
+    members.user_id::int,
+    members_invites.*,
   FROM nodes
   LEFT JOIN members ON
     members.member_id = nodes.node_id

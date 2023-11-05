@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-import { IMember } from '../types/member.types';
 import { ITransaction } from '../../db/types/types';
 import { NetEvent } from '../event/event';
 import { exeWithNetLock } from '../../api/utils/utils';
@@ -10,13 +9,13 @@ export class NetArrange {
     const { user_id } = member!;
 
     do {
-      const [userNetData] = await execQuery
+      const [member] = await execQuery
         .user.netData.getFurthestSubnet([user_id, root_net_id]);
-      if (!userNetData) break;
-      const { net_id } = userNetData;
+      if (!member) break;
+      const { net_id } = member;
       // eslint-disable-next-line no-loop-func
       await exeWithNetLock(net_id, async (t) => {
-        const event = new NetEvent(net_id, event_type, userNetData);
+        const event = new NetEvent(net_id, event_type, member);
         const net = new NetArrange();
         const nodesToArrange = await net.removeMember(event);
         await net.arrangeNodes(t, event, nodesToArrange);
@@ -171,11 +170,10 @@ export class NetArrange {
     const { dislike_count } = memberWithMaxDislikes!;
     const disliked = Math.ceil(dislike_count / (count - dislike_count)) > 1;
     if (!disliked) return [];
-    const { user_id, member_id } = memberWithMaxDislikes!;
-    const [userNetData] =
-      await execQuery.user.netData.findByNode([user_id, member_id]);
+    const { node_id } = memberWithMaxDislikes!;
+    const [member] = await execQuery.member.get([node_id]);
     return this.removeMemberFromNetAndSubnets(
-      event.createChild('DISLIKE_DISCONNECT', userNetData));
+      event.createChild('DISLIKE_DISCONNECT', member));
   }
 
   async checkVotes(event: NetEvent, parent_node_id: number) {
@@ -199,7 +197,7 @@ export class NetArrange {
     await execQuery.member.invite.removeAll([node_id]);
     await execQuery.member.invite.removeAll([parent_node_id]);
 
-    const [member] = await execQuery.member.get([node_id]) as IMember[];
+    const [member] = await execQuery.member.get([node_id]);
     const {
       user_id,
       node_level,
@@ -211,8 +209,7 @@ export class NetArrange {
     await execQuery.member.data.removeFromTree([node_id]);
     await execQuery.events.removeFromTree([user_id!, net_id]);
 
-    const [parent_member] = await execQuery
-      .member.get([parent_node_id]) as IMember[];
+    const [parent_member] = await execQuery.member.get([parent_node_id]);
     const {
       user_id: parentUserId,
       node_level: parentNodeLevel,
