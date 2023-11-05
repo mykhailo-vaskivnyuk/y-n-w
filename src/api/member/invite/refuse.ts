@@ -7,8 +7,9 @@ import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
 
 const refuse: THandler<IMemberConfirmParams, boolean> = async (
-  { userNetData }, { node_id, member_node_id }
+  { member: actionMember }, { node_id, member_node_id }
 ) => {
+  const m = actionMember!.get();
   const [member] = await execQuery.member
     .find.inTree([node_id, member_node_id]);
   if (!member) return false; // bad request
@@ -17,7 +18,7 @@ const refuse: THandler<IMemberConfirmParams, boolean> = async (
   if (memberStatus !== 'CONNECTED') return false; // bad request
 
   const { user_id, net_id } = member;
-  const event = new domain.event.NetEvent(net_id, 'REFUSE', userNetData);
+  const event = new domain.event.NetEvent(net_id, 'REFUSE', m);
   await new domain.net.NetArrange().removeConnectedMember(event, user_id!);
   await event.commit(notificationService);
   return true;

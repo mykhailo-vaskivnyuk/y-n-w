@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
 import { IMemberResponse } from '../../../client/common/server/types/types';
-import { ITableNodes } from '../../types/db.tables.types';
+import { ITableNodes } from '../../../domain/types/db.tables.types';
 import { TQuery } from '../../types/types';
-import { IMember } from '../../types/member.types';
+import { IMember } from '../../../domain/types/member.types';
 
 export interface IQueriesNetTree {
   getData: TQuery<[

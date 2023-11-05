@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { IMember, IMemberNode } from '../../../db/types/member.types';
+import { IMember, IMemberNode } from '../../../domain/types/member.types';
 import { THandler } from '../../../controller/types';
 
 const clear: THandler<{ weekAgo: number }, boolean> =

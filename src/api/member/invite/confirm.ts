@@ -9,9 +9,9 @@ import { createTree } from '../../utils/nodes.utils';
 import { exeWithNetLock } from '../../utils/utils';
 
 const confirm: THandler<IMemberConfirmParams, boolean> = async (
-  { userNetData }, { member_node_id }
+  { member }, { member_node_id }
 ) => {
-  const { net_id, node_id } = userNetData!;
+  const { net_id, node_id } = member!.get();
   return exeWithNetLock(net_id, async (t) => {
     const [member] = await execQuery
       .member.find.inTree([node_id, member_node_id]);

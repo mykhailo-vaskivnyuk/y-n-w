@@ -1,7 +1,7 @@
 import {
   INetResponse, OmitNull,
 } from '../../../client/common/server/types/types';
-import { ITableNets, ITableNodes } from '../../types/db.tables.types';
+import { ITableNets, ITableNodes } from '../../../domain/types/db.tables.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNetFind {

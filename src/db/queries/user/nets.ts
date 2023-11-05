@@ -1,8 +1,8 @@
 import {
   ITableNets, ITableNetsData, ITableMembers, ITableNodes,
-} from '../../types/db.tables.types';
+} from '../../../domain/types/db.tables.types';
 import { TQuery } from '../../types/types';
-import { IUserNetData } from '../../types/member.types';
+import { IMemberNet } from '../../../domain/types/member.types';
 
 export interface IQueriesUserNets {
   get: TQuery<[
@@ -15,7 +15,7 @@ export interface IQueriesUserNets {
   >;
   getTop: TQuery<[
     ['user_id', number],
-  ], IUserNetData>,
+  ], IMemberNet>,
 }
 
 export const get = `
@@ -46,8 +46,10 @@ export const getTop = `
     nodes.parent_node_id::int,
     nodes.net_id::int,
     nets_data.*,
-    nets.net_level,
-    members.user_id,
+    nets.*,
+    nets.net_level::int,
+    members.*,
+    members.user_id::int,
     members.confirmed
   FROM members
   INNER JOIN nodes ON

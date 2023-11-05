@@ -1,6 +1,6 @@
 import { createTree } from '../../api/utils/nodes.utils';
 import { exeWithNetLock } from '../../api/utils/utils';
-import { ITableNets } from '../../db/types/db.tables.types';
+import { ITableNets } from '../types/db.tables.types';
 import { NetEvent } from '../event/event';
 import { NetArrange } from './net.arrange';
 

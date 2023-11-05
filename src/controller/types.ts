@@ -4,8 +4,7 @@ import { IObject } from '../types/types';
 import {
   IOperation, TOperationResponse, IParams,
 } from '../types/operation.types';
-import { ITableUsers } from '../db/types/db.tables.types';
-import { IUserNetData } from '../db/types/member.types';
+import { ITableUsers } from '../domain/types/db.tables.types';
 import {
   PartialUserNetStatusKeys, PartialUserStatusKeys, UserStatusKeys,
 } from '../client/common/server/types/types';
@@ -16,6 +15,7 @@ import { NotificationService } from '../services/notification/notification';
 import {
   TInputModulesKeys, TOutputModulesKeys, TServicesKeys,
 } from './constants';
+import { Member } from '../domain/member/member';
 
 export interface IRouterConfig {
   path: string;
@@ -78,8 +78,7 @@ export type THandlerSchema = THandler['responseSchema' | 'paramsSchema'];
 export type IContext = {
   session: Session<ISessionContent>;
   origin: string;
-  userNetData?: IUserNetData;
-  userNetStatus?: UserStatusKeys;
+  member?: Member;
   connectionId?: number;
   isAdmin?: boolean;
 };

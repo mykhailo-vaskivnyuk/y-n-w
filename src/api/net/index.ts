@@ -5,8 +5,8 @@ import { THandler } from '../../controller/types';
 import { NetReadParamsSchema, NetViewResponseSchema } from '../schema/schema';
 
 export const getCircle: THandler<INetReadParams, INetViewResponse> =
-  async ({ userNetData }, { node_id }) => {
-    const { parent_node_id, confirmed } = userNetData!;
+  async ({ member }, { node_id }) => {
+    const { parent_node_id, confirmed } = member!.get();
     if (!parent_node_id) return [];
     if (!confirmed) return [];
     return await execQuery

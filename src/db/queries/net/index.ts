@@ -2,7 +2,7 @@
 import {
   INetResponse, OmitNull,
 } from '../../../client/common/server/types/types';
-import { ITableNets } from '../../types/db.tables.types';
+import { ITableNets } from '../../../domain/types/db.tables.types';
 import { TQuery } from '../../types/types';
 import { IQueriesNetData } from './data';
 import { IQueriesNetCircle } from './circle';

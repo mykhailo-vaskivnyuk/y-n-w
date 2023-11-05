@@ -1,6 +1,6 @@
 import { IMemberResponse } from '../../../client/common/server/types/types';
 import { TQuery } from '../../types/types';
-import { IMember } from '../../types/member.types';
+import { IMember } from '../../../domain/types/member.types';
 
 export interface IQueriesNetCircle {
   getData: TQuery<[

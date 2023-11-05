@@ -6,9 +6,9 @@ import { MemberInviteParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
 
 const create: THandler<IMemberInviteParams, string | null> = async (
-  { userNetData }, { node_id, member_node_id, member_name },
+  { member: actionMember }, { node_id, member_node_id, member_name },
 ) => {
-  const { goal } = userNetData!;
+  const { goal } = actionMember!.get();
   if (!goal) return null; // bad request
 
   const [member] = await execQuery.member

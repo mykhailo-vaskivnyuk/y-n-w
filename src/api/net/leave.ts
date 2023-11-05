@@ -4,11 +4,12 @@ import { THandler } from '../../controller/types';
 import { NetReadParamsSchema } from '../schema/schema';
 
 const leave: THandler<INetReadParams> = async (
-  { userNetData },
+  { member },
 ) => {
-  const { net_id, confirmed } = userNetData!;
+  const m = member!.get();
+  const { net_id, confirmed } = m;
   const event_type = confirmed ? 'LEAVE' : 'LEAVE_CONNECTED';
-  const event = new domain.event.NetEvent(net_id, event_type, userNetData);
+  const event = new domain.event.NetEvent(net_id, event_type, m);
   await domain.net.removeMemberFromNet(event);
   return true;
 };

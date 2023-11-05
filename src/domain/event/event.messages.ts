@@ -2,7 +2,7 @@
 import { format } from 'node:util';
 import { IEventRecord, INetResponse,
 } from '../../client/common/server/types/types';
-import { IMember } from '../../db/types/member.types';
+import { IMember } from '../types/member.types';
 import { INetEventTo } from '../../api/types/net.types';
 import { NetEvent } from './event';
 import {

@@ -1,4 +1,4 @@
-import { IMember, INodeWithUser } from '../../types/member.types';
+import { IMember, INodeWithUser } from '../../../domain/types/member.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesMemberFind {

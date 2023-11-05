@@ -1,10 +1,20 @@
 import { DatabaseError } from '../../db/errors';
+import { DomainError, DomainErrorCode } from '../../domain/errors';
 import {
   HandlerError, RouterError, InputValidationError,
   OutputValidationError, HandlerErrorCode,
 } from '../errors';
 import { GetStreamError } from '../modules/get.stream';
 import { SessionError } from '../modules/set.session';
+
+const DOMAIN_ERRORS_MAP = {
+  NOT_FOUND: (e: any) => {
+    throw new RouterError('CANT_FIND_ROUTE', e.details);
+  },
+  FORBIDDEN: (e: any) => {
+    throw new RouterError('FORBIDDEN', e.message);
+  },
+};
 
 const HANDLER_ERRORS_MAP = {
   REDIRECT: (e: any) => {
@@ -25,6 +35,10 @@ const HANDLER_ERRORS_MAP = {
 };
 
 const ROUTER_ERRORS_MAP = {
+  [DomainError.name]: (e: any) => {
+    handleDomainError(e);
+    throw new RouterError('DOMAIN_ERROR', e.message);
+  },
   [DatabaseError.name]: (e: any) => {
     throw new RouterError('HANDLER_ERROR', e.message);
   },
@@ -46,6 +60,8 @@ const ROUTER_ERRORS_MAP = {
   },
 };
 
+const handleDomainError = (e: any) =>
+  DOMAIN_ERRORS_MAP[e.code as DomainErrorCode]?.(e);
 const handleHandlerError = (e: any) =>
   HANDLER_ERRORS_MAP[e.code as HandlerErrorCode]?.(e);
 const handleError = (e: any) => ROUTER_ERRORS_MAP[e.name]?.(e);

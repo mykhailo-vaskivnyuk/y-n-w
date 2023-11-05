@@ -3,18 +3,18 @@ import { TQuery } from '../../types/types';
 import {
   IUserNetDataResponse,
 } from '../../../client/common/server/types/types';
-import { IUserNetData } from '../../types/member.types';
+import { IMemberNet } from '../../../domain/types/member.types';
 import { userInSubnets } from '../../utils';
 
 export interface IQueriesUserNetData {
   findByNode: TQuery<[
     ['user_id', number],
     ['node_id', number],
-  ], IUserNetData>
-  getFurthestNet: TQuery<[
+  ], IMemberNet>
+  getFurthestSubnet: TQuery<[
     ['user_id', number],
     ['net_id', number | null],
-  ], IUserNetData>;
+  ], IMemberNet>;
   get: TQuery<[
     ['user_id', number],
     ['net_id', number],
@@ -27,8 +27,10 @@ export const findByNode = `
     nodes.node_id::int,
     nodes.parent_node_id::int,
     nodes.net_id::int,
-    nets.net_level,
+    nets.*,
+    nets.net_level::int,
     nets_data.*,
+    members.*,
     members.user_id::int,
     members.confirmed
   FROM members
@@ -46,9 +48,13 @@ export const findByNode = `
 export const getFurthestSubnet = `
   SELECT
     nodes.*,
-    nets.net_level,
-    nets_data.*,
+    nodes.node_id::int,
+    nodes.parent_node_id::int,
     nodes.net_id::int,
+    nets.*,
+    nets.net_level::int,
+    nets_data.*,
+    members.*,
     members.user_id::int,
     members.confirmed
   FROM members

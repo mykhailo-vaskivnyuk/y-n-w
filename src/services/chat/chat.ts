@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import * as T from '../../client/common/server/types/types';
 import { IChatIdMapValue } from './types';
-import { IMemberNode } from '../../db/types/member.types';
+import { IMemberNode } from '../../domain/types/member.types';
 import {
   MAX_CHAT_INDEX,
   MAX_CHAT_MESSAGE_COUNT,

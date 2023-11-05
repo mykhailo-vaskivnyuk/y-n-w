@@ -1,7 +1,7 @@
 import { TQuery } from '../../types/types';
 import {
   IBranchDislikes, IBranchVotes,
-} from '../../types/member.types';
+} from '../../../domain/types/member.types';
 
 export interface IQueriesNetBranch {
   getDislikes: TQuery<[

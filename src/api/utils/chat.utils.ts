@@ -1,13 +1,13 @@
 import {
   IChatGetMessages, IChatSendMessage,
 } from '../../client/common/server/types/types';
-import { IUserNetData } from '../../db/types/member.types';
+import { Member } from '../../domain/member/member';
 
 export const chatIdVerified = (
-  userNetData: Pick<IUserNetData, 'net_id' | 'node_id' | 'parent_node_id'>,
+  member: Member,
   messageData: IChatSendMessage | IChatGetMessages,
 ) => {
-  const { net_id, node_id, parent_node_id } = userNetData!;
+  const { net_id, node_id, parent_node_id } = member.get();
   const { chatId } = messageData;
   const { net_id: netId, node_id: nodeId } =
     chatService.getUserNetNode(chatId) || {};

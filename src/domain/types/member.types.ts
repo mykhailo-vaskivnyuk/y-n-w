@@ -1,16 +1,11 @@
 import * as T from './db.tables.types';
 
-export type IUserNetData =
-  T.ITableNodes &
-  T.ITableNetsData &
-  Pick<T.ITableNets, 'net_level'> &
-  Pick<T.ITableMembers, 'user_id' | 'confirmed'>;
-
-export type IMember =
-  T.ITableNodes &
-  Pick<T.ITableMembers, 'user_id' | 'confirmed'>;
-
+export type IMember = T.ITableNodes & T.ITableMembers;
 export type IMemberNode = T.ITableNodes;
+export type IMemberNet =
+  IMember &
+  T.ITableNets &
+  T.ITableNetsData;
 
 export type INodeWithUser =
   T.ITableNodes &

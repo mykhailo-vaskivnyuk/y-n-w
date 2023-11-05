@@ -10,8 +10,8 @@ import {
 import { chatIdVerified } from '../utils/chat.utils';
 
 export const sendMessage: THandler<IChatSendMessage, boolean> =
-  async ({ session, userNetData }, messageData) => {
-    if (!chatIdVerified(userNetData!, messageData)) return false;
+  async ({ session, member }, messageData) => {
+    if (!chatIdVerified(member!, messageData)) return false;
     const user_id = session.read('user_id');
     const [message, connectionIds] =
       chatService.persistMessage(user_id!, messageData);
@@ -23,8 +23,8 @@ sendMessage.responseSchema = Joi.boolean();
 
 export const getMessages: THandler<
   IChatGetMessages, IChatGetMessagesResponse
-> = async ({ userNetData }, params) => {
-  if (!chatIdVerified(userNetData!, params)) return [];
+> = async ({ member }, params) => {
+  if (!chatIdVerified(member!, params)) return [];
   return chatService.getMessages(params);
 };
 getMessages.paramsSchema = ChatGetMessagesSchema;

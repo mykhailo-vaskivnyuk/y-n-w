@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { IMember } from '../../db/types/member.types';
+import { IMember } from '../types/member.types';
 import { ITransaction } from '../../db/types/types';
 import { NetEvent } from '../event/event';
 import { exeWithNetLock } from '../../api/utils/utils';
@@ -11,7 +11,7 @@ export class NetArrange {
 
     do {
       const [userNetData] = await execQuery
-        .user.netData.getFurthestNet([user_id, root_net_id]);
+        .user.netData.getFurthestSubnet([user_id, root_net_id]);
       if (!userNetData) break;
       const { net_id } = userNetData;
       // eslint-disable-next-line no-loop-func

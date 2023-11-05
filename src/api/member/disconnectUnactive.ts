@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { IMember } from '../../db/types/member.types';
+import { IMember } from '../../domain/types/member.types';
 import { THandler } from '../../controller/types';
 
 const disconnectUnactive: THandler<{ monthAgo: number }, boolean> =
