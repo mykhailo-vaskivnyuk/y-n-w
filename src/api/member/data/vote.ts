@@ -5,7 +5,6 @@ import {
 } from '../../../client/common/server/types/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
-import { exeWithNetLock } from '../../utils/utils';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
   { member: actionMember }, { member_node_id }
@@ -13,7 +12,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
   const m = actionMember!.get();
   const { net_id, node_id, parent_node_id } = m;
   if (!parent_node_id) return false; // bad request
-  return exeWithNetLock(net_id, async (t) => {
+  return domain.utils.exeWithNetLock(net_id, async (t) => {
     const [member] = await execQuery
       .member.find.inCircle([parent_node_id, member_node_id]);
     if (!member) return false; // bad request

@@ -7,7 +7,8 @@ import {
   ChatGetMessagesResponseSchema, ChatGetMessagesSchema,
   ChatSendMessageSchema,
 } from '../schema/chat.schema';
-import { chatIdVerified } from '../utils/chat.utils';
+
+const { chatIdVerified } = domain.utils;
 
 export const sendMessage: THandler<IChatSendMessage, boolean> =
   async ({ session, member }, messageData) => {

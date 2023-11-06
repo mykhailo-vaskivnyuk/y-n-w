@@ -3,7 +3,6 @@ import { THandler } from '../../controller/types';
 import { ITokenParams } from '../../client/common/server/types/types';
 import { JOI_NULL } from '../../controller/constants';
 import { TokenParamsSchema } from '../schema/schema';
-import { exeWithNetLock } from '../utils/utils';
 
 type INetConnectByToken = {
   net_id: number;
@@ -17,7 +16,7 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
     if (!net) return null;
     const { parent_net_id, net_id, node_id } = net;
 
-    return exeWithNetLock(net_id, async () => {
+    return domain.utils.exeWithNetLock(net_id, async () => {
       const [user_exists] = await execQuery.net.find.byUser([net_id, user_id]);
       if (user_exists) return { net_id, error: 'already connected' };
 

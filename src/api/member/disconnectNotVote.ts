@@ -1,6 +1,5 @@
 import Joi from 'joi';
 import { THandler } from '../../controller/types';
-import { exeWithNetLock } from '../utils/utils';
 
 const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
   async ({ isAdmin }, { monthAgo }) => {
@@ -17,7 +16,7 @@ const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
       const net = new domain.net.NetArrange();
       const event = new domain.event.NetEvent(net_id, 'NOT_VOTE');
       // eslint-disable-next-line no-loop-func
-      await exeWithNetLock(net_id, async (t) => {
+      await domain.utils.exeWithNetLock(net_id, async (t) => {
         const members = await execQuery.net.tree.getMembers([node_id]);
         const nodesToArrange = [node_id];
         for (const member of members) {

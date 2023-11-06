@@ -5,14 +5,12 @@ import {
 import { THandler } from '../../../controller/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
-import { createTree } from '../../utils/nodes.utils';
-import { exeWithNetLock } from '../../utils/utils';
 
 const confirm: THandler<IMemberConfirmParams, boolean> = async (
   { member }, { member_node_id }
 ) => {
   const { net_id, node_id } = member!.get();
-  return exeWithNetLock(net_id, async (t) => {
+  return domain.utils.exeWithNetLock(net_id, async (t) => {
     const [member] = await execQuery
       .member.find.inTree([node_id, member_node_id]);
     if (!member) return false; // bad request
@@ -20,7 +18,7 @@ const confirm: THandler<IMemberConfirmParams, boolean> = async (
     if (memberStatus !== 'CONNECTED') return false; // bad request
     await execQuery.member.confirm([member_node_id]);
     await new domain.net.NetArrange().updateCountOfMembers(member_node_id);
-    await createTree(t, member);
+    await domain.utils.createTree(t, member);
     return true;
   });
 };

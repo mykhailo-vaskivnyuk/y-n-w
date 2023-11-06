@@ -5,7 +5,8 @@ import {
 } from '../../../client/common/server/types/types';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
-import { exeWithNetLock } from '../../utils/utils';
+
+const { exeWithNetLock } = domain.utils;
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
   { member: actionMember }, { node_id, member_node_id }
