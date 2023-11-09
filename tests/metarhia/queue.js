@@ -24,7 +24,7 @@ class Queue {
     return item;
   }
 
-  remove(item) {
+  drop(item) {
     let cur = this.head;
     let prev = null;
     while (cur) {
@@ -43,9 +43,7 @@ class Queue {
   has(item) {
     let cur = this.head;
     while (cur) {
-      if (cur.item === item) {
-        return true;
-      }
+      if (cur.item === item) return true;
       cur = cur.next;
     }
     return false;
