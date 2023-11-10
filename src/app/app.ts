@@ -37,8 +37,6 @@ export default class App {
       this.setLogger();
       setToGlobal('logger', this.logger);
       logger.info('LOGGER IS READY');
-      if (env.API_UNAVAILABLE)
-        throw new AppError('INIT_ERROR', 'API set UNAVAILABLE');
       await this.setDatabase();
       logger.info('DATABASE IS READY');
       this.setInputConnection();

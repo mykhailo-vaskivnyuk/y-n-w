@@ -21,13 +21,12 @@ export interface IInputConnection {
   onOperation(
     cb: (operation: IOperation) => Promise<TOperationResponse>
   ): void;
-  setUnavailable(service?: TServerService): void;
+  setUnavailable(value: boolean): void;
   getServer(): IServer;
   getConnectionService: () => IConnectionService;
 }
 
 export type IServer = IHttpServer | IWsServer | ITgServer;
-export type TServerService = 'static' | 'api';
 export type IRequest = http.IncomingMessage;
 export interface IConnectionService {
   sendMessage: <T extends MessageTypeKeys>(

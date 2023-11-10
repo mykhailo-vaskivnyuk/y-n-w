@@ -31,13 +31,13 @@ export const createStaticServer = (staticPath: string) =>
   async (
     req: IRequest, res: IResponse, context: IHttpContext,
   ): Promise<void> => {
-    const { staticUnavailable } = context.contextParams;
+    const { unavailable } = context.contextParams;
     const { url, headers } = req;
     const { pathname } = getUrlInstance(url, headers.host);
     const path = pathname.replace(/\/$/, '');
     const {
       found, ext, stream,
-    } = await prepareFile(staticPath, path, staticUnavailable);
+    } = await prepareFile(staticPath, path, unavailable);
     let errCode = '' as ErrorStatusCode;
     let resHeaders = {
       'Content-Type': RES_MIME_TYPES_MAP[ext] || RES_MIME_TYPES_MAP.default,
@@ -46,7 +46,7 @@ export const createStaticServer = (staticPath: string) =>
       errCode = 'REDIRECT';
       resHeaders = { location: '/' };
     } else if (!found) errCode = 'NOT_FOUND';
-    else if (staticUnavailable) errCode = 'SERVICE_UNAVAILABLE';
+    else if (unavailable) errCode = 'SERVICE_UNAVAILABLE';
     const statusCode = errCode ? ErrorStatusCodeMap[errCode]! : 200;
     const resLog = errCode ? statusCode + ' ' + ServerErrorMap[errCode] : 'OK';
     const log = getLog(req, resLog);
