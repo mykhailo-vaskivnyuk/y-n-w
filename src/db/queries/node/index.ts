@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { ITableNodes } from '../../../domain/types/db.tables.types';
+import { ITableNodes } from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
 import { IQueriesNodeTree } from './tree';
 

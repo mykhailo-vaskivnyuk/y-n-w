@@ -3,7 +3,7 @@ import { format } from 'node:util';
 import { IEventRecord, INetResponse,
 } from '../../client/common/server/types/types';
 import { IMember } from '../types/member.types';
-import { INetEventTo } from '../../api/types/net.types';
+import { INetEventTo } from '../../domain/types/net.event.types';
 import { NetEvent } from './event';
 import {
   INSTANT_EVENTS, NET_MESSAGES_MAP, SET_USER_NODE_ID_FOR,

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { IMemberResponse } from '../../../client/common/server/types/types';
-import { ITableNodes } from '../../../domain/types/db.tables.types';
+import { ITableNodes } from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
 import { IMember } from '../../../domain/types/member.types';
 

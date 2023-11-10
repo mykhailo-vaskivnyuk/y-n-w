@@ -1,4 +1,4 @@
-import * as T from './db.tables.types';
+import * as T from './db.types';
 
 export type IMember = T.ITableNodes & T.ITableMembers;
 export type IMemberNode = T.ITableNodes;

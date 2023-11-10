@@ -1,6 +1,6 @@
 import {
   ITableNets, ITableNetsData, ITableMembers, ITableNodes,
-} from '../../../domain/types/db.tables.types';
+} from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
 import { IMember } from '../../../domain/types/member.types';
 

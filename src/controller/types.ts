@@ -4,7 +4,7 @@ import { IObject } from '../types/types';
 import {
   IOperation, TOperationResponse, IParams,
 } from '../types/operation.types';
-import { ITableUsers } from '../domain/types/db.tables.types';
+import { ITableUsers } from '../domain/types/db.types';
 import {
   PartialUserNetStatusKeys, PartialUserStatusKeys, UserStatusKeys,
 } from '../client/common/server/types/types';

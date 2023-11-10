@@ -1,4 +1,4 @@
-import * as T from './db.tables.types';
+import * as T from './db.types';
 
 export type INet = T.ITableNets & T.ITableNetsData;
 

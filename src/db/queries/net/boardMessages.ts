@@ -1,5 +1,5 @@
 import { TQuery } from '../../types/types';
-import { ITableBoardMessages } from '../../../domain/types/db.tables.types';
+import { ITableBoardMessages } from '../../../domain/types/db.types';
 import { IMemberNode } from '../../../domain/types/member.types';
 
 export interface IQueriesNetBoard {

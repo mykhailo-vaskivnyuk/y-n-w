@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { TQuery } from '../../types/types';
 import { IMember } from '../../../domain/types/member.types';
-import { ITableMembers } from '../../../domain/types/db.tables.types';
+import { ITableMembers } from '../../../domain/types/db.types';
 import { IQueriesMemberData } from './data';
 import { IQueriesMemberInvite } from './invite';
 import { IQueriesMemberFind } from './find';

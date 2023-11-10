@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { ITransaction } from '../../db/types/types';
 import { NetEvent } from '../event/event';
-import { exeWithNetLock } from '../../api/utils/utils';
+import { exeWithNetLock } from '../utils/utils';
 
 export class NetArrange {
   async removeMemberFromNetAndSubnets(event: NetEvent) {

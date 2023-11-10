@@ -7,8 +7,8 @@ export const log = (moduleFullPath: string, loadingString = 'loading ...') =>
   logger.debug(loadingString, path.relative(cwd, moduleFullPath));
 
 export const resolve = (parentModuleDir: string, modulePath: string) => {
-  if (path.isAbsolute(modulePath)) return addExt(modulePath);
   if (/^node:/.test(modulePath)) return;
+  if (path.isAbsolute(modulePath)) return addExt(modulePath);
   if (/(\/|\\)/.test(modulePath)) {
     const moduleFullPath = path.resolve(parentModuleDir, modulePath);
     return addExt(moduleFullPath);
