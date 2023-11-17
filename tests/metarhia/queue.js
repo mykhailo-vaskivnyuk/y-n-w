@@ -1,5 +1,3 @@
-// 'use strict';
-
 class Queue {
   constructor() {
     this.head = null;

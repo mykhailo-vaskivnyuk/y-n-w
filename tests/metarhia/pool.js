@@ -1,5 +1,3 @@
-// 'use strict';
-
 const { Queue } = require('./queue');
 
 class Pool {
@@ -8,8 +6,8 @@ class Pool {
   #queue = new Queue();
   #timeout;
 
-  constructor(options) {
-    this.#timeout = options?.timeout || 0;
+  constructor(options = {}) {
+    this.#timeout = options.timeout || 0;
   }
 
   add(item) {
@@ -21,15 +19,15 @@ class Pool {
 
   async use(capture) {
     let item;
-    const wait = this.#queue.size || !this.#items.size;
-    if (wait) item = await this.#inQueue();
-    else item = this.#items.get();
+    const ready = this.#items.size;
+    if (ready) item = this.#items.get();
+    else item = await this.#inQueue();
     let i = item;
     const release = () => {
       if (i) this.#addAvailable(i);
       else i = null;
     };
-    !capture && release();
+    if (!capture) release();
     return { item, release };
   }
 
