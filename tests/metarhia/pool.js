@@ -22,11 +22,13 @@ class Pool {
     const ready = this.#items.size;
     if (ready) item = this.#items.get();
     else item = await this.#inQueue();
+
     let i = item;
     const release = () => {
       if (i) this.#addAvailable(i);
       else i = null;
     };
+
     if (!capture) release();
     return { item, release };
   }
@@ -41,29 +43,32 @@ class Pool {
 
   #addAvailable(item) {
     this.#items.add(item);
-    this.#popQueue();
+    this.#shiftQueue();
+  }
+
+  #shiftQueue() {
+    if (!this.#queue.size) return;
+    this.#queue.get().out();
   }
 
   async #inQueue() {
     return new Promise((rv, rj) => {
       let timer = null;
+
       const out = () => {
         clearTimeout(timer);
         const item = this.#items.get();
         rv(item);
       };
+
       const timeout = () => {
         this.#queue.drop(out);
         rj(new Error('Pool: next item timeout'));
       };
+
       this.#queue.add({ out });
       timer = setTimeout(timeout, this.#timeout);
     });
-  }
-
-  #popQueue() {
-    if (!this.#queue.size) return;
-    this.#queue.get().out();
   }
 }
 
