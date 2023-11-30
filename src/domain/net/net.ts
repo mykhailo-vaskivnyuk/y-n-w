@@ -40,10 +40,13 @@ export const createNet = (
 export const removeMemberFromNet = (event: NetEvent) =>
   exeWithNetLock(event.net_id, async (t) => {
     const net = new NetArrange();
-    const nodesToArrange =
-      await net.removeMemberFromNetAndSubnets(event);
-    await net.arrangeNodes(t, event, nodesToArrange);
-    await event.commit(notificationService, t);
+    try {
+      const nodesToArrange =
+        await net.removeMemberFromNetAndSubnets(event);
+      await net.arrangeNodes(t, event, nodesToArrange);
+    } finally {
+      await event.commit(notificationService, t);
+    }
   });
 
 export const removeMemberFromAllNets = async (user_id: number) => {

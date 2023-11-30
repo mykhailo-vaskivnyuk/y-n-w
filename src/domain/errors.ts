@@ -1,7 +1,8 @@
 import { TOperationResponse } from '../types/operation.types';
+
 export const DOMAIN_ERROR_MAP = {
   NOT_FOUND: 'NOT_FOUND',
-  FORBIDDEN: 'USER ISN\'T INSIDE NET OR MEMBER PARENT NET',
+  FORBIDDEN: 'USER ISN\'T INSIDE NET OR MEMBER OF PARENT NET',
 } as const;
 export type DomainErrorCode = keyof typeof DOMAIN_ERROR_MAP;
 
