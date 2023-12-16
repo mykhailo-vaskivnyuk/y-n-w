@@ -30,6 +30,6 @@ export const EXCLUDE_STATIC = [
 ].map((i) => join(FRONT_STATIC_PATH, i));
 
 export const FILES_TO_COPY_FROM_BACK_TO_FRONT: [string, string][] = [
-  ['src/domain/types/db.tables.types.ts', 'local/db.tables.types.ts'],
+  ['src/domain/types/db.types.ts', 'local/db.types.ts'],
   ['src/domain/types/member.types.ts', 'local/member.types.ts'],
 ].map(([i, j]) => [resolve(i!), join(FRONT_PATH, j!)]);

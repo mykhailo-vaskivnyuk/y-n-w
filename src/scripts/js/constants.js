@@ -31,6 +31,6 @@ exports.excludeStatic = [
 ].map((i) => join(exports.frontStaticPath, i));
 
 exports.filesToCopyFromBackToFront = [
-  ['src/domain/types/db.tables.types.ts', 'local/db.tables.types.ts'],
+  ['src/domain/types/db.types.ts', 'local/db.types.ts'],
   ['src/domain/types/member.types.ts', 'local/member.types.ts'],
 ].map(([i, j]) => [resolve(i), join(exports.frontPath, j)]);
