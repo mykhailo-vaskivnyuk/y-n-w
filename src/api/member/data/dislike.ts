@@ -9,10 +9,10 @@ import { getMemberStatus } from '../../../client/common/server/utils';
 const { exeWithNetLock } = domain.utils;
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
-  { member: actionMember }, { node_id, member_node_id }
+  { member: actionMember }, { member_node_id }
 ) => {
   const m = actionMember!.get();
-  const { net_id, parent_node_id } = m;
+  const { net_id, node_id, parent_node_id } = m;
   return exeWithNetLock(net_id, async (t) => {
     let [member] = await execQuery
       .member.find.inTree([node_id, member_node_id]);
@@ -25,10 +25,11 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
     }
     const memberStatus = getMemberStatus(member);
     if (memberStatus !== 'ACTIVE') return false; // bad request
-    await execQuery.member.data
-      .setDislike([parentNodeId!, node_id, member_node_id]);
+    const params = [parentNodeId!, node_id, member_node_id] as const;
+    await execQuery.member.data.setDislike([...params]);
     const event = new domain.event.NetEvent(net_id, 'DISLIKE', m);
-    await new domain.net.NetArrange().arrangeNodes(t, event, [parentNodeId]);
+    const net = await new domain.net.NetArrange();
+    net.arrangeNodes(t, event, [parentNodeId]);
     await event.commit(notificationService, t);
     return true;
   });

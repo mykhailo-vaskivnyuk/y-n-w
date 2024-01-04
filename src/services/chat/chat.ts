@@ -13,8 +13,8 @@ export class ChatService {
   private counter = 0;
   private connectionChats = new Map<number, Set<number>>();
   private chatConnections = new Map<number, Set<number>>();
-  private userChatIds = new Map<number, number>();
-  private connectionUsers = new Map<number, number>();
+  private userChatId = new Map<number, number>();
+  // private connectionUser = new Map<number, number>();
   private netChatIds = new Map<number, number>();
   private nodeChatIds = new Map<number, number>();
   private getChatIdMap = {
@@ -30,22 +30,22 @@ export class ChatService {
   }
 
   getChatIdOfUser(user_id: number, connectionId?: number) {
-    let chatId = this.userChatIds.get(user_id);
+    let chatId = this.userChatId.get(user_id);
     if (!connectionId) return chatId;
     if (!chatId) {
       chatId = this.genChatId();
       logger.debug('USER', user_id, 'NEW USER CHAT', chatId);
-      this.userChatIds.set(user_id, chatId);
-      this.connectionUsers.set(connectionId, user_id);
+      this.userChatId.set(user_id, chatId);
+      // this.connectionUser.set(connectionId, user_id);
       this.chatIdUserNetNode.set(chatId, { user_id });
     }
     this.addChatAndConnection(chatId, connectionId);
     return chatId;
   }
 
-  getUserByConnectionId(connectionId: number) {
-    return this.connectionUsers.get(connectionId);
-  }
+  // getUserByConnectionId(connectionId: number) {
+  //   return this.connectionUsers.get(connectionId);
+  // }
 
   getChatIdsOfNet(
     memberNode: IMemberNode,
@@ -99,7 +99,7 @@ export class ChatService {
 
   removeChat(chatId: number) {
     const { user_id, net_id, node_id } = this.getUserNetNode(chatId) || {};
-    user_id && this.userChatIds.delete(user_id);
+    user_id && this.userChatId.delete(user_id);
     net_id && this.netChatIds.delete(net_id);
     node_id && this.nodeChatIds.delete(node_id);
   }
@@ -155,7 +155,7 @@ export class ChatService {
   }
 
   removeConnection(connectionId: number) {
-    this.connectionUsers.delete(connectionId);
+    // this.connectionUser.delete(connectionId);
     const chatIds = this.connectionChats.get(connectionId);
     if (!chatIds) return false;
     for (const chatId of chatIds)

@@ -1,8 +1,8 @@
 import { createTree } from '../utils/nodes.utils';
 import { exeWithNetLock } from '../utils/utils';
 import { ITableNets } from '../types/db.types';
-import { NetEvent } from '../event/event';
 import { NetArrange } from './net.arrange';
+
 
 export const createNet = (
   user_id: number,
@@ -37,23 +37,10 @@ export const createNet = (
   return { ...net!, ...netData!, ...node!, total_count_of_members: 1 };
 });
 
-export const removeMemberFromNet = (event: NetEvent) =>
-  exeWithNetLock(event.net_id, async (t) => {
-    const net = new NetArrange();
-    try {
-      const nodesToArrange =
-        await net.removeMemberFromNetAndSubnets(event);
-      await net.arrangeNodes(t, event, nodesToArrange);
-    } finally {
-      await event.commit(notificationService, t);
-    }
-  });
-
 export const removeMemberFromAllNets = async (user_id: number) => {
   const userNetDataArr = await execQuery.user.nets.getTop([user_id]);
+  const net = new NetArrange();
   for (const userNetData of userNetDataArr) {
-    const { net_id } = userNetData;
-    const event = new NetEvent(net_id, 'LEAVE', userNetData);
-    await removeMemberFromNet(event);
+    await net.removeMemberFromNet('LEAVE', userNetData);
   }
 };
