@@ -41,7 +41,7 @@ export class ChatService {
     this.connectionUser.set(connectionId, user_id);
   }
 
-  getChatsForNet(user_id: number, node: IMemberNode, connectionId: number) {
+  getChatsForUserNet(user_id: number, node: IMemberNode, connectionId: number) {
     const { net_id } = node;
     const netChatIds: T.IChatConnectAll[number] = { net_id };
     for (const netView of T.NET_VIEW_MAP) {
@@ -55,20 +55,18 @@ export class ChatService {
     return netChatIds;
   }
 
-  removeChatsForNet() {
+  removeChatsForUserNet() {
     // user_id: number, node: IMemberNode
-  }
-
-  getUserChats(user_id: number) {
-    return this.userChats.get(user_id);
   }
 
   getUserConnections(user_id: number) {
     return this.userConnections.get(user_id);
   }
 
-  getNetChat(net_id: number) {
-    return this.netChats.get(net_id);
+  getNetConnections(net_id: number) {
+    const chatId = this.netChats.get(net_id);
+    if (!chatId) return;
+    return this.getChatConnections(chatId);
   }
 
   getChatConnections(chatId: number) {
@@ -129,7 +127,7 @@ export class ChatService {
   }
 
   private checkUserChat(user_id: number, chatId: number) {
-    const userChats = chatService.getUserChats(user_id);
+    const userChats = this.userChats.get(user_id);
     return userChats?.has(chatId) || false;
   }
 

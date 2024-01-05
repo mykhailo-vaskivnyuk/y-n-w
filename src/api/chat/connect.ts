@@ -10,7 +10,7 @@ export const nets: THandler<never, T.IChatConnectAll> =
     const nets = await execQuery.user.nets.get([user_id!]);
     const allChatIds: T.IChatConnectAll = [];
     for (const node of nets) {
-      const chats = chatService.getChatsForNet(user_id, node, connectionId);
+      const chats = chatService.getChatsForUserNet(user_id, node, connectionId);
       allChatIds.push(chats);
     }
     return allChatIds;

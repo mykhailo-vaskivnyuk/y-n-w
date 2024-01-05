@@ -70,9 +70,7 @@ export class NotificationService {
   private sendNetEvent(message: T.IEventMessage) {
     const { net_id } = message;
     if (!net_id) return;
-    const chatId = chatService.getNetChat(net_id);
-    if (!chatId) return;
-    const connectionIds = chatService.getChatConnections(chatId);
+    const connectionIds = chatService.getNetConnections(net_id);
     connectionService.sendMessage(message, connectionIds);
   }
 
