@@ -1,18 +1,11 @@
-import {
-  ITableNets, ITableNetsData, ITableMembers, ITableNodes,
-} from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
+import { IUserNet } from '../../../domain/types/net.types';
 import { IMember } from '../../../domain/types/member.types';
 
 export interface IQueriesUserNets {
   get: TQuery<[
     ['user_id', number],
-  ],
-    ITableNodes &
-    ITableNets &
-    Pick<ITableNetsData, 'name'> &
-    Pick<ITableMembers, 'user_id' | 'confirmed'>
-  >;
+  ], IUserNet>;
   getTop: TQuery<[
     ['user_id', number],
   ], IMember>,

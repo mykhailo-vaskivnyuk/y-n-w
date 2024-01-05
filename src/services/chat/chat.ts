@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import * as T from '../../client/common/server/types/types';
-import { IChatIdMapValue } from './types';
+import { IChatMapValue } from './types';
 import { IMemberNode } from '../../domain/types/member.types';
 import {
   MAX_CHAT_INDEX,
@@ -13,99 +13,93 @@ export class ChatService {
   private counter = 0;
   private connectionChats = new Map<number, Set<number>>();
   private chatConnections = new Map<number, Set<number>>();
-  private userChatId = new Map<number, number>();
-  // private connectionUser = new Map<number, number>();
-  private netChatIds = new Map<number, number>();
-  private nodeChatIds = new Map<number, number>();
-  private getChatIdMap = {
+  private userConnections = new Map<number, Set<number>>();
+  private connectionUser = new Map<number, number>();
+  private userChats = new Map<number, Set<number>>();
+  private netChats = new Map<number, number>();
+  private nodeChats = new Map<number, number>();
+  private chatUsers = new Map<number, Set<number>>();
+  private chatNetOrNode = new Map<number, IChatMapValue>();
+  private getChatMap = {
     net: this.getNetChatId.bind(this),
     tree: this.getTreeChatId.bind(this),
     circle: this.getCircleChatId.bind(this),
   };
-  private chatIdUserNetNode = new Map<number, IChatIdMapValue>();
 
   private genChatId() {
     this.counter = (this.counter % MAX_CHAT_INDEX) + 1;
     return this.counter;
   }
 
-  getChatIdOfUser(user_id: number, connectionId?: number) {
-    let chatId = this.userChatId.get(user_id);
-    if (!connectionId) return chatId;
-    if (!chatId) {
-      chatId = this.genChatId();
-      logger.debug('USER', user_id, 'NEW USER CHAT', chatId);
-      this.userChatId.set(user_id, chatId);
-      // this.connectionUser.set(connectionId, user_id);
-      this.chatIdUserNetNode.set(chatId, { user_id });
+  addUserConnection(user_id: number, connectionId: number) {
+    let connections = this.userConnections.get(user_id);
+    if (connections) connections.add(connectionId);
+    else {
+      connections = new Set([connectionId]);
+      this.userConnections.set(user_id, connections);
     }
-    this.addChatAndConnection(chatId, connectionId);
-    return chatId;
+    this.connectionUser.set(connectionId, user_id);
   }
 
-  // getUserByConnectionId(connectionId: number) {
-  //   return this.connectionUsers.get(connectionId);
-  // }
-
-  getChatIdsOfNet(
-    memberNode: IMemberNode,
-    connectionId?: number,
-  ) {
-    const { net_id } = memberNode;
+  getChatsForNet(user_id: number, node: IMemberNode, connectionId: number) {
+    const { net_id } = node;
     const netChatIds: T.IChatConnectAll[number] = { net_id };
     for (const netView of T.NET_VIEW_MAP) {
-      const chatId = this.getChatIdMap[netView](memberNode);
+      const chatId = this.getChatMap[netView](node);
       if (!chatId) continue;
       netChatIds[netView] = chatId;
-      connectionId && this.addChatAndConnection(chatId, connectionId);
+      if (!connectionId) continue;
+      this.addChatAndUser(chatId, user_id);
+      this.addChatAndConnection(chatId, connectionId);
     }
     return netChatIds;
   }
 
-  getChatIdOfNet(net_id: number) {
-    return this.netChatIds.get(net_id);
+  removeChatsForNet() {
+    // user_id: number, node: IMemberNode
   }
 
-  private getNetChatId({ net_id }: IMemberNode) {
-    let chatId = this.netChatIds.get(net_id);
-    if (chatId) return chatId;
-    chatId = this.genChatId();
-    this.netChatIds.set(net_id, chatId);
-    this.chatIdUserNetNode.set(chatId, { net_id });
-    return chatId;
+  getUserChats(user_id: number) {
+    return this.userChats.get(user_id);
   }
 
-  private getNodeChatId(node_id: number | null) {
-    if (!node_id) return null;
-    let chatId = this.nodeChatIds.get(node_id);
-    if (chatId) return chatId;
-    chatId = this.genChatId();
-    this.nodeChatIds.set(node_id, chatId);
-    this.chatIdUserNetNode.set(chatId, { node_id });
-    return chatId;
+  getUserConnections(user_id: number) {
+    return this.userConnections.get(user_id);
   }
 
-  private getTreeChatId({ node_id }: IMemberNode) {
-    return this.getNodeChatId(node_id);
+  getNetChat(net_id: number) {
+    return this.netChats.get(net_id);
   }
 
-  private getCircleChatId({ parent_node_id }: IMemberNode) {
-    return this.getNodeChatId(parent_node_id);
+  getChatConnections(chatId: number) {
+    return this.chatConnections.get(chatId);
   }
 
-  getUserNetNode(chatId: number) {
-    return this.chatIdUserNetNode.get(chatId);
-  }
-
-  removeChat(chatId: number) {
-    const { user_id, net_id, node_id } = this.getUserNetNode(chatId) || {};
-    user_id && this.userChatId.delete(user_id);
-    net_id && this.netChatIds.delete(net_id);
-    node_id && this.nodeChatIds.delete(node_id);
+  removeConnection(connectionId?: number) {
+    if (!connectionId) return;
+    const user_id = this.connectionUser.get(connectionId);
+    if (!user_id) return;
+    this.connectionUser.delete(connectionId);
+    const connections = this.userConnections.get(user_id);
+    if (!connections) return;
+    connections.delete(connectionId);
+    const userDisconnect = !connections.size;
+    if (userDisconnect) {
+      this.userConnections.delete(user_id);
+      this.userChats.delete(user_id);
+    }
+    const chatIds = this.connectionChats.get(connectionId);
+    if (!chatIds) return;
+    this.connectionChats.delete(connectionId);
+    for (const chatId of chatIds) {
+      userDisconnect && this.removeUserFromChat(user_id, chatId);
+      this.removeConnectionFromChat(connectionId, chatId);
+    }
   }
 
   persistMessage(user_id: number, messageData: T.IChatSendMessage) {
     const { chatId, message } = messageData;
+    if (!this.checkUserChat(user_id, chatId)) return [];
     const chatMessages = this.messages.get(chatId);
     let index: number;
     if (chatMessages) {
@@ -122,7 +116,8 @@ export class ChatService {
     return [responseMessage, connectionIds] as const;
   }
 
-  getMessages({ chatId, index = 1 }: T.IChatGetMessages) {
+  getMessages(user_id: number, { chatId, index = 1 }: T.IChatGetMessages) {
+    if (!this.checkUserChat(user_id, chatId)) return [];
     const chatMessages = this.messages.get(chatId);
     if (!chatMessages) return [];
     const { index: lastIndex } = chatMessages.at(-1)!;
@@ -133,13 +128,51 @@ export class ChatService {
     return messages;
   }
 
+  private checkUserChat(user_id: number, chatId: number) {
+    const userChats = chatService.getUserChats(user_id);
+    return userChats?.has(chatId) || false;
+  }
+
+  private getNetChatId({ net_id }: IMemberNode) {
+    let chatId = this.netChats.get(net_id);
+    if (chatId) return chatId;
+    chatId = this.genChatId();
+    this.netChats.set(net_id, chatId);
+    this.chatNetOrNode.set(chatId, { net_id });
+    return chatId;
+  }
+
+  private getTreeChatId({ node_id }: IMemberNode) {
+    return this.getNodeChatId(node_id);
+  }
+
+  private getCircleChatId({ parent_node_id }: IMemberNode) {
+    return this.getNodeChatId(parent_node_id);
+  }
+
+  private getNodeChatId(node_id: number | null) {
+    if (!node_id) return null;
+    let chatId = this.nodeChats.get(node_id);
+    if (chatId) return chatId;
+    chatId = this.genChatId();
+    this.nodeChats.set(node_id, chatId);
+    this.chatNetOrNode.set(chatId, { node_id });
+    return chatId;
+  }
+
+  private addChatAndUser(chatId: number, user_id: number) {
+    const chats = this.userChats.get(user_id);
+    if (chats) chats.add(chatId);
+    else this.userChats.set(user_id, new Set([chatId]));
+
+    const users = this.chatUsers.get(chatId);
+    if (users) users.add(chatId);
+    else this.chatUsers.set(chatId, new Set([user_id]));
+  }
+
   private addChatAndConnection(chatId: number, connection: number) {
     this.addChatToConnection(chatId, connection);
     this.addConnectionToChat(connection, chatId);
-  }
-
-  getChatConnections(chatId: number) {
-    return this.chatConnections.get(chatId);
   }
 
   private addChatToConnection(chatId: number, connection: number) {
@@ -154,22 +187,25 @@ export class ChatService {
     else this.chatConnections.set(chatId, new Set([connection]));
   }
 
-  removeConnection(connectionId: number) {
-    // this.connectionUser.delete(connectionId);
-    const chatIds = this.connectionChats.get(connectionId);
-    if (!chatIds) return false;
-    for (const chatId of chatIds)
-      this.removeConnectionFromChat(connectionId, chatId);
-    return this.connectionChats.delete(connectionId);
+  private removeUserFromChat(user_id: number, chatId: number) {
+    const chatUsers = this.chatUsers.get(chatId);
+    chatUsers!.delete(user_id);
+    if (chatUsers!.size) return;
+    this.chatUsers.delete(chatId);
   }
 
   private removeConnectionFromChat(connection: number, chatId: number) {
     const chatConnections = this.chatConnections.get(chatId);
     chatConnections!.delete(connection);
-    if (chatConnections!.size === 0) {
-      this.chatConnections.delete(chatId);
-      this.removeChat(chatId);
-    }
+    if (chatConnections!.size) return;
+    this.chatConnections.delete(chatId);
+    this.removeChat(chatId);
+  }
+
+  private removeChat(chatId: number) {
+    const { net_id, node_id } = this.chatNetOrNode.get(chatId) || {};
+    net_id && this.netChats.delete(net_id);
+    node_id && this.nodeChats.delete(node_id);
   }
 }
 

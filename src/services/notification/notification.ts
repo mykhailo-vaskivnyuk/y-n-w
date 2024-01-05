@@ -9,7 +9,7 @@ type IInstantEvent = Omit<T.IEventMessage, 'type' | 'event_id' | 'date'>;
 export class NotificationService {
   private connection: IConnectionService;
   private messenger: IConnectionService;
-  private chat?: ChatService;
+  private chat: ChatService;
   private notifDates = new Map<number, string>();
   private notifsToSend: number[] = [];
   private eventsToSend: IInstantEvent[] = [];
@@ -18,7 +18,7 @@ export class NotificationService {
     const { chatService } = services;
     this.connection = connectionService;
     this.messenger = messengerService;
-    this.chat = chatService;
+    this.chat = chatService!;
   }
 
   addNotification(user_id: number, date: string) {
@@ -60,27 +60,25 @@ export class NotificationService {
       this.sendEvents();
       return;
     }
-    const chatId = chatService.getChatIdOfUser(user_id);
-    if (!chatId) return;
+    const connectionIds = this.chat.getUserConnections(user_id);
+    if (!connectionIds) return;
 
-    const connectionIds = chatService.getChatConnections(chatId);
-    connectionService.sendMessage(message, connectionIds);
+    this.connection.sendMessage(message, connectionIds);
     this.sendEvents();
   }
 
   private sendNetEvent(message: T.IEventMessage) {
     const { net_id } = message;
     if (!net_id) return;
-    const chatId = chatService.getChatIdOfNet(net_id);
+    const chatId = chatService.getNetChat(net_id);
     if (!chatId) return;
     const connectionIds = chatService.getChatConnections(chatId);
     connectionService.sendMessage(message, connectionIds);
   }
 
   private commitEvents(user_id: number, date: string) {
-    const chatId = this.chat?.getChatIdOfUser(user_id);
-    if (!chatId) return this.sendNotification(user_id, date);
-    const connectionIds = this.chat?.getChatConnections(chatId);
+    const connectionIds = this.chat.getUserConnections(user_id);
+    if (!connectionIds) return this.sendNotification(user_id, date);
     const message: T.INewEventsMessage = { type: 'NEW_EVENTS' };
     this.connection.sendMessage(message, connectionIds);
   }
