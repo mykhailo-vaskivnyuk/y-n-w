@@ -3,7 +3,6 @@ import { exeWithNetLock } from '../utils/utils';
 import { ITableNets } from '../types/db.types';
 import { NetArrange } from './net.arrange';
 
-
 export const createNet = (
   user_id: number,
   parentNetId: number | null,

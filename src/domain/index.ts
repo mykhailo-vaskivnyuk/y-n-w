@@ -4,11 +4,15 @@ import * as netEvent from './event/event';
 import * as memberImport from './member/member';
 import * as nodesUtils from './utils/nodes.utils';
 import * as comUtils from './utils/utils';
-// import * as eventMessages from './event/event.messages';
 
-export const net = { net: netBase, ...netArrange };
-// export const event = { ...netEvent, ...eventMessages };
+export const net = { ...netBase, ...netArrange };
 export const event = { ...netEvent };
 export const member = { ...memberImport };
 export const utils = { ...nodesUtils, ...comUtils };
 
+export type IDomain = {
+  net: typeof net,
+  event: typeof event,
+  member: typeof member,
+  utils: typeof utils,
+};

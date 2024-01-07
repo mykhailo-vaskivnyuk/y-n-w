@@ -7,7 +7,7 @@ import { IMailService } from '../services/mail/types';
 import { ChatService } from '../services/chat/chat';
 import { NotificationService } from '../services/notification/notification';
 import App from './app';
-import { IDomain } from '../domain/types';
+import { IDomain } from '../domain';
 
 export type IAppThis = App & {
   config: IConfig;

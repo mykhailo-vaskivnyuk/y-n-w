@@ -10,7 +10,6 @@ import App from '../../src/app/app';
 import { getCasesTree } from './create.cases';
 import { runScript } from './utils';
 import { setToGlobal } from '../../src/app/methods/utils';
-import { delay } from '../../src/utils/utils';
 
 export const getConnection = (
   transport: TTransport,
@@ -27,12 +26,13 @@ export const getConnection = (
 export const getTestCases =
   async (testData: ITestData): Promise<[ITestCase, number][]> => {
     const casesTree = await getCasesTree();
-    const { connCount, cases } = testData;
-    const stateArr = Array(connCount).fill(0).map(() => ({}));
+    const { connCount = 1, cases } = testData;
+    const connStates = Array(connCount).fill(0).map(() => ({}));
     return cases(casesTree as any).map((item) => {
-      const itemArr = Array.isArray(item) ? item : [item] as const;
-      const [getTestCase, connNumber = 0] = itemArr;
-      return [getTestCase(stateArr[connNumber]!), connNumber];
+      const itemAndConn = Array.isArray(item) ? item : [item] as const;
+      const [getTestCase, connNumber = 0] = itemAndConn;
+      const state = connStates[connNumber]!;
+      return [getTestCase(state), connNumber];
     });
   };
 
@@ -82,7 +82,6 @@ export const prepareTest = async (testData: ITestData) => {
     closeConnections.forEach((fn) => fn());
     await app.stop();
     await db.disconnect();
-    await delay(5000);
   };
 
   return { testRunnerData, finalize };

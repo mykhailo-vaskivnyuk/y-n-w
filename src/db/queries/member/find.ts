@@ -51,7 +51,7 @@ export const inCircle = `
     nodes.*,
     members.*,
     members.user_id::int,
-    members_invites.*,
+    members_invites.*
   FROM nodes
   LEFT JOIN members ON
     members.member_id = nodes.node_id
