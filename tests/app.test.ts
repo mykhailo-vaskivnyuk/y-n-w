@@ -3,7 +3,7 @@ import { ITestRunnerData } from './types/types';
 import { prepareTest } from './utils/test.utils';
 import { assertDb, assertMessage, assertResponse } from './utils/assert.utils';
 import { delay } from '../src/utils/utils';
-import { TEST_DATA_ARR } from './data/test.data';
+import { createCasesAll } from './utils/create.cases';
 
 const runTest = ({
   title,
@@ -12,8 +12,11 @@ const runTest = ({
   testCases,
 }: ITestRunnerData) =>
   test(title, async (t) => {
+    const connStates = [];
     for (const [data, connIndex] of testCases) {
-      const { title, operations } = data;
+      const state: any = connStates[connIndex] || {};
+      connStates[connIndex] = state;
+      const { title, operations } = data(state);
       const titleWithconnIndex = `${title} [${connIndex}]`;
       await t.test(titleWithconnIndex, async (t) => {
         for (const operation of operations) {
@@ -33,6 +36,8 @@ const runTest = ({
   });
 
 const runAllTests = async () => {
+  await createCasesAll();
+  const { TEST_DATA_ARR } = require('./data/test.data');
   for (const testData of TEST_DATA_ARR) {
     const { testRunnerData, finalize } = await prepareTest(testData);
     await runTest(testRunnerData);

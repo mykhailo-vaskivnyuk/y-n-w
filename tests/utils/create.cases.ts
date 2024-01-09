@@ -3,10 +3,11 @@ import fsp from 'node:fs/promises';
 import { ITestCases, TTestCase } from '../types/types';
 import { createCasesTypes } from './create.cases.types';
 import { config } from '../config';
+import { setToGlobal } from '../../src/app/methods/utils';
 
 const EXCLUDE_CASES: string[] = [];
 
-const createCases = async (dirPath: string): Promise<ITestCases> => {
+const loadCasesAll = async (dirPath: string): Promise<ITestCases> => {
   const cases: ITestCases = {};
   const casesPath = path.resolve(dirPath);
   const dir = await fsp.opendir(casesPath);
@@ -18,7 +19,7 @@ const createCases = async (dirPath: string): Promise<ITestCases> => {
 
     if (item.isDirectory()) {
       const dirPath = path.join(casesPath, name);
-      cases[name] = await createCases(dirPath);
+      cases[name] = await loadCasesAll(dirPath);
       continue;
     }
 
@@ -44,9 +45,8 @@ const createCases = async (dirPath: string): Promise<ITestCases> => {
   return cases;
 };
 
-export const getCasesTree = async () => {
-  const casesTree = await createCases(config.casesPath);
-  await createCasesTypes(config, casesTree);
-  return casesTree;
+export const createCasesAll = async () => {
+  const casesAll = await loadCasesAll(config.casesPath);
+  await createCasesTypes(config, casesAll);
+  setToGlobal('testCases', casesAll);
 };
-

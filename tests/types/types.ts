@@ -4,14 +4,13 @@ import { TTransport } from '../../src/server/types';
 import {
   IParams, TOperationResponse,
 } from '../../src/types/operation.types';
-import { ITestCasesTree } from './test.cases.types';
 
 export interface ITestData {
   title: string;
   dbDataFile: string;
   connection: TTransport;
   connCount?: number;
-  cases: (cases: ITestCasesTree) => ([TTestCase, number] | TTestCase)[];
+  cases: ([TTestCase, number] | TTestCase)[];
 }
 
 export type TTestCase = (state: Record<string, any>) => ITestCase;
@@ -40,7 +39,7 @@ export interface ITestRunnerData {
   title: string;
   connections: TFetch[];
   onConnMessage: TMockFunction[];
-  testCases: [ITestCase, number][];
+  testCases: [TTestCase, number][];
 }
 
 export type TMockFunction = ReturnType<typeof mock.fn<(data: any) => void>>;

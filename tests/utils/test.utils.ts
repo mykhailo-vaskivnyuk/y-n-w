@@ -1,13 +1,12 @@
 import { mock } from 'node:test';
 import { TTransport } from '../../src/server/types';
 import { TFetch } from '../../src/client/common/client/connection/types';
-import { ITestCase, ITestData, ITestRunnerData } from '../types/types';
+import { ITestData, ITestRunnerData } from '../types/types';
 import { getHttpConnection as http } from '../client/http';
 import { getWsConnection as ws } from '../client/ws';
 import { getLinkConnection as link } from '../client/link';
 import config from '../../src/config';
 import App from '../../src/app/app';
-import { getCasesTree } from './create.cases';
 import { runScript } from './utils';
 import { setToGlobal } from '../../src/app/methods/utils';
 
@@ -23,24 +22,11 @@ export const getConnection = (
   return [connection, closeConnection, onMessage] as const;
 };
 
-export const getTestCases =
-  async (testData: ITestData): Promise<[ITestCase, number][]> => {
-    const casesTree = await getCasesTree();
-    const { connCount = 1, cases } = testData;
-    const connStates = Array(connCount).fill(0).map(() => ({}));
-    return cases(casesTree as any).map((item) => {
-      const itemAndConn = Array.isArray(item) ? item : [item] as const;
-      const [getTestCase, connNumber = 0] = itemAndConn;
-      const state = connStates[connNumber]!;
-      return [getTestCase(state), connNumber];
-    });
-  };
-
 export const prepareTest = async (testData: ITestData) => {
   /* data */
   const { logger, inConnection } = config;
   const { port } = inConnection.http;
-  const { title, connection: transport, connCount = 1 } = testData;
+  const { title, connection: transport, connCount = 1, cases } = testData;
   logger.level = 'ERROR';
   inConnection.transport = transport;
 
@@ -69,7 +55,10 @@ export const prepareTest = async (testData: ITestData) => {
   }
 
   /* testCases */
-  const testCases = await getTestCases(testData);
+  const testCases = cases.map((item) => {
+    if (Array.isArray(item)) return item;
+    return [item, 0] as const;
+  });
 
   /* app */
   const app = new App(config);

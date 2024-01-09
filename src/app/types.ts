@@ -8,6 +8,7 @@ import { ChatService } from '../services/chat/chat';
 import { NotificationService } from '../services/notification/notification';
 import App from './app';
 import { IDomain } from '../domain';
+import { ITestCasesTree } from '../../tests/types/test.cases.types';
 
 export type IAppThis = App & {
   config: IConfig;
@@ -40,6 +41,7 @@ export interface IGlobalMixins {
   chatService: ChatService;
   env: IConfig['env'];
   domain: IDomain;
+  testCases: ITestCasesTree;
 }
 
 declare global {
@@ -54,4 +56,5 @@ declare global {
   const notificationService: NotificationService;
   const env: IConfig['env'];
   const domain: IDomain;
+  const testCases: ITestCasesTree;
 }

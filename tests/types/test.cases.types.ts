@@ -20,6 +20,7 @@ export interface ITestCasesTree {
     };
   };
   'events': {
+    'newEvents': TTestCase;
     'vote': TTestCase;
   };
   'invite': {
@@ -32,6 +33,9 @@ export interface ITestCasesTree {
     };
     'enter': {
       'firstNet': TTestCase;
+    };
+    'leave': {
+      'parent': TTestCase;
     };
   };
   'vote': {
