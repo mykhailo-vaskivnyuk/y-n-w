@@ -3,7 +3,7 @@ import { ITestRunnerData } from './types/types';
 import { prepareTest } from './utils/test.utils';
 import { assertDb, assertMessage, assertResponse } from './utils/assert.utils';
 import { delay } from '../src/utils/utils';
-import { createCasesAll } from './utils/create.cases';
+import { loadTestData } from './utils/create.cases';
 
 const runTest = ({
   title,
@@ -36,9 +36,8 @@ const runTest = ({
   });
 
 const runAllTests = async () => {
-  await createCasesAll();
-  const { TEST_DATA_ARR } = require('./data/test.data');
-  for (const testData of TEST_DATA_ARR) {
+  const testDataArr = await loadTestData();
+  for (const testData of testDataArr) {
     const { testRunnerData, finalize } = await prepareTest(testData);
     await runTest(testRunnerData);
     await finalize();

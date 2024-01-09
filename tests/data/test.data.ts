@@ -1,6 +1,7 @@
+import { ITestCasesTree } from '../types/test.cases.types';
 import { ITestData } from '../types/types';
 
-export const TEST_DATA_ARR: ITestData[] = [
+export const getTestData = (testCases: ITestCasesTree): ITestData[] => [
   {
     title: 'Test API over HTTP',
     dbDataFile: 'restore.sh',
@@ -53,7 +54,7 @@ export const TEST_DATA_ARR: ITestData[] = [
     connection: 'ws',
     connCount: 2,
     cases: [
-      testCases.account.login.user02,
+      [testCases.account.login.user02, 0],
       [testCases.account.login.user03, 1],
       testCases.net.create.first,
       testCases.invite.create,

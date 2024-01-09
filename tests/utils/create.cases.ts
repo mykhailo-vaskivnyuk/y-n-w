@@ -2,12 +2,13 @@ import path from 'node:path';
 import fsp from 'node:fs/promises';
 import { ITestCases, TTestCase } from '../types/types';
 import { createCasesTypes } from './create.cases.types';
+import { ITestCasesTree } from '../types/test.cases.types';
 import { config } from '../config';
-import { setToGlobal } from '../../src/app/methods/utils';
+import { getTestData } from '../data/test.data';
 
 const EXCLUDE_CASES: string[] = [];
 
-const loadCasesAll = async (dirPath: string): Promise<ITestCases> => {
+const loadTestCases = async (dirPath: string): Promise<ITestCases> => {
   const cases: ITestCases = {};
   const casesPath = path.resolve(dirPath);
   const dir = await fsp.opendir(casesPath);
@@ -19,7 +20,7 @@ const loadCasesAll = async (dirPath: string): Promise<ITestCases> => {
 
     if (item.isDirectory()) {
       const dirPath = path.join(casesPath, name);
-      cases[name] = await loadCasesAll(dirPath);
+      cases[name] = await loadTestCases(dirPath);
       continue;
     }
 
@@ -45,8 +46,9 @@ const loadCasesAll = async (dirPath: string): Promise<ITestCases> => {
   return cases;
 };
 
-export const createCasesAll = async () => {
-  const casesAll = await loadCasesAll(config.casesPath);
-  await createCasesTypes(config, casesAll);
-  setToGlobal('testCases', casesAll);
+export const loadTestData = async () => {
+  const testCases = await loadTestCases(config.casesPath);
+  await createCasesTypes(config, testCases);
+  const testData = getTestData(testCases as unknown as ITestCasesTree);
+  return testData;
 };

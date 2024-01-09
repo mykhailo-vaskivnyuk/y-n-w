@@ -165,7 +165,7 @@ export class ChatService {
     else this.userChats.set(user_id, new Set([chatId]));
 
     const users = this.chatUsers.get(chatId);
-    if (users) users.add(chatId);
+    if (users) users.add(user_id);
     else this.chatUsers.set(chatId, new Set([user_id]));
   }
 
@@ -187,16 +187,16 @@ export class ChatService {
   }
 
   private removeUserFromChat(user_id: number, chatId: number) {
-    const chatUsers = this.chatUsers.get(chatId);
-    chatUsers!.delete(user_id);
-    if (chatUsers!.size) return;
+    const chatUsers = this.chatUsers.get(chatId)!;
+    chatUsers.delete(user_id);
+    if (chatUsers.size) return;
     this.chatUsers.delete(chatId);
   }
 
   private removeConnectionFromChat(connection: number, chatId: number) {
-    const chatConnections = this.chatConnections.get(chatId);
-    chatConnections!.delete(connection);
-    if (chatConnections!.size) return;
+    const chatConnections = this.chatConnections.get(chatId)!;
+    chatConnections.delete(connection);
+    if (chatConnections.size) return;
     this.chatConnections.delete(chatId);
     this.removeChat(chatId);
   }
