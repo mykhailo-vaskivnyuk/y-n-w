@@ -38,7 +38,7 @@ export interface IOperationData {
 export interface ITestRunnerData {
   title: string;
   connections: TFetch[];
-  onConnMessage: TMockFunction[];
+  onMessage: TMockFunction[];
   testCases: [TTestCase, number][];
 }
 

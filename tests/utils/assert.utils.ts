@@ -14,13 +14,13 @@ export const assertDb = async (
 const callIndex: number[] = [];
 export const assertMessage = async (
   operation: IOperationData,
-  onMessage: TMockFunction,
-  connIndex: number,
+  onMessage: TMockFunction[],
+  connId: number,
 ) => {
   await delay(200);
-  const index = callIndex[connIndex] || 0;
-  const call = onMessage.mock.calls[index];
-  if (call) callIndex[connIndex] = index + 1;
+  const index = callIndex[connId] || 0;
+  const call = onMessage[connId]!.mock.calls[index];
+  if (call) callIndex[connId] = index + 1;
   const [actual] = call?.arguments || [];
   const { expected } = operation;
   if (typeof expected === 'function') expected(actual);

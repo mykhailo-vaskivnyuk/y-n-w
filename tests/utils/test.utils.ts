@@ -41,11 +41,10 @@ export const prepareTest = async (testData: ITestData) => {
   /* connections */
   const connections: TFetch[] = [];
   const closeConnections: (() => void)[] = [];
-  const onConnMessage: ((data: any) => void)[] = [];
+  const onMessage: ((data: any) => void)[] = [];
   for (let i = 0; i < connCount; i++) {
-    const onMessage = () => undefined;
-    const onMessageMock = mock.fn(onMessage);
-    onConnMessage.push(onMessageMock);
+    const onMessageMock = mock.fn(() => undefined);
+    onMessage.push(onMessageMock);
     const [
       connection,
       closeConnection,
@@ -66,7 +65,7 @@ export const prepareTest = async (testData: ITestData) => {
 
   /* result */
   const testRunnerData =
-    { title, connections, onConnMessage, testCases } as ITestRunnerData;
+    { title, connections, onMessage, testCases } as ITestRunnerData;
   const finalize = async () => {
     closeConnections.forEach((fn) => fn());
     await app.stop();

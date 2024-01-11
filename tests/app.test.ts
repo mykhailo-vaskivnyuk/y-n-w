@@ -8,26 +8,25 @@ import { loadTestData } from './utils/create.cases';
 const runTest = ({
   title,
   connections,
-  onConnMessage,
+  onMessage,
   testCases,
 }: ITestRunnerData) =>
   test(title, async (t) => {
-    const connStates = [];
-    for (const [data, connIndex] of testCases) {
-      const state: any = connStates[connIndex] || {};
-      connStates[connIndex] = state;
-      const { title, operations } = data(state);
-      const titleWithconnIndex = `${title} [${connIndex}]`;
-      await t.test(titleWithconnIndex, async (t) => {
+    const states = [];
+    for (const [getCase, connId] of testCases) {
+      const state: any = states[connId] || {};
+      states[connId] = state;
+      const { title, operations } = getCase(state);
+      const titleAndConn = `${title} [${connId}]`;
+      await t.test(titleAndConn, async (t) => {
         for (const operation of operations) {
           const { name } = operation;
           await t.test(name, async () => {
             const { query, params } = operation;
-            const connection = connections[connIndex]!;
-            const onMessage = onConnMessage[connIndex]!;
+            const connection = connections[connId]!;
             if (query) await assertDb(operation);
             else if (!params)
-              await assertMessage(operation, onMessage, connIndex);
+              await assertMessage(operation, onMessage, connId);
             else await assertResponse(operation, connection);
           });
         }
