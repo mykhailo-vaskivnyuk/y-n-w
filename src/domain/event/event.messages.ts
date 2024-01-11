@@ -55,13 +55,11 @@ export class EventMessages {
       .getMembers([member_node_id, parent_node_id]);
     for (const user of users) {
       const { node_id: user_node_id, confirmed: user_confirmed } = user;
-      if (user_node_id === parent_node_id) {
+      if (user_node_id === parent_node_id)
         this.createMessageToFacilitator(user);
-      } else if (!member_confirmed) continue;
+      else if (!member_confirmed) continue;
       else if (!user_confirmed) continue;
-      else {
-        this.cretaeMessagesToCircleMember(user);
-      }
+      else this.cretaeMessagesToCircleMember(user);
     }
   }
 

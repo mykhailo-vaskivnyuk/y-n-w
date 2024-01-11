@@ -21,6 +21,10 @@ export interface ITestCasesTree {
   };
   'events': {
     'newEvents': TTestCase;
+    'read': {
+      'leaveInTree': TTestCase;
+      'leaveInCircle': TTestCase;
+    };
     'vote': TTestCase;
   };
   'invite': {

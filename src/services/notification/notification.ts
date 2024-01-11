@@ -24,8 +24,8 @@ export class NotificationService {
   addNotification(user_id: number, date: string) {
     const availableDate = this.notifDates.get(user_id);
     if (availableDate) {
-      const newDate = new Date(date) > new Date(availableDate) ? date : null;
-      if (newDate) this.notifDates.set(user_id, date);
+      const isNewDate = new Date(date) > new Date(availableDate);
+      if (isNewDate) this.notifDates.set(user_id, date);
     } else {
       this.notifDates.set(user_id, date);
       this.notifsToSend.push(user_id);

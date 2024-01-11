@@ -21,6 +21,7 @@ export const user01: TTestCase = (state: any) => (
           user_status: 'LOGGEDIN',
           chat_id: null,
         },
+        setToState: (actual) => state.user_id = actual.user_id,
       },
       {
         name: '/chat/connect/user',
@@ -57,6 +58,7 @@ export const user02: TTestCase = (state: any) => (
           user_status: 'LOGGEDIN',
           chat_id: null,
         },
+        setToState: (actual) => state.user_id = actual.user_id,
       },
       {
         name: '/chat/connect/user',
@@ -93,6 +95,7 @@ export const user03: TTestCase = (state: any) => (
           user_status: 'LOGGEDIN',
           chat_id: null,
         },
+        setToState: (actual) => state.user_id = actual.user_id,
       },
       {
         name: '/chat/connect/user',

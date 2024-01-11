@@ -37,6 +37,10 @@ export class NetEvent {
     for (const child of this.children) {
       await child.commit(notificationService, t);
     }
+    console.log('COMMIT', {
+      records: this.messages.records,
+      instant: this.messages.instantRecords,
+    });
     for (const record of this.messages.instantRecords) {
       notificationService.addEvent({
         net_id: this.net_id,
@@ -57,5 +61,7 @@ export class NetEvent {
       await (t?.execQuery || execQuery).events.create([...params]);
       notificationService.addNotification(record.user_id, this.date);
     }
+    notificationService.sendNotifs();
+    notificationService.sendEvents();
   }
 }
