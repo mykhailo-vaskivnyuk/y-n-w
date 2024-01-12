@@ -169,24 +169,26 @@ export class ClientApp extends EventEmitter {
     this.setUserStatus();
   }
 
-  async setEvents(events: T.IEvents) {
-    const { net } = this.getState();
+  private async onNewEvents() {
+    const { net, events } = this.getState();
     const { net_id } = net || {};
     let updateUser = false;
     let updateNet = false;
     for (const event of events) {
-      const { net_id: eventNetId } = event;
+      const { net_id: eventNetId, message } = event;
       if (!eventNetId) {
         updateUser = true;
         net_id && (updateNet = true);
         break;
       }
       if (eventNetId === net_id) updateNet = true;
+      if (!message) this.userEvents.drop(event);
     }
     if (updateUser) await this.onNewUser(false) // ?
       .catch(console.log);
     if (updateNet) await this.net.enter(net_id!, true)
       .catch(console.log);
+    this.emit('events', events);
   }
 
   setMessage<T extends T.MessageTypeKeys>(
@@ -194,10 +196,9 @@ export class ClientApp extends EventEmitter {
   ) {
     if (!messageData) return;
 
-    if (this.userEvents.isNewEvents(messageData))
-      return this.userEvents.read();
-    if (this.userEvents.isEvent(messageData))
-      return this.setEvents([messageData]);
+    if (this.userEvents.isEventMessage(messageData)) {
+      return this.userEvents.newEventMessage(messageData);
+    }
 
     this.chat.setMessage(messageData);
   }

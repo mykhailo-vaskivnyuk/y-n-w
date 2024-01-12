@@ -7,7 +7,9 @@ import { IClientAppThis } from '../types';
 import { AppStatus } from '../constants';
 
 
-type IApp = IClientAppThis;
+type IApp = IClientAppThis & {
+  onNewEvents: () => void;
+};
 
 export class Events {
   private lastDate?: string;
@@ -17,7 +19,7 @@ export class Events {
 
   private setEvents(events: IEvents) {
     this.events = events;
-    this.app.emit('events', events);
+    this.app.onNewEvents();
   }
 
   getEvents() {
@@ -28,16 +30,28 @@ export class Events {
     this.lastDate = events.at(-1)?.date;
   }
 
-  isEvent(
+  isEventMessage(
+    messageData: IMessage<MessageTypeKeys>,
+  ): messageData is IMessage<'EVENT' | 'NEW_EVENTS'> {
+    return this.isEvent(messageData) || this.isNewEvents(messageData);
+  }
+
+  private isEvent(
     messageData: IMessage<MessageTypeKeys>,
   ): messageData is IMessage<'EVENT'> {
     return messageData?.type === 'EVENT';
   }
 
-  isNewEvents(
+  private isNewEvents(
     messageData: IMessage<MessageTypeKeys>,
   ): messageData is IMessage<'NEW_EVENTS'> {
     return messageData?.type === 'NEW_EVENTS';
+  }
+
+  newEventMessage(messageData: IMessage<'EVENT' | 'NEW_EVENTS'>) {
+    const { type } = messageData;
+    if (type === 'NEW_EVENTS') this.read();
+    else this.add(messageData);
   }
 
   async read(inChain = false) {
@@ -46,13 +60,17 @@ export class Events {
       const newEvents = await this.app.api
         .events.read({ date: this.lastDate });
       this.setLastDate(newEvents);
-      !inChain && await this.setEvents(newEvents);
       if (newEvents.length) this.setEvents([...this.events, ...newEvents]);
       !inChain && this.app.setStatus(AppStatus.READY);
     } catch (e: any) {
       if (inChain) throw e;
       this.app.setError(e);
     }
+  }
+
+  private async add(event: IMessage<'EVENT'>) {
+    this.setLastDate([event]);
+    this.setEvents([...this.events, event]);
   }
 
   async confirm(event_id: number) {
@@ -70,5 +88,9 @@ export class Events {
     const events = this.events
       .filter(({ event_id: v }) => eventId !== v);
     this.setEvents(events);
+  }
+
+  drop(event: IEvents[number]) {
+    this.events = this.events.filter((i) => i !== event);
   }
 }
