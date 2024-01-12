@@ -11,17 +11,14 @@ export const assertDb = async (
   assert.deepEqual(actual, expected);
 };
 
-const callIndex: number[] = [];
 export const assertMessage = async (
   operation: IOperationData,
-  onMessage: TMockFunction[],
-  connId: number,
+  onMessage: TMockFunction,
+  callId: number,
 ) => {
   await delay(200);
-  const index = callIndex[connId] || 0;
-  const call = onMessage[connId]!.mock.calls[index];
-  if (call) callIndex[connId] = index + 1;
-  const [actual] = call?.arguments || [];
+  const call = onMessage!.mock.calls[callId];
+  const actual = call?.arguments[0];
   const { expected } = operation;
   if (typeof expected === 'function') expected(actual);
   else assert.deepEqual(actual, expected);
