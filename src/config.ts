@@ -14,6 +14,7 @@ const {
   ORIGIN: origin,
   STATIC_PATH: staticPath,
   LOGGER_COLORIZE: colorize,
+  GMAIL: gmail,
   ...restEnv
 } = getEnv();
 const connection = {
@@ -72,7 +73,7 @@ const config: IConfig = {
         service: 'gmail',
         auth: {
           user: 'm.vaskivnyuk@gmail.com',
-          pass: 'okvjifqaumuznqlu',
+          pass: gmail,
         },
       },
     },

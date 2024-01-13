@@ -26,5 +26,6 @@ export interface ICleanedEnv {
   ORIGIN: string;
   STATIC_PATH: string;
   LOGGER_COLORIZE: boolean;
+  GMAIL: string;
 }
 export type CleanedEnvKeys = keyof ICleanedEnv;

@@ -8,7 +8,7 @@
     "build:front": "cd ../node-u-n-w-front && rimraf build && cross-env NODE_ENV=production npx webpack --config webpack/webpack.config.js",
     "start": "node js/src/index.js",
     "pack": "npm run rmjs && npm run build && cross-env RUN_ONCE=true PORT=8001 npm start && npm run sync && npm run build:front && npm run sync",
-    "dev": "cross-env NODE_ENV=development MAIL_CONFIRM_OFF=true nodemon js/src/index.js",
+    "dev": "cross-env NODE_ENV=development nodemon js/src/index.js",
     "debug": "nodemon --inspect js/src/index.js",
     "test": "node js/tests/app.test.js",
     "tsc": "npm run rmjs && tsc --watch",

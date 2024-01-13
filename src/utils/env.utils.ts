@@ -26,6 +26,7 @@ export const getEnv = () => {
     ORIGIN = 'https://merega.herokuapp.com',
     STATIC_PATH = 'public',
     LOGGER_COLORIZE = false,
+    GMAIL = '',
   } = env as Record<CleanedEnvKeys, any>;
 
   const cleanedEnvObj: ICleanedEnv = {
@@ -43,6 +44,7 @@ export const getEnv = () => {
     ORIGIN,
     STATIC_PATH,
     LOGGER_COLORIZE,
+    GMAIL,
   };
 
   return cleanedEnvObj;

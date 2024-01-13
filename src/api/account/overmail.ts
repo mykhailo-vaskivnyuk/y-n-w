@@ -12,7 +12,7 @@ const overmail: THandler<ISignupParams, boolean> = async (
   const { user_id, confirmed } = user;
   await execQuery.user.token.create([user_id, token]);
   const type = confirmed ? 'restore' : 'confirm';
-  await mailService.sendMail[type](email, origin, token);
+  await mailService[type](email, origin, token);
   return true;
 };
 overmail.paramsSchema = SignupParamsSchema;

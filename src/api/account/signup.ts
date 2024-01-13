@@ -22,7 +22,7 @@ const signup: THandler<ISignupParams, IUserResponse> = async (
   } else {
     user_status = 'NOT_CONFIRMED';
     await execQuery.user.token.create([user_id, token]);
-    await mailService.sendMail.confirm(email, origin, token);
+    await mailService.confirm(email, origin, token);
   }
   session.write('user_id', user_id);
   session.write('user_status', user_status);
