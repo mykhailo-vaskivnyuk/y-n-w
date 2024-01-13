@@ -3,11 +3,11 @@ import { format } from 'node:util';
 const tplHeader =
 `/* eslint-disable max-lines */
 /* eslint-disable max-len */
-import { TTestCase } from './types';
+import { TTestUnit } from './types';
 
-export interface ITestCasesTree `;
+export interface ITestUnitsMap `;
 const tplKey = '\n%s\'%s\': ';
-const tplType = 'TTestCase;';
+const tplType = 'TTestUnit;';
 const tplFooter = '\n';
 
 export const strHeader = () => tplHeader;

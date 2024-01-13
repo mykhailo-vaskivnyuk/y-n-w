@@ -1,6 +1,6 @@
-import { ITestCase } from '../../types/types';
+import { TTestUnit } from '../../types/types';
 
-export const firstNet = (state: any): ITestCase => (
+export const firstNet: TTestUnit = (state: any) => (
   {
     title: 'enter net 1',
     operations: [

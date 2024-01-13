@@ -1,7 +1,7 @@
 import { mock } from 'node:test';
 import { TTransport } from '../../src/server/types';
 import { TFetch } from '../../src/client/common/client/connection/types';
-import { ITestData, ITestRunnerData } from '../types/types';
+import { ITestCase, ITestRunnerData } from '../types/types';
 import { getHttpConnection as http } from '../client/http';
 import { getWsConnection as ws } from '../client/ws';
 import { getLinkConnection as link } from '../client/link';
@@ -22,16 +22,16 @@ export const getConnection = (
   return [connection, closeConnection, onMessage] as const;
 };
 
-export const prepareTest = async (testData: ITestData) => {
+export const prepareTest = async (testCase: ITestCase) => {
   /* data */
   const { logger, inConnection } = config;
   const { port } = inConnection.http;
-  const { title, connection: transport, connCount = 1, cases } = testData;
+  const { title, connection: transport, connCount = 1, caseUnits } = testCase;
   logger.level = 'ERROR';
   inConnection.transport = transport;
 
   /* db */
-  const script = `sh tests/db/${testData.dbDataFile}`;
+  const script = `sh tests/db/${testCase.dbDataFile}`;
   await runScript(script, { showLog: false });
   const { database } = config;
   const Database = require(database.path);
@@ -53,8 +53,8 @@ export const prepareTest = async (testData: ITestData) => {
     closeConnections.push(closeConnection);
   }
 
-  /* testCases */
-  const testCases = cases.map((item) => {
+  /* testUnits */
+  const testUnits = caseUnits.map((item) => {
     if (Array.isArray(item)) return item;
     return [item, 0] as const;
   });
@@ -65,7 +65,7 @@ export const prepareTest = async (testData: ITestData) => {
 
   /* result */
   const testRunnerData =
-    { title, connections, onMessage, testCases } as ITestRunnerData;
+    { title, connections, onMessage, testUnits } as ITestRunnerData;
   const finalize = async () => {
     closeConnections.forEach((fn) => fn());
     await app.stop();

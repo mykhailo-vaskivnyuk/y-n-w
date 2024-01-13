@@ -1,6 +1,6 @@
-import { ITestCase } from '../../types/types';
+import { TTestUnit } from '../../types/types';
 
-const newEvents = (): ITestCase => (
+const newEvents: TTestUnit = () => (
   {
     title: 'Wait event: NEW EVENTS',
     operations: [

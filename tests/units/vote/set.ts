@@ -1,6 +1,6 @@
-import { TTestCase } from '../../types/types';
+import { TTestUnit } from '../../types/types';
 
-const set: TTestCase = () => (
+const set: TTestUnit = () => (
   {
     title: 'Set vote',
     operations: [

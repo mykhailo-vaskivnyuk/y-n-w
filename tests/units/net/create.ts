@@ -1,6 +1,6 @@
-import { ITestCase } from '../../types/types';
+import { TTestUnit } from '../../types/types';
 
-export const first = (state: any): ITestCase => (
+export const first: TTestUnit = (state: any) => (
   {
     title: 'create net',
     operations: [
@@ -48,7 +48,7 @@ export const first = (state: any): ITestCase => (
     ]
   });
 
-export const second = (state: any): ITestCase => (
+export const second: TTestUnit = (state: any) => (
   {
     title: 'create net',
     operations: [

@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
-import { ITestCase } from '../../types/types';
+import { TTestUnit } from '../../types/types';
 
-export const sendFirst = (state: any): ITestCase => (
+export const sendFirst: TTestUnit = (state: any) => (
   {
     title: 'send messages from first',
     operations: [
@@ -44,7 +44,7 @@ export const sendFirst = (state: any): ITestCase => (
     ],
   });
 
-export const sendSecond = (state: any): ITestCase => (
+export const sendSecond: TTestUnit = (state: any) => (
   {
     title: 'receive and send messages from second',
     operations: [
@@ -125,7 +125,7 @@ export const sendSecond = (state: any): ITestCase => (
     ],
   });
 
-export const sendThird = (state: any): ITestCase => (
+export const sendThird: TTestUnit = (state: any) => (
   {
     title: 'receive and send messages from third',
     operations: [
@@ -226,7 +226,7 @@ export const sendThird = (state: any): ITestCase => (
     ],
   });
 
-export const receiveSecond = (): ITestCase => (
+export const receiveSecond: TTestUnit = () => (
   {
     title: 'receive message',
     operations: [
@@ -253,7 +253,7 @@ export const receiveSecond = (): ITestCase => (
     ],
   });
 
-export const receiveFirst = (): ITestCase => (
+export const receiveFirst: TTestUnit = () => (
   {
     title: 'receive message',
     operations: [

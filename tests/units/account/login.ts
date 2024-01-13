@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
-import { IOperationData, TTestCase } from '../../types/types';
+import { IOperationData, TTestUnit } from '../../types/types';
 
-export const user01: TTestCase = (state: any) => (
+export const user01: TTestUnit = (state: any) => (
   {
     title: 'login',
     operations: [
@@ -38,7 +38,7 @@ export const user01: TTestCase = (state: any) => (
     ] as IOperationData[],
   });
 
-export const user02: TTestCase = (state: any) => (
+export const user02: TTestUnit = (state: any) => (
   {
     title: 'login',
     operations: [
@@ -75,7 +75,7 @@ export const user02: TTestCase = (state: any) => (
     ] as IOperationData[],
   });
 
-export const user03: TTestCase = (state: any) => (
+export const user03: TTestUnit = (state: any) => (
   {
     title: 'login',
     operations: [

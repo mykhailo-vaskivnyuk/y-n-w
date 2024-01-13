@@ -1,22 +1,23 @@
 import test from 'node:test';
 import { ITestRunnerData } from './types/types';
+import { ITestUnitsMap } from './types/test.units.types';
+import { getCasesAll, getUnitsMap } from './utils/load.units';
 import { prepareTest } from './utils/test.utils';
 import { assertDb, assertMessage, assertResponse } from './utils/assert.utils';
-import { loadTestData } from './utils/create.cases';
 
 const runTest = ({
   title,
   connections,
   onMessage,
-  testCases,
+  testUnits,
 }: ITestRunnerData) =>
   test(title, async (t) => {
     const states: any[] = [];
-    const callIds: number[] = [];
-    for (const [getCase, connId] of testCases) {
+    const calls: number[] = [];
+    for (const [getUnit, connId] of testUnits) {
       const state = states[connId] || {};
       states[connId] = state;
-      const { title, operations } = getCase(state);
+      const { title, operations } = getUnit(state);
       const titleAndConn = `${title} [${connId}]`;
       await t.test(titleAndConn, async (t) => {
         for (const operation of operations) {
@@ -26,9 +27,9 @@ const runTest = ({
             const connection = connections[connId]!;
             if (query) await assertDb(operation);
             else if (!params) {
-              const callId = callIds[connId] || 0;
+              const callId = calls[connId] || 0;
               await assertMessage(operation, onMessage[connId]!, callId);
-              callIds[connId] = callId + 1;
+              calls[connId] = callId + 1;
             } else await assertResponse(operation, connection);
           });
         }
@@ -37,11 +38,15 @@ const runTest = ({
   });
 
 const runAllTests = async () => {
-  const testDataArr = await loadTestData();
-  for (const testData of testDataArr) {
-    const { testRunnerData, finalize } = await prepareTest(testData);
-    await runTest(testRunnerData);
-    await finalize();
+  const cases = getCasesAll();
+  const unitsMap = await getUnitsMap() as unknown as ITestUnitsMap;
+  for (const getCaseGroup of cases) {
+    const caseGroup = getCaseGroup(unitsMap);
+    for (const testCase of caseGroup) {
+      const { testRunnerData, finalize } = await prepareTest(testCase);
+      await runTest(testRunnerData);
+      await finalize();
+    }
   }
 };
 

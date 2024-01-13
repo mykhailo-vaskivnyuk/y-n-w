@@ -1,15 +1,14 @@
 import path from 'node:path';
 import fsp from 'node:fs/promises';
-import { ITestCases, TTestCase } from '../types/types';
-import { createCasesTypes } from './create.cases.types';
-import { ITestCasesTree } from '../types/test.cases.types';
+import { ITestUnits, TTestUnit } from '../types/types';
+import { createUnitsTypes } from './create.units.types';
 import { config } from '../config';
-import { getTestData } from '../data/test.data';
+import * as casesMap from '../cases';
 
 const EXCLUDE_CASES: string[] = [];
 
-const loadTestCases = async (dirPath: string): Promise<ITestCases> => {
-  const cases: ITestCases = {};
+const readUnitsDir = async (dirPath: string): Promise<ITestUnits> => {
+  const cases: ITestUnits = {};
   const casesPath = path.resolve(dirPath);
   const dir = await fsp.opendir(casesPath);
 
@@ -20,7 +19,7 @@ const loadTestCases = async (dirPath: string): Promise<ITestCases> => {
 
     if (item.isDirectory()) {
       const dirPath = path.join(casesPath, name);
-      cases[name] = await loadTestCases(dirPath);
+      cases[name] = await readUnitsDir(dirPath);
       continue;
     }
 
@@ -29,7 +28,7 @@ const loadTestCases = async (dirPath: string): Promise<ITestCases> => {
     const filePath = path.join(casesPath, item.name);
     let moduleExport = require(filePath);
     moduleExport = moduleExport.default ||
-      moduleExport as TTestCase | ITestCases;
+      moduleExport as TTestUnit | ITestUnits;
 
     if (name !== 'index') {
       cases[name] = moduleExport;
@@ -46,9 +45,13 @@ const loadTestCases = async (dirPath: string): Promise<ITestCases> => {
   return cases;
 };
 
-export const loadTestData = async () => {
-  const testCases = await loadTestCases(config.casesPath);
-  await createCasesTypes(config, testCases);
-  const testData = getTestData(testCases as unknown as ITestCasesTree);
-  return testData;
+export const getUnitsMap = async () => {
+  const units = await readUnitsDir(config.unitsPath);
+  await createUnitsTypes(config, units);
+  return units;
 };
+
+export const getCasesAll = () => Object
+  .values(casesMap)
+  .map((v) => Object.values(v))
+  .flat();

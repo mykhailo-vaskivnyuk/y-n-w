@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
 import assert from 'node:assert';
-import { IOperationData, TTestCase } from '../../types/types';
+import { IOperationData, TTestUnit } from '../../types/types';
 
-export const leaveInTree: TTestCase = (state: any) => (
+export const leaveInTree: TTestUnit = (state: any) => (
   {
     title: 'read events',
     operations: [
@@ -31,7 +31,7 @@ export const leaveInTree: TTestCase = (state: any) => (
     ] as IOperationData[],
   });
 
-export const leaveInCircle: TTestCase = (state: any) => (
+export const leaveInCircle: TTestUnit = (state: any) => (
   {
     title: 'read events',
     operations: [

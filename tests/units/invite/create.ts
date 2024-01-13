@@ -1,7 +1,7 @@
 import assert from 'node:assert';
-import { TTestCase } from '../../types/types';
+import { TTestUnit } from '../../types/types';
 
-const create: TTestCase = (state) => (
+const create: TTestUnit = (state) => (
   {
     title: 'invite create',
     operations: [

@@ -5,23 +5,23 @@ import {
   IParams, TOperationResponse,
 } from '../../src/types/operation.types';
 
-export interface ITestData {
+export interface ITestCase {
   title: string;
   dbDataFile: string;
   connection: TTransport;
   connCount?: number;
-  cases: ([TTestCase, number] | TTestCase)[];
+  caseUnits: ([TTestUnit, number] | TTestUnit)[];
 }
 
-export type TTestCase = (state: Record<string, any>) => ITestCase;
+export type TTestUnit = (state: Record<string, any>) => ITestUnit;
 
-export interface ITestCase {
+export interface ITestUnit {
   title: string;
   operations: IOperationData[];
 }
 
-export interface ITestCases {
-  [key: string]: TTestCase | ITestCases;
+export interface ITestUnits {
+  [key: string]: TTestUnit | ITestUnits;
 }
 
 export interface IOperationData {
@@ -39,7 +39,7 @@ export interface ITestRunnerData {
   title: string;
   connections: TFetch[];
   onMessage: TMockFunction[];
-  testCases: [TTestCase, number][];
+  testUnits: [TTestUnit, number][];
 }
 
 export type TMockFunction = ReturnType<typeof mock.fn<(data: any) => void>>;
