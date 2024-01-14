@@ -1,8 +1,9 @@
+/* eslint-disable max-lines */
 import { IOperationData, TTestUnit } from '../../types/types';
 
 const user = (user: number): TTestUnit => (state: any) => (
   {
-    title: `login user ${user}`,
+    title: `signup user ${user}`,
     operations: [
       {
         name: '/health',
@@ -10,11 +11,8 @@ const user = (user: number): TTestUnit => (state: any) => (
         expected: 'API IS READY',
       },
       {
-        name: '/account/login',
-        params: {
-          email: `user${String(user).padStart(2, '0')}@gmail.com`,
-          password: '12345',
-        },
+        name: '/account/signup',
+        params: { email: `user${String(user).padStart(2, '0')}@gmail.com` },
         expected: {
           email: `user${String(user).padStart(2, '0')}@gmail.com`,
           mobile: null,
@@ -40,7 +38,6 @@ const user = (user: number): TTestUnit => (state: any) => (
     ] as IOperationData[],
   });
 
-export const user01 = user(1);
-export const user02 = user(2);
-export const user03 = user(3);
-export const user04 = user(4);
+export const user05 = user(5);
+export const user06 = user(6);
+export const user07 = user(7);

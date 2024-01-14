@@ -14,7 +14,7 @@ export const netCases = (units: ITestUnitsMap): ITestCase[] => [
       [units.net.enter.firstNet, 0],
       [units.net.enter.firstNet, 1],
       [units.net.enter.firstNet, 2],
-      [units.net.leave.parent, 1],
+      [units.net.leave, 1],
       [units.events.newEvents, 0],
       [units.events.newEvents, 2],
       [units.events.read.leaveInTree, 0],

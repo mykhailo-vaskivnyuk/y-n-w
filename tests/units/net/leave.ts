@@ -1,6 +1,6 @@
 import { ITestUnit } from '../../types/types';
 
-export const parent = (state: any): ITestUnit => (
+const leave = (state: any): ITestUnit => (
   {
     title: 'leave net 1',
     operations: [
@@ -10,3 +10,5 @@ export const parent = (state: any): ITestUnit => (
       },
     ]
   });
+
+export  = leave;

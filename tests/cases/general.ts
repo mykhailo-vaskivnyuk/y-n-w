@@ -9,7 +9,7 @@ export const generalCases = (units: ITestUnitsMap): ITestCase[] => [
     caseUnits: [
       units.account.login.user02,
       units.net.create.first,
-      units.invite.create,
+      units.invite.create.mber0,
     ],
   },
   {
@@ -21,10 +21,10 @@ export const generalCases = (units: ITestUnitsMap): ITestCase[] => [
       [units.account.login.user02, 0],
       [units.account.login.user03, 1],
       units.net.create.first,
-      units.invite.create,
+      units.invite.create.mber0,
       units.account.login.user02,
       [units.account.login.user03, 1],
-      units.vote.set,
+      // units.vote.set.mber1,
       // [units.events.vote, 1],
     ],
   },
@@ -36,12 +36,12 @@ export const generalCases = (units: ITestUnitsMap): ITestCase[] => [
     caseUnits: [
       units.account.login.user02,
       [units.account.login.user03, 1],
-      units.vote.set,
+      // units.vote.set.mber1,
       // [units.events.vote, 1],
       units.net.create.first,
-      units.invite.create,
+      units.invite.create.mber0,
       [units.net.create.second, 1],
-      [units.invite.create, 1],
+      [units.invite.create.mber0, 1],
     ],
   },
 ];

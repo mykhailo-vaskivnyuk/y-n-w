@@ -12,14 +12,15 @@ const runTest = ({
   testUnits,
 }: ITestRunnerData) =>
   test(title, async (t) => {
-    const states: any[] = [];
+    const global: Record<string, any> = {};
+    const states: Record<string, any>[] = [];
     const calls: number[] = [];
     for (const [getUnit, connId] of testUnits) {
-      const state = states[connId] || {};
+      const state = states[connId] || { global };
       states[connId] = state;
       const { title, operations } = getUnit(state);
-      const titleAndConn = `${title} [${connId}]`;
-      await t.test(titleAndConn, async (t) => {
+      const connAndTitle = `${connId} - ${title}`;
+      await t.test(connAndTitle, async (t) => {
         for (const operation of operations) {
           const { name } = operation;
           await t.test(name, async () => {
@@ -37,7 +38,7 @@ const runTest = ({
     }
   });
 
-const runAllTests = async () => {
+const runTests = async () => {
   const cases = getCasesAll();
   const unitsMap = await getUnitsMap() as unknown as ITestUnitsMap;
   for (const getCaseGroup of cases) {
@@ -50,4 +51,4 @@ const runAllTests = async () => {
   }
 };
 
-runAllTests();
+runTests();
