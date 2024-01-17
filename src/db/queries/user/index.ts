@@ -75,7 +75,7 @@ export const create = `
     email
   )
   VALUES ($1)
-  RETURNING *
+  RETURNING *, user_id::int
 `;
 
 export const createByChatId = `

@@ -223,6 +223,7 @@ export class NetArrange {
     await this.removeConnectedAll(eventVote);
     await execQuery.member.data.removeFromTree([node_id]);
     await execQuery.events.removeFromTree([user_id!, net_id]);
+    await eventVote.messages.create();
 
     const [parent_member] = await execQuery.member.get([parent_node_id]);
     const {
@@ -240,6 +241,7 @@ export class NetArrange {
         .data.removeFromCircle([parentUserId, parent_node_id]);
       await execQuery
         .events.removeFromCircle([parentUserId, net_id]);
+      await eventDisvote.messages.create();
     }
 
     await execQuery.node.move([
@@ -263,15 +265,12 @@ export class NetArrange {
     ]);
 
     await execQuery.node.tree.replace([parent_node_id, node_id]);
-    if (!newCountOfMembers) await execQuery.node.tree.remove([parent_node_id]);
-
-    await eventVote.messages.create();
-    parentUserId && await eventDisvote.messages.create();
+    if (!newCountOfMembers)
+      await execQuery.node.tree.remove([parent_node_id]);
 
     const voteMemeber = {
       ...member!,
-      node_id: parent_node_id,
-      parent_node_id: parent_member?.parent_node_id || null,
+      parent_node_id: parentParentNodeId,
     };
     await event.createChild('CONNECT_VOTE', voteMemeber).messages.create();
 
@@ -279,8 +278,7 @@ export class NetArrange {
 
     const disvoteMember = {
       ...parent_member!,
-      node_id,
-      parent_node_id,
+      parent_node_id: node_id,
     };
     await event.createChild('CONNECT_DISVOTE', disvoteMember).messages.create();
   }
