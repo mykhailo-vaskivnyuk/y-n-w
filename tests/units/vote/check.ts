@@ -7,11 +7,13 @@ export const self: TTestUnit = (state: any) => (
     operations: [
       {
         name: '/net/getTree',
-        params: { node_id: state.node_id },
+        params: { node_id: state.net.node_id },
         expected: (actual) => {
-          const mbers = actual.filter(({ node_id }: any) => node_id === 1);
-          assert(mbers.length === 1);
-          assert(mbers[0].node_id === 1);
+          for (const mber of actual) {
+            const available = (state.circle as Array<any>)
+              .find((m) => m.node_id === mber.node_id);
+            assert(Boolean(available));
+          }
         },
       },
     ] as IOperationData[],

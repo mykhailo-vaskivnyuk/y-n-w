@@ -8,13 +8,13 @@ export const self: TTestUnit = (state: any) => (
       {
         name: '/member/data/vote/set',
         params: {
-          node_id: state.node_id,
-          member_node_id: state.node_id,
+          node_id: state.net.node_id,
+          member_node_id: state.net.node_id,
         },
       },
       {
         name: '/net/getCircle',
-        params: { node_id: state.node_id },
+        params: { node_id: state.net.node_id },
         expected: (actual) => {
           const mbers = actual.filter(({ vote }: any) => vote);
           assert(mbers.length === 0);
@@ -22,7 +22,7 @@ export const self: TTestUnit = (state: any) => (
       },
       {
         name: '/user/net/getData',
-        params: { net_id: state.net_id },
+        params: { net_id: state.net.net_id },
         expected: (actual) => {
           assert(actual.vote);
         },
@@ -37,13 +37,13 @@ const set = (m: number): TTestUnit => (state: any) => (
       {
         name: '/member/data/vote/set',
         params: {
-          node_id: state.node_id,
+          node_id: state.net.node_id,
           member_node_id: state.circle[m].node_id,
         },
       },
       {
         name: '/net/getCircle',
-        params: { node_id: state.node_id },
+        params: { node_id: state.net.node_id },
         expected: (actual) => {
           const mbers = actual.filter(({ vote }: any) => vote);
           assert(mbers.length === 1 && mbers[0].vote === true);

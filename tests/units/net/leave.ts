@@ -6,7 +6,7 @@ const leave = (state: any): ITestUnit => (
     operations: [
       {
         name: '/net/leave',
-        params: () => ({ node_id: state.node_id }),
+        params: () => ({ node_id: state.net.node_id }),
       },
     ]
   });

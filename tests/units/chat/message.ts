@@ -8,8 +8,8 @@ export const sendFirst: TTestUnit = (state: any) => (
       {
         name: '/chat/sendMessage',
         params: () => ({
-          node_id: state.node_id,
-          chatId: state.chats[state.net_id].net,
+          node_id: state.net.node_id,
+          chatId: state.chats[state.net.net_id].net,
           message: 'from first in net',
         }),
       },
@@ -26,8 +26,8 @@ export const sendFirst: TTestUnit = (state: any) => (
       {
         name: '/chat/sendMessage',
         params: () => ({
-          node_id: state.node_id,
-          chatId: state.chats[state.net_id].tree,
+          node_id: state.net.node_id,
+          chatId: state.chats[state.net.net_id].tree,
           message: 'from first in tree',
         }),
       },
@@ -71,8 +71,8 @@ export const sendSecond: TTestUnit = (state: any) => (
       {
         name: '/chat/sendMessage',
         params: () => ({
-          node_id: state.node_id,
-          chatId: state.chats[state.net_id].net,
+          node_id: state.net.node_id,
+          chatId: state.chats[state.net.net_id].net,
           message: 'from second in net',
         }),
       },
@@ -89,8 +89,8 @@ export const sendSecond: TTestUnit = (state: any) => (
       {
         name: '/chat/sendMessage',
         params: () => ({
-          node_id: state.node_id,
-          chatId: state.chats[state.net_id].circle,
+          node_id: state.net.node_id,
+          chatId: state.chats[state.net.net_id].circle,
           message: 'from second in circle',
         }),
       },
@@ -107,8 +107,8 @@ export const sendSecond: TTestUnit = (state: any) => (
       {
         name: '/chat/sendMessage',
         params: () => ({
-          node_id: state.node_id,
-          chatId: state.chats[state.net_id].tree,
+          node_id: state.net.node_id,
+          chatId: state.chats[state.net.net_id].tree,
           message: 'from second in tree',
         }),
       },
@@ -172,8 +172,8 @@ export const sendThird: TTestUnit = (state: any) => (
       {
         name: '/chat/sendMessage',
         params: () => ({
-          node_id: state.node_id,
-          chatId: state.chats[state.net_id].net,
+          node_id: state.net.node_id,
+          chatId: state.chats[state.net.net_id].net,
           message: 'from third in net',
         }),
       },
@@ -190,8 +190,8 @@ export const sendThird: TTestUnit = (state: any) => (
       {
         name: '/chat/sendMessage',
         params: () => ({
-          node_id: state.node_id,
-          chatId: state.chats[state.net_id].circle,
+          node_id: state.net.node_id,
+          chatId: state.chats[state.net.net_id].circle,
           message: 'from third in circle',
         }),
       },
@@ -208,8 +208,8 @@ export const sendThird: TTestUnit = (state: any) => (
       {
         name: '/chat/sendMessage',
         params: () => ({
-          node_id: state.node_id,
-          chatId: state.chats[state.net_id].tree,
+          node_id: state.net.node_id,
+          chatId: state.chats[state.net.net_id].tree,
           message: 'from third in tree',
         }),
       },

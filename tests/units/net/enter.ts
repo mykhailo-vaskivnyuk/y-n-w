@@ -1,26 +1,27 @@
 import { TTestUnit } from '../../types/types';
 
-export const firstNet: TTestUnit = (state: any) => (
+const id = (net_id: number): TTestUnit => (state: any) => (
   {
-    title: 'enter net 1',
+    title: `enter net net_id: ${net_id}`,
     operations: [
       {
         name: '/net/enter',
-        params: { net_id: 1 },
+        params: { net_id },
         setToState: (actual) => {
-          state.net_id = actual.net_id;
-          state.node_id = actual.node_id;
+          state.net = actual;
         },
       },
       {
         name: '/net/getCircle',
-        params: () => ({ node_id: state.node_id }),
+        params: () => ({ node_id: state.net.node_id }),
         setToState: (actual) => state.circle = actual,
       },
       {
         name: '/net/getTree',
-        params: () => ({ node_id: state.node_id }),
+        params: () => ({ node_id: state.net.node_id }),
         setToState: (actual) => state.tree = actual,
       },
     ],
   });
+
+export const main = id(1);

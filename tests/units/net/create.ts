@@ -18,13 +18,13 @@ export const first: TTestUnit = (state: any) => (
           total_count_of_members: 1
         },
         setToState: (actual) => {
-          state.net_id = actual.net_id;
-          state.node_id = actual.node_id;
+          state.net.net_id = actual.net_id;
+          state.net.node_id = actual.node_id;
         },
       },
       {
         name: 'query net',
-        query: () => execQuery.net.get([state.net_id]),
+        query: () => execQuery.net.get([state.net.net_id]),
         expectedQueryResult: [{
           goal: null,
           name: 'test net',
@@ -38,11 +38,11 @@ export const first: TTestUnit = (state: any) => (
       },
       {
         name: '/net/update',
-        params: () => ({ node_id: state.node_id, goal: 'goal of net' }),
+        params: () => ({ node_id: state.net.node_id, goal: 'goal of net' }),
       },
       {
         name: '/net/getTree',
-        params: () => ({ node_id: state.node_id }),
+        params: () => ({ node_id: state.net.node_id }),
         setToState: (actual) => state.tree = actual,
       }
     ]
@@ -56,17 +56,17 @@ export const second: TTestUnit = (state: any) => (
         name: '/net/create',
         params: { net_id: null, name: 'test net second' },
         setToState: (actual) => {
-          state.net_id = actual.net_id;
-          state.node_id = actual.node_id;
+          state.net.net_id = actual.net_id;
+          state.net.node_id = actual.node_id;
         },
       },
       {
         name: '/net/update',
-        params: () => ({ node_id: state.node_id, goal: 'goal of net second' }),
+        params: () => ({ node_id: state.net.node_id, goal: 'goal of net second' }),
       },
       {
         name: '/net/getTree',
-        params: () => ({ node_id: state.node_id }),
+        params: () => ({ node_id: state.net.node_id }),
         setToState: (actual) => state.tree = actual,
       }
     ]

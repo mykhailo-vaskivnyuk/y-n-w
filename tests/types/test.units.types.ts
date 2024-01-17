@@ -17,6 +17,7 @@ export interface ITestUnitsMap {
     };
   };
   'chat': {
+    'connect': TTestUnit;
     'message': {
       'sendFirst': TTestUnit;
       'sendSecond': TTestUnit;
@@ -30,8 +31,13 @@ export interface ITestUnitsMap {
     'read': {
       'leaveInTree': TTestUnit;
       'leaveInCircle': TTestUnit;
+      'voteForMembers': TTestUnit;
+      'voteForVoteMember': TTestUnit;
+      'voteForDisvoteMember': TTestUnit;
     };
-    'vote': TTestUnit;
+    'vote': {
+      'set': TTestUnit;
+    };
   };
   'invite': {
     'confirm': {
@@ -53,7 +59,7 @@ export interface ITestUnitsMap {
       'second': TTestUnit;
     };
     'enter': {
-      'firstNet': TTestUnit;
+      'main': TTestUnit;
     };
     'leave': TTestUnit;
   };

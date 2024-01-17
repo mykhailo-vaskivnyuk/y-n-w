@@ -8,7 +8,7 @@ const mber = (m: number): TTestUnit => (state) => (
       {
         name: '/member/invite/create',
         params: () => ({
-          node_id: state.node_id,
+          node_id: state.net.node_id,
           member_node_id: state.tree[m].node_id,
           member_name: `member ${m}`,
         }),
