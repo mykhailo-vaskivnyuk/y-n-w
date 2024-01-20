@@ -1,6 +1,8 @@
+import { ITableNets } from '../types/db.types';
+import { INetMember } from '../types/member.types';
+import { INetNode } from '../types/net.types';
 import { createTree } from '../utils/nodes.utils';
 import { exeWithNetLock } from '../utils/utils';
-import { ITableNets } from '../types/db.types';
 import { NetArrange } from './net.arrange';
 
 export const createNet = (
@@ -42,4 +44,42 @@ export const removeMemberFromAllNets = async (user_id: number) => {
   for (const userNetData of userNetDataArr) {
     await net.removeMemberFromNet('LEAVE', userNetData);
   }
+};
+
+export const showNet = (netNode: INetNode) => {
+  const { member, tree } = netNode;
+  const {
+    node_level: level,
+    node_id,
+    user_id,
+    invite,
+    dislikes,
+    votes,
+  } = member;
+
+  let before = level > 1 ? ' '.concat('| '.repeat(level - 1)) : '';
+  before += level ? ' |-' : '';
+
+  const strNode = String(node_id).padStart(2, ' ');
+  const strUser = user_id ? `:${user_id}` : '';
+  const strInvite = invite ? ':i' : '';
+  const strDislikes = dislikes ? `-${dislikes}d` : '';
+  const strVotes = votes ? `-${votes}v` : '';
+  const log = before
+    .concat(strNode)
+    .concat(strUser)
+    .concat(strInvite)
+    .concat(strDislikes)
+    .concat(strVotes);
+  console.log(log);
+
+  tree?.forEach(showNet);
+};
+
+export const getNetNode = async (member: INetMember) => {
+  const tree = await execQuery.net.structure.get.tree([member.node_id]);
+  if (!tree.length) return { member, tree: null };
+  const arr: INetNode[] = [];
+  for (const member of tree) arr.push(await getNetNode(member));
+  return { member, tree: arr };
 };

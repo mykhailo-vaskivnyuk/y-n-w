@@ -9,8 +9,8 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
     connection: 'ws',
     connCount: 7,
     caseUnits: [ //                           01 02
-      [units.account.login.user01, 0], //     =   0
-      [units.account.login.user02, 1], //     1   -
+      [units.account.login.user01, 0], //     x   0
+      [units.account.login.user02, 1], //     1   x
       [units.account.login.user03, 2], //     3   3
       [units.account.login.user04, 3], //     5   5
       [units.account.signup.user05, 4], //    0   1

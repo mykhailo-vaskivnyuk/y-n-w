@@ -1,4 +1,4 @@
-import { TTestUnit } from '../../types/types';
+import { IOperationData, TTestUnit } from '../../types/types';
 
 export const first: TTestUnit = (state: any) => (
   {
@@ -17,10 +17,7 @@ export const first: TTestUnit = (state: any) => (
           parent_node_id: null,
           total_count_of_members: 1
         },
-        setToState: (actual) => {
-          state.net.net_id = actual.net_id;
-          state.net.node_id = actual.node_id;
-        },
+        setToState: (actual) => state.net = actual,
       },
       {
         name: 'query net',
@@ -45,8 +42,9 @@ export const first: TTestUnit = (state: any) => (
         params: () => ({ node_id: state.net.node_id }),
         setToState: (actual) => state.tree = actual,
       }
-    ]
-  });
+    ] as IOperationData[],
+  }
+);
 
 export const second: TTestUnit = (state: any) => (
   {
@@ -55,19 +53,19 @@ export const second: TTestUnit = (state: any) => (
       {
         name: '/net/create',
         params: { net_id: null, name: 'test net second' },
-        setToState: (actual) => {
-          state.net.net_id = actual.net_id;
-          state.net.node_id = actual.node_id;
-        },
+        setToState: (actual) => state.net = actual,
       },
       {
         name: '/net/update',
-        params: () => ({ node_id: state.net.node_id, goal: 'goal of net second' }),
+        params: () => ({
+          node_id: state.net.node_id,
+          goal: 'goal of net second',
+        }),
       },
       {
         name: '/net/getTree',
         params: () => ({ node_id: state.net.node_id }),
         setToState: (actual) => state.tree = actual,
       }
-    ]
+    ] as IOperationData[],
   });
