@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fsp from 'node:fs/promises';
-import { ITestUnits, TTestUnit } from '../types/types';
+import { ITestUnits } from '../types/types';
 import { createUnitsTypes } from './create.units.types';
 import { config } from '../config';
 import * as casesMap from '../cases';
@@ -28,7 +28,7 @@ const readUnitsDir = async (dirPath: string): Promise<ITestUnits> => {
     const filePath = path.join(casesPath, item.name);
     let moduleExport = require(filePath);
     moduleExport = moduleExport.default ||
-      moduleExport as TTestUnit | ITestUnits;
+      moduleExport as ITestUnits[string];
 
     if (name !== 'index') {
       cases[name] = moduleExport;

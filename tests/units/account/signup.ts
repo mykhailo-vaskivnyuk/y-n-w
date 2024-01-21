@@ -1,6 +1,6 @@
 import { IOperationData, TTestUnit } from '../../types/types';
 
-const user = (user: number): TTestUnit => (state: any) => (
+export const user = (user: number): TTestUnit => (state: any) => (
   {
     title: `signup user ${user}`,
     operations: [
@@ -28,7 +28,3 @@ const user = (user: number): TTestUnit => (state: any) => (
       },
     ] as IOperationData[],
   });
-
-export const user05 = user(5);
-export const user06 = user(6);
-export const user07 = user(7);

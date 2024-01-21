@@ -1,6 +1,6 @@
 import { TTestUnit } from '../../types/types';
 
-const id = (net_id: number): TTestUnit => (state: any) => (
+const getUnit = (net_id: number): TTestUnit => (state: any) => (
   {
     title: `enter net net_id: ${net_id}`,
     operations: [
@@ -24,4 +24,4 @@ const id = (net_id: number): TTestUnit => (state: any) => (
     ],
   });
 
-export const main = id(1);
+export = getUnit;

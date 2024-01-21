@@ -21,7 +21,7 @@ export interface ITestUnit {
 }
 
 export interface ITestUnits {
-  [key: string]: TTestUnit | ITestUnits;
+  [key: string]: ((...args: any[]) => TTestUnit) | TTestUnit | ITestUnits;
 }
 
 export interface IOperationData {

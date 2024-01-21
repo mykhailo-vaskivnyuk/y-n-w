@@ -8,6 +8,7 @@ import { TTestUnit } from './types';
 export interface ITestUnitsMap `;
 const tplKey = '\n%s\'%s\': ';
 const tplType = 'TTestUnit;';
+const tplTypeGetUnit = '(...args: any[]) => TTestUnit;';
 const tplFooter = '\n';
 
 export const strHeader = () => tplHeader;
@@ -16,4 +17,5 @@ export const strKey = (
   key: string
 ) => format(tplKey, indent, key);
 export const strType = () => tplType;
+export const strTypeGetUnit = () => tplTypeGetUnit;
 export const strFooter = () => tplFooter;

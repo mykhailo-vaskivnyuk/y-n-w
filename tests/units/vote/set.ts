@@ -30,7 +30,7 @@ export const self: TTestUnit = (state: any) => (
     ] as IOperationData[],
   });
 
-const set = (m: number): TTestUnit => (state: any) => (
+export const cMember = (m: number): TTestUnit => (state: any) => (
   {
     title: `Set vote for circle[${m}]`,
     operations: [
@@ -51,9 +51,3 @@ const set = (m: number): TTestUnit => (state: any) => (
       },
     ] as IOperationData[],
   });
-
-export const mber1 = set(1);
-export const mber2 = set(2);
-export const mber3 = set(3);
-export const mber4 = set(4);
-export const mber5 = set(5);

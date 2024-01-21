@@ -26,9 +26,19 @@ export const createUnitsTypes = (config: ITestConfig, units: ITestUnits) => {
   return new Promise(executor);
 };
 
+export const isTestUnits = (
+  testUnits: ITestUnits[string],
+): testUnits is ITestUnits => typeof testUnits !== 'function';
+
 export const isTestUnit = (
-  testUnit?: TTestUnit | ITestUnits,
-): testUnit is TTestUnit => typeof testUnit === 'function';
+  testUnit: ((...args: any[]) => TTestUnit) | TTestUnit,
+): testUnit is TTestUnit => {
+  try {
+    return typeof testUnit({}) !== 'function';
+  } catch {
+    return true;
+  }
+};
 
 export const createTypes = (
   stream: Writable,
@@ -39,14 +49,15 @@ export const createTypes = (
 
   for (const key of routesKeys) {
     stream.write(tpl.strKey(nextIndent, key));
-    const testUnit = units[key] as TTestUnit | ITestUnits;
+    const testUnit = units[key] as ITestUnits[string];
     const nextPathname = pathname + '/' + key;
-    if (!isTestUnit(testUnit)) {
+    if (isTestUnits(testUnit)) {
       createTypes(testUnit, nextPathname, nextIndent);
       stream.write(';');
       continue;
     }
-    stream.write(tpl.strType());
+    if (isTestUnit(testUnit)) stream.write(tpl.strType());
+    else stream.write(tpl.strTypeGetUnit());
   }
 
   stream.write('\n' + indent + '}');

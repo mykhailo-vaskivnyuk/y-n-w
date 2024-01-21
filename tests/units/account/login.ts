@@ -1,8 +1,8 @@
 import { IOperationData, TTestUnit } from '../../types/types';
 
-const user = (user: number): TTestUnit => (state: any) => (
+export const user = (id: number): TTestUnit => (state: any) => (
   {
-    title: `login user ${user}`,
+    title: `login user ${id}`,
     operations: [
       {
         name: '/health',
@@ -12,14 +12,14 @@ const user = (user: number): TTestUnit => (state: any) => (
       {
         name: '/account/login',
         params: {
-          email: `user${String(user).padStart(2, '0')}@gmail.com`,
+          email: `user${String(id).padStart(2, '0')}@gmail.com`,
           password: '12345',
         },
         expected: {
-          email: `user${String(user).padStart(2, '0')}@gmail.com`,
+          email: `user${String(id).padStart(2, '0')}@gmail.com`,
           mobile: null,
           name: null,
-          user_id: user,
+          user_id: id,
           user_status: 'LOGGEDIN',
           chat_id: null,
         },
@@ -39,8 +39,3 @@ const user = (user: number): TTestUnit => (state: any) => (
       }
     ] as IOperationData[],
   });
-
-export const user01 = user(1);
-export const user02 = user(2);
-export const user03 = user(3);
-export const user04 = user(4);

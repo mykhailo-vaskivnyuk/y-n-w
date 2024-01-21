@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { TTestUnit } from '../../types/types';
 
-const mber = (m: number): TTestUnit => (state) => (
+export const tMember = (m: number): TTestUnit => (state) => (
   {
     title: `invite create for tree[${m}]`,
     operations: [
@@ -17,7 +17,3 @@ const mber = (m: number): TTestUnit => (state) => (
       },
     ],
   });
-
-export const mber0 = mber(0);
-export const mber2 = mber(2);
-export const mber4 = mber(4);
