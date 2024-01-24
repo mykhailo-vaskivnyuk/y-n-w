@@ -9,7 +9,7 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
     connection: 'ws',
     connCount: 7,
     caseUnits: [
-      [units.net.structure(2), 0],
+      [units.net.get.structure(2), 0],
       // singup users 5...14
       [units.account.signup.user(5), 1],
       [units.user.update.password, 1],
@@ -34,7 +34,7 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       // user 5 create net 2
       [units.account.login.user(5), 1],
       [units.net.create.root2, 1],
-      [units.net.structure(2), 0],
+      [units.net.get.structure(2), 0],
       // user 5 connect user 6
       [units.invite.create.tMember(0), 1],
       [units.account.login.user(6), 2],
@@ -100,7 +100,7 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       // 8 vote 8
       [units.vote.setFinal.self, 1],
       //
-      [units.net.structure(2), 0],
+      [units.net.get.structure(2), 0],
     ],
   },
 ];
