@@ -43,19 +43,33 @@ export interface ITestUnitsMap {
     };
   };
   'net': {
-    'connetByToken': TTestUnit;
+    'connetByToken': (...args: any[]) => TTestUnit;
     'create': {
+      'root2': TTestUnit;
       'first': TTestUnit;
       'second': TTestUnit;
     };
     'enter': (...args: any[]) => TTestUnit;
+    'get': {
+      'structure': (...args: any[]) => TTestUnit;
+    };
     'leave': TTestUnit;
+  };
+  'user': {
+    'update': {
+      'all': (...args: any[]) => TTestUnit;
+      'password': TTestUnit;
+    };
   };
   'vote': {
     'check': {
       'self': TTestUnit;
     };
     'set': {
+      'self': TTestUnit;
+      'cMember': (...args: any[]) => TTestUnit;
+    };
+    'setFinal': {
       'self': TTestUnit;
       'cMember': (...args: any[]) => TTestUnit;
     };

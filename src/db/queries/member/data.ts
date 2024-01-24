@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { TQuery } from '../../types/types';
 
 export interface IQueriesMemberData {
@@ -18,6 +19,9 @@ export interface IQueriesMemberData {
   unsetVote: TQuery<[
     ['branch_id', number],
     ['from_member_id', number],
+  ]>;
+  clearVotes: TQuery<[
+    ['branch_id', number],
   ]>;
   removeFromCircle: TQuery<[
     ['node_id', number],
@@ -76,6 +80,12 @@ export const unsetVote = `
   WHERE
     branch_id = $1 AND
     from_member_id = $2
+`;
+
+export const clearVotes = `
+  UPDATE members_to_members
+  SET vote = false
+  WHERE branch_id = $1
 `;
 
 export const removeFromCircle = `

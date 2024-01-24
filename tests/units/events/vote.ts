@@ -25,7 +25,7 @@ export const set: TTestUnit = (state: any) => (
             net_id: state.net.net_id,
             net_view: 'circle',
             type: 'EVENT',
-            user_id: state.user_id,
+            user_id: state.user.user_id,
           });
         },
       },

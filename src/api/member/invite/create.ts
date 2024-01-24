@@ -11,16 +11,16 @@ const create: THandler<IMemberInviteParams, string | null> = async (
   const { goal } = await actionMember!.getNet();
   if (!goal) return null; // bad request
 
-  const [member] = await execQuery.member
-    .find.inTree([node_id, member_node_id]);
+  const [member] = await execQuery
+    .member.find.inTree([node_id, member_node_id]);
   if (!member) return null; // bad request
 
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'EMPTY') return null; // bad request
 
   const token = cryptoService.createUnicCode(15);
-  await execQuery.member.invite
-    .create([node_id, member_node_id, member_name, token]);
+  await execQuery
+    .member.invite.create([node_id, member_node_id, member_name, token]);
 
   return token;
 };

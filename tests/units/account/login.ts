@@ -23,7 +23,7 @@ export const user = (id: number): TTestUnit => (state: any) => (
           user_status: 'LOGGEDIN',
           chat_id: null,
         },
-        setToState: (actual) => state.user_id = actual.user_id,
+        setToState: (actual) => state.user = actual,
       },
       {
         name: '/chat/connect/user',

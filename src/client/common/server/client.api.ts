@@ -8,11 +8,6 @@ export type IClientApi = ReturnType<typeof getApi>;
 export const getApi = (
   fetch: <T>(pathname: string, options?: Record<string, any>) => Promise<T>
 ) => ({
-  'health': () => fetch<string>('/health'),
-
-  'echo': (options: P.IEchoData) =>
-    fetch<P.IEchoData>('/echo', options),
-
   'account': {
     'confirm': (options: P.ITokenParams) =>
       fetch<P.IUserResponse>('/account/confirm', options),
@@ -22,6 +17,15 @@ export const getApi = (
 
     'logout': () => fetch<boolean>('/account/logout'),
 
+    'messenger': {
+      'link': {
+        'get': () => fetch<Q.TAccountMessengerLinkGetResponse>('/account/messenger/link/get'),
+
+        'connect': (options: Q.TAccountMessengerLinkConnect) =>
+          fetch<boolean>('/account/messenger/link/connect', options),
+
+      },
+    },
     'overmail': (options: P.ISignupParams) =>
       fetch<boolean>('/account/overmail', options),
 
@@ -39,20 +43,13 @@ export const getApi = (
     'signupTg': (options: Q.TAccountSignupTg) =>
       fetch<P.IUserResponse>('/account/signupTg', options),
 
-    'messenger': {
-      'link': {
-        'get': () => fetch<Q.TAccountMessengerLinkGetResponse>('/account/messenger/link/get'),
-
-        'connect': (options: Q.TAccountMessengerLinkConnect) =>
-          fetch<boolean>('/account/messenger/link/connect', options),
-
-      },
-    },
   },
   'admin': {
-    'getNet': (options: P.INetEnterParams) =>
-      fetch<Q.TAdminGetNetResponse>('/admin/getNet', options),
+    'net': {
+      'get': (options: P.INetEnterParams) =>
+        fetch<Q.TAdminNetGetResponse>('/admin/net/get', options),
 
+    },
   },
   'chat': {
     'connect': {
@@ -78,13 +75,12 @@ export const getApi = (
       fetch<boolean>('/events/confirm', options),
 
   },
+  'health': () => fetch<string>('/health'),
+
+  'echo': (options: P.IEchoData) =>
+    fetch<P.IEchoData>('/echo', options),
+
   'member': {
-    'disconnectNotVote': (options: Q.TMemberDisconnectNotVote) =>
-      fetch<boolean>('/member/disconnectNotVote', options),
-
-    'disconnectUnactive': (options: Q.TMemberDisconnectUnactive) =>
-      fetch<boolean>('/member/disconnectUnactive', options),
-
     'data': {
       'dislike': {
         'set': (options: P.IMemberConfirmParams) =>
@@ -103,6 +99,12 @@ export const getApi = (
 
       },
     },
+    'disconnectNotVote': (options: Q.TMemberDisconnectNotVote) =>
+      fetch<boolean>('/member/disconnectNotVote', options),
+
+    'disconnectUnactive': (options: Q.TMemberDisconnectUnactive) =>
+      fetch<boolean>('/member/disconnectUnactive', options),
+
     'invite': {
       'cancel': (options: P.IMemberConfirmParams) =>
         fetch<boolean>('/member/invite/cancel', options),
@@ -119,6 +121,20 @@ export const getApi = (
     },
   },
   'net': {
+    'board': {
+      'clear': (options: Q.TNetBoardClear) =>
+        fetch<boolean>('/net/board/clear', options),
+
+      'read': (options: P.INetReadParams) =>
+        fetch<P.INetBoardReadResponse>('/net/board/read', options),
+
+      'remove': (options: P.IBoardRemoveParams) =>
+        fetch<boolean>('/net/board/remove', options),
+
+      'save': (options: P.IBoardSaveParams) =>
+        fetch<boolean>('/net/board/save', options),
+
+    },
     'connectByToken': (options: P.ITokenParams) =>
       fetch<Q.TNetConnectByTokenResponse>('/net/connectByToken', options),
 
@@ -140,20 +156,6 @@ export const getApi = (
     'update': (options: P.INetUpdateParams) =>
       fetch<P.INetResponse>('/net/update', options),
 
-    'board': {
-      'clear': (options: Q.TNetBoardClear) =>
-        fetch<boolean>('/net/board/clear', options),
-
-      'read': (options: P.INetReadParams) =>
-        fetch<P.INetBoardReadResponse>('/net/board/read', options),
-
-      'remove': (options: P.IBoardRemoveParams) =>
-        fetch<boolean>('/net/board/remove', options),
-
-      'save': (options: P.IBoardSaveParams) =>
-        fetch<boolean>('/net/board/save', options),
-
-    },
   },
   'scripts': {
     'script.js': () => fetch<Q.TScriptsScriptjsResponse>('/scripts/script.js'),

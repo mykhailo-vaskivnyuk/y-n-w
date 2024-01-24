@@ -1,15 +1,15 @@
 import { TTestUnit } from '../../types/types';
 
-const unit: TTestUnit = (state: any) => (
+const getUnit = (net_id: number): TTestUnit => (state: any) => (
   {
     title: 'connect net by token',
     operations: [
       {
         name: '/net/connectByToken',
         params: { token: state.global.invite },
-        expected: { net_id: 1 },
+        expected: { net_id },
       },
     ],
   });
 
-  export = unit;
+  export = getUnit;

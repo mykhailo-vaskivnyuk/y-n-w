@@ -25,7 +25,7 @@ export const leaveInTree: TTestUnit = (state: any) => (
             message: 'Від\'єднався учасник вашого дерева',
             // net_id: 1,
             net_view: 'tree',
-            user_id: state.user_id,
+            user_id: state.user.user_id,
           }]);
         },
       },
@@ -54,7 +54,7 @@ export const leaveInCircle: TTestUnit = (state: any) => (
             message: 'Від\'єднався учасник кола',
             // net_id: 1,
             net_view: 'circle',
-            user_id: state.user_id,
+            user_id: state.user.user_id,
           }]);
         },
       },
@@ -63,7 +63,7 @@ export const leaveInCircle: TTestUnit = (state: any) => (
 
 export const voteForMembers: TTestUnit = (state: any) => (
   {
-    title: 'read events on vote for members',
+    title: 'read events on vote for circle member',
     operations: [
       {
         name: '/events/read',
@@ -83,7 +83,7 @@ export const voteForMembers: TTestUnit = (state: any) => (
             message: 'Учасника вашого кола обрано координатором',
             // net_id: 1,
             net_view: 'circle',
-            user_id: state.user_id,
+            user_id: state.user.user_id,
           }]);
         },
       },
@@ -112,7 +112,7 @@ export const voteForVoteMember: TTestUnit = (state: any) => (
             message: 'Вас обрано координатором',
             // net_id: 1,
             net_view: 'net',
-            user_id: state.user_id,
+            user_id: state.user.user_id,
           }]);
         },
       },
@@ -141,7 +141,7 @@ export const voteForDisvoteMember: TTestUnit = (state: any) => (
             message: 'Учасника вашого кола обрано координатором',
             // net_id: 1,
             net_view: 'circle',
-            user_id: state.user_id,
+            user_id: state.user.user_id,
           }]);
 
           event = actual[1];
@@ -158,7 +158,7 @@ export const voteForDisvoteMember: TTestUnit = (state: any) => (
             message: 'Вас переобрано',
             // net_id: 1,
             net_view: 'net',
-            user_id: state.user_id,
+            user_id: state.user.user_id,
           }]);
         },
       },

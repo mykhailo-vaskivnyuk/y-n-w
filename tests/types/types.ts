@@ -32,7 +32,9 @@ export interface IOperationData {
     | ((actual: any) => void);
   setToState?: (actual: any) => void;
   query?: () => Promise<Record<string, any>[]>;
-  expectedQueryResult?: Record<string, any>[];
+  expectedQueryResult?:
+    | TOperationResponse
+    | ((actual: any) => void);
 }
 
 export interface ITestRunnerData {

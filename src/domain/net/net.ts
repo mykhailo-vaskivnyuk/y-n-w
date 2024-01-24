@@ -52,23 +52,25 @@ export const showNet = (netNode: INetNode) => {
     node_level: level,
     node_id,
     user_id,
+    confirmed,
     invite,
     dislikes,
     votes,
   } = member;
 
-  let before = level > 1 ? ' '.concat('| '.repeat(level - 1)) : '';
-  before += level ? ' |-' : '';
+  let before = level > 1 ? '|  '.repeat(level - 1) : '';
+  before = level ? ' '.concat(before).concat('|-') : '';
 
   const strNode = String(node_id).padStart(2, ' ');
-  const strUser = user_id ? `:${user_id}` : '';
-  const strInvite = invite ? ':i' : '';
+  const strInvite = invite ? ':!x' : '';
+  const strConfirmed = confirmed ? '' : '!';
+  const strUser = user_id ? `:${strConfirmed}${user_id}` : '';
   const strDislikes = dislikes ? `-${dislikes}d` : '';
   const strVotes = votes ? `-${votes}v` : '';
   const log = before
     .concat(strNode)
-    .concat(strUser)
     .concat(strInvite)
+    .concat(strUser)
     .concat(strDislikes)
     .concat(strVotes);
   console.log(log);

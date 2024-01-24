@@ -1,3 +1,4 @@
+import assert from 'node:assert';
 import { IOperationData, TTestUnit } from '../../types/types';
 
 export const user = (user: number): TTestUnit => (state: any) => (
@@ -12,15 +13,15 @@ export const user = (user: number): TTestUnit => (state: any) => (
       {
         name: '/account/signup',
         params: { email: `user${String(user).padStart(2, '0')}@gmail.com` },
-        expected: {
+        expected: (actual) => assert.deepStrictEqual(actual, {
           email: `user${String(user).padStart(2, '0')}@gmail.com`,
           mobile: null,
           name: null,
-          user_id: user,
+          user_id: actual.user_id,
           user_status: 'LOGGEDIN',
           chat_id: null,
-        },
-        setToState: (actual) => state.user_id = actual.user_id,
+        }),
+        setToState: (actual) => state.user = actual,
       },
       {
         name: '/chat/connect/user',

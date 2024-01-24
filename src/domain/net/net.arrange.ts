@@ -264,6 +264,8 @@ export class NetArrange {
       newCountOfMembers,
     ]);
 
+    await execQuery.member.data.clearVotes([parent_node_id]);
+
     await execQuery.node.tree.replace([parent_node_id, node_id]);
     if (!newCountOfMembers)
       await execQuery.node.tree.remove([parent_node_id]);
