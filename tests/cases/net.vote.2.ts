@@ -7,7 +7,7 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
     title: 'Test VOTES IN NET 2 over WS',
     dbDataFile: 'restore.sh',
     connection: 'ws',
-    connCount: 7,
+    connCount: 9,
     caseUnits: [
       [units.net.get.structure(2), 0],
       // singup users 5...14
@@ -85,20 +85,37 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       [units.net.connetByToken(2), 2],
       // user 8 invite create
       [units.invite.create.tMember(2), 1],
+      // connect users
+      [units.account.login.user(5), 2],
+      [units.account.login.user(6), 3],
+      [units.account.login.user(7), 4],
+      [units.account.login.user(9), 5],
+      [units.account.login.user(12), 6],
+      [units.account.login.user(13), 7],
+      [units.account.login.user(14), 8],
       // 9 vote 8
-      [units.account.login.user(9), 2],
-      [units.net.enter(2), 2],
-      [units.vote.set.cMember(1), 2],
+      [units.net.enter(2), 5],
+      [units.vote.set.cMember(1), 5],
+      // events
+      //
       // 10 vote 8
-      [units.account.login.user(10), 2],
-      [units.net.enter(2), 2],
-      [units.vote.set.cMember(1), 2],
+      [units.account.login.user(10), 1],
+      [units.net.enter(2), 1],
+      [units.vote.set.cMember(1), 1],
+      // events
+      //
       // 11 vote 8
-      [units.account.login.user(11), 2],
-      [units.net.enter(2), 2],
-      [units.vote.set.cMember(1), 2],
+      [units.account.login.user(11), 1],
+      [units.net.enter(2), 1],
+      [units.vote.set.cMember(1), 1],
+      // events
+      //
       // 8 vote 8
+      [units.account.login.user(8), 1],
+      [units.net.enter(2), 1],
       [units.vote.setFinal.self, 1],
+      // events
+      //
       //
       [units.net.get.structure(2), 0],
     ],

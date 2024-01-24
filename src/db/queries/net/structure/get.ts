@@ -15,6 +15,7 @@ export const root = `
   SELECT
     nodes.*,
     members.*,
+    members.user_id::int,
     false AS invite,
     SUM (
       CASE
@@ -40,6 +41,7 @@ export const tree = `
   SELECT 
     nodes.*,
     members.*,
+    members.user_id::int,
     CASE
       WHEN mi.node_id ISNULL THEN false
       ELSE true

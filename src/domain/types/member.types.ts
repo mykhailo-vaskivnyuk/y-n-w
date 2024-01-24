@@ -20,7 +20,7 @@ export type IBranchVotes =
 /* net structure */
 export type INetMember =
   T.ITableNodes &
-  Partial<T.ITableMembers> & {
+  T.OuterJoin<T.ITableMembers> & {
   invite: boolean;
   dislikes: number;
   votes: number;

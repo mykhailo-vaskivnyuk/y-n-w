@@ -21,6 +21,7 @@ export const user: THandler<never, boolean> =
   async ({ session, connectionId }) => {
     const user_id = session.read('user_id')!;
     if (!connectionId) return false;
+    chatService.removeConnection(connectionId);
     chatService.addUserConnection(user_id, connectionId);
     return true;
   };

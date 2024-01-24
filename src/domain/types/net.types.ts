@@ -13,4 +13,5 @@ export type IUserNet =
 export type INetNode = {
   member: INetMember,
   tree: INetNode[] | null,
+  connection: boolean,
 };

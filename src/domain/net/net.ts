@@ -47,7 +47,7 @@ export const removeMemberFromAllNets = async (user_id: number) => {
 };
 
 export const showNet = (netNode: INetNode) => {
-  const { member, tree } = netNode;
+  const { member, tree, connection: conn } = netNode;
   const {
     node_level: level,
     node_id,
@@ -57,9 +57,7 @@ export const showNet = (netNode: INetNode) => {
     dislikes,
     votes,
   } = member;
-
-  let before = level > 1 ? '|  '.repeat(level - 1) : '';
-  before = level ? ' '.concat(before).concat('|-') : '';
+  const indent = '  |'.repeat(level).concat(conn ? '+' : '-');
 
   const strNode = String(node_id).padStart(2, ' ');
   const strInvite = invite ? ':!x' : '';
@@ -67,7 +65,7 @@ export const showNet = (netNode: INetNode) => {
   const strUser = user_id ? `:${strConfirmed}${user_id}` : '';
   const strDislikes = dislikes ? `-${dislikes}d` : '';
   const strVotes = votes ? `-${votes}v` : '';
-  const log = before
+  const log = indent
     .concat(strNode)
     .concat(strInvite)
     .concat(strUser)
@@ -79,9 +77,12 @@ export const showNet = (netNode: INetNode) => {
 };
 
 export const getNetNode = async (member: INetMember) => {
-  const tree = await execQuery.net.structure.get.tree([member.node_id]);
-  if (!tree.length) return { member, tree: null };
+  const { node_id, user_id } = member;
+  const connections = user_id && chatService.getUserConnections(user_id);
+  const connection = Boolean(connections);
+  const tree = await execQuery.net.structure.get.tree([node_id]);
+  if (!tree.length) return { member, tree: null, connection };
   const arr: INetNode[] = [];
   for (const member of tree) arr.push(await getNetNode(member));
-  return { member, tree: arr };
+  return { member, tree: arr, connection };
 };
