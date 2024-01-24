@@ -35,7 +35,8 @@ export const inTree = `
     nodes.*,
     members.*,
     members.user_id::int,
-    members_invites.*
+    members_invites.member_name,
+    members_invites.token
   FROM nodes
   LEFT JOIN members ON
     members.member_id = nodes.node_id
@@ -51,7 +52,8 @@ export const inCircle = `
     nodes.*,
     members.*,
     members.user_id::int,
-    members_invites.*
+    members_invites.member_name,
+    members_invites.token
   FROM nodes
   LEFT JOIN members ON
     members.member_id = nodes.node_id
