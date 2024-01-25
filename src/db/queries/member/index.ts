@@ -84,7 +84,7 @@ export const get = `
 `;
 
 export const getConnected = `
-  SELECT members.user_id
+  SELECT members.user_id::int
   FROM nodes
   INNER JOIN members ON
     members.member_id = nodes.node_id

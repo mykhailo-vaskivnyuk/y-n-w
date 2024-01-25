@@ -17,10 +17,7 @@ export const set: TTestUnit = (state: any) => (
             type: actual.type,
             user_id: actual.user_id,
           }, {
-            // date: '',
-            // event_id: 0,
             event_type: 'VOTE',
-            // from_node_id: null,
             message: 'Учасник вашого кола проголосував',
             net_id: state.net.net_id,
             net_view: 'circle',

@@ -6,11 +6,9 @@ const newEvents: TTestUnit = () => (
     operations: [
       {
         name: 'NEW EVENTS',
-        expected: {
-          type: 'NEW_EVENTS',
-        },
+        expected: { type: 'NEW_EVENTS' },
       },
-    ]
+    ],
   });
 
 export = newEvents;

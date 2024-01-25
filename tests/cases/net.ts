@@ -17,8 +17,9 @@ export const netCases = (units: ITestUnitsMap): ITestCase[] => [
       [units.net.leave, 1],
       [units.events.newEvents, 0],
       [units.events.newEvents, 2],
-      [units.events.read.leaveInTree, 0],
-      [units.events.read.leaveInCircle, 2],
+      [units.events.read.leave.inTree, 0],
+      [units.events.read.leave.inCircle, 2],
+      [units.events.check.confirmed, 0],
     ],
   },
 ];

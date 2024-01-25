@@ -107,6 +107,7 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       [units.events.read.voteForMembers, 4],
       [units.events.read.voteForMembers, 5],
       [units.events.read.voteForMembers, 6],
+      [units.events.check.confirmed, 0],
     ],
   },
 ];

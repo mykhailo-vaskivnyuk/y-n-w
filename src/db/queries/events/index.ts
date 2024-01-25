@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import {
   IEvent, NetEventKeys, NetViewKeys,
 } from '../../../client/common/server/types/types';
@@ -13,6 +14,7 @@ export interface IQueriesEvents {
     ['message', string],
     ['date', string],
   ]>;
+  readAll: TQuery<[], IEvent>;
   read: TQuery<[
     ['user_id', number],
     ['date', string | null],
@@ -49,7 +51,8 @@ export const create = `
 `;
 
 export const read = `
-  SELECT *,
+  SELECT
+    *,
     TRIM(net_view) as net_view,
     TRIM(event_type) as event_type
   FROM events
@@ -58,6 +61,15 @@ export const read = `
       $2::timestamp ISNULL OR
       date > $2
     )
+  ORDER BY event_id
+`;
+
+export const readAll = `
+  SELECT
+    *,
+    TRIM(net_view) as net_view,
+    TRIM(event_type) as event_type
+  FROM events
   ORDER BY event_id
 `;
 

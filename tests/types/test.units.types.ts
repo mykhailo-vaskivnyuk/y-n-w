@@ -22,13 +22,22 @@ export interface ITestUnitsMap {
     };
   };
   'events': {
+    'check': {
+      'confirmed': TTestUnit;
+    };
     'newEvents': TTestUnit;
     'read': {
-      'leaveInTree': TTestUnit;
-      'leaveInCircle': TTestUnit;
       'voteForMembers': TTestUnit;
+      'voteForMembersInTree': TTestUnit;
+      'voteForMembersInCircle': TTestUnit;
+      'voteForConnectedInCircle': TTestUnit;
+      'voteForConnectedInTree': TTestUnit;
       'voteForVoteMember': TTestUnit;
       'voteForDisvoteMember': TTestUnit;
+      'leave': {
+        'inTree': TTestUnit;
+        'inCircle': TTestUnit;
+      };
     };
     'vote': {
       'set': TTestUnit;
