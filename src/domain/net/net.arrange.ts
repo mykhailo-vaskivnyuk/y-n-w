@@ -222,7 +222,7 @@ export class NetArrange {
     const eventVote = event.createChild('LEAVE_VOTE', member);
     await this.removeConnectedAll(eventVote);
     await execQuery.member.data.removeFromTree([node_id]);
-    await execQuery.events.removeFromTree([user_id!, net_id]);
+    await execQuery.events.removeFromNet([user_id!, net_id]);
     await eventVote.messages.create();
 
     const [parent_member] = await execQuery.member.get([parent_node_id]);
@@ -240,7 +240,7 @@ export class NetArrange {
       await execQuery.member
         .data.removeFromCircle([parentUserId, parent_node_id]);
       await execQuery
-        .events.removeFromCircle([parentUserId, net_id]);
+        .events.removeFromNet([parentUserId, net_id]);
       await eventDisvote.messages.create();
     }
 

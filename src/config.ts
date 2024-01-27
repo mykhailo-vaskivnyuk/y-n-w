@@ -5,7 +5,7 @@ import { BUILD_SRC_PATH } from './constants/constants';
 import { createPathResolve } from './utils/utils';
 import { getEnv } from './utils/env.utils';
 
-const resolvePath  = createPathResolve(BUILD_SRC_PATH);
+const resolvePath = createPathResolve(BUILD_SRC_PATH);
 const {
   TRANSPORT: transport,
   HOST: host,
