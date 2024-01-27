@@ -75,18 +75,22 @@ export class Events {
 
   async confirm(event_id: number) {
     try {
+      if (!event_id) return;
       await this.app.setStatus(AppStatus.LOADING);
-      await this.app.api.events
-        .confirm({ event_id });
+      await this.app
+        .api.events.confirm({ event_id });
       this.app.setStatus(AppStatus.READY);
     } catch (e: any) {
       this.app.setError(e);
+    } finally {
+      this.remove(event_id)
     }
   }
 
   remove(eventId: number) {
-    const events = this.events
-      .filter(({ event_id: v }) => eventId !== v);
+    const event = this.events.find((v) => eventId !== v.event_id);
+    if (!event) return;
+    const events = this.events.filter((v) => event !== v);
     this.setEvents(events);
   }
 
