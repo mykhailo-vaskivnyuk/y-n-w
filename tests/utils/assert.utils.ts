@@ -17,7 +17,7 @@ export const assertMessage = async (
   onMessage: TMockFunction,
   callId: number,
 ) => {
-  await delay(200);
+  await delay(50);
   const call = onMessage!.mock.calls[callId];
   const actual = call?.arguments[0];
   const { expected } = operation;

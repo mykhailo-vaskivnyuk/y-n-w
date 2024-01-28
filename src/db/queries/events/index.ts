@@ -23,14 +23,6 @@ export interface IQueriesEvents {
     ['user_id', number],
     ['event_id', number],
   ]>;
-  removeFromCircle: TQuery<[
-    ['user_id', number],
-    ['net_id', number],
-  ]>;
-  removeFromTree: TQuery<[
-    ['user_id', number],
-    ['net_id', number],
-  ]>;
   removeFromNet: TQuery<[
     ['user_id', number],
     ['net_id', number | null],
@@ -80,26 +72,11 @@ export const confirm = `
     event_id = $2
 `;
 
-export const removeFromCircle = `
-  DELETE FROM events
-  WHERE
-    user_id = $1 AND
-    net_id = $2 AND
-    net_view = 'circle'
-`;
-
-export const removeFromTree = `
-  DELETE FROM events
-  WHERE
-    user_id = $1 AND
-    net_id = $2 AND
-    net_view = 'tree'
-`;
-
 export const removeFromNet = `
   DELETE FROM events
   WHERE
-    user_id = $1 AND (
+    user_id = $1 AND
+    (
       $2::int ISNULL OR
       net_id = $2
     )
