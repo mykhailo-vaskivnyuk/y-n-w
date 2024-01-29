@@ -29,7 +29,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
     await execQuery.member.data.setDislike([...params]);
     const event = new domain.event.NetEvent(net_id, 'DISLIKE', m);
     const net = await new domain.net.NetArrange();
-    net.arrangeNodes(t, event, [parentNodeId]);
+    await net.arrangeNodes(t, event, [parentNodeId]);
     await event.commit(notificationService, t);
     return true;
   });

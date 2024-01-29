@@ -21,11 +21,24 @@ export interface ITestUnitsMap {
       'receiveFirst': TTestUnit;
     };
   };
+  'dislike': {
+    'set': {
+      'tMember': (...args: any[]) => TTestUnit;
+      'cMember': (...args: any[]) => TTestUnit;
+    };
+    'setFinal': {
+      'tMember': (...args: any[]) => TTestUnit;
+      'cMember': (...args: any[]) => TTestUnit;
+    };
+  };
   'events': {
     'check': {
       'confirmed': TTestUnit;
     };
     'newEvents': TTestUnit;
+    'vote': {
+      'set': TTestUnit;
+    };
     'read': {
       'voteForMembers': TTestUnit;
       'voteForMembersInTree': TTestUnit;
@@ -39,9 +52,6 @@ export interface ITestUnitsMap {
         'inCircle': TTestUnit;
       };
     };
-    'vote': {
-      'set': TTestUnit;
-    };
   };
   'invite': {
     'confirm': {
@@ -52,7 +62,9 @@ export interface ITestUnitsMap {
     };
   };
   'net': {
-    'connetByToken': (...args: any[]) => TTestUnit;
+    'connectByToken': {
+      'toNet': (...args: any[]) => TTestUnit;
+    };
     'create': {
       'root2': TTestUnit;
       'first': TTestUnit;

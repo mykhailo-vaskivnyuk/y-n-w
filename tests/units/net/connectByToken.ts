@@ -1,6 +1,6 @@
 import { TTestUnit } from '../../types/types';
 
-const getUnit = (net_id: number): TTestUnit => (state: any) => (
+export const toNet = (net_id: number): TTestUnit => (state: any) => (
   {
     title: 'connect net by token',
     operations: [
@@ -11,5 +11,3 @@ const getUnit = (net_id: number): TTestUnit => (state: any) => (
       },
     ],
   });
-
-  export = getUnit;

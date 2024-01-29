@@ -25,9 +25,9 @@
 
 [heroku](https://heroku.com)
 
-[develop](https://merega.herokuapp.com/)
+[prod](https://merega.herokuapp.com/)
 
-[prod](https://younworld-188e695e6363.herokuapp.com/)
+[develop](https://younworld-188e695e6363.herokuapp.com/)
 
 ## Код
 

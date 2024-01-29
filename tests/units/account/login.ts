@@ -8,6 +8,9 @@ export const user = (id: number): TTestUnit => (state: any) => (
         name: '/health',
         params: {},
         expected: 'API IS READY',
+        setToState: () => Object
+          .keys(state)
+          .forEach((key) => key !== 'global' && delete state[key]),
       },
       {
         name: '/account/login',
