@@ -39,7 +39,6 @@ export const cMember = (m: number): TTestUnit => (state: any) => (
         name: '/net/getCircle',
         params: { node_id: state.net.node_id },
         expected: (actual) => {
-          console.log(actual);
           assert.strictEqual(actual[m].user_id, null);
         },
       },

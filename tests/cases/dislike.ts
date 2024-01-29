@@ -44,6 +44,13 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       // user 7 dislike user 6
       [units.net.enter(2), 3],
       [units.dislike.setFinal.cMember(1), 3],
+      // events
+      [units.events.newEvents, 1],
+      [units.events.newEvents, 2],
+      [units.events.newEvents, 3],
+      [units.events.read.leave.dislikeInCircle, 1],
+      [units.events.read.leave.dislikeInCircle, 3],
+      [units.events.read.disconnect.dislike, 2],
       // user 5 connect user 6
       [units.invite.create.tMember(0), 1],
       [units.account.login.user(6), 2],
@@ -61,104 +68,134 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       // user 8 dislike user 6
       [units.net.enter(2), 4],
       [units.dislike.setFinal.cMember(1), 4],
-      //
+      // events
+      [units.events.newEvents, 1],
+      [units.events.newEvents, 2],
+      [units.events.newEvents, 3],
+      [units.events.newEvents, 4],
+      [units.events.read.leave.dislikeInCircle, 1],
+      [units.events.read.leave.dislikeInCircle, 3],
+      [units.events.read.leave.dislikeInCircle, 4],
+      [units.events.read.disconnect.dislike, 2],
+      // user 5 connect user 6
+      [units.invite.create.tMember(0), 1],
+      [units.account.login.user(6), 2],
+      [units.net.connectByToken.toNet(2), 2],
+      [units.invite.confirm.tMember(0), 1],
+      // user 5 connect user 9
+      [units.invite.create.tMember(3), 1],
+      [units.account.login.user(9), 5],
+      [units.net.connectByToken.toNet(2), 5],
+      [units.invite.confirm.tMember(3), 1],
+      // user 5 dislike user 6
+      [units.dislike.set.tMember(0), 1],
+      // user 7 dislike user 6
+      [units.dislike.set.cMember(1), 3],
+      // user 8 dislike user 6
+      [units.dislike.setFinal.cMember(1), 4],
+      // events
+      [units.events.newEvents, 1],
+      [units.events.newEvents, 2],
+      [units.events.newEvents, 3],
+      [units.events.newEvents, 4],
+      [units.events.newEvents, 5],
+      [units.events.read.leave.dislikeInCircle, 1],
+      [units.events.read.leave.dislikeInCircle, 3],
+      [units.events.read.leave.dislikeInCircle, 4],
+      [units.events.read.leave.dislikeInCircle, 5],
+      [units.events.read.disconnect.dislike, 2],
+      // user 5 connect user 6
+      [units.invite.create.tMember(0), 1],
+      [units.account.login.user(6), 2],
+      [units.net.connectByToken.toNet(2), 2],
+      [units.invite.confirm.tMember(0), 1],
+      // user 5 connect user 10
+      [units.invite.create.tMember(4), 1],
+      [units.account.login.user(10), 6],
+      [units.net.connectByToken.toNet(2), 6],
+      // user 5 dislike user 6
+      [units.dislike.set.tMember(0), 1],
+      // user 7 dislike user 6
+      [units.dislike.set.cMember(1), 3],
+      // user 8 dislike user 6
+      [units.dislike.setFinal.cMember(1), 4],
+      // events
+      [units.events.newEvents, 1],
+      [units.events.newEvents, 2],
+      [units.events.newEvents, 3],
+      [units.events.newEvents, 4],
+      [units.events.newEvents, 5],
+      [units.events.read.leave.dislikeInCircle, 1],
+      [units.events.read.leave.dislikeInCircle, 3],
+      [units.events.read.leave.dislikeInCircle, 4],
+      [units.events.read.leave.dislikeInCircle, 5],
+      [units.events.read.disconnect.dislike, 2],
+      // user 5 confirm user 10
+      [units.invite.confirm.tMember(4), 1],
+      // user 5 connect user 6
+      [units.invite.create.tMember(0), 1],
+      [units.account.login.user(6), 2],
+      [units.net.connectByToken.toNet(2), 2],
+      [units.invite.confirm.tMember(0), 1],
+      // user 5 dislike user 6
+      [units.dislike.set.tMember(0), 1],
+      // user 7 dislike user 6
+      [units.dislike.set.cMember(1), 3],
+      // user 8 dislike user 6
+      [units.dislike.set.cMember(1), 4],
+      // user 9 dislike user 6
+      [units.net.enter(2), 5],
+      [units.dislike.setFinal.cMember(1), 5],
+      // events
+      [units.events.newEvents, 1],
+      [units.events.newEvents, 2],
+      [units.events.newEvents, 3],
+      [units.events.newEvents, 4],
+      [units.events.newEvents, 5],
+      [units.events.newEvents, 6],
+      [units.events.read.leave.dislikeInCircle, 1],
+      [units.events.read.leave.dislikeInCircle, 3],
+      [units.events.read.leave.dislikeInCircle, 4],
+      [units.events.read.leave.dislikeInCircle, 5],
+      [units.events.read.leave.dislikeInCircle, 6],
+      [units.events.read.disconnect.dislike, 2],
+      // user 5 connect user 6
+      [units.invite.create.tMember(0), 1],
+      [units.account.login.user(6), 2],
+      [units.net.connectByToken.toNet(2), 2],
+      [units.invite.confirm.tMember(0), 1],
+      // user 5 connect user 11
+      [units.invite.create.tMember(5), 1],
+      [units.account.login.user(11), 7],
+      [units.net.connectByToken.toNet(2), 7],
+      [units.invite.confirm.tMember(5), 1],
+      // user 5 dislike user 6
+      [units.dislike.set.tMember(0), 1],
+      // user 7 dislike user 6
+      [units.dislike.set.cMember(1), 3],
+      // user 8 dislike user 6
+      [units.dislike.set.cMember(1), 4],
+      // user 9 dislike user 6
+      [units.dislike.setFinal.cMember(1), 5],
+      // events
+      [units.events.newEvents, 1],
+      [units.events.newEvents, 2],
+      [units.events.newEvents, 3],
+      [units.events.newEvents, 4],
+      [units.events.newEvents, 5],
+      [units.events.newEvents, 6],
+      [units.events.newEvents, 7],
+      [units.events.read.leave.dislikeInCircle, 1],
+      [units.events.read.leave.dislikeInCircle, 3],
+      [units.events.read.leave.dislikeInCircle, 4],
+      [units.events.read.leave.dislikeInCircle, 5],
+      [units.events.read.leave.dislikeInCircle, 6],
+      [units.events.read.leave.dislikeInCircle, 7],
+      [units.events.read.disconnect.dislike, 2],
+      // check events all confirmed
+      [units.events.check.confirmed, 0],
+      // end of test
       [units.net.get.structure(2), 0],
-
-      // // user 7 connect user 8
-      // [units.net.enter(2), 2],
-      // [units.invite.create.tMember(0), 2],
-      // [units.account.login.user(8), 1],
-      // [units.net.connectByToken.toNet(2), 1],
-      // [units.invite.confirm.tMember(0), 2],
-      // // user 7 connect user 9
-      // [units.invite.create.tMember(1), 2],
-      // [units.account.login.user(9), 1],
-      // [units.net.connectByToken.toNet(2), 1],
-      // [units.invite.confirm.tMember(1), 2],
-      // // user 7 connect user 10
-      // [units.invite.create.tMember(2), 2],
-      // [units.account.login.user(10), 1],
-      // [units.net.connectByToken.toNet(2), 1],
-      // [units.invite.confirm.tMember(2), 2],
-      // // user 7 connect user 11
-      // [units.invite.create.tMember(3), 2],
-      // [units.account.login.user(11), 1],
-      // [units.net.connectByToken.toNet(2), 1],
-      // [units.invite.confirm.tMember(3), 2],
-      // // user 7 connect user 12
-      // [units.invite.create.tMember(4), 2],
-      // [units.account.login.user(12), 1],
-      // [units.net.connectByToken.toNet(2), 1],
-      // // user 7 invite create
-      // [units.invite.create.tMember(5), 2],
-      // // user 8 connect user 13
-      // [units.account.login.user(8), 1],
-      // [units.net.enter(2), 1],
-      // [units.invite.create.tMember(0), 1],
-      // [units.account.login.user(13), 2],
-      // [units.net.connectByToken.toNet(2), 2],
-      // [units.invite.confirm.tMember(0), 1],
-      // // user 8 connect user 14
-      // [units.invite.create.tMember(1), 1],
-      // [units.account.login.user(14), 2],
-      // [units.net.connectByToken.toNet(2), 2],
-      // // user 8 invite create
-      // [units.invite.create.tMember(2), 1],
-      // // connect users
-      // [units.account.login.user(5), 2],
-      // [units.account.login.user(6), 3],
-      // [units.account.login.user(7), 4],
-      // [units.account.login.user(9), 5],
-      // [units.account.login.user(12), 6],
-      // [units.account.login.user(13), 7],
-      // [units.account.login.user(14), 8],
-      // // 9 vote 8
-      // [units.net.enter(2), 5],
-      // [units.vote.set.cMember(1), 5],
-      // // push events
-      // [units.events.vote.set, 1],
-      // // 10 vote 8
-      // [units.account.login.user(10), 1],
-      // [units.net.enter(2), 1],
-      // [units.vote.set.cMember(1), 1],
-      // // push events
-      // [units.events.vote.set, 5],
-      // // 11 vote 8
-      // [units.account.login.user(11), 1],
-      // [units.net.enter(2), 1],
-      // [units.vote.set.cMember(1), 1],
-      // // push events
-      // [units.events.vote.set, 5],
-      // // 8 vote 8
-      // [units.account.login.user(8), 1],
-      // [units.net.enter(2), 1],
-      // [units.vote.setFinal.self, 1],
-      // // push events
-      // [units.events.newEvents, 2],
-      // [units.events.newEvents, 3],
-      // [units.events.newEvents, 4],
-      // [units.events.newEvents, 1],
-      // [units.events.newEvents, 5],
-      // [units.events.newEvents, 6],
-      // [units.events.newEvents, 7],
-      // [units.events.newEvents, 8],
-      // // read events
-      // [units.events.read.voteForMembers, 5],
-      // [units.account.login.user(10), 5],
-      // [units.events.read.voteForMembers, 5],
-      // [units.account.login.user(11), 5],
-      // [units.events.read.voteForMembers, 5],
-      // [units.events.read.voteForConnectedInCircle, 6],
-      // [units.events.read.voteForVoteMember, 1],
-      // [units.events.read.voteForDisvoteMember, 4],
-      // [units.events.read.voteForMembersInTree, 7],
-      // [units.events.read.voteForConnectedInTree, 8],
-      // [units.events.read.voteForMembersInCircle, 3],
-      // [units.events.read.voteForMembersInCircle, 2],
-      // // check events all confirmed
-      // [units.events.check.confirmed, 0],
-      // // end of test
-      // [units.net.get.structure(2), 0],
     ],
   },
 ];
