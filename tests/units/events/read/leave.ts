@@ -50,6 +50,12 @@ export const dislikeInCircle = getLeaveEvent(
   'Учасника вашого кола від\'єднано через діслайки',
 );
 
+export const dislikeFacilitator = getLeaveEvent(
+  'circle',
+  'DISLIKE_DISCONNECT',
+  'Вашого координатора від\'єднано через діслайки',
+);
+
 export const inTree = getLeaveEvent(
   'tree',
   'LEAVE',

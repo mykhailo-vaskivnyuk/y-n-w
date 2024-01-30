@@ -42,6 +42,7 @@ export interface ITestUnitsMap {
     'read': {
       'disconnect': {
         'dislike': TTestUnit;
+        'dislikeFacilitator': TTestUnit;
       };
       'voteForMembers': TTestUnit;
       'voteForMembersInTree': TTestUnit;
@@ -53,6 +54,7 @@ export interface ITestUnitsMap {
       'leave': {
         'dislikeInTree': TTestUnit;
         'dislikeInCircle': TTestUnit;
+        'dislikeFacilitator': TTestUnit;
         'inTree': TTestUnit;
         'inCircle': TTestUnit;
       };

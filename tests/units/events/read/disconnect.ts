@@ -3,7 +3,6 @@ import assert from 'node:assert';
 import { IOperationData, TTestUnit } from '../../../types/types';
 
 const getDisconnectEvent = (
-  net_view: string | null,
   event_type: string,
   message: string,
 ): TTestUnit => (state: any) => (
@@ -24,7 +23,7 @@ const getDisconnectEvent = (
           }], [{
             event_type,
             message,
-            net_view,
+            net_view: null,
             user_id: state.user.user_id,
           }]);
         },
@@ -40,7 +39,11 @@ const getDisconnectEvent = (
   });
 
 export const dislike = getDisconnectEvent(
-  'net',
+  'DISLIKE_DISCONNECT',
+  'Вас від\'єднано від мережі',
+);
+
+export const dislikeFacilitator = getDisconnectEvent(
   'DISLIKE_DISCONNECT',
   'Вас від\'єднано від мережі',
 );

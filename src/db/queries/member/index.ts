@@ -76,6 +76,8 @@ export const get = `
     nodes.*,
     nodes.net_id::int,
     members.*,
+    nodes.node_id::int,
+    nodes.parent_node_id::int,
     members.user_id::int
   FROM nodes
   INNER JOIN members ON
