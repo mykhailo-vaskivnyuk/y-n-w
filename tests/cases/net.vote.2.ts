@@ -135,7 +135,7 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       [units.events.read.voteForMembersInTree, 7],
       [units.events.read.voteForConnectedInTree, 8],
       [units.events.read.voteForMembersInCircle, 3],
-      [units.events.read.voteForMembersInCircle, 2],
+      [units.events.read.voteForFacilitator, 2],
       // check events all confirmed
       [units.events.check.confirmed, 0],
       // end of test

@@ -51,6 +51,7 @@ export interface ITestUnitsMap {
       'voteForConnectedInTree': TTestUnit;
       'voteForVoteMember': TTestUnit;
       'voteForDisvoteMember': TTestUnit;
+      'voteForFacilitator': TTestUnit;
       'leave': {
         'dislikeInTree': TTestUnit;
         'dislikeInCircle': TTestUnit;
