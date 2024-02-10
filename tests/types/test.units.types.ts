@@ -21,12 +21,29 @@ export interface ITestUnitsMap {
       'receiveFirst': TTestUnit;
     };
   };
+  'dislike': {
+    'set': {
+      'tMember': (...args: any[]) => TTestUnit;
+      'cMember': (...args: any[]) => TTestUnit;
+    };
+    'setFinal': {
+      'tMember': (...args: any[]) => TTestUnit;
+      'cMember': (...args: any[]) => TTestUnit;
+    };
+  };
   'events': {
     'check': {
       'confirmed': TTestUnit;
     };
     'newEvents': TTestUnit;
+    'vote': {
+      'set': TTestUnit;
+    };
     'read': {
+      'disconnect': {
+        'dislike': TTestUnit;
+        'dislikeFacilitator': TTestUnit;
+      };
       'voteForMembers': TTestUnit;
       'voteForMembersInTree': TTestUnit;
       'voteForMembersInCircle': TTestUnit;
@@ -34,13 +51,14 @@ export interface ITestUnitsMap {
       'voteForConnectedInTree': TTestUnit;
       'voteForVoteMember': TTestUnit;
       'voteForDisvoteMember': TTestUnit;
+      'voteForFacilitator': TTestUnit;
       'leave': {
+        'dislikeInTree': TTestUnit;
+        'dislikeInCircle': TTestUnit;
+        'dislikeFacilitator': TTestUnit;
         'inTree': TTestUnit;
         'inCircle': TTestUnit;
       };
-    };
-    'vote': {
-      'set': TTestUnit;
     };
   };
   'invite': {
@@ -52,7 +70,9 @@ export interface ITestUnitsMap {
     };
   };
   'net': {
-    'connetByToken': (...args: any[]) => TTestUnit;
+    'connectByToken': {
+      'toNet': (...args: any[]) => TTestUnit;
+    };
     'create': {
       'root2': TTestUnit;
       'first': TTestUnit;

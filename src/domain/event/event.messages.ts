@@ -6,7 +6,7 @@ import { IMember } from '../types/member.types';
 import { INetEventTo } from '../../domain/types/net.event.types';
 import { NetEvent } from './event';
 import {
-  INSTANT_EVENTS, NET_MESSAGES_MAP, SET_USER_NODE_ID_FOR,
+  INSTANT_EVENTS, NET_MESSAGES_MAP, SET_NET_ID_FOR,
 } from '../../constants/constants';
 
 export class EventMessages {
@@ -105,15 +105,14 @@ export class EventMessages {
     const { event_type } = this.event;
     let message = this.eventToMessages.MEMBER;
     if (!message) return;
-    const { user_id, node_id, net_id } = this.member!;
+    const { user_id, net_id } = this.member!;
     const [net] = await execQuery.net.data.get([net_id]);
     const { name } = net!;
-    const user_node_id =
-      SET_USER_NODE_ID_FOR.includes(event_type) ? node_id : null;
-    if (!user_node_id) message = format(message, name);
+    const net_view = SET_NET_ID_FOR.includes(event_type) ? 'net' : null;
+    if (!net_view) message = format(message, name);
     this.records.push({
       user_id,
-      net_view: 'net',
+      net_view,
       from_node_id: null,
       message,
     });

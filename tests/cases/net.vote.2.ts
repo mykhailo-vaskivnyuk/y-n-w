@@ -38,38 +38,38 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       // user 5 connect user 6
       [units.invite.create.tMember(0), 1],
       [units.account.login.user(6), 2],
-      [units.net.connetByToken(2), 2],
+      [units.net.connectByToken.toNet(2), 2],
       [units.invite.confirm.tMember(0), 1],
       // user 5 connect user 7
       [units.invite.create.tMember(1), 1],
       [units.account.login.user(7), 2],
-      [units.net.connetByToken(2), 2],
+      [units.net.connectByToken.toNet(2), 2],
       [units.invite.confirm.tMember(1), 1],
       // user 7 connect user 8
       [units.net.enter(2), 2],
       [units.invite.create.tMember(0), 2],
       [units.account.login.user(8), 1],
-      [units.net.connetByToken(2), 1],
+      [units.net.connectByToken.toNet(2), 1],
       [units.invite.confirm.tMember(0), 2],
       // user 7 connect user 9
       [units.invite.create.tMember(1), 2],
       [units.account.login.user(9), 1],
-      [units.net.connetByToken(2), 1],
+      [units.net.connectByToken.toNet(2), 1],
       [units.invite.confirm.tMember(1), 2],
       // user 7 connect user 10
       [units.invite.create.tMember(2), 2],
       [units.account.login.user(10), 1],
-      [units.net.connetByToken(2), 1],
+      [units.net.connectByToken.toNet(2), 1],
       [units.invite.confirm.tMember(2), 2],
       // user 7 connect user 11
       [units.invite.create.tMember(3), 2],
       [units.account.login.user(11), 1],
-      [units.net.connetByToken(2), 1],
+      [units.net.connectByToken.toNet(2), 1],
       [units.invite.confirm.tMember(3), 2],
       // user 7 connect user 12
       [units.invite.create.tMember(4), 2],
       [units.account.login.user(12), 1],
-      [units.net.connetByToken(2), 1],
+      [units.net.connectByToken.toNet(2), 1],
       // user 7 invite create
       [units.invite.create.tMember(5), 2],
       // user 8 connect user 13
@@ -77,12 +77,12 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       [units.net.enter(2), 1],
       [units.invite.create.tMember(0), 1],
       [units.account.login.user(13), 2],
-      [units.net.connetByToken(2), 2],
+      [units.net.connectByToken.toNet(2), 2],
       [units.invite.confirm.tMember(0), 1],
       // user 8 connect user 14
       [units.invite.create.tMember(1), 1],
       [units.account.login.user(14), 2],
-      [units.net.connetByToken(2), 2],
+      [units.net.connectByToken.toNet(2), 2],
       // user 8 invite create
       [units.invite.create.tMember(2), 1],
       // connect users
@@ -135,7 +135,7 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       [units.events.read.voteForMembersInTree, 7],
       [units.events.read.voteForConnectedInTree, 8],
       [units.events.read.voteForMembersInCircle, 3],
-      [units.events.read.voteForMembersInCircle, 2],
+      [units.events.read.voteForFacilitator, 2],
       // check events all confirmed
       [units.events.check.confirmed, 0],
       // end of test

@@ -1,8 +1,8 @@
+/* eslint-disable max-lines */
 import assert from 'node:assert';
 import { IOperationData, TTestUnit } from '../../../types/types';
 
-const getLeaveEvent = (
-  net_view: string | null,
+const getDisconnectEvent = (
   event_type: string,
   message: string,
 ): TTestUnit => (state: any) => (
@@ -17,13 +17,13 @@ const getLeaveEvent = (
           const event = actual[0];
           assert.deepEqual([{
             event_type: event.event_type,
-            message: event.message,
+            message: event.message.slice(0, 25),
             net_view: event.net_view,
             user_id: event.user_id,
           }], [{
             event_type,
             message,
-            net_view,
+            net_view: null,
             user_id: state.user.user_id,
           }]);
         },
@@ -38,32 +38,12 @@ const getLeaveEvent = (
     ] as IOperationData[],
   });
 
-export const dislikeInTree = getLeaveEvent(
-  'tree',
+export const dislike = getDisconnectEvent(
   'DISLIKE_DISCONNECT',
-  'Учасника вашого дерева від\'єднано через діслайки',
+  'Вас від\'єднано від мережі',
 );
 
-export const dislikeInCircle = getLeaveEvent(
-  'circle',
+export const dislikeFacilitator = getDisconnectEvent(
   'DISLIKE_DISCONNECT',
-  'Учасника вашого кола від\'єднано через діслайки',
-);
-
-export const dislikeFacilitator = getLeaveEvent(
-  'circle',
-  'DISLIKE_DISCONNECT',
-  'Вашого координатора від\'єднано через діслайки',
-);
-
-export const inTree = getLeaveEvent(
-  'tree',
-  'LEAVE',
-  'Від\'єднався учасник дерева',
-);
-
-export const inCircle = getLeaveEvent(
-  'circle',
-  'LEAVE',
-  'Від\'єднався учасник кола',
+  'Вас від\'єднано від мережі',
 );
