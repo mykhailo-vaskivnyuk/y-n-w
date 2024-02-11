@@ -68,7 +68,16 @@ export class EventMessages {
     if (!message) return [];
     const { user_id } = user;
     const { node_id: from_node_id } = this.member!;
-    this.records.push({ user_id, net_view: 'tree', from_node_id, message });
+    const record: IEventRecord = {
+      user_id,
+      net_view: 'tree',
+      from_node_id,
+      message,
+    };
+    const { event_type } = this.event;
+    if (INSTANT_EVENTS.includes(event_type))
+      this.instantRecords.push(record);
+    else this.records.push(record);
   }
 
   cretaeMessagesToCircleMember(user: IMember) {
@@ -83,11 +92,9 @@ export class EventMessages {
       from_node_id,
       message,
     };
-    if (INSTANT_EVENTS.includes(event_type)) {
+    if (INSTANT_EVENTS.includes(event_type))
       this.instantRecords.push(record);
-    } else {
-      this.records.push(record);
-    }
+    else this.records.push(record);
   }
 
   async createInTree() {
