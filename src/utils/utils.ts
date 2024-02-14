@@ -1,5 +1,5 @@
-import { resolve } from 'path';
-
+import { resolve } from 'node:path';
+import { setTimeout } from 'node:timers/promises';
 /**
  * {              |  {
  *  KEY1: value1, |    KEY1: KEY1,
@@ -80,10 +80,7 @@ export const runHeavyOperation = (
     counter++, i++
   ) operation(counter);
   if (counter >= count) return;
-  setTimeout(runHeavyOperation, 0, operation, count, counter);
+  setTimeout(0).then(() => runHeavyOperation(operation, count, counter));
 };
 
-export const delay = (time: number) =>
-  new Promise((rv) => {
-    setTimeout(rv, time);
-  });
+export const delay = (time: number) => setTimeout(time);

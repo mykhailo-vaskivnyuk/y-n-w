@@ -37,7 +37,7 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
       const newMember = { parent_node_id, node_id } as IMember;
       const event = new domain.event.NetEvent(net_id, 'CONNECT', newMember);
       await event.messages.create();
-      event.commit(notificationService, t);
+      await event.commit(notificationService, t);
 
       return { net_id };
     });

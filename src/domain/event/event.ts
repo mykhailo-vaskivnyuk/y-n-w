@@ -2,9 +2,10 @@ import {
   NetEventKeys,
 } from '../../client/common/server/types/types';
 import { ITransaction } from '../../db/types/types';
+import { IMember } from '../types/member.types';
 import { NotificationService } from '../../services/notification/notification';
 import { EventMessages } from './event.messages';
-import { IMember } from '../types/member.types';
+import { delay } from '../../utils/utils';
 
 export class NetEvent {
   private children: NetEvent[] = [];
@@ -61,7 +62,8 @@ export class NetEvent {
       await (t?.execQuery || execQuery).events.create([...params]);
       notificationService.addNotification(record.user_id, this.date);
     }
-    notificationService.sendNotifs();
-    notificationService.sendEvents();
+    delay(0)
+      .then(() => notificationService.sendEvents())
+      .then(() => notificationService.sendNotifs());
   }
 }
