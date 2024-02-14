@@ -22,6 +22,10 @@ map.LEAVE_CONNECTED = {
   FACILITATOR: 'Від\'єднався запрошений учасник',
 };
 
+map.CONNECT = {
+  FACILITATOR: 'У дереві новий учасник',
+};
+
 map.REFUSE = {
   CONNECTED: 'Вас від\'єднано від мережі %s через відмову координатора',
 };
@@ -89,6 +93,7 @@ export const SET_NET_ID_FOR: NetEventKeys[] = [
 ];
 
 export const INSTANT_EVENTS: NetEventKeys[] = [
+  'CONNECT',
   'VOTE',
   'BOARD_MESSAGE',
 ];

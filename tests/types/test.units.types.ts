@@ -35,6 +35,10 @@ export interface ITestUnitsMap {
     'check': {
       'confirmed': TTestUnit;
     };
+    'instant': {
+      'vote': TTestUnit;
+      'connect': TTestUnit;
+    };
     'newEvents': TTestUnit;
     'vote': {
       'set': TTestUnit;
