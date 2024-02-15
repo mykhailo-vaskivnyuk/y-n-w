@@ -37,7 +37,6 @@ export interface ITestUnitsMap {
     };
     'instant': {
       'vote': TTestUnit;
-      'connect': TTestUnit;
     };
     'newEvents': TTestUnit;
     'vote': {
@@ -48,20 +47,25 @@ export interface ITestUnitsMap {
         'dislike': TTestUnit;
         'dislikeFacilitator': TTestUnit;
       };
-      'voteForMembers': TTestUnit;
-      'voteForMembersInTree': TTestUnit;
-      'voteForMembersInCircle': TTestUnit;
-      'voteForConnectedInCircle': TTestUnit;
-      'voteForConnectedInTree': TTestUnit;
-      'voteForVoteMember': TTestUnit;
-      'voteForDisvoteMember': TTestUnit;
-      'voteForFacilitator': TTestUnit;
+      'getEvent': (...args: any[]) => TTestUnit;
+      'confirm': TTestUnit;
+      'connect': TTestUnit;
       'leave': {
         'dislikeInTree': TTestUnit;
         'dislikeInCircle': TTestUnit;
         'dislikeFacilitator': TTestUnit;
         'inTree': TTestUnit;
         'inCircle': TTestUnit;
+      };
+      'vote': {
+        'forMembers': TTestUnit;
+        'forMembersInTree': TTestUnit;
+        'forMembersInCircle': TTestUnit;
+        'forConnectedInCircle': TTestUnit;
+        'forConnectedInTree': TTestUnit;
+        'forVoteMember': TTestUnit;
+        'forDisvoteMember': TTestUnit;
+        'forFacilitator': TTestUnit;
       };
     };
   };

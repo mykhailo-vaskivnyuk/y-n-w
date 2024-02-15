@@ -26,6 +26,10 @@ map.CONNECT = {
   FACILITATOR: 'У дереві новий учасник',
 };
 
+map.CONFIRM = {
+  MEMBER: 'Координатор підтвердив вашу участь в мережі',
+};
+
 map.REFUSE = {
   CONNECTED: 'Вас від\'єднано від мережі %s через відмову координатора',
 };
@@ -88,12 +92,12 @@ map.BOARD_MESSAGE = {
 };
 
 export const SET_NET_ID_FOR: NetEventKeys[] = [
+  'CONFIRM',
   'CONNECT_VOTE',
   'CONNECT_DISVOTE',
 ];
 
 export const INSTANT_EVENTS: NetEventKeys[] = [
-  'CONNECT',
   'VOTE',
   'BOARD_MESSAGE',
 ];

@@ -33,16 +33,22 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       [units.invite.create.tMember(0), 1],
       [units.account.login.user(6), 2],
       [units.net.connectByToken.toNet(2), 2],
-      [units.events.instant.connect, 1],
+      [units.events.newEvents, 1],
+      [units.events.read.connect, 1],
       [units.invite.confirm.tMember(0), 1],
+      [units.events.newEvents, 2],
+      [units.events.read.confirm, 2],
       // user 5 dislike user 6
       [units.dislike.set.tMember(0), 1],
       // user 5 connect user 7
       [units.invite.create.tMember(1), 1],
       [units.account.login.user(7), 3],
       [units.net.connectByToken.toNet(2), 3],
-      [units.events.instant.connect, 1],
+      [units.events.newEvents, 1],
+      [units.events.read.connect, 1],
       [units.invite.confirm.tMember(1), 1],
+      [units.events.newEvents, 3],
+      [units.events.read.confirm, 3],
       // user 7 dislike user 6
       [units.net.enter(2), 3],
       [units.dislike.setFinal.cMember(1), 3],
@@ -57,14 +63,20 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       [units.invite.create.tMember(0), 1],
       [units.account.login.user(6), 2],
       [units.net.connectByToken.toNet(2), 2],
-      [units.events.instant.connect, 1],
+      [units.events.newEvents, 1],
+      [units.events.read.connect, 1],
       [units.invite.confirm.tMember(0), 1],
+      [units.events.newEvents, 2],
+      [units.events.read.confirm, 2],
       // user 5 connect user 8
       [units.invite.create.tMember(2), 1],
       [units.account.login.user(8), 4],
       [units.net.connectByToken.toNet(2), 4],
-      [units.events.instant.connect, 1],
+      [units.events.newEvents, 1],
+      [units.events.read.connect, 1],
       [units.invite.confirm.tMember(2), 1],
+      [units.events.newEvents, 4],
+      [units.events.read.confirm, 4],
       // user 5 dislike user 6
       [units.dislike.set.tMember(0), 1],
       // user 7 dislike user 6
@@ -85,14 +97,20 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       [units.invite.create.tMember(0), 1],
       [units.account.login.user(6), 2],
       [units.net.connectByToken.toNet(2), 2],
-      [units.events.instant.connect, 1],
+      [units.events.newEvents, 1],
+      [units.events.read.connect, 1],
       [units.invite.confirm.tMember(0), 1],
+      [units.events.newEvents, 2],
+      [units.events.read.confirm, 2],
       // user 5 connect user 9
       [units.invite.create.tMember(3), 1],
       [units.account.login.user(9), 5],
       [units.net.connectByToken.toNet(2), 5],
-      [units.events.instant.connect, 1],
+      [units.events.newEvents, 1],
+      [units.events.read.connect, 1],
       [units.invite.confirm.tMember(3), 1],
+      [units.events.newEvents, 5],
+      [units.events.read.confirm, 5],
       // user 5 dislike user 6
       [units.dislike.set.tMember(0), 1],
       // user 7 dislike user 6
@@ -114,13 +132,17 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       [units.invite.create.tMember(0), 1],
       [units.account.login.user(6), 2],
       [units.net.connectByToken.toNet(2), 2],
-      [units.events.instant.connect, 1],
+      [units.events.newEvents, 1],
+      [units.events.read.connect, 1],
       [units.invite.confirm.tMember(0), 1],
+      [units.events.newEvents, 2],
+      [units.events.read.confirm, 2],
       // user 5 connect user 10
       [units.invite.create.tMember(4), 1],
       [units.account.login.user(10), 6],
       [units.net.connectByToken.toNet(2), 6],
-      [units.events.instant.connect, 1],
+      [units.events.newEvents, 1],
+      [units.events.read.connect, 1],
       // user 5 dislike user 6
       [units.dislike.set.tMember(0), 1],
       // user 7 dislike user 6
@@ -140,12 +162,17 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       [units.events.read.disconnect.dislike, 2],
       // user 5 confirm user 10
       [units.invite.confirm.tMember(4), 1],
+      [units.events.newEvents, 6],
+      [units.events.read.confirm, 6],
       // user 5 connect user 6
       [units.invite.create.tMember(0), 1],
       [units.account.login.user(6), 2],
       [units.net.connectByToken.toNet(2), 2],
-      [units.events.instant.connect, 1],
+      [units.events.newEvents, 1],
+      [units.events.read.connect, 1],
       [units.invite.confirm.tMember(0), 1],
+      [units.events.newEvents, 2],
+      [units.events.read.confirm, 2],
       // user 5 dislike user 6
       [units.dislike.set.tMember(0), 1],
       // user 7 dislike user 6
@@ -172,14 +199,20 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       [units.invite.create.tMember(0), 1],
       [units.account.login.user(6), 2],
       [units.net.connectByToken.toNet(2), 2],
-      [units.events.instant.connect, 1],
+      [units.events.newEvents, 1],
+      [units.events.read.connect, 1],
       [units.invite.confirm.tMember(0), 1],
+      [units.events.newEvents, 2],
+      [units.events.read.confirm, 2],
       // user 5 connect user 11
       [units.invite.create.tMember(5), 1],
       [units.account.login.user(11), 7],
       [units.net.connectByToken.toNet(2), 7],
-      [units.events.instant.connect, 1],
+      [units.events.newEvents, 1],
+      [units.events.read.connect, 1],
       [units.invite.confirm.tMember(5), 1],
+      [units.events.newEvents, 7],
+      [units.events.read.confirm, 7],
       // user 5 dislike user 6
       [units.dislike.set.tMember(0), 1],
       // user 7 dislike user 6
@@ -207,7 +240,8 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       [units.invite.create.tMember(0), 1],
       [units.account.login.user(6), 2],
       [units.net.connectByToken.toNet(2), 2],
-      [units.events.instant.connect, 1],
+      [units.events.newEvents, 1],
+      [units.events.read.connect, 1],
       // user 7 dislike user 5
       [units.dislike.set.cMember(0), 3],
       // user 8 dislike user 5

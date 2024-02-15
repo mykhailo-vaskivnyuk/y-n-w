@@ -19,6 +19,11 @@ const confirm: THandler<IMemberConfirmParams, boolean> = async (
     await execQuery.member.confirm([member_node_id]);
     await new domain.net.NetArrange().updateCountOfMembers(member_node_id);
     await domain.utils.createTree(t, member);
+
+    const event = new domain.event.NetEvent(net_id, 'CONFIRM', member);
+    await event.messages.create();
+    await event.commit(notificationService, t);
+
     return true;
   });
 };

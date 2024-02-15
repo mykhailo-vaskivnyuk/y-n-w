@@ -38,9 +38,3 @@ export const vote = getEvent(
   'circle',
   'Учасник вашого кола проголосував',
 );
-
-export const connect = getEvent(
-  'CONNECT',
-  'tree',
-  'У дереві новий учасник',
-);
