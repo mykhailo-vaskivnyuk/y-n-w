@@ -113,10 +113,12 @@ export class EventMessages {
     let message = this.eventToMessages.MEMBER;
     if (!message) return;
     const { user_id, net_id } = this.member!;
-    const [net] = await execQuery.net.data.get([net_id]);
-    const { name } = net!;
     const net_view = SET_NET_ID_FOR.includes(event_type) ? 'net' : null;
-    if (!net_view) message = format(message, name);
+    if (!net_view) {
+      const [net] = await execQuery.net.data.get([net_id]);
+      const { name } = net!;
+      message = format(message, name);
+    }
     this.records.push({
       user_id,
       net_view,
