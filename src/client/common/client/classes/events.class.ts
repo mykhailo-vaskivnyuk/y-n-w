@@ -88,8 +88,8 @@ export class Events {
   }
 
   remove(eventId: number) {
-    const event = this.events.find((v) => eventId !== v.event_id);
-    if (!event) return;
+    const event = this.events.find((v) => eventId === v.event_id);
+    // if (!event) return;
     const events = this.events.filter((v) => event !== v);
     this.setEvents(events);
   }
