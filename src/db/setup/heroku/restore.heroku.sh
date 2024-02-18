@@ -1,7 +1,9 @@
 echo 'start'
 
+# prod
 # export DATABASE=postgresql-asymmetrical-81951
 # export APP=merega
+# dev
 export DATABASE=postgresql-animated-67025
 export APP=younworld
 
