@@ -31,6 +31,12 @@ export interface IQueriesMember {
   updateDate: TQuery<[
     ['member_id', number],
   ]>;
+  replace: TQuery<[
+    ['node_id', number],
+    ['parent_node_id', number],
+    ['user_id', number],
+    ['parent_user_id', number],
+  ]>;
   data: IQueriesMemberData;
   invite: IQueriesMemberInvite;
   find: IQueriesMemberFind;
@@ -99,4 +105,14 @@ export const updateDate = `
   UPDATE members
   SET active_date = now() at time zone 'UTC'
   WHERE member_id = $1
+`;
+
+export const replace = `
+  UPDATE members
+  SET user_id =
+    CASE WHEN user_id = $3
+      THEN $4
+      ELSE $3
+    END
+  WHERE member_id IN ($1, $2)
 `;

@@ -48,3 +48,8 @@ export const MemberResponseSchema = {
 } as Record<keyof IMemberResponse, TJoiSchema>;
 
 export const NetViewResponseSchema = { ...MemberResponseSchema };
+
+export const NetConnectByTokenSchema = [JOI_NULL, {
+  net_id: Joi.number().required(),
+  error: Joi.string(),
+}];

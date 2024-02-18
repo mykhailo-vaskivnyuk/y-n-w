@@ -30,6 +30,10 @@ export interface IQueriesMemberData {
   removeFromTree: TQuery<[
     ['node_id', number],
   ]>;
+  replace: TQuery<[
+    ['node_id', number],
+    ['parent_node_id', number],
+  ]>;
 }
 
 export const setDislike = `
@@ -104,4 +108,28 @@ export const removeFromTree = `
       from_member_id = $1 OR
       to_member_id = $1
   )
+`;
+
+export const replace = `
+  UPDATE members_to_members AS mtm
+  SET
+    from_member_id =
+      CASE WHEN from_member_id = $1
+        THEN $2
+        ELSE
+          CASE WHEN from_member_id = $2
+            THEN $1
+            ELSE from_member_id
+          END
+      END,
+    to_member_id =
+      CASE WHEN to_member_id = $1
+        THEN $2
+        ELSE
+          CASE WHEN to_member_id = $2
+            THEN $1
+            ELSE to_member_id
+          END
+      END
+  WHERE branch_id = $2
 `;

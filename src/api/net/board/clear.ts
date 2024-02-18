@@ -26,5 +26,6 @@ const clear: THandler<{ weekAgo: number }, boolean> =
   };
 clear.paramsSchema = { weekAgo: Joi.number().required() };
 clear.responseSchema = Joi.boolean();
+clear.checkNet = false;
 
 export = clear;

@@ -1,9 +1,16 @@
-import { ITableNets } from '../types/db.types';
+import { ITransaction } from '../../db/types/types';
+import { ITableNets, ITableNodes } from '../types/db.types';
 import { INetMember } from '../types/member.types';
 import { INetNode } from '../types/net.types';
-import { createTree } from '../utils/nodes.utils';
-import { exeWithNetLock } from '../utils/utils';
+import { MAX_NODE_LEVEL } from '../../client/common/server/constants';
 import { NetArrange } from './net.arrange';
+import { exeWithNetLock } from '../utils/utils';
+
+export const createTree = async (t: ITransaction, node: ITableNodes) => {
+  const { node_level, node_id, net_id } = node;
+  if (node_level >= MAX_NODE_LEVEL) return;
+  await t.execQuery.node.tree.create([node_level + 1, node_id, net_id]);
+};
 
 export const createNet = (
   user_id: number,
@@ -14,11 +21,11 @@ export const createNet = (
   let net: ITableNets | undefined;
   if (parentNetId) {
     [net] = await t.execQuery.net.createChild([parentNetId]);
-    await new domain.net.NetArrange().updateCountOfNets(t, parentNetId);
+    await new domain.net.NetArrange(t).updateCountOfNets(parentNetId);
   } else {
-    [net] = await execQuery.net.createRoot([]);
+    [net] = await t.execQuery.net.createRoot([]);
     const { net_id: root_net_id } = net!;
-    [net] = await execQuery.net.setRootNet([root_net_id]);
+    [net] = await t.execQuery.net.setRootNet([root_net_id]);
   }
   const { net_id } = net!;
 
@@ -40,9 +47,8 @@ export const createNet = (
 
 export const removeMemberFromAllNets = async (user_id: number) => {
   const userNetDataArr = await execQuery.user.nets.getTop([user_id]);
-  const net = new NetArrange();
   for (const userNetData of userNetDataArr) {
-    await net.removeMemberFromNet('LEAVE', userNetData);
+    await NetArrange.removeMemberFromNet('LEAVE', userNetData);
   }
 };
 

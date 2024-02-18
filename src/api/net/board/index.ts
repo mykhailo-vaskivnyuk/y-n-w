@@ -14,6 +14,7 @@ export const read: THandler<INetReadParams, INetBoardReadResponse> =
   };
 read.paramsSchema = NetReadParamsSchema;
 read.responseSchema = NetBoardReadResponseSchema;
+read.checkNet = true;
 
 export const remove: THandler<IBoardRemoveParams, boolean> = async (
   { member }, { node_id, message_id }
@@ -28,3 +29,4 @@ export const remove: THandler<IBoardRemoveParams, boolean> = async (
 };
 remove.paramsSchema = BoardRemoveParamsSchema;
 remove.responseSchema = Joi.boolean();
+remove.checkNet = true;

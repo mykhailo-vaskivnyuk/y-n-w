@@ -66,6 +66,7 @@ export type THandler<
     : Q extends Array<IObject> ? | TObjectSchema<Q[number]> : TJoiSchema;
   allowedForUser?: PartialUserStatusKeys;
   allowedForNetUser?: PartialUserNetStatusKeys;
+  checkNet?: boolean;
 };
 
 export type TObjectSchema<T extends IObject> = {

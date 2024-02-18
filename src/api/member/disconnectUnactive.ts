@@ -10,11 +10,11 @@ const disconnectUnactive: THandler<{ monthAgo: number }, boolean> =
     date.setMonth(month - monthAgo);
     const strDate = date.toUTCString();
     let member: IMember | undefined;
-    const net = new domain.net.NetArrange();
+    const remove = domain.net.NetArrange.removeMemberFromNet;
     do {
       [member] = await execQuery.member.find.unactive([strDate]);
       if (!member) return true;
-      await net.removeMemberFromNet('UNACTIVE_DISCONNECT', member);
+      await remove('UNACTIVE_DISCONNECT', member);
     } while (member);
     return true;
   };

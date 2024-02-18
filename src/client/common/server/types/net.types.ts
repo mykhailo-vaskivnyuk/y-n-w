@@ -14,7 +14,7 @@ export type INetReadParams = { node_id: number };
 
 export type INetUpdateParams  = {
   goal: string;
-  node_id: number | null;
+  node_id: number;
 };
 
 export type INetResponse = null | (
@@ -40,3 +40,8 @@ export type IUserNetDataResponse =
   Pick<ITableMembers, 'confirmed'> &
   OuterJoin<Pick<ITableMembersToMembers, 'vote'>> &
   { vote_count: number };
+
+export type INetConnectByToken = {
+  net_id: number;
+  error?: 'already connected' | 'not parent net member';
+} | null;

@@ -2,12 +2,13 @@
 import { format } from 'node:util';
 import { IEventRecord, INetResponse,
 } from '../../client/common/server/types/types';
+import { ITransaction } from '../../db/types/types';
 import { IMember } from '../types/member.types';
 import { INetEventTo } from '../../domain/types/net.event.types';
-import { NetEvent } from './event';
 import {
   INSTANT_EVENTS, NET_MESSAGES_MAP, SET_NET_ID_FOR,
 } from '../../constants/constants';
+import { NetEvent } from './event';
 
 export class EventMessages {
   private event: NetEvent;
@@ -24,10 +25,10 @@ export class EventMessages {
     this.eventToMessages = NET_MESSAGES_MAP[event_type];
   }
 
-  async create() {
+  async create(t?: ITransaction) {
     if (!this.member) return;
-    await this.createInCircle();
-    await this.createInTree();
+    await this.createInCircle(t);
+    await this.createInTree(t);
     await this.createMessageToMember();
     this.createInstantMessageInNet();
   }
@@ -41,7 +42,7 @@ export class EventMessages {
     return this.net;
   }
 
-  async createInCircle() {
+  async createInCircle(t?: ITransaction) {
     const {
       node_id: member_node_id,
       parent_node_id,
@@ -51,8 +52,8 @@ export class EventMessages {
     const toFacilitator = this.eventToMessages.FACILITATOR;
     const toCircleMember = this.eventToMessages.CIRCLE;
     if (!toFacilitator && !toCircleMember) return;
-    const users = await execQuery.net.circle
-      .getMembers([member_node_id, parent_node_id]);
+    const users = await (t?.execQuery || execQuery)
+      .net.circle.getMembers([member_node_id, parent_node_id]);
     for (const user of users) {
       const { node_id: user_node_id, confirmed: user_confirmed } = user;
       if (user_node_id === parent_node_id)
@@ -97,12 +98,13 @@ export class EventMessages {
     else this.records.push(record);
   }
 
-  async createInTree() {
+  async createInTree(t?: ITransaction) {
     const message = this.eventToMessages.TREE;
     if (!message) return;
     const { node_id: from_node_id, confirmed } = this.member!;
     if (!confirmed) return;
-    const members = await execQuery.net.tree.getMembers([from_node_id]);
+    const members = await (t?.execQuery || execQuery)
+      .net.tree.getMembers([from_node_id]);
     for (const { user_id } of members) {
       this.records.push({ user_id, net_view: 'circle', from_node_id, message });
     }
@@ -152,33 +154,3 @@ export class EventMessages {
     });
   }
 }
-
-/**
- * voteNetUser
- * removeMemberFromNetAndSubnets
- * api.net.board.save
- * api.net.board.remove
- * api.net.board.clear
- * api.member.data.vote.set
- * api.member.data.vote.unset
- * tighten
- */
-
-/*
-createMessagesInTree
-  execQuery.events.create
-  commitEvents(user_id, date)
-createMessagesInCircle
-  createMessageToFacilitator
-  cretaeMessagesToCircleMember
-    sendInstantMessage
-    execQuery.events.create
-    commitEvents(user_id, date)
-    execQuery.events.create
-    commitEvents(user_id, date)
-createMessageToMember
-  execQuery.events.create
-  commitEvents(user_id, date)
-createInstantMessageInNet
-  sendInstantMessageInNet
-*/
