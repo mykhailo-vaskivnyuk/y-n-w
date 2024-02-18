@@ -12,17 +12,23 @@ export class Member {
     return this;
   }
 
-  status() {
-    const { confirmed } = this.member;
-    return confirmed ? 'INSIDE_NET' : 'INVITING';
+  async reinit() {
+    const { user_id, node_id } = this.get();
+    return this.init(user_id, node_id);
   }
 
   get() {
-    return this.member;
+    if (this.member) return this.member;
+    throw new DomainError('NOT_FOUND');
+  }
+
+  status() {
+    const { confirmed } = this.get();
+    return confirmed ? 'INSIDE_NET' : 'INVITING';
   }
 
   async getNet() {
-    const { net_id } = this.member;
+    const { net_id } = this.get();
     const [net] = await execQuery.net.getData([net_id]);
     return net!;
   }
