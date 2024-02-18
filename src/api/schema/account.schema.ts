@@ -28,3 +28,8 @@ export const UserUpdateParamsSchema = {
   mobile: [Joi.string().empty(''), JOI_NULL],
   password: [Joi.string().empty(''), JOI_NULL],
 };
+
+export const MessengerLinkConnectParamsSchema = {
+  chatId: Joi.string().required(),
+  token: Joi.string().required(),
+};

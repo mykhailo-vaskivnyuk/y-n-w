@@ -15,5 +15,6 @@ const update: THandler<INetUpdateParams, INetResponse> =
   };
 update.paramsSchema = NetUpdateParamsSchema;
 update.responseSchema = NetResponseSchema;
+update.checkNet = true;
 
 export = update;

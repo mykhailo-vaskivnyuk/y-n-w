@@ -47,7 +47,7 @@ Table "nets_data" {
 
 Table "members" {
   "member_id" bigint [primary key, not null]
-  "user_id" bigint [not null]
+  "user_id" bigint [default: NULL]
   "email_show" boolean [not null, default: false]
   "name_show" boolean [not null, default: false]
   "mobile_show" boolean [not null, default: false]

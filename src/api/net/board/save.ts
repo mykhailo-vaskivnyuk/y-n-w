@@ -19,5 +19,6 @@ const save: THandler<IBoardSaveParams, boolean> = async (
 };
 save.paramsSchema = BoardSaveParamsSchema;
 save.responseSchema = Joi.boolean();
+save.checkNet = true;
 
 export = save;

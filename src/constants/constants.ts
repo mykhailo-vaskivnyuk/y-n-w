@@ -98,6 +98,7 @@ export const SET_NET_ID_FOR: NetEventKeys[] = [
 ];
 
 export const INSTANT_EVENTS: NetEventKeys[] = [
+  // 'CONNECT',
   'VOTE',
   'BOARD_MESSAGE',
 ];

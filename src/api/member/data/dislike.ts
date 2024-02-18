@@ -6,14 +6,13 @@ import {
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
 
-const { exeWithNetLock } = domain.utils;
-
 export const set: THandler<IMemberConfirmParams, boolean> = async (
-  { member: actionMember }, { member_node_id }
+  { member: m }, { node_id, member_node_id },
 ) => {
-  const m = actionMember!.get();
-  const { net_id, node_id, parent_node_id } = m;
-  return exeWithNetLock(net_id, async (t) => {
+  const { net_id } = m!.get();
+  return domain.utils.exeWithNetLock(net_id, async (t) => {
+    await m!.reinit();
+    const { parent_node_id } = m!.get();
     let [member] = await execQuery
       .member.find.inTree([node_id, member_node_id]);
     const parentNodeId = member ? node_id : parent_node_id;
@@ -25,27 +24,28 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
     }
     const memberStatus = getMemberStatus(member);
     if (memberStatus !== 'ACTIVE') return false; // bad request
+    const event = new domain.event.NetEvent(net_id, 'DISLIKE', m!.get());
+    const net = await new domain.net.NetArrange(t);
     const params = [parentNodeId!, node_id, member_node_id] as const;
-    await execQuery.member.data.setDislike([...params]);
-    const event = new domain.event.NetEvent(net_id, 'DISLIKE', m);
-    const net = await new domain.net.NetArrange();
-    await net.arrangeNodes(t, event, [parentNodeId]);
+    await t.execQuery.member.data.setDislike([...params]);
+    await net.arrangeNodes(event, [parentNodeId]);
     await event.commit(notificationService, t);
     return true;
   });
 };
 set.paramsSchema = MemberConfirmParamsSchema;
 set.responseSchema = Joi.boolean();
+set.checkNet = true;
 
 export const unSet: THandler<IMemberConfirmParams, boolean> = async (
-  { member: actionMember }, { node_id, member_node_id }
+  { member: m }, { node_id, member_node_id }
 ) => {
-  const m = actionMember!.get();
+  const { parent_node_id } = m!.get();
   let parentNodeId: number | null = node_id;
   let [member] = await execQuery.member
     .find.inTree([parentNodeId, member_node_id]);
   if (!member) {
-    parentNodeId = m.parent_node_id;
+    parentNodeId = parent_node_id;
     if (!parentNodeId) return false; // bad request
     [member] = await execQuery.member
       .find.inCircle([parentNodeId, member_node_id]);
@@ -59,3 +59,4 @@ export const unSet: THandler<IMemberConfirmParams, boolean> = async (
 };
 unSet.paramsSchema = MemberConfirmParamsSchema;
 unSet.responseSchema = Joi.boolean();
+unSet.checkNet = true;

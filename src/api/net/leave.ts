@@ -9,12 +9,13 @@ const leave: THandler<INetReadParams> = async (
   const member = m!.get();
   const { confirmed } = member;
   const event_type = confirmed ? 'LEAVE' : 'LEAVE_CONNECTED';
-  const net = new domain.net.NetArrange();
-  await net.removeMemberFromNet(event_type, member);
+  const remove = domain.net.NetArrange.removeMemberFromNet;
+  await remove(event_type, member);
   return true;
 };
 leave.paramsSchema = NetReadParamsSchema;
 leave.responseSchema = Joi.boolean();
 leave.allowedForNetUser = 'INVITING';
+leave.checkNet = true;
 
 export = leave;

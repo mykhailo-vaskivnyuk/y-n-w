@@ -19,3 +19,8 @@ export type IUserUpdateParams = {
   mobile: string,
   password: string,
 };
+
+export type IMessengerLinkConnectParams = {
+  chatId: string;
+  token: string;
+}
