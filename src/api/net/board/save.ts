@@ -15,6 +15,7 @@ const save: THandler<IBoardSaveParams, boolean> = async (
   const event = new domain.event.NetEvent(net_id, 'BOARD_MESSAGE', m);
   await event.messages.create();
   await event.commit(notificationService);
+  event.send();
   return true;
 };
 save.paramsSchema = BoardSaveParamsSchema;

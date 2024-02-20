@@ -9,17 +9,19 @@ import { exeWithNetLock } from '../utils/utils';
 export class NetArrange {
   constructor(private t: ITransaction) {}
 
-  static removeMemberFromNet(event_type: NetEventKeys, member: IMember) {
+  static async removeMemberFromNet(event_type: NetEventKeys, member: IMember) {
     const { net_id, node_id, user_id } = member;
-    exeWithNetLock(net_id, async (t) => {
+    let event!: NetEvent;
+    await exeWithNetLock(net_id, async (t) => {
       const member = await new Member().init(user_id, node_id);
-      const event = new NetEvent(net_id, event_type, member.get());
+      event = new NetEvent(net_id, event_type, member.get());
       const net = new NetArrange(t);
       const nodesToArrange =
         await net.removeMemberFromNetAndSubnets(event);
       await net.arrangeNodes(event, nodesToArrange);
       await event.commit(notificationService, t);
     });
+    event.send();
   }
 
   async removeMemberFromNetAndSubnets(event: NetEvent) {

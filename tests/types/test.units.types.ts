@@ -39,9 +39,6 @@ export interface ITestUnitsMap {
       'vote': TTestUnit;
     };
     'newEvents': TTestUnit;
-    'vote': {
-      'set': TTestUnit;
-    };
     'read': {
       'disconnect': {
         'dislike': TTestUnit;

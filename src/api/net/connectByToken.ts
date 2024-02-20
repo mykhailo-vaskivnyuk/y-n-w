@@ -3,6 +3,7 @@ import {
   INetConnectByToken, ITokenParams,
 } from '../../client/common/server/types/types';
 import { IMember } from '../../domain/types/member.types';
+import { NetEvent } from '../../domain/event/event';
 import { TokenParamsSchema, NetConnectByTokenSchema } from '../schema/schema';
 
 const connectByToken: THandler<ITokenParams, INetConnectByToken> =
@@ -10,7 +11,8 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
     const user_id = session.read('user_id')!;
     const [net] = await execQuery.net.find.byToken([token]);
     if (!net) return null;
-    return domain.utils.exeWithNetLock(net.net_id, async (t) => {
+    let event!: NetEvent;
+    const result = await domain.utils.exeWithNetLock(net.net_id, async (t) => {
       const [net] = await execQuery.net.find.byToken([token]);
       if (!net) return null;
       const { parent_net_id, net_id, parent_node_id, node_id } = net;
@@ -31,12 +33,14 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
 
       /* create messages */
       const newMember = { parent_node_id, node_id } as IMember;
-      const event = new domain.event.NetEvent(net_id, 'CONNECT', newMember);
+      event = new domain.event.NetEvent(net_id, 'CONNECT', newMember);
       await event.messages.create(t);
       await event.commit(notificationService, t);
 
       return { net_id };
-    });
+    }) as INetConnectByToken;
+    event.send();
+    return result;
   };
 connectByToken.paramsSchema = TokenParamsSchema;
 connectByToken.responseSchema = NetConnectByTokenSchema;

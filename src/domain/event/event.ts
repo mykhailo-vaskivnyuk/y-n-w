@@ -5,7 +5,6 @@ import { ITransaction } from '../../db/types/types';
 import { IMember } from '../types/member.types';
 import { NotificationService } from '../../services/notification/notification';
 import { EventMessages } from './event.messages';
-import { delay } from '../../utils/utils';
 
 export class NetEvent {
   private children: NetEvent[] = [];
@@ -38,17 +37,10 @@ export class NetEvent {
     for (const child of this.children) {
       await child.commit(notificationService, t);
     }
-    console.log('COMMIT', {
-      records: this.messages.records,
-      instant: this.messages.instantRecords,
-    });
-    for (const record of this.messages.instantRecords) {
-      notificationService.addEvent({
-        net_id: this.net_id,
-        event_type: this.event_type,
-        ...record,
-      });
-    }
+    // console.log('COMMIT', {
+    //   records: this.messages.records,
+    //   instant: this.messages.instantRecords,
+    // });
     for (const record of this.messages.records) {
       const params = [
         record.user_id,
@@ -60,10 +52,24 @@ export class NetEvent {
         this.date,
       ] as const;
       await (t?.execQuery || execQuery).events.create([...params]);
-      notificationService.addNotification(record.user_id, this.date);
     }
-    delay(0)
-      .then(() => notificationService.sendEvents())
-      .then(() => notificationService.sendNotifs());
+  }
+
+  send() {
+    for (const child of this.children) child.send();
+
+    /* send instant events */
+    for (const record of this.messages.instantRecords) {
+      notificationService.addEvent({
+        net_id: this.net_id,
+        event_type: this.event_type,
+        ...record,
+      });
+    }
+
+    /* send notifications */
+    for (const { user_id } of this.messages.records) {
+      notificationService.addNotification(user_id, this.date);
+    }
   }
 }

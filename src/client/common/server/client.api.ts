@@ -21,7 +21,7 @@ export const getApi = (
       'link': {
         'get': () => fetch<Q.TAccountMessengerLinkGetResponse>('/account/messenger/link/get'),
 
-        'connect': (options: Q.TAccountMessengerLinkConnect) =>
+        'connect': (options: P.IMessengerLinkConnectParams) =>
           fetch<boolean>('/account/messenger/link/connect', options),
 
       },
@@ -136,7 +136,7 @@ export const getApi = (
 
     },
     'connectByToken': (options: P.ITokenParams) =>
-      fetch<Q.TNetConnectByTokenResponse>('/net/connectByToken', options),
+      fetch<P.INetConnectByToken>('/net/connectByToken', options),
 
     'create': (options: P.INetCreateParams) =>
       fetch<P.INetResponse>('/net/create', options),

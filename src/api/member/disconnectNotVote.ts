@@ -30,6 +30,7 @@ const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
         await net.arrangeNodes(event, nodesToArrange);
         await event.commit(notificationService, t);
       });
+      event.send();
     } while (true);
   };
 disconnectNotVote.paramsSchema = { monthAgo: Joi.number().required() };

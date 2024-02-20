@@ -3,6 +3,7 @@ import { THandler } from '../../../controller/types';
 import {
   IMemberConfirmParams,
 } from '../../../client/common/server/types/types';
+import { NetEvent } from '../../../domain/event/event';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
 
@@ -10,7 +11,8 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
   { member: m }, { node_id, member_node_id },
 ) => {
   const { net_id } = m!.get();
-  return domain.utils.exeWithNetLock(net_id, async (t) => {
+  let event!: NetEvent;
+  const result = await domain.utils.exeWithNetLock(net_id, async (t) => {
     await m!.reinit();
     const { parent_node_id } = m!.get();
     let [member] = await execQuery
@@ -24,7 +26,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
     }
     const memberStatus = getMemberStatus(member);
     if (memberStatus !== 'ACTIVE') return false; // bad request
-    const event = new domain.event.NetEvent(net_id, 'DISLIKE', m!.get());
+    event = new domain.event.NetEvent(net_id, 'DISLIKE', m!.get());
     const net = await new domain.net.NetArrange(t);
     const params = [parentNodeId!, node_id, member_node_id] as const;
     await t.execQuery.member.data.setDislike([...params]);
@@ -32,6 +34,8 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
     await event.commit(notificationService, t);
     return true;
   });
+  event.send();
+  return result;
 };
 set.paramsSchema = MemberConfirmParamsSchema;
 set.responseSchema = Joi.boolean();

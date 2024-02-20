@@ -66,7 +66,6 @@ const config: IConfig = {
     ],
     outputModules: [
       'validateOutput',
-      'sendEvents',
     ],
     modulesConfig: {
       mailService: {

@@ -21,6 +21,7 @@ const clear: THandler<{ weekAgo: number }, boolean> =
       );
       await event.messages.create();
       await event.commit(notificationService);
+      event.send();
     } while (memberMessage);
     return true;
   };
