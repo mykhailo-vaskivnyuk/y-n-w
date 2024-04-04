@@ -77,6 +77,7 @@ export interface ITestUnitsMap {
   'net': {
     'connectByToken': {
       'toNet': (...args: any[]) => TTestUnit;
+      'withErrorToNet': (...args: any[]) => TTestUnit;
     };
     'create': {
       'root2': TTestUnit;

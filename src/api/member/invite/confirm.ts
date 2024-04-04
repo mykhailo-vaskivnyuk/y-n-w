@@ -30,7 +30,7 @@ const confirm: THandler<IMemberConfirmParams, boolean> = async (
 
     return true;
   });
-  event.send();
+  event?.send();
   return result;
 };
 confirm.paramsSchema = MemberConfirmParamsSchema;

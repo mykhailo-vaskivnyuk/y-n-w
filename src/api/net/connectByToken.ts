@@ -39,7 +39,7 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
 
       return { net_id };
     }) as INetConnectByToken;
-    event.send();
+    event?.send();
     return result;
   };
 connectByToken.paramsSchema = TokenParamsSchema;

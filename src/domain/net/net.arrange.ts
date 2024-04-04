@@ -21,7 +21,7 @@ export class NetArrange {
       await net.arrangeNodes(event, nodesToArrange);
       await event.commit(notificationService, t);
     });
-    event.send();
+    event?.send();
   }
 
   async removeMemberFromNetAndSubnets(event: NetEvent) {

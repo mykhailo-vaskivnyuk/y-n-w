@@ -11,3 +11,15 @@ export const toNet = (net_id: number): TTestUnit => (state: any) => (
       },
     ],
   });
+
+export const withErrorToNet = (net_id: number): TTestUnit => (state: any) => (
+  {
+    title: 'connect net by token with error',
+    operations: [
+      {
+        name: '/net/connectByToken',
+        params: { token: state.global.invite },
+        expected: { net_id, error: 'already connected' },
+      },
+    ],
+  });

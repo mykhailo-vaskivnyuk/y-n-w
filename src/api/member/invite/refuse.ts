@@ -27,7 +27,7 @@ const refuse: THandler<IMemberConfirmParams, boolean> = async (
     await event.commit(notificationService, t);
     return true;
   });
-  event.send();
+  event?.send();
   return result;
 };
 refuse.paramsSchema = MemberConfirmParamsSchema;

@@ -32,7 +32,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
     await event.commit(notificationService, t);
     return true;
   });
-  event.send();
+  event?.send();
   return result;
 };
 set.paramsSchema = MemberConfirmParamsSchema;
