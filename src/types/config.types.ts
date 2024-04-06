@@ -22,6 +22,7 @@ export interface ICleanedEnv {
   API_UNAVAILABLE: boolean;
   EXIT_ON_ERROR: boolean;
   MAIL_CONFIRM_OFF: boolean;
+  TG_BOT: string;
   TG_BOT_TOKEN: string;
   ORIGIN: string;
   STATIC_PATH: string;

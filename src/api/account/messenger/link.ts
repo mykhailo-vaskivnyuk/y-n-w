@@ -9,7 +9,7 @@ export const get: THandler<never, string | null> =
     const user_id = session.read('user_id')!;
     const token = cryptoService.createUnicCode(15);
     await execQuery.user.token.create([user_id, token]);
-    return `tg://resolve?domain=u_n_w_bot&start=${token}`;
+    return `tg://resolve?domain=${env.TG_BOT}&start=${token}`;
   };
 get.responseSchema = [Joi.string(), JOI_NULL];
 

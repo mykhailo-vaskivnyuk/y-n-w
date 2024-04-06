@@ -7,10 +7,9 @@ export const getEnv = () => {
   const DEV = env.NODE_ENV === 'development';
   new SyncCalc('.env.json')
     .next(readFileSync)
-    .next((v) => v.toString())
+    .next(String)
     .next(JSON.parse)
-    .next((v) => Object.assign(env, v))
-    .onerror(() => env);
+    .next(Object.assign.bind(null, env));
 
   const {
     TRANSPORT = 'ws',
@@ -22,6 +21,7 @@ export const getEnv = () => {
     API_UNAVAILABLE = false,
     EXIT_ON_ERROR = false,
     MAIL_CONFIRM_OFF = false,
+    TG_BOT = 'u_n_w_bot',
     TG_BOT_TOKEN = '',
     ORIGIN = 'https://merega.herokuapp.com',
     STATIC_PATH = 'public',
@@ -40,6 +40,7 @@ export const getEnv = () => {
     API_UNAVAILABLE,
     EXIT_ON_ERROR,
     MAIL_CONFIRM_OFF,
+    TG_BOT,
     TG_BOT_TOKEN,
     ORIGIN,
     STATIC_PATH,

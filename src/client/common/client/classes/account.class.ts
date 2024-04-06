@@ -2,8 +2,7 @@
 /* eslint-disable import/no-cycle */
 import * as T from '../../server/types/types';
 import { IClientAppThis } from '../types';
-import { AppStatus, TELEGRAM } from '../constants';
-import { USE_TG } from '../../../local/imports';
+import { AppStatus, TELEGRAM, USE_TG } from '../constants';
 import { Messenger } from './messenger.class';
 
 type IApp = IClientAppThis & {
@@ -21,15 +20,17 @@ export class Account {
     this.tg = webApp.initData ? webApp : undefined;
   }
 
-  getUser() {
+  getState() {
     return {
       user: this.user,
       tg: this.tg,
+      bot: this.messenger.getState(),
     };
   }
 
   async init() {
     let user;
+    await this.messenger.init();
     if (this.tg) {
       user = await this.app.api.account.overtg(this.tg);
     } else {

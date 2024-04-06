@@ -121,7 +121,7 @@ const config: IConfig = {
     tg: {
       path: resolvePath('server/tg/tg'),
       token: restEnv.TG_BOT_TOKEN,
-      user_name: 'u_n_w_bot',
+      user_name: restEnv.TG_BOT,
       origin,
     }
   },
