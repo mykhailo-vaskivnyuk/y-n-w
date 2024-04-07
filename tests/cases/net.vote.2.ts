@@ -44,6 +44,10 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
       [units.invite.confirm.tMember(0), 1],
       [units.events.newEvents, 2],
       [units.events.read.confirm, 2],
+      // user 6 vote self
+      [units.net.enter(2), 2],
+      [units.vote.set.self, 2],
+      [units.vote.unSet.self, 2],
       // user 5 connect user 7
       [units.invite.create.tMember(1), 1],
       [units.account.login.user(7), 2],

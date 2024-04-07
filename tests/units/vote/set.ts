@@ -18,7 +18,7 @@ export const self: TTestUnit = (state: any) => (
         params: { node_id: state.net.node_id },
         expected: (actual) => {
           const mbers = actual.filter(({ vote }: any) => vote);
-          assert(mbers.length === 0);
+          assert.strictEqual(mbers.length, 0);
         },
       },
       {

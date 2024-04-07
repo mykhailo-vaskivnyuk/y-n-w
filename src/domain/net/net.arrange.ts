@@ -197,7 +197,7 @@ export class NetArrange {
     const members = await this.t.execQuery
       .net.branch.getVotes([parent_node_id]);
     const count = members.length;
-    if (!count) return false;
+    if (count < 2) return false;
     const [memberWithMaxVotes] = members;
     const { vote_count } = memberWithMaxVotes!;
     const isVoted = vote_count === count;

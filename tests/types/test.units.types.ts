@@ -108,5 +108,8 @@ export interface ITestUnitsMap {
       'self': TTestUnit;
       'cMember': (...args: any[]) => TTestUnit;
     };
+    'unSet': {
+      'self': TTestUnit;
+    };
   };
 }
