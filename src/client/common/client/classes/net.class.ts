@@ -70,6 +70,7 @@ export class Net {
       confirmed && await this.board.read();
       await this.getCircle();
       await this.getTree();
+      if (this.member) this.findMember(this.member.getMember().node_id);
     } else {
       this.setUserNetData();
       this.board = new NetBoard(this.app);
