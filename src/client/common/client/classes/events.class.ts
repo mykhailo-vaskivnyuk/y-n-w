@@ -19,6 +19,7 @@ export class Events {
 
   private setEvents(events: IEvents) {
     this.events = events;
+    this.setLastDate(events);
     this.app.onNewEvents();
   }
 
@@ -27,7 +28,9 @@ export class Events {
   }
 
   setLastDate(events: IEvents) {
-    this.lastDate = events.at(-1)?.date;
+    const [lastEvent] = events;
+    if (!lastEvent.date) return;
+    this.lastDate = lastEvent.date;
   }
 
   isEventMessage(
@@ -59,7 +62,6 @@ export class Events {
       !inChain && await this.app.setStatus(AppStatus.LOADING);
       const newEvents = await this.app.api
         .events.read({ date: this.lastDate });
-      this.setLastDate(newEvents);
       if (newEvents.length) this.setEvents([...this.events, ...newEvents]);
       !inChain && this.app.setStatus(AppStatus.READY);
     } catch (e: any) {
@@ -69,7 +71,6 @@ export class Events {
   }
 
   private async add(event: IMessage<'EVENT'>) {
-    this.setLastDate([event]);
     this.setEvents([...this.events, event]);
   }
 
@@ -83,13 +84,12 @@ export class Events {
     } catch (e: any) {
       this.app.setError(e);
     } finally {
-      this.remove(event_id)
+      this.remove(event_id);
     }
   }
 
   remove(eventId: number) {
     const event = this.events.find((v) => eventId === v.event_id);
-    // if (!event) return;
     const events = this.events.filter((v) => event !== v);
     this.setEvents(events);
   }

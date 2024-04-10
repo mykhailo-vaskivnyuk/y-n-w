@@ -53,5 +53,5 @@ export const getUnitsMap = async () => {
 
 export const getCasesAll = () => Object
   .values(casesMap)
-  .map((v) => Object.values(v))
+  .map(Object.values)
   .flat();

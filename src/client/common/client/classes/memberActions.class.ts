@@ -58,9 +58,8 @@ export class MemberActions {
       const success = await this.app.api.member.data.vote
         .set({ ...net!, member_node_id });
       if (success) {
-        if (member_node_id === net!.node_id)
-          await this.net.onUserNetDataChanged();
-        else await this.net.onMemberChanged();
+        await this.net.onMemberChanged();
+        await this.net.onUserNetDataChanged();
       }
       this.app.setStatus(AppStatus.READY);
       return success;
