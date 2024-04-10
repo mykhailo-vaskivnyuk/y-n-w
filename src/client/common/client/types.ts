@@ -18,6 +18,7 @@ export type IClientAppThis =
 export interface INetThis {
   onNetChanged: () => void,
   onMemberChanged: () => void,
+  onUserNetDataChanged: () => void,
 }
 
 export interface INets {

@@ -39,6 +39,12 @@ export class Net {
     if (this.member) this.findMember(this.member.getMember().node_id);
   }
 
+  async onUserNetDataChanged() {
+    await this.getUserData(true);
+    if (this.netView === 'tree') this.app.emit('tree', { ...this.tree });
+    else this.app.emit('circle', { ...this.circle });
+  }
+
   getNetState() {
     return {
       userNetData: this.userNetData,
@@ -138,15 +144,16 @@ export class Net {
     }
   }
 
-  async getUserData() {
+  async getUserData(inChain = false) {
     try {
-      await this.app.setStatus(AppStatus.LOADING);
+      !inChain && await this.app.setStatus(AppStatus.LOADING);
       const net_id = this.userNet!.net_id;
       const userNetData = await this.app.api.user.net.getData({ net_id });
       await this.setUserNetData(userNetData);
-      this.app.setStatus(AppStatus.READY);
+      !inChain && this.app.setStatus(AppStatus.READY);
       return userNetData;
     } catch (e: any) {
+      if (inChain) throw e;
       await this.setUserNetData();
       this.app.setError(e);
     }

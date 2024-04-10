@@ -57,7 +57,14 @@ export class MemberActions {
       const { net } = this.app.getState();
       const success = await this.app.api.member.data.vote
         .set({ ...net!, member_node_id });
-      success && await this.net.onNetChanged();
+      if (success) {
+        if (member_node_id === net?.node_id) {
+          await this.net.onUserNetDataChanged();
+        }
+        else {
+          await this.net.onMemberChanged();
+        }
+      }
       this.app.setStatus(AppStatus.READY);
       return success;
     } catch (e: any) {
@@ -71,7 +78,14 @@ export class MemberActions {
       const { net } = this.app.getState();
       const success = await this.app.api.member.data.vote
         .unSet({ ...net!, member_node_id });
-      success && await this.net.onNetChanged();
+        if (success) {
+          if (member_node_id === net?.node_id) {
+            await this.net.onUserNetDataChanged();
+          }
+          else {
+            await this.net.onMemberChanged();
+          }
+        }
       this.app.setStatus(AppStatus.READY);
       return success;
     } catch (e: any) {
