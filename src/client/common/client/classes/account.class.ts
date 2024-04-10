@@ -43,7 +43,6 @@ export class Account {
     if (this.user === user) return;
     this.user = user;
     await this.app.onNewUser();
-    this.app.emit('user', user);
   }
 
   async loginOrSignup(

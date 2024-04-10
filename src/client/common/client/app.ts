@@ -143,6 +143,7 @@ export class ClientApp extends EventEmitter {
       readChanges && await this.userEvents.read(true);
     }
     this.setUserStatus();
+    this.emit('user', user);
   }
 
   private setUserStatus() {
@@ -175,19 +176,19 @@ export class ClientApp extends EventEmitter {
     let updateUser = false;
     let updateNet = false;
     for (const event of events) {
-      const { net_id: eventNetId, message } = event;
-      if (!eventNetId) {
+      const { net_id: eventNetId, net_view: netView, message } = event;
+      if (!netView) {
         updateUser = true;
-        net_id && (updateNet = true);
+        // net_id && (updateNet = true);
         break;
       }
       if (eventNetId === net_id) updateNet = true;
       if (!message) this.userEvents.drop(event);
     }
-    if (updateUser) await this.onNewUser(false) // ?
-      .catch(console.log);
-    if (updateNet) await this.net.enter(net_id!, true)
-      .catch(console.log);
+    if (updateUser)
+      await this.onNewUser(false).catch(console.log);
+    if (updateNet)
+      await this.net.enter(net_id!, true).catch(console.log);
     this.emit('events', events);
   }
 
