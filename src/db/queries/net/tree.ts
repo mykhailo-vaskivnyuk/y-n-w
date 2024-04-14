@@ -22,7 +22,7 @@ export const getData = `
     nodes.count_of_members,
     members.user_id,
     members.confirmed,
-    users.email as name,
+    users.name,
     members_invites.member_name,
     members_invites.token,
     members_to_members.dislike,

@@ -7,13 +7,13 @@ import {
 } from '../schema/schema';
 
 const signup: THandler<ISignupParams, IUserResponse> = async (
-  { session, origin }, { email },
+  { session, origin }, { name, email },
 ) => {
   const [userExists] = await execQuery.user.findByEmail([email]);
   if (userExists) return null;
 
   const token = cryptoService.createUnicCode(15);
-  const [user] = await execQuery.user.create([email]);
+  const [user] = await execQuery.user.create([name, email]);
   const { user_id } = user!;
   let user_status: UserStatusKeys;
   if (env.MAIL_CONFIRM_OFF) {

@@ -30,8 +30,8 @@ export const verifyHash = (password: string, hashedPasword: string) => {
   return new Promise(executor);
 };
 
-export const verifyTgData = (initData: string): string => {
-  if (!env.TG_BOT_TOKEN) return '';
+export const verifyTgData = (initData: string): WebAppUser | null => {
+  if (!env.TG_BOT_TOKEN) return null;
 
   const initDataMap = new URLSearchParams(initData);
   const initDataObj: any = {};
@@ -53,9 +53,10 @@ export const verifyTgData = (initData: string): string => {
     .update(checkString)
     .digest('hex');
 
-  if (result !== hash) return '';
+  if (result !== hash) return null;
 
   const userInitDataJson = initDataObj.user;
-  const { id } = JSON.parse(userInitDataJson);
-  return id.toString();
+  const user = JSON.parse(userInitDataJson);
+  user.id = user.id.toString();
+  return user as WebAppUser;
 };

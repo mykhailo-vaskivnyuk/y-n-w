@@ -8,13 +8,15 @@ import { UserResponseSchema } from '../schema/schema';
 const signupTg: THandler<{ initData: string }, IUserResponse> = async (
   { session }, { initData },
 ) => {
-  const chat_id = cryptoService.verifyTgData(initData);
-  if (!chat_id) return null;
+  const tgUser = cryptoService.verifyTgData(initData);
+  if (!tgUser) return null;
+  const { id: chat_id, username, first_name, last_name } = tgUser;
 
   const [userExists] = await execQuery.user.findByChatId([chat_id]);
   if (userExists) return null;
 
-  const [user] = await execQuery.user.createByChatId([chat_id]);
+  const name = `${first_name} ${last_name}`.trim() || username || null;
+  const [user] = await execQuery.user.createByChatId([name, chat_id]);
   const { user_id } = user!;
   const user_status = 'LOGGEDIN';
   session.write('user_id', user_id);

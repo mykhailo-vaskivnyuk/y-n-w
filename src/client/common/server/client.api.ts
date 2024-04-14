@@ -22,7 +22,7 @@ export const getApi = (
 
     'logout': () => fetch<boolean>('/account/logout'),
 
-    'overmail': (options: P.ISignupParams) =>
+    'overmail': (options: P.IEnterParams) =>
       fetch<boolean>('/account/overmail', options),
 
     'overtg': (options: Q.TAccountOvertg) =>

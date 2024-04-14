@@ -45,12 +45,23 @@ export class Account {
     await this.app.onNewUser();
   }
 
-  async loginOrSignup(
-    type: 'login' | 'signup', args: T.ILoginParams | T.ISignupParams,
-  ) {
+  async signup(args: T.ISignupParams) {
     try {
       await this.app.setStatus(AppStatus.LOADING);
-      const user = await this.app.api.account[type](args as any);
+      const user = await this.app.api.account.signup(args);
+      user && await this.setUser(user);
+      this.app.setStatus(AppStatus.READY);
+      return user;
+    } catch (e: any) {
+      this.app.setError(e);
+      throw e;
+    }
+  }
+
+  async login(args: T.ILoginParams) {
+    try {
+      await this.app.setStatus(AppStatus.LOADING);
+      const user = await this.app.api.account.login(args);
       user && await this.setUser(user);
       this.app.setStatus(AppStatus.READY);
       return user;
@@ -73,7 +84,7 @@ export class Account {
     }
   }
 
-  async overmail(args: T.ISignupParams) {
+  async overmail(args: T.IEnterParams) {
     try {
       await this.app.setStatus(AppStatus.LOADING);
       const success = await this.app.api.account.overmail(args);

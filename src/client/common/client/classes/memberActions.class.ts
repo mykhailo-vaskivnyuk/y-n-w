@@ -20,7 +20,7 @@ export class MemberActions {
       memberPosition + 1 :
       memberPosition && memberPosition + 1;
     const { name, member_name: memberName } = member;
-    return name || memberName || `member ${position}`;
+    return name || memberName || `Учасник ${position}`;
   }
 
   async setDislike(member_node_id: number) {
