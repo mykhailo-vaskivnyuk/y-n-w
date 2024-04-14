@@ -15,11 +15,14 @@ export const user = (user: number): TTestUnit => (state: any) => (
       },
       {
         name: '/account/signup',
-        params: { email: `user${String(user).padStart(2, '0')}@gmail.com` },
+        params: {
+          name: `Учасник ${user}`,
+          email: `user${String(user).padStart(2, '0')}@gmail.com`,
+        },
         expected: (actual) => assert.deepStrictEqual(actual, {
           email: `user${String(user).padStart(2, '0')}@gmail.com`,
           mobile: null,
-          name: null,
+          name: `Учасник ${user}`,
           user_id: actual.user_id,
           user_status: 'LOGGEDIN',
           chat_id: null,

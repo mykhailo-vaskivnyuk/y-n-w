@@ -21,7 +21,7 @@ export const user = (id: number): TTestUnit => (state: any) => (
         expected: {
           email: `user${String(id).padStart(2, '0')}@gmail.com`,
           mobile: null,
-          name: null,
+          name: `Учасник ${id}`,
           user_id: id,
           user_status: 'LOGGEDIN',
           chat_id: null,
