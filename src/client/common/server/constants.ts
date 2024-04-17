@@ -1,5 +1,5 @@
-export const MAX_NET_LEVEL = 4;
-export const MAX_NODE_LEVEL = 3;
+export const MAX_NET_LEVEL = 3;
+export const MAX_NODE_LEVEL = 5;
 
 export const MEMBER_STATUS = [
   'UNAVAILABLE',

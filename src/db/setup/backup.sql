@@ -344,7 +344,7 @@ COPY public.nets (net_id, net_level, parent_net_id, root_net_id, count_of_nets) 
 --
 
 COPY public.nets_data (net_id, name, goal, resource_name, resource_link) FROM stdin;
-1	Нова спільнота	Мета нової спільноти	\N	\N
+1	Моя спільнота	Мета моєї спільноти	\N	\N
 \.
 
 

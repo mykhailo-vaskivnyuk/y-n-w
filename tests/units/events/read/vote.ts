@@ -154,12 +154,12 @@ export const forConnectedInCircle: TTestUnit = (state: any) => (
           const event = actual[0];
           assert.deepEqual([{
             event_type: event.event_type,
-            message: event.message.slice(0, 25),
+            message: event.message.slice(0, 28),
             net_view: event.net_view,
             user_id: event.user_id,
           }], [{
             event_type: 'LEAVE_DISVOTE',
-            message: 'Вас від\'єднано від мережі', // ... через вибори координатора
+            message: 'Вас від\'єднано від спільноти', // ... через вибори координатора
             net_view: null,
             user_id: state.user.user_id,
           }]);
@@ -187,12 +187,12 @@ export const forConnectedInTree: TTestUnit = (state: any) => (
           const event = actual[0];
           assert.deepEqual([{
             event_type: event.event_type,
-            message: event.message.slice(0, 25),
+            message: event.message.slice(0, 28),
             net_view: event.net_view,
             user_id: event.user_id,
           }], [{
             event_type: 'LEAVE_VOTE',
-            message: 'Вас від\'єднано від мережі', // ... через вибори координатора
+            message: 'Вас від\'єднано від спільноти', // ... через вибори координатора
             net_view: null,
             user_id: state.user.user_id,
           }]);

@@ -52,7 +52,7 @@ export const getEvent = (
 export const confirm = getEvent(
   'CONFIRM',
   'net',
-  'Координатор підтвердив вашу участь в мережі',
+  'Координатор підтвердив вашу участь в спільноті',
 );
 
 export const connect = getEvent(

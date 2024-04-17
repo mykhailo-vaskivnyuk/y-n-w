@@ -17,7 +17,7 @@ const getDisconnectEvent = (
           const event = actual[0];
           assert.deepEqual([{
             event_type: event.event_type,
-            message: event.message.slice(0, 25),
+            message: event.message.slice(0, 28),
             net_view: event.net_view,
             user_id: event.user_id,
           }], [{
@@ -40,10 +40,10 @@ const getDisconnectEvent = (
 
 export const dislike = getDisconnectEvent(
   'DISLIKE_DISCONNECT',
-  'Вас від\'єднано від мережі',
+  'Вас від\'єднано від спільноти',
 );
 
 export const dislikeFacilitator = getDisconnectEvent(
   'DISLIKE_DISCONNECT',
-  'Вас від\'єднано від мережі',
+  'Вас від\'єднано від спільноти',
 );
