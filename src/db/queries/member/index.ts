@@ -14,6 +14,7 @@ export interface IQueriesMember {
   connect: TQuery<[
     ['node_id', number],
     ['user_id', number],
+    ['confirmed', boolean],
   ], ITableMembers>;
   confirm: TQuery<[
     ['member_id', number],
@@ -52,9 +53,9 @@ export const create = `
 
 export const connect = `
   INSERT INTO members (
-    member_id, user_id
+    member_id, user_id, confirmed
   )
-  VALUES ($1, $2)
+  VALUES ($1, $2, $3)
   RETURNING *
 `;
 

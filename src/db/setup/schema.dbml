@@ -26,10 +26,10 @@ Table "nets" {
 Table "users" {
   "user_id" bigint [primary key, not null]
   "email" "character varying(50)" [default: NULL]
-  "name" "character varying(50)" [default: NULL]
+  "name" "character varying(50)" [default: NULL] // not null ?
   "mobile" "character varying(50)" [default: NULL]
   "password" "character varying(255)" [default: NULL]
-  "confirmed" boolean [not null, default: false]
+  "confirmed" boolean [not null, default: false] // default true ?
   "chat_id" "character varying(50)" [default: NULL]
   Indexes {
     email [type: btree, unique, name: "users_email_idx"]

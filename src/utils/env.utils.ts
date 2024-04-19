@@ -27,6 +27,7 @@ export const getEnv = () => {
     STATIC_PATH = 'public',
     LOGGER_COLORIZE = false,
     GMAIL = '',
+    INVITE_CONFIRM = false,
   } = env as Record<CleanedEnvKeys, any>;
 
   const cleanedEnvObj: ICleanedEnv = {
@@ -46,6 +47,7 @@ export const getEnv = () => {
     STATIC_PATH,
     LOGGER_COLORIZE,
     GMAIL,
+    INVITE_CONFIRM,
   };
 
   return cleanedEnvObj;

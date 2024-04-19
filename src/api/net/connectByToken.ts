@@ -9,13 +9,13 @@ import { TokenParamsSchema, NetConnectByTokenSchema } from '../schema/schema';
 const connectByToken: THandler<ITokenParams, INetConnectByToken> =
   async ({ session }, { token }) => {
     const user_id = session.read('user_id')!;
-    const [net] = await execQuery.net.find.byToken([token]);
-    if (!net) return null;
+    const [node] = await execQuery.net.find.byToken([token]);
+    if (!node) return null;
     let event!: NetEvent;
-    const result = await domain.utils.exeWithNetLock(net.net_id, async (t) => {
-      const [net] = await execQuery.net.find.byToken([token]);
-      if (!net) return null;
-      const { parent_net_id, net_id, parent_node_id, node_id } = net;
+    const result = await domain.utils.exeWithNetLock(node.net_id, async (t) => {
+      const [node] = await execQuery.net.find.byToken([token]);
+      if (!node) return null;
+      const { parent_net_id, net_id, parent_node_id, node_id } = node;
       const [user_exists] = await execQuery.net.find.byUser([net_id, user_id]);
       if (user_exists) return { net_id, error: 'already connected' };
 
@@ -29,7 +29,13 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
       await t.execQuery.member.invite.remove([node_id]);
 
       /* create new member */
-      await t.execQuery.member.connect([node_id, user_id]);
+      const confirmed = !env.INVITE_CONFIRM;
+      await t.execQuery.member.connect([node_id, user_id, confirmed]);
+      if (confirmed) {
+        const net = new domain.net.NetArrange(t);
+        await net.updateCountOfMembers(node_id);
+        await domain.net.createTree(t, node);
+      }
 
       /* create messages */
       const newMember = { parent_node_id, node_id } as IMember;
