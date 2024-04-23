@@ -18,6 +18,12 @@ export const dislikeFacilitator = getEvent(
   'Вашого координатора від\'єднано через діслайки',
 );
 
+export const leaveFacilitator = getEvent(
+  'LEAVE',
+  'circle',
+  'У вашому колі від\'єднався координатор',
+);
+
 export const inTree = getEvent(
   'LEAVE',
   'tree',

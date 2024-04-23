@@ -5,3 +5,4 @@ export * as cases04 from './net.vote.2';
 export * as cases05 from './chat';
 export * as cases06 from './dislike';
 export * as cases07 from './invite';
+export * as cases08 from './net.leave.tight';

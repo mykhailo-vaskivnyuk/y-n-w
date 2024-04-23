@@ -24,6 +24,7 @@ map.LEAVE_CONNECTED = {
 
 map.CONNECT = {
   FACILITATOR: 'У дереві новий учасник',
+  // CIRCLE: 'У колі новий учасник',
 };
 
 map.CONFIRM = {

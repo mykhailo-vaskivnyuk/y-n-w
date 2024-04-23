@@ -1,3 +1,4 @@
+import { ITableNodes } from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNodeTree {
@@ -8,7 +9,7 @@ export interface IQueriesNodeTree {
   ]>;
   remove: TQuery<[
     ['parent_node_id', number],
-  ]>;
+  ], Pick<ITableNodes, 'node_id'>>;
 }
 
 export const create = `
@@ -27,4 +28,5 @@ export const create = `
 export const remove = `
   DELETE FROM nodes
   WHERE parent_node_id = $1
+  RETURNING node_id::int
 `;

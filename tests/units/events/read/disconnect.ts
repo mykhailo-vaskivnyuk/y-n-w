@@ -47,3 +47,8 @@ export const dislikeFacilitator = getDisconnectEvent(
   'DISLIKE_DISCONNECT',
   'Вас від\'єднано від спільноти',
 );
+
+export const leaveFacilitator = getDisconnectEvent(
+  'LEAVE',
+  'Вас від\'єднано від спільноти',
+);

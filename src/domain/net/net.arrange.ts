@@ -64,7 +64,7 @@ export class NetArrange {
 
     // 5 - create messages
     logger.debug('CREATE MESSAGES');
-    event.messages.create(t);
+    await event.messages.create(t);
 
     return [parent_node_id, node_id];
   }
@@ -101,8 +101,19 @@ export class NetArrange {
     while (nodesToArrange.length) {
       const node_id = nodesToArrange.shift();
       if (!node_id) continue;
-      const isTighten = await this.tightenNodes(node_id);
-      if (isTighten) continue;
+      const removed = await this.tightenNodes(node_id);
+      if (removed) {
+        if (!removed.length) continue;
+        let i = -1;
+        for (const node_id of nodesToArrange) {
+          i++;
+          if (!node_id) continue;
+          if (!removed.includes(node_id)) continue;
+          nodesToArrange.splice(i, 1);
+        }
+        event.messages.removeFromNodes(removed);
+        continue;
+      }
       const newNodesToArrange =
         await this.checkDislikes(event, node_id);
       nodesToArrange = [...newNodesToArrange, ...nodesToArrange];
@@ -111,10 +122,10 @@ export class NetArrange {
     }
   }
 
-  async tightenNodes(node_id: number) {
+  async tightenNodes(node_id: number): Promise<number[] | undefined> {
     const { t } = this;
     const [node] = await t.execQuery.node.getIfEmpty([node_id]);
-    if (!node) return false;
+    if (!node) return;
     const {
       node_level,
       parent_node_id,
@@ -123,20 +134,20 @@ export class NetArrange {
       count_of_members,
     } = node;
     if (!count_of_members) {
-      if (parent_node_id) return true;
+      if (parent_node_id) return [];
       await t.execQuery.node.remove([node_id]);
       await this.updateCountOfNets(net_id, -1);
       await t.execQuery.net.remove([net_id]);
-      return true;
+      return [];
     }
     const [nodeWithMaxCount] = await t.execQuery
       .net.tree.getNodes([node_id]);
-    if (!nodeWithMaxCount) return false;
+    if (!nodeWithMaxCount) return;
     const {
       count_of_members: childCount,
       node_id: childNodeId,
     } = nodeWithMaxCount;
-    if (childCount !== count_of_members) return false;
+    if (childCount !== count_of_members) return;
     await t.execQuery.node.move([
       childNodeId,
       node_level,
@@ -149,9 +160,11 @@ export class NetArrange {
     } else {
       await t.execQuery.node.changeLevelAll([net_id]);
     }
-    await t.execQuery.node.tree.remove([node_id]);
+    const nodes = await t.execQuery.node.tree.remove([node_id]);
     await t.execQuery.node.remove([node_id]);
-    return true;
+    const nodeIds = nodes.map(({ node_id }) => node_id);
+    nodeIds.push(node_id);
+    return nodeIds;
   }
 
   async updateCountOfNets(

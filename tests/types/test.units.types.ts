@@ -43,6 +43,7 @@ export interface ITestUnitsMap {
       'disconnect': {
         'dislike': TTestUnit;
         'dislikeFacilitator': TTestUnit;
+        'leaveFacilitator': TTestUnit;
       };
       'getEvent': (...args: any[]) => TTestUnit;
       'confirm': TTestUnit;
@@ -51,6 +52,7 @@ export interface ITestUnitsMap {
         'dislikeInTree': TTestUnit;
         'dislikeInCircle': TTestUnit;
         'dislikeFacilitator': TTestUnit;
+        'leaveFacilitator': TTestUnit;
         'inTree': TTestUnit;
         'inCircle': TTestUnit;
       };
