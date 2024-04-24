@@ -26,7 +26,12 @@ export const getEnv = () => {
     ORIGIN = 'https://merega.herokuapp.com',
     STATIC_PATH = 'public',
     LOGGER_COLORIZE = false,
-    GMAIL = '',
+    MAIL = 'google',
+    MAIL_PASSWORD = '',
+    MAILERTOGO_SMTP_HOST = '',
+    MAILERTOGO_SMTP_PORT = 587,
+    MAILERTOGO_SMTP_USER = '',
+    MAILERTOGO_SMTP_PASSWORD = '',
     INVITE_CONFIRM = false,
   } = env as Record<CleanedEnvKeys, any>;
 
@@ -46,7 +51,12 @@ export const getEnv = () => {
     ORIGIN,
     STATIC_PATH,
     LOGGER_COLORIZE,
-    GMAIL,
+    MAIL,
+    MAIL_PASSWORD,
+    MAILERTOGO_SMTP_HOST,
+    MAILERTOGO_SMTP_PORT,
+    MAILERTOGO_SMTP_USER,
+    MAILERTOGO_SMTP_PASSWORD,
     INVITE_CONFIRM,
   };
 

@@ -27,7 +27,12 @@ export interface ICleanedEnv {
   ORIGIN: string;
   STATIC_PATH: string;
   LOGGER_COLORIZE: boolean;
-  GMAIL: string;
+  MAIL: 'google' | 'mailertogo';
+  MAIL_PASSWORD: string;
+  MAILERTOGO_SMTP_HOST: string;
+  MAILERTOGO_SMTP_PORT: number; // 587
+  MAILERTOGO_SMTP_USER: string;
+  MAILERTOGO_SMTP_PASSWORD: string;
   INVITE_CONFIRM: boolean;
 }
 export type CleanedEnvKeys = keyof ICleanedEnv;

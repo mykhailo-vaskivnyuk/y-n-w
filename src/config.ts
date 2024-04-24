@@ -14,7 +14,12 @@ const {
   ORIGIN: origin,
   STATIC_PATH: staticPath,
   LOGGER_COLORIZE: colorize,
-  GMAIL: gmail,
+  MAIL: mail,
+  MAIL_PASSWORD: emailPass,
+  MAILERTOGO_SMTP_HOST,
+  MAILERTOGO_SMTP_PORT,
+  MAILERTOGO_SMTP_USER,
+  MAILERTOGO_SMTP_PASSWORD,
   ...restEnv
 } = getEnv();
 const connection = {
@@ -31,6 +36,23 @@ const connection = {
   },
 }[dbUrl ? 'heroku' : 'local'];
 
+const mailConfig = {
+  google: {
+    auth: {
+      user: 'm.vaskivnyuk@gmail.com',
+      pass: emailPass,
+    },
+  },
+  mailertogo: {
+    host: MAILERTOGO_SMTP_HOST,
+    port: MAILERTOGO_SMTP_PORT,
+    requireTLS: true,
+    auth: {
+      user: MAILERTOGO_SMTP_USER,
+      pass: MAILERTOGO_SMTP_PASSWORD,
+    }
+  },
+}[MAILERTOGO_SMTP_HOST ? 'mailertogo' : mail];
 
 const config: IConfig = {
   env: restEnv,
@@ -68,13 +90,7 @@ const config: IConfig = {
       'validateOutput',
     ],
     modulesConfig: {
-      mailService: {
-        service: 'gmail',
-        auth: {
-          user: 'm.vaskivnyuk@gmail.com',
-          pass: gmail,
-        },
-      },
+      mailService: mailConfig,
     },
     tasks: [{
       path: 'member/disconnectUnactive',
