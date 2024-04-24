@@ -9,7 +9,7 @@ import {
 
 const getMailService = (config: MailOptions) => {
   const transporter = nodemailer.createTransport(config);
-
+  console.log('MAIL CONFIG', config);
   const send = (mailOptions: MailOptions) => {
     const executor: TPromiseExecutor<SentMessageInfo> = (rv, rj) => {
       const options = { ...MAIL_COMMON_OPTIONS, ...mailOptions };
