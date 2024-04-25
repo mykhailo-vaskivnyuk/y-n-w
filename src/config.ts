@@ -15,7 +15,10 @@ const {
   STATIC_PATH: staticPath,
   LOGGER_COLORIZE: colorize,
   MAIL: mail,
-  MAIL_PASSWORD: emailPass,
+  MAIL_HOST: mailHost,
+  MAIL_PORT: mailPort,
+  MAIL_USER: mailUser,
+  MAIL_PASSWORD: mailPass,
   MAILERTOGO_SMTP_HOST,
   MAILERTOGO_SMTP_PORT,
   MAILERTOGO_SMTP_USER,
@@ -40,7 +43,7 @@ const mailConfig = {
   google: {
     auth: {
       user: 'm.vaskivnyuk@gmail.com',
-      pass: emailPass,
+      pass: mailPass,
     },
   },
   mailertogo: {
@@ -52,7 +55,15 @@ const mailConfig = {
       pass: MAILERTOGO_SMTP_PASSWORD,
     }
   },
-}[MAILERTOGO_SMTP_HOST ? 'mailertogo' : mail];
+  elastic: {
+    host: mailHost,
+    port: mailPort,
+    auth: {
+      user: mailUser,
+      pass: mailPass,
+    }
+  },
+}[mail || 'google'];
 
 const config: IConfig = {
   env: restEnv,
