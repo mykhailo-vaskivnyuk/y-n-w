@@ -31,10 +31,6 @@ export const getEnv = () => {
     MAIL_PORT = 2525,
     MAIL_USER = '',
     MAIL_PASSWORD = '',
-    MAILERTOGO_SMTP_HOST = '',
-    MAILERTOGO_SMTP_PORT = 587,
-    MAILERTOGO_SMTP_USER = '',
-    MAILERTOGO_SMTP_PASSWORD = '',
     INVITE_CONFIRM = false,
   } = env as Record<CleanedEnvKeys, any>;
 
@@ -59,10 +55,6 @@ export const getEnv = () => {
     MAIL_PORT,
     MAIL_USER,
     MAIL_PASSWORD,
-    MAILERTOGO_SMTP_HOST,
-    MAILERTOGO_SMTP_PORT,
-    MAILERTOGO_SMTP_USER,
-    MAILERTOGO_SMTP_PASSWORD,
     INVITE_CONFIRM,
   };
 

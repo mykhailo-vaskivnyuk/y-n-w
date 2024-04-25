@@ -19,10 +19,6 @@ const {
   MAIL_PORT: mailPort,
   MAIL_USER: mailUser,
   MAIL_PASSWORD: mailPass,
-  MAILERTOGO_SMTP_HOST,
-  MAILERTOGO_SMTP_PORT,
-  MAILERTOGO_SMTP_USER,
-  MAILERTOGO_SMTP_PASSWORD,
   ...restEnv
 } = getEnv();
 const connection = {
@@ -45,15 +41,6 @@ const mailConfig = {
       user: 'm.vaskivnyuk@gmail.com',
       pass: mailPass,
     },
-  },
-  mailertogo: {
-    host: MAILERTOGO_SMTP_HOST,
-    port: MAILERTOGO_SMTP_PORT,
-    requireTLS: true,
-    auth: {
-      user: MAILERTOGO_SMTP_USER,
-      pass: MAILERTOGO_SMTP_PASSWORD,
-    }
   },
   elastic: {
     host: mailHost,
