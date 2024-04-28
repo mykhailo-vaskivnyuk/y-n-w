@@ -1,9 +1,9 @@
 /* eslint-disable import/no-cycle */
-import { INetEvents } from "../types";
-import { Store } from "../lib/store";
+import { INetEvents } from '../types';
+import { Store } from '../lib/store';
 import * as T from '../../server/types/types';
 
-const getInitialState = (netId: number ) => ({
+const getInitialState = (netId: number) => ({
   childEventsCount: 0,
   events: [],
   netId,
@@ -28,8 +28,8 @@ export class EventsStore extends Store<INetEvents> {
   }
 
   onChildChanged(childState: INetEvents) {
-    const { childEventsCount: count } = this.state;
-    const childEventsCount = count + childState.childEventsCount;
+    const { events: childEvents, childEventsCount: childCount } = childState;
+    const childEventsCount = childEvents.length + childCount;
     this.setState({ childEventsCount });
   }
 }

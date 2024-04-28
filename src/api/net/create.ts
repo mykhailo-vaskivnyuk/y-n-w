@@ -16,9 +16,9 @@ const create: THandler<INetCreateParams, INetResponse> = async (
     if (net_level >= MAX_NET_LEVEL) return null;
     parentNetId = net_id;
   }
-  return domain.utils.exeWithNetLock(parentNetId, async () => {
+  return domain.utils.exeWithNetLock(parentNetId, async (t) => {
     member && await member!.reinit();
-    return domain.net.createNet(user_id, parentNetId, name);
+    return domain.net.createNet(user_id, parentNetId, name, t);
   });
 };
 create.paramsSchema = NetCreateParamsSchema;

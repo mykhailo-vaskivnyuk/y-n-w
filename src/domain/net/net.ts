@@ -4,7 +4,6 @@ import { INetMember } from '../types/member.types';
 import { INetNode } from '../types/net.types';
 import { MAX_NODE_LEVEL } from '../../client/common/server/constants';
 import { NetArrange } from './net.arrange';
-import { exeWithNetLock } from '../utils/utils';
 
 export const createTree = async (t: ITransaction, node: ITableNodes) => {
   const { node_level, node_id, net_id } = node;
@@ -12,11 +11,12 @@ export const createTree = async (t: ITransaction, node: ITableNodes) => {
   await t.execQuery.node.tree.create([node_level + 1, node_id, net_id]);
 };
 
-export const createNet = (
+export const createNet = async (
   user_id: number,
   parentNetId: number | null,
   name: string,
-) => exeWithNetLock(parentNetId, async (t) => {
+  t: ITransaction,
+) => {
   /* create net */
   let net: ITableNets | undefined;
   if (parentNetId) {
@@ -43,7 +43,7 @@ export const createNet = (
   await t.execQuery.member.create([node_id, user_id]);
 
   return { ...net!, ...netData!, ...node!, total_count_of_members: 1 };
-});
+};
 
 export const removeMemberFromAllNets = async (user_id: number) => {
   const userNetDataArr = await execQuery.user.nets.getTop([user_id]);
