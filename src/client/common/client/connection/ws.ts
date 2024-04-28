@@ -7,7 +7,7 @@ import {
 } from '../constants';
 import { PING_INTERVAL } from '../../server/constants';
 import { HttpResponseError } from './errors';
-import { EventEmitter } from '../event.emitter';
+import { EventEmitter } from '../lib/event.emitter';
 import { logData, delay } from './utils';
 
 class WsConnection extends EventEmitter {

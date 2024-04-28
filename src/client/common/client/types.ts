@@ -4,7 +4,7 @@ import { AppStatus } from './constants';
 import { MemberStatusKeys } from '../server/constants';
 import { HttpResponseError } from './connection/errors';
 import { IClientApi } from '../server/client.api';
-import { EventEmitter } from './event.emitter';
+import { EventEmitter } from './lib/event.emitter';
 import { ClientApp } from './app';
 
 export type IClientAppThis =
@@ -25,6 +25,12 @@ export interface INets {
   parentNets: T.INetsResponse;
   siblingNets: T.INetsResponse;
   childNets: T.INetsResponse;
+}
+
+export interface INetEvents {
+  netId: number;
+  events: T.IEvents;
+  childEventsCount: number;
 }
 
 export const INITIAL_NETS = {

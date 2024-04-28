@@ -4,7 +4,7 @@ import * as T from '../server/types/types';
 import { TPromiseExecutor } from '../types';
 import { AppStatus } from './constants';
 import { HttpResponseError } from './connection/errors';
-import { EventEmitter } from './event.emitter';
+import { EventEmitter } from './lib/event.emitter';
 import { getApi, IClientApi } from '../server/client.api';
 import { Account } from './classes/account.class';
 import { UserNets } from './classes/user.nets.class';
@@ -170,8 +170,8 @@ export class ClientApp extends EventEmitter {
     this.setUserStatus();
   }
 
-  private async onNewEvents() {
-    const { net, events } = this.getState();
+  private async onNewEvents(events: T.IEvents) {
+    const { net } = this.getState();
     const { net_id } = net || {};
     let updateUser = false;
     let updateNet = false;
@@ -179,7 +179,6 @@ export class ClientApp extends EventEmitter {
       const { net_id: eventNetId, net_view: netView, message } = event;
       if (!netView) {
         updateUser = true;
-        // net_id && (updateNet = true);
         break;
       }
       if (eventNetId === net_id) updateNet = true;
@@ -189,7 +188,7 @@ export class ClientApp extends EventEmitter {
       await this.onNewUser(false).catch(console.log);
     if (updateNet)
       await this.net.enter(net_id!, true).catch(console.log);
-    this.emit('events', events);
+    this.emit('events', this.userEvents.getEvents());
   }
 
   setMessage<T extends T.MessageTypeKeys>(

@@ -17,6 +17,7 @@ export class UserNets {
   private setAllNets(nets: T.INetsResponse) {
     if (this.allNets === nets) return;
     this.allNets = nets;
+    this.app.emit('allnets', nets);
     this.getNets();
   }
 

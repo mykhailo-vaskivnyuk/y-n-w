@@ -12,7 +12,7 @@ import { PING_INTERVAL } from '../../src/client/common/server/constants';
 import {
   HttpResponseError,
 } from '../../src/client/common/client/connection/errors';
-import { EventEmitter } from '../../src/client/common/client/event.emitter';
+import { EventEmitter } from '../../src/client/common/client/lib/event.emitter';
 import { delay } from '../../src/client/common/client/connection/utils';
 import { createUnicCode } from '../../src/utils/crypto';
 
