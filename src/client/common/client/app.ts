@@ -131,6 +131,8 @@ export class ClientApp extends EventEmitter {
 
   private handleConnect() {
     if (this.status === AppStatus.INITING) return;
+    const { user_status } = this.getState().user || {};
+    if (user_status === 'NOT_LOGGEDIN') return;
     this.chat.connectAll().catch((e) => this.setError(e));
     this.userEvents.read(true).catch((e) => this.setError(e));
   }
