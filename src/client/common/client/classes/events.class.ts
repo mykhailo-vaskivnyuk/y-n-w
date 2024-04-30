@@ -1,28 +1,26 @@
 /* eslint-disable max-lines */
 /* eslint-disable import/no-cycle */
-import {
-  IEvents, IMessage, MessageTypeKeys, INetsResponse,
-} from '../../server/types/types';
+import * as T from '../../server/types/types';
 import { IClientAppThis } from '../types';
 import { AppStatus } from '../constants';
-import { EventsStore } from './events.store.class';
+import { EventStore } from './event.store.class';
 
 
 type IApp = IClientAppThis & {
-  onNewEvents: (events: IEvents) => void;
+  onNewEvents: (events: T.IEvents) => void;
 };
 
 export class Events {
   private lastDate?: string;
-  private events: IEvents = [];
-  private netEventsMap = new Map<number, EventsStore>;
+  private events: T.IEvents = [];
+  private netEventsMap = new Map<number, EventStore>;
 
   constructor(private app: IApp) {
     this.app.on('allnets', this.onAllNets.bind(this));
-    this.netEventsMap.set(0, new EventsStore(0, null));
+    this.netEventsMap.set(0, new EventStore(0));
   }
 
-  private onAllNets(nets: INetsResponse) {
+  private onAllNets(nets: T.INetsResponse) {
     for (const net of nets) {
       const { net_id, parent_net_id } = net;
       if (this.netEventsMap.has(net_id)) continue;
@@ -31,24 +29,25 @@ export class Events {
         parent = this.netEventsMap.get(parent_net_id);
         if (!parent) throw new Error('Parent net is not found');
       }
-      const eventsStore = new EventsStore(net_id, parent!);
-      this.netEventsMap.set(net_id, eventsStore);
+      const eventStore = new EventStore(net_id);
+      this.netEventsMap.set(net_id, eventStore);
+      parent!.setChild(eventStore);
       const events = this.events.filter(
         (event) => event.net_view && event.net_id === net_id);
-      eventsStore.addEvents(events);
+      eventStore.addEvents(events);
     }
   }
 
-  private setNewEvents(newEvents: IEvents) {
+  private setNewEvents(newEvents: T.IEvents) {
     this.events = [...this.events, ...newEvents];
     for (const event of newEvents) {
       const { net_id, net_view} = event;
-      let eventsStore = this.netEventsMap.get(0);
+      let eventStore = this.netEventsMap.get(0);
       if (net_view && net_id) {
-        eventsStore = this.netEventsMap.get(net_id);
+        eventStore = this.netEventsMap.get(net_id);
       }
-      if (!eventsStore) throw new Error('eventStore is not found');
-      eventsStore.addEvents([event]);
+      if (!eventStore) throw new Error('eventStore is not found');
+      eventStore.addEvents([event]);
     };
     this.setLastDate(newEvents);
     this.app.onNewEvents(newEvents);
@@ -58,7 +57,7 @@ export class Events {
     return this.netEventsMap;
   }
 
-  setLastDate(events: IEvents) {
+  setLastDate(events: T.IEvents) {
     for (const lastEvent of events) {
       if (!lastEvent.date) continue;
       this.lastDate = lastEvent.date;
@@ -66,24 +65,24 @@ export class Events {
   }
 
   isEventMessage(
-    messageData: IMessage<MessageTypeKeys>,
-  ): messageData is IMessage<'EVENT' | 'NEW_EVENTS'> {
+    messageData: T.IMessage<T.MessageTypeKeys>,
+  ): messageData is T.IMessage<'EVENT' | 'NEW_EVENTS'> {
     return this.isEvent(messageData) || this.isNewEvents(messageData);
   }
 
   private isEvent(
-    messageData: IMessage<MessageTypeKeys>,
-  ): messageData is IMessage<'EVENT'> {
+    messageData: T.IMessage<T.MessageTypeKeys>,
+  ): messageData is T.IMessage<'EVENT'> {
     return messageData?.type === 'EVENT';
   }
 
   private isNewEvents(
-    messageData: IMessage<MessageTypeKeys>,
-  ): messageData is IMessage<'NEW_EVENTS'> {
+    messageData: T.IMessage<T.MessageTypeKeys>,
+  ): messageData is T.IMessage<'NEW_EVENTS'> {
     return messageData?.type === 'NEW_EVENTS';
   }
 
-  newEventMessage(messageData: IMessage<'EVENT' | 'NEW_EVENTS'>) {
+  newEventMessage(messageData: T.IMessage<'EVENT' | 'NEW_EVENTS'>) {
     const { type } = messageData;
     if (type === 'NEW_EVENTS') this.read();
     else this.add(messageData);
@@ -102,40 +101,37 @@ export class Events {
     }
   }
 
-  private async add(event: IMessage<'EVENT'>) {
+  private async add(event: T.IMessage<'EVENT'>) {
     this.setNewEvents([event]);
   }
 
-  async confirm(event_id: number) {
+  async confirm(event: T.IEvent) {
     try {
-      if (!event_id) return;
+      if (!event.event_id) return;
       await this.app.setStatus(AppStatus.LOADING);
-      await this.app
-        .api.events.confirm({ event_id });
+      await this.app.api.events.confirm(event);
       this.app.setStatus(AppStatus.READY);
     } catch (e: any) {
       this.app.setError(e);
     } finally {
-      this.remove(event_id);
+      this.remove(event);
     }
   }
 
-  remove(eventId: number) {
-    const event = this.events.find((v) => eventId === v.event_id);
-    if (!event) return;
+  remove(event: T.IEvent) {
     const { net_id, net_view } = event;
-    let eventsStore = this.netEventsMap.get(0)
+    let eventStore = this.netEventsMap.get(0);
     if (net_id && net_view) {
-      eventsStore = this.netEventsMap.get(net_id);
-      if (!eventsStore) throw new Error('eventStore is not found');
-      eventsStore.removeEvent(eventId);
+      eventStore = this.netEventsMap.get(net_id);
+      if (!eventStore) throw new Error('eventStore is not found');
+      eventStore.removeEvent(event);
     }
     const events = this.events.filter((v) => event !== v);
     this.events = events;
     this.app.emit('events', this.netEventsMap);
   }
 
-  drop(event: IEvents[number]) {
+  drop(event: T.IEvent) {
     this.events = this.events.filter((i) => i !== event);
   }
 }

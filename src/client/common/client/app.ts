@@ -20,7 +20,7 @@ export class ClientApp extends EventEmitter {
   private status: AppStatus = AppStatus.INITING;
   private error: Error | null = null;
   private userStatus: T.UserStatusKeys = 'NOT_LOGGEDIN';
-  private loadingQueue: (Parameters<TPromiseExecutor<void>>)[] = [];
+  private loadingQueue: Parameters<TPromiseExecutor<void>>[] = [];
 
   account: Account;
   userNets: UserNets;
@@ -186,16 +186,12 @@ export class ClientApp extends EventEmitter {
       if (eventNetId === net_id) updateNet = true;
       if (!message) this.userEvents.drop(event);
     }
-    if (updateUser)
-      await this.onNewUser(false).catch(console.log);
-    if (updateNet)
-      await this.net.enter(net_id!, true).catch(console.log);
+    if (updateUser) await this.onNewUser(false).catch(console.log);
+    if (updateNet) await this.net.enter(net_id!, true).catch(console.log);
     this.emit('events', this.userEvents.getEvents());
   }
 
-  setMessage<T extends T.MessageTypeKeys>(
-    messageData: T.IMessage<T>,
-  ) {
+  setMessage<T extends T.MessageTypeKeys>(messageData: T.IMessage<T>) {
     if (!messageData) return;
 
     if (this.userEvents.isEventMessage(messageData)) {
