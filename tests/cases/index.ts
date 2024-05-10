@@ -4,5 +4,7 @@ export * as cases03 from './net.vote.1';
 export * as cases04 from './net.vote.2';
 export * as cases05 from './chat';
 export * as cases06 from './dislike';
-export * as cases07 from './invite';
+export * as cases07_1 from './invite';
+export * as cases07_2 from './invite.confirm';
 export * as cases08 from './net.leave.tight';
+export * as cases09 from './net.board';

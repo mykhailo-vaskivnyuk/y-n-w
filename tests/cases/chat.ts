@@ -6,7 +6,6 @@ export const chatCases = (units: ITestUnitsMap): ITestCase[] => [
     title: 'Test CHAT over WS',
     dbDataFile: 'restore.sh',
     connection: 'ws',
-    connCount: 3,
     caseUnits: [
       units.account.login.user(1),
       [units.account.login.user(2), 1],

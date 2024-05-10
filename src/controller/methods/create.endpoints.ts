@@ -1,17 +1,17 @@
 import path from 'node:path';
 import fsp from 'node:fs/promises';
-import { IRoutes, THandler } from '../types';
-import { EXCLUDE_ROUTES } from '../constants';
+import { IEndpoints, THandler } from '../types';
+import { EXCLUDE_ENDPOINTS } from '../constants';
 
-export const createRoutes = async (dirPath: string): Promise<IRoutes> => {
-  const route: IRoutes = {};
+export const createRoutes = async (dirPath: string): Promise<IEndpoints> => {
+  const route: IEndpoints = {};
   const routePath = path.resolve(dirPath);
   const dir = await fsp.opendir(routePath);
 
   for await (const item of dir) {
     const ext = path.extname(item.name);
     const name = path.basename(item.name, ext);
-    if (EXCLUDE_ROUTES.includes(name)) continue;
+    if (EXCLUDE_ENDPOINTS.includes(name)) continue;
 
     if (item.isDirectory()) {
       const dirPath = path.join(routePath, name);
@@ -23,7 +23,9 @@ export const createRoutes = async (dirPath: string): Promise<IRoutes> => {
 
     const filePath = path.join(routePath, item.name);
     let moduleExport = require(filePath);
-    moduleExport = moduleExport.default || moduleExport as THandler | IRoutes;
+    moduleExport =
+      moduleExport.default ||
+      moduleExport as THandler | IEndpoints;
 
     if (name !== 'index') {
       route[name] = moduleExport;

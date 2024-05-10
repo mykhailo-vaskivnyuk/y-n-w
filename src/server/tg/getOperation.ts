@@ -1,18 +1,13 @@
 import { Context } from 'grammy';
-import { ITgConfig } from './types';
 
-let thisConfig: ITgConfig;
-
-const getUrlFromArg = (arg: string) => {
-  const pathBase64 = arg.match(/^path(.+)$/)?.[1];
+const getUrlFromArg = (origin: string, token: string) => {
+  const pathBase64 = token.match(/^path(.+)$/)?.[1];
   if (!pathBase64) return;
   const path = Buffer.from(pathBase64, 'base64').toString();
-  const { origin } = thisConfig;
   return `${origin}/${path}`;
 };
 
-export const getOparation = (ctx: Context, config: ITgConfig) => {
-  thisConfig = config;
+export const getOparation = (ctx: Context, origin: string) => {
   const { chat, message } = ctx;
   const chatId = chat?.id.toString();
   if (!chatId) return;
@@ -21,7 +16,7 @@ export const getOparation = (ctx: Context, config: ITgConfig) => {
   const token = text.match(/^\/start (.+)$/)?.[1];
   if (!token) return;
 
-  const url = getUrlFromArg(token);
+  const url = getUrlFromArg(origin, token);
 
   const operation = {
     options: { sessionKey: 'messenger', origin: 'https://t.me' },

@@ -45,6 +45,10 @@ export class ChatService {
     return this.userConnections.get(user_id);
   }
 
+  getConnectionUser(connectionId: number) {
+    return this.connectionUser.get(connectionId);
+  }
+
   getChatsForUserNet(user_id: number, node: IMemberNode, connectionId: number) {
     const { net_id } = node;
     const netChatIds: T.IChatConnectAll[number] = { net_id };

@@ -7,7 +7,7 @@ import {
 } from '../schema/schema';
 
 const signup: THandler<ISignupParams, IUserResponse> = async (
-  { session, origin }, { name, email },
+  { session }, { name, email },
 ) => {
   const [userExists] = await execQuery.user.findByEmail([email]);
   if (userExists) return null;
@@ -22,7 +22,7 @@ const signup: THandler<ISignupParams, IUserResponse> = async (
   } else {
     user_status = 'NOT_CONFIRMED';
     await execQuery.user.token.create([user_id, token]);
-    await mailService.confirm(email, origin, token);
+    await mailService.confirm(email, token);
   }
   session.write('user_id', user_id);
   session.write('user_status', user_status);

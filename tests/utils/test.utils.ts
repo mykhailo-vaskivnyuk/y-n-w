@@ -24,19 +24,43 @@ export const getConnection = (
 
 export const prepareTest = async (testCase: ITestCase) => {
   /* data */
-  const { logger, inConnection } = config;
-  const { port } = inConnection.http;
-  const { title, connection: transport, connCount = 1, caseUnits } = testCase;
-  logger.level = 'ERROR';
-  inConnection.transport = transport;
+  const originConfig = { ...config };
+  const {
+    title,
+    connection: transport,
+    caseUnits,
+    config: testConfig,
+  } = testCase;
+
+  config.inConnection.http.port = 4000;
+  config.logger.level = 'WARN';
+  config.inConnection.transport = transport;
+  config.env.MAIL_CONFIRM_OFF = true;
+  config.env.INVITE_CONFIRM = false;
+  Object.assign(config, testConfig);
+
+  const { port } = config.inConnection.http;
 
   /* db */
-  const script = `sh tests/db/${testCase.dbDataFile}`;
-  await runScript(script, { showLog: false });
+  if (testCase.dbDataFile) {
+    const script = `sh tests/db/${testCase.dbDataFile}`;
+    await runScript(script, { showLog: false });
+  }
   const { database } = config;
   const Database = require(database.path);
   const db = await new Database(database).init();
   setToGlobal('execQuery', db.getQueries());
+
+  /* testUnits */
+  const testUnits = caseUnits.map((item) => {
+    if (Array.isArray(item)) return item;
+    return [item, 0] as const;
+  });
+  const connCount = testUnits
+    .reduce((a, [_, b]) => {
+      if (b > a) return b;
+      return a;
+    }, 0) + 1;
 
   /* connections */
   const connections: TFetch[] = [];
@@ -53,12 +77,6 @@ export const prepareTest = async (testCase: ITestCase) => {
     closeConnections.push(closeConnection);
   }
 
-  /* testUnits */
-  const testUnits = caseUnits.map((item) => {
-    if (Array.isArray(item)) return item;
-    return [item, 0] as const;
-  });
-
   /* app */
   const app = new App(config);
   await app.start();
@@ -70,6 +88,7 @@ export const prepareTest = async (testCase: ITestCase) => {
     closeConnections.forEach((fn) => fn());
     await app.stop();
     await db.disconnect();
+    Object.assign(config, originConfig);
   };
 
   return { testRunnerData, finalize };

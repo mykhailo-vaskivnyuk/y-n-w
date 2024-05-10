@@ -33,6 +33,7 @@ export const unactive = `
 export const inTree = `
   SELECT
     nodes.*,
+    nodes.parent_node_id::int,
     members.*,
     members.user_id::int,
     members_invites.member_name,

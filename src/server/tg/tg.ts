@@ -11,6 +11,7 @@ const TEST_URL = 'https://mykhailo-vaskivnyuk.github.io/telegram-web-app-bot-exa
 class TgConnection implements IInputConnection {
   private exec?: THandleOperation;
   private server: ITgServer;
+  private origin = process.env.ORIGIN || 'https://example.com';
 
   constructor(private config: ITgConfig) {
     this.server = new Bot(config.token);
@@ -54,7 +55,7 @@ class TgConnection implements IInputConnection {
   }
 
   private async handleRequest(ctx: Context) {
-    const { operation, url } = getOparation(ctx, this.config) || {};
+    const { operation, url } = getOparation(ctx, this.origin) || {};
 
     if (url) {
       const inlineKyeboard = new InlineKeyboard([
@@ -73,9 +74,8 @@ class TgConnection implements IInputConnection {
       }
     }
 
-    const { origin } = this.config;
     const testBtn = [{ text: 'Open TestApp', web_app: { url: TEST_URL  } }];
-    const btns = [[{ text: origin, web_app: { url: origin } }]];
+    const btns = [[{ text: this.origin, web_app: { url: this.origin } }]];
     if (process.env.NODE_ENV === 'development') btns.push(testBtn);
     const inlineKyeboard = new InlineKeyboard(btns);
     return ctx.reply('MENU', { reply_markup: inlineKyeboard, });
@@ -85,11 +85,15 @@ class TgConnection implements IInputConnection {
   private async sendNotification(chatId: string) {
     const appName = 'You & World';
     const message = `На сайті ${appName} нові події`;
-    const { origin } = this.config;
-    const inlineKyeboard = new InlineKeyboard().url(appName, origin);
-    await this.server.api
-      .sendMessage(chatId, message, { reply_markup: inlineKyeboard });
-    return true;
+    const inlineKyeboard = new InlineKeyboard().url(appName, this.origin);
+    try {
+      await this.server.api
+        .sendMessage(chatId, message, { reply_markup: inlineKyeboard });
+      return true;
+    } catch (e) {
+      logger.warn(e);
+      return false;
+    }
   }
 
   private handleError(error: BotError) {

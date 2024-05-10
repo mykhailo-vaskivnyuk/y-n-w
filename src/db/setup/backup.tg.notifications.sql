@@ -307,19 +307,10 @@ COPY public.events (event_id, user_id, net_id, net_view, from_node_id, event_typ
 --
 
 COPY public.members (member_id, user_id, email_show, name_show, mobile_show, confirmed, active_date) FROM stdin;
+1	1	f	f	f	t	2023-01-08 13:27:19.209752
+3	2	f	f	f	t	2023-01-08 13:27:19.209752
 7	4	f	f	f	f	2023-01-08 13:27:19.209752
-3	2	f	f	f	t	2024-04-30 16:55:06.853296
-40	2	f	f	f	t	2024-04-30 16:55:45.355132
-22	2	f	f	f	t	2024-04-30 16:55:53.020855
-60	2	f	f	f	t	2024-04-30 16:55:55.291461
-20	1	f	f	f	t	2024-04-30 16:27:57.546236
-39	1	f	f	f	t	2024-04-30 16:29:08.809421
-59	3	f	f	f	t	2024-04-30 16:57:29.345549
-1	1	f	f	f	t	2024-04-30 16:32:37.459107
-41	3	f	f	f	t	2024-04-30 16:57:43.166931
-58	1	f	f	f	t	2024-04-30 16:33:20.674087
-21	3	f	f	f	t	2024-04-30 16:57:46.106684
-5	3	f	f	f	t	2024-04-30 16:57:48.315959
+5	3	f	f	f	t	2024-05-02 16:47:30.913892
 \.
 
 
@@ -336,13 +327,6 @@ COPY public.members_invites (member_id, node_id, member_name, token) FROM stdin;
 --
 
 COPY public.members_to_members (branch_id, from_member_id, to_member_id, dislike, vote) FROM stdin;
-1	5	3	f	f
-39	41	40	f	f
-20	21	22	f	f
-1	3	5	f	t
-20	22	21	f	f
-39	40	41	f	t
-58	60	59	f	t
 \.
 
 
@@ -351,10 +335,7 @@ COPY public.members_to_members (branch_id, from_member_id, to_member_id, dislike
 --
 
 COPY public.nets (net_id, net_level, parent_net_id, root_net_id, count_of_nets) FROM stdin;
-3	2	2	1	1
-2	1	1	1	2
-4	1	1	1	1
-1	0	\N	1	4
+1	0	\N	1	1
 \.
 
 
@@ -364,9 +345,6 @@ COPY public.nets (net_id, net_level, parent_net_id, root_net_id, count_of_nets) 
 
 COPY public.nets_data (net_id, name, goal, resource_name, resource_link) FROM stdin;
 1	Моя спільнота	Мета моєї спільноти	\N	\N
-2	Subnet 1	Goal of subnet 1	\N	\N
-3	Subnet 11	Goal of subnet 11	\N	\N
-4	SUbnet 2	Goal of subnet 2	\N	\N
 \.
 
 
@@ -394,63 +372,6 @@ COPY public.nodes (node_id, node_level, parent_node_id, net_id, node_position, c
 17	2	5	1	3	0	2023-01-10 21:21:58.740173
 18	2	5	1	4	0	2023-01-10 21:21:58.740173
 19	2	5	1	5	0	2023-01-10 21:21:58.740173
-23	1	20	2	2	0	2024-04-30 22:22:12.619278
-24	1	20	2	3	0	2024-04-30 22:22:12.619278
-25	1	20	2	4	0	2024-04-30 22:22:12.619278
-26	1	20	2	5	0	2024-04-30 22:22:12.619278
-21	1	20	2	0	1	2024-04-30 16:22:34.903994
-27	2	21	2	0	0	2024-04-30 22:22:34.903994
-28	2	21	2	1	0	2024-04-30 22:22:34.903994
-29	2	21	2	2	0	2024-04-30 22:22:34.903994
-30	2	21	2	3	0	2024-04-30 22:22:34.903994
-31	2	21	2	4	0	2024-04-30 22:22:34.903994
-32	2	21	2	5	0	2024-04-30 22:22:34.903994
-22	1	20	2	1	1	2024-04-30 16:23:09.755601
-20	0	\N	2	0	3	2024-04-30 16:23:09.755601
-33	2	22	2	0	0	2024-04-30 22:23:09.755601
-34	2	22	2	1	0	2024-04-30 22:23:09.755601
-35	2	22	2	2	0	2024-04-30 22:23:09.755601
-36	2	22	2	3	0	2024-04-30 22:23:09.755601
-37	2	22	2	4	0	2024-04-30 22:23:09.755601
-38	2	22	2	5	0	2024-04-30 22:23:09.755601
-42	1	39	3	2	0	2024-04-30 22:28:05.4163
-43	1	39	3	3	0	2024-04-30 22:28:05.4163
-44	1	39	3	4	0	2024-04-30 22:28:05.4163
-45	1	39	3	5	0	2024-04-30 22:28:05.4163
-40	1	39	3	0	1	2024-04-30 16:28:33.37553
-46	2	40	3	0	0	2024-04-30 22:28:33.37553
-47	2	40	3	1	0	2024-04-30 22:28:33.37553
-48	2	40	3	2	0	2024-04-30 22:28:33.37553
-49	2	40	3	3	0	2024-04-30 22:28:33.37553
-50	2	40	3	4	0	2024-04-30 22:28:33.37553
-51	2	40	3	5	0	2024-04-30 22:28:33.37553
-41	1	39	3	1	1	2024-04-30 16:29:08.763208
-39	0	\N	3	0	3	2024-04-30 16:29:08.763208
-52	2	41	3	0	0	2024-04-30 22:29:08.763208
-53	2	41	3	1	0	2024-04-30 22:29:08.763208
-54	2	41	3	2	0	2024-04-30 22:29:08.763208
-55	2	41	3	3	0	2024-04-30 22:29:08.763208
-56	2	41	3	4	0	2024-04-30 22:29:08.763208
-57	2	41	3	5	0	2024-04-30 22:29:08.763208
-61	1	58	4	2	0	2024-04-30 22:32:43.934069
-62	1	58	4	3	0	2024-04-30 22:32:43.934069
-63	1	58	4	4	0	2024-04-30 22:32:43.934069
-64	1	58	4	5	0	2024-04-30 22:32:43.934069
-59	1	58	4	0	1	2024-04-30 16:33:01.948821
-65	2	59	4	0	0	2024-04-30 22:33:01.948821
-66	2	59	4	1	0	2024-04-30 22:33:01.948821
-67	2	59	4	2	0	2024-04-30 22:33:01.948821
-68	2	59	4	3	0	2024-04-30 22:33:01.948821
-69	2	59	4	4	0	2024-04-30 22:33:01.948821
-70	2	59	4	5	0	2024-04-30 22:33:01.948821
-60	1	58	4	1	1	2024-04-30 16:33:20.643998
-58	0	\N	4	0	3	2024-04-30 16:33:20.643998
-71	2	60	4	0	0	2024-04-30 22:33:20.643998
-72	2	60	4	1	0	2024-04-30 22:33:20.643998
-73	2	60	4	2	0	2024-04-30 22:33:20.643998
-74	2	60	4	3	0	2024-04-30 22:33:20.643998
-75	2	60	4	4	0	2024-04-30 22:33:20.643998
-76	2	60	4	5	0	2024-04-30 22:33:20.643998
 \.
 
 
@@ -468,9 +389,9 @@ COPY public.sessions (session_id, user_id, session_key, session_value, updated) 
 
 COPY public.users (user_id, email, name, mobile, password, confirmed, chat_id) FROM stdin;
 1	user01@gmail.com	Учасник 1	\N	ee5d3bb0f5f23cf735caea21a4321116:53be5841d206ea53f4aab75bbe1072dac00f203dcc812ca77c0fab776e566a6cb519348d4a2a9eeb26d549d46792e9fa70092254a1cbc4bb58df316662147fbb	t	\N
-2	user02@gmail.com	Учасник 2	\N	8317b53f9189781a5aec6b8c4d1fdd83:235c7d0fff5c8d74fa0de478da7b1269397f6f14cc81f9f1f1d04d96637cfc41de78a375e728eaf0ab985877c5fcfdf40becaf2a458f52c1f36eea5fb96ca9d3	t	\N
 3	user03@gmail.com	Учасник 3	\N	428505ea613e395075de8335d6c11f1a:801e1098928a65226c5ea0edb379c5bedfd81e07211b15b80ad5e48e4efc89bb2de79e038da105aaf70a19d59e318c0c45648b1f4c38a14fc1e8a6aadae3ba56	t	\N
 4	user04@gmail.com	Учасник 4	\N	72f7b8c5e2f2a7eca7d4f86667274ef2:83ea46cd83030580f8d97fa4d622de348c536377228a759472419275630cd91be64db1bdf304795988b539f35f836883f6f8618ad5aaeb6c50bf5aaf538682ef	t	\N
+2	user02@gmail.com	Учасник 2	\N	8317b53f9189781a5aec6b8c4d1fdd83:235c7d0fff5c8d74fa0de478da7b1269397f6f14cc81f9f1f1d04d96637cfc41de78a375e728eaf0ab985877c5fcfdf40becaf2a458f52c1f36eea5fb96ca9d3	t	831299334
 \.
 
 
@@ -501,28 +422,28 @@ SELECT pg_catalog.setval('public.board_messages_message_id_seq', 1, false);
 -- Name: events_event_id_seq; Type: SEQUENCE SET; Schema: public; Owner: merega
 --
 
-SELECT pg_catalog.setval('public.events_event_id_seq', 6, true);
+SELECT pg_catalog.setval('public.events_event_id_seq', 1, false);
 
 
 --
 -- Name: nets_net_id_seq; Type: SEQUENCE SET; Schema: public; Owner: merega
 --
 
-SELECT pg_catalog.setval('public.nets_net_id_seq', 4, true);
+SELECT pg_catalog.setval('public.nets_net_id_seq', 1, true);
 
 
 --
 -- Name: nodes_node_id_seq; Type: SEQUENCE SET; Schema: public; Owner: merega
 --
 
-SELECT pg_catalog.setval('public.nodes_node_id_seq', 76, true);
+SELECT pg_catalog.setval('public.nodes_node_id_seq', 19, true);
 
 
 --
 -- Name: sessions_session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: merega
 --
 
-SELECT pg_catalog.setval('public.sessions_session_id_seq', 59, true);
+SELECT pg_catalog.setval('public.sessions_session_id_seq', 50, true);
 
 
 --

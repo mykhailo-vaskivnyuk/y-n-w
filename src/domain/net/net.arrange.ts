@@ -19,7 +19,7 @@ export class NetArrange {
       const nodesToArrange =
         await net.removeMemberFromNetAndSubnets(event);
       await net.arrangeNodes(event, nodesToArrange);
-      await event.commit(notificationService, t);
+      await event.commit(t);
     });
     event?.send();
   }

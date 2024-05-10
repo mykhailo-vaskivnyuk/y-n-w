@@ -37,7 +37,7 @@ export type ITableNets = {
 
 export type ITableUsers = {
   user_id: number;
-  email: string;
+  email: string | null;
   name: string | null;
   mobile: string | null;
   password: string | null;

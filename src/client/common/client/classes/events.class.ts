@@ -11,9 +11,9 @@ type IApp = IClientAppThis & {
 };
 
 export class Events {
-  private lastDate?: string;
+  private lastEvent: T.IEvent;
   private events: T.IEvents = [];
-  private netEventsMap = new Map<number, EventStore>;
+  private netEventsMap = new Map<number, EventStore>();
 
   constructor(private app: IApp) {
     this.app.on('allnets', this.onAllNets.bind(this));
@@ -41,15 +41,15 @@ export class Events {
   private setNewEvents(newEvents: T.IEvents) {
     this.events = [...this.events, ...newEvents];
     for (const event of newEvents) {
-      const { net_id, net_view} = event;
+      const { net_id, net_view } = event;
       let eventStore = this.netEventsMap.get(0);
       if (net_view && net_id) {
         eventStore = this.netEventsMap.get(net_id);
       }
       if (!eventStore) throw new Error('eventStore is not found');
       eventStore.addEvents([event]);
-    };
-    this.setLastDate(newEvents);
+    }
+    this.setLastEventId(newEvents);
     this.app.onNewEvents(newEvents);
   }
 
@@ -57,10 +57,10 @@ export class Events {
     return this.netEventsMap;
   }
 
-  setLastDate(events: T.IEvents) {
+  setLastEventId(events: T.IEvents) {
     for (const lastEvent of events) {
-      if (!lastEvent.date) continue;
-      this.lastDate = lastEvent.date;
+      if (!lastEvent.event_id) continue;
+      this.lastEvent = lastEvent;
     }
   }
 
@@ -91,8 +91,9 @@ export class Events {
   async read(inChain = false) {
     try {
       !inChain && await this.app.setStatus(AppStatus.LOADING);
+      const { event_id } = this.lastEvent || {};
       const newEvents = await this.app.api
-        .events.read({ date: this.lastDate });
+        .events.read({ event_id });
       if (newEvents.length) this.setNewEvents(newEvents);
       !inChain && this.app.setStatus(AppStatus.READY);
     } catch (e: any) {

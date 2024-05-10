@@ -3,15 +3,15 @@ import { IEvents } from '../../client/common/server/types/types';
 import { THandler } from '../../controller/types';
 import { EventsSchema } from '../schema/schema';
 
-export const read: THandler<{ date?: string }, IEvents> =
-  async ({ session }, { date = null }) => {
+export const read: THandler<{ event_id?: number }, IEvents> =
+  async ({ session }, { event_id = 0 }) => {
     const user_id = session.read('user_id')!;
-    const events = await execQuery.events.read([user_id, date]);
+    const events = await execQuery.events.read([user_id, event_id]);
     await execQuery.user.events.clear([user_id]);
     return events;
   };
 read.paramsSchema = {
-  date: Joi.string(),
+  event_id: Joi.number(),
 };
 read.responseSchema = EventsSchema;
 

@@ -86,7 +86,7 @@ Table "events" {
   "net_view" "character(10)" [default: NULL]
   "event_type" "character(20)" [not null]
   "message" "character varying(255)" [not null]
-  "date" timestamp [not null]
+  "date" timestamp [not null, default: 'now()']
   Indexes {
     user_id [name: "sk_events_user"]
     // date ?
@@ -109,9 +109,7 @@ Table "board_messages" {
 
 Table "users_events" {
   "user_id" bigint [primary key, not null]
-  "notification_date" timestamp [not null]
-  // "last_event_date" timestamp [not null]
-  // "read_event_date" timestamp [default: NULL]
+  "notification_date" timestamp [not null, default: 'now()']
 }
 
 Table "members_to_members" {

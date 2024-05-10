@@ -63,6 +63,7 @@ export const getMembers = `
   SELECT
     nodes.*,
     nodes.node_id::int,
+    nodes.parent_node_id::int,
     nodes.net_id::int,
     members.user_id::int,
     members.confirmed

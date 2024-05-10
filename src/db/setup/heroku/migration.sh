@@ -8,7 +8,6 @@ echo 'start'
 DATABASE=postgresql-animated-67025
 APP=younworld
 
-heroku pg:psql $DATABASE --app $APP -f create.heroku.sql
-heroku pg:psql $DATABASE --app $APP -f ../structure.sql
+heroku pg:psql $DATABASE --app $APP -f ../migrations/alter.events.sql
 
 echo 'end'

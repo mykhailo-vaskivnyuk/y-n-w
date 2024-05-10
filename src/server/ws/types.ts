@@ -19,4 +19,4 @@ export type TWsResModule<T = any> = (config: T) => (
   connection: IWsConnection | IWsConnection[],
   options: IOperation['options'] | null,
   data: TOperationResponse | IMessage<MessageTypeKeys>,
-) => boolean;
+) => Promise<boolean>;

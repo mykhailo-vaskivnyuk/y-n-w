@@ -55,8 +55,32 @@ export const confirm = getEvent(
   'Координатор підтвердив вашу участь в спільноті',
 );
 
+export const confirmInCircle = getEvent(
+  'CONFIRM',
+  'circle',
+  'У колі новий учасник',
+);
+
 export const connect = getEvent(
   'CONNECT',
   'tree',
   'У дереві новий учасник',
+);
+
+export const connectAndConfirmInTree = getEvent(
+  'CONNECT_AND_CONFIRM',
+  'tree',
+  'У дереві новий учасник',
+);
+
+export const connectAndConfirmInCircle = getEvent(
+  'CONNECT_AND_CONFIRM',
+  'circle',
+  'У колі новий учасник',
+);
+
+export const boardMessage = getEvent(
+  'BOARD_MESSAGE',
+  'net',
+  'Зміни на дошці',
 );

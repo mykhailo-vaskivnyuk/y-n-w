@@ -6,7 +6,6 @@ export const netCases = (units: ITestUnitsMap): ITestCase[] => [
     title: 'Test LEAVE NET over WS',
     dbDataFile: 'restore.sh',
     connection: 'ws',
-    connCount: 5,
     caseUnits: [
       [units.account.login.user(1), 1],
       [units.account.login.user(2), 2],

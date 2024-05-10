@@ -10,7 +10,7 @@ export type TAccountMessengerLinkGetResponse = string | null;
 export type TAdminNetGetResponse = {
 };
 export type TEventsRead = {
-  date?: string;
+  event_id?: number;
 };
 export type TEventsConfirm = {
   event_id: number;

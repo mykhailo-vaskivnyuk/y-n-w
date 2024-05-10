@@ -26,7 +26,7 @@ const confirm: THandler<IMemberConfirmParams, boolean> = async (
 
     event = new domain.event.NetEvent(net_id, 'CONFIRM', member);
     await event.messages.create(t);
-    await event.commit(notificationService, t);
+    await event.commit(t);
 
     return true;
   });

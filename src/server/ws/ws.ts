@@ -102,7 +102,9 @@ class WsConnection implements IInputConnection {
       const operation = await this.getOperation(message, options);
       options = operation.options;
       const data = await this.exec!(operation);
-      this.resModules.forEach((module) => module(connection, options, data));
+      for (const module of this.resModules) {
+        await module(connection, options, data);
+      }
     } catch (e) {
       if (connection.readyState === connection.CLOSED) return;
       handleError(e, options, connection);
@@ -177,8 +179,12 @@ class WsConnection implements IInputConnection {
       const connections = [...connectionIds]
         .map((connectionId) => this.getConnection(connectionId))
         .filter(excludeNullUndefined);
-      this.resModules.forEach((module) => module(connections, null, data));
-      return true;
+      let result = true;
+      for (const module of this.resModules) {
+        const moduleResult = await module(connections, null, data);
+        result = result && moduleResult;
+      }
+      return result;
     } catch (e) {
       logger.error(e);
       return false;

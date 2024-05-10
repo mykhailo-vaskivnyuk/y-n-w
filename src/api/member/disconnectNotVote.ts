@@ -28,7 +28,7 @@ const disconnectNotVote: THandler<{ monthAgo: number }, boolean> =
           nodesToArrange.push(node_id);
         }
         await net.arrangeNodes(event, nodesToArrange);
-        await event.commit(notificationService, t);
+        await event.commit(t);
       });
       event.send();
     } while (true);

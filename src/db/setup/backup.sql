@@ -61,7 +61,7 @@ CREATE TABLE public.events (
     from_node_id bigint,
     event_type character(20) NOT NULL,
     message character varying(255) NOT NULL,
-    date timestamp without time zone NOT NULL
+    date timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -254,7 +254,7 @@ ALTER TABLE public.users OWNER TO merega;
 
 CREATE TABLE public.users_events (
     user_id bigint NOT NULL,
-    notification_date timestamp without time zone NOT NULL
+    notification_date timestamp without time zone DEFAULT now() NOT NULL
 );
 
 

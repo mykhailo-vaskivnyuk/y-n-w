@@ -17,7 +17,7 @@ import {
 } from './constants';
 import { Member } from '../domain/member/member';
 
-export interface IRouterConfig {
+export interface IControllerConfig {
   path: string;
   apiPath: string;
   servicesPath: string;
@@ -43,13 +43,13 @@ export interface ITask {
   interval?: number,
 }
 
-export interface IRouter {
+export interface IController {
   init(): Promise<this>;
   exec(operation: IOperation): Promise<TOperationResponse>;
 }
 
-export interface IRoutes {
-  [key: string]: THandler | IRoutes;
+export interface IEndpoints {
+  [key: string]: THandler | IEndpoints;
 }
 
 export type THandler<

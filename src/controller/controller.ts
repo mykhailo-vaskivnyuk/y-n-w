@@ -1,29 +1,29 @@
 /* eslint-disable max-lines */
 import { setTimeout, setInterval } from 'node:timers';
 import {
-  THandler, IRoutes, TInputModule, IContext,
-  TOutputModule, IRouter, IRouterConfig, ITask,
+  THandler, IEndpoints, TInputModule, IContext,
+  TOutputModule, IController, IControllerConfig, ITask,
 } from './types';
 import { IOperation, TOperationResponse } from '../types/operation.types';
-import { RouterError } from './errors';
+import { ControllerError } from './errors';
 import { isHandler } from './utils';
 import { errorHandler } from './methods/error.handler';
 import { createClientApi } from './methods/create.client.api';
 import { createInputModules, createOutputModules } from './methods/modules';
 import { getServices } from './methods/services';
-import { createRoutes } from './methods/create.routes';
+import { createRoutes } from './methods/create.endpoints';
 import { setToGlobal } from '../app/methods/utils';
 import { pathToArray } from '../utils/utils';
 import * as cryptoService from '../utils/crypto';
 import * as domain from '../domain/index';
 
-class Router implements IRouter {
-  private routes?: IRoutes;
+class Controller implements IController {
+  private endpoints?: IEndpoints;
   private execInputModules?: ReturnType<TInputModule>;
   private execOutputModules?: ReturnType<TOutputModule>;
   private inited = false;
 
-  constructor(private config: IRouterConfig) {}
+  constructor(private config: IControllerConfig) {}
 
   async init() {
     try {
@@ -33,7 +33,7 @@ class Router implements IRouter {
       setToGlobal('domain', domain);
     } catch (e: any) {
       logger.error(e);
-      throw new RouterError('SERVICE_ERROR');
+      throw new ControllerError('SERVICE_ERROR');
     }
 
     try {
@@ -41,16 +41,16 @@ class Router implements IRouter {
       this.execOutputModules = createOutputModules(this.config);
     } catch (e: any) {
       logger.error(e);
-      throw new RouterError('MODULE_ERROR');
+      throw new ControllerError('MODULE_ERROR');
     }
 
     try {
       const { apiPath } = this.config;
-      this.routes = await createRoutes(apiPath);
-      await createClientApi(this.config, this.routes);
+      this.endpoints = await createRoutes(apiPath);
+      await createClientApi(this.config, this.endpoints);
     } catch (e: any) {
       logger.error(e);
-      throw new RouterError('ROUTES_CREATE_ERROR');
+      throw new ControllerError('ENDPOINTS_CREATE_ERROR');
     }
 
     try {
@@ -58,7 +58,7 @@ class Router implements IRouter {
       for (const task of tasks) await this.execTask(task);
     } catch (e: any) {
       logger.error(e);
-      throw new RouterError('TASK_ERROR');
+      throw new ControllerError('TASK_ERROR');
     }
 
     this.inited = true;
@@ -80,7 +80,7 @@ class Router implements IRouter {
   }
 
   async exec(operation: IOperation): Promise<TOperationResponse> {
-    if (!this.inited) throw new RouterError('ROUTER_ERROR');
+    if (!this.inited) throw new ControllerError('CONTROLLER_ERROR');
     const { options: { origin, connectionId }, names } = operation;
     const context = { origin, connectionId } as IContext;
     const handler = this.findRoute(names);
@@ -97,14 +97,14 @@ class Router implements IRouter {
   }
 
   private findRoute(names: IOperation['names']): THandler {
-    let handler: IRoutes | THandler = this.routes!;
+    let handler: IEndpoints | THandler = this.endpoints!;
     for (const key of names) {
       if (!isHandler(handler) && key in handler) handler = handler[key]!;
-      else throw new RouterError('CANT_FIND_ROUTE');
+      else throw new ControllerError('CANT_FIND_ENDPOINT');
     }
     if (isHandler(handler)) return handler;
-    throw new RouterError('CANT_FIND_ROUTE');
+    throw new ControllerError('CANT_FIND_ENDPOINT');
   }
 }
 
-export = Router;
+export = Controller;

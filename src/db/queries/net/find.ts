@@ -20,8 +20,9 @@ export interface IQueriesNetFind {
 export const byToken = `
   SELECT
     nodes.*,
-    nodes.net_id::int,
+    nodes.node_id::int,
     nodes.parent_node_id::int,
+    nodes.net_id::int,
     nets.parent_net_id
   FROM members_invites
   INNER JOIN nodes ON

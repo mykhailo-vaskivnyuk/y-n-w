@@ -18,14 +18,14 @@ export const user = (id: number): TTestUnit => (state: any) => (
           email: `user${String(id).padStart(2, '0')}@gmail.com`,
           password: '12345',
         },
-        expected: {
+        expected: () => ({
           email: `user${String(id).padStart(2, '0')}@gmail.com`,
           mobile: null,
           name: `Учасник ${id}`,
           user_id: id,
           user_status: 'LOGGEDIN',
-          chat_id: null,
-        },
+          chat_id: state.user.chat_id,
+        }),
         setToState: (actual) => state.user = actual,
       },
       {

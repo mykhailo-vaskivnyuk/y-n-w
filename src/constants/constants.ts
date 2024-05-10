@@ -24,11 +24,16 @@ map.LEAVE_CONNECTED = {
 
 map.CONNECT = {
   FACILITATOR: 'У дереві новий учасник',
-  // CIRCLE: 'У колі новий учасник',
 };
 
 map.CONFIRM = {
   MEMBER: 'Координатор підтвердив вашу участь в спільноті',
+  CIRCLE: 'У колі новий учасник',
+};
+
+map.CONNECT_AND_CONFIRM = {
+  FACILITATOR: 'У дереві новий учасник',
+  CIRCLE: 'У колі новий учасник',
 };
 
 map.REFUSE = {
@@ -89,7 +94,7 @@ map.NOT_VOTE_DISCONNECT = {
 };
 
 map.BOARD_MESSAGE = {
-  NET: '',
+  NET: 'Зміни на дошці',
 };
 
 export const SET_NET_ID_FOR: NetEventKeys[] = [
@@ -101,5 +106,5 @@ export const SET_NET_ID_FOR: NetEventKeys[] = [
 export const INSTANT_EVENTS: NetEventKeys[] = [
   // 'CONNECT',
   'VOTE',
-  'BOARD_MESSAGE',
+  // 'BOARD_MESSAGE',
 ];

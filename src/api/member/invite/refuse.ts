@@ -24,7 +24,7 @@ const refuse: THandler<IMemberConfirmParams, boolean> = async (
     event = new domain.event.NetEvent(net_id, 'REFUSE', m!.get());
     const net = new domain.net.NetArrange(t);
     await net.removeConnectedMember(event, user_id!);
-    await event.commit(notificationService, t);
+    await event.commit(t);
     return true;
   });
   event?.send();

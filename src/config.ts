@@ -11,7 +11,6 @@ const {
   HOST: host,
   PORT: port,
   DATABASE_URL: dbUrl,
-  ORIGIN: origin,
   STATIC_PATH: staticPath,
   LOGGER_COLORIZE: colorize,
   MAIL: mail,
@@ -66,8 +65,8 @@ const config: IConfig = {
     connectionPath: resolvePath('db/connection/pg'),
     connection,
   },
-  router: {
-    path: resolvePath('controller/router'),
+  controller: {
+    path: resolvePath('controller/controller'),
     apiPath: resolvePath('api'),
     servicesPath: resolvePath('services'),
     modulesPath: resolvePath('controller/modules'),
@@ -136,7 +135,6 @@ const config: IConfig = {
       path: resolvePath('server/tg/tg'),
       token: restEnv.TG_BOT_TOKEN,
       user_name: restEnv.TG_BOT,
-      origin,
     }
   },
 };
