@@ -50,7 +50,7 @@ export type ITableNetsData = {
   name: string;
   goal: string | null;
   resource_name: string | null;
-  resource_link: string | null;
+  net_link: string | null;
 }
 
 export type ITableMembers = {
