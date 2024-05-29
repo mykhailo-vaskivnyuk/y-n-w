@@ -2,6 +2,7 @@ export const USER_STATUS_MAP = {
   'NOT_LOGGEDIN': 0,
   'NOT_CONFIRMED': 1,
   'LOGGEDIN': 2,
+  // 'WAITING': 3,
   'INVITING': 3,
   'INSIDE_NET': 4,
   'DEV': Infinity,

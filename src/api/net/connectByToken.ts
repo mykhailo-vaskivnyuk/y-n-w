@@ -27,6 +27,8 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
 
       /* remove token */
       await t.execQuery.member.invite.remove([node_id]);
+      /* remove wait */
+      await t.execQuery.net.wait.remove([net_id, user_id]);
 
       /* create new member */
       const confirmed = !env.INVITE_CONFIRM;

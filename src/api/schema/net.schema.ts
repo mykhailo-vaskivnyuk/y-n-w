@@ -26,6 +26,7 @@ export const NetResponseSchema = [JOI_NULL, {
   parent_net_id: [Joi.number(), JOI_NULL],
   name: Joi.string(),
   goal: [Joi.string(), JOI_NULL],
+  net_link: Joi.string(),
   node_id: Joi.number(),
   parent_node_id: [Joi.number(), JOI_NULL],
   total_count_of_members: Joi.number(),

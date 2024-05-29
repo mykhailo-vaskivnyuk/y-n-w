@@ -13,6 +13,7 @@ import { IQueriesNetFind } from './find';
 import { IQueriesNetBoard } from './boardMessages';
 import { IQueriesNetUsers } from './users';
 import { IQueriesNetStructure } from './structure/get';
+import { IQueriesNetWait } from './wait';
 
 export interface IQueriesNet {
   createRoot: TQuery<[], ITableNets>;
@@ -46,6 +47,7 @@ export interface IQueriesNet {
   boardMessages: IQueriesNetBoard;
   users: IQueriesNetUsers;
   structure: { get: IQueriesNetStructure; };
+  wait: IQueriesNetWait;
 }
 
 export const createRoot = `
