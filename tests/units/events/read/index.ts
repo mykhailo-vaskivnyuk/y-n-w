@@ -84,3 +84,15 @@ export const boardMessage = getEvent(
   'net',
   'Зміни на дошці',
 );
+
+export const tightenInTree = getEvent(
+  'TIGHTEN',
+  'tree',
+  'У вашому дереві новий учасник, через стискання спільноти',
+);
+
+export const tighten = getEvent(
+  'TIGHTEN',
+  'net',
+  'У вас нове коло, через стискання спільноти',
+);

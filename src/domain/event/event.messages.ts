@@ -35,11 +35,11 @@ export class EventMessages {
 
   removeFromNodes(nodeIds: number[]) {
     let i = -1;
-    for (const { from_node_id } of this.records) {
+    for (const { from_node_id } of [...this.records]) {
       i++;
       if (!from_node_id) continue;
       if (!nodeIds.includes(from_node_id)) continue;
-      this.records.splice(i, 1);
+      this.records.splice(i--, 1);
     }
   }
 

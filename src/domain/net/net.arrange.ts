@@ -101,15 +101,15 @@ export class NetArrange {
     while (nodesToArrange.length) {
       const node_id = nodesToArrange.shift();
       if (!node_id) continue;
-      const removed = await this.tightenNodes(node_id);
+      const removed = await this.tightenNodes(node_id, event);
       if (removed) {
         if (!removed.length) continue;
         let i = -1;
-        for (const node_id of nodesToArrange) {
+        for (const node_id of [...nodesToArrange]) {
           i++;
           if (!node_id) continue;
           if (!removed.includes(node_id)) continue;
-          nodesToArrange.splice(i, 1);
+          nodesToArrange.splice(i--, 1);
         }
         event.messages.removeFromNodes(removed);
         continue;
@@ -122,12 +122,14 @@ export class NetArrange {
     }
   }
 
-  async tightenNodes(node_id: number): Promise<number[] | undefined> {
+  async tightenNodes(
+    node_id: number,
+    event: NetEvent,
+  ): Promise<number[] | undefined> {
     const { t } = this;
     const [node] = await t.execQuery.node.getIfEmpty([node_id]);
     if (!node) return;
     const {
-      node_level,
       parent_node_id,
       net_id,
       node_position,
@@ -150,13 +152,12 @@ export class NetArrange {
     if (childCount !== count_of_members) return;
     await t.execQuery.node.move([
       childNodeId,
-      node_level,
       parent_node_id,
       node_position,
       count_of_members,
     ]);
     if (parent_node_id) {
-      this.changeLevelFromNode(childNodeId);
+      await this.changeLevelFromNode(childNodeId);
     } else {
       await t.execQuery.node.changeLevelAll([net_id]);
     }
@@ -164,6 +165,9 @@ export class NetArrange {
     await t.execQuery.node.remove([node_id]);
     const nodeIds = nodes.map(({ node_id }) => node_id);
     nodeIds.push(node_id);
+    const [tightenMember] = await t.execQuery.member.get([childNodeId]);
+    const tightenEvent = event.createChild('TIGHTEN', tightenMember!);
+    await tightenEvent.messages.create(t);
     return nodeIds;
   }
 
@@ -178,13 +182,14 @@ export class NetArrange {
     await this.updateCountOfNets(parent_net_id, addCount);
   }
 
-  async changeLevelFromNode(parentNodeId: number) {
+  async changeLevelFromNode(nodeId: number) {
+    const [node] = await this.t.execQuery.node.changeLevel([nodeId]);
+    if (!node!.count_of_members) return;
     for (let node_position = 0; node_position < 6; node_position++) {
-      const [node] = await this.t.execQuery
-        .node.getChild([parentNodeId, node_position]);
-      const { node_id, count_of_members } = node!;
-      await this.t.execQuery.node.changeLevel([node_id]);
-      if (count_of_members) await this.changeLevelFromNode(node_id);
+      const [childNode] = await this.t.execQuery
+        .node.getChild([nodeId, node_position]);
+      const { node_id } = childNode!;
+      await this.changeLevelFromNode(node_id);
     }
   }
 

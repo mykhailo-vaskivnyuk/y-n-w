@@ -52,6 +52,8 @@ export interface ITestUnitsMap {
       'connectAndConfirmInTree': TTestUnit;
       'connectAndConfirmInCircle': TTestUnit;
       'boardMessage': TTestUnit;
+      'tightenInTree': TTestUnit;
+      'tighten': TTestUnit;
       'leave': {
         'dislikeInTree': TTestUnit;
         'dislikeInCircle': TTestUnit;

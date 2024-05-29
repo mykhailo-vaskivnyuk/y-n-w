@@ -97,10 +97,17 @@ map.BOARD_MESSAGE = {
   NET: 'Зміни на дошці',
 };
 
+map.TIGHTEN = {
+  CIRCLE: 'У вашому колі новий учасник, через стискання спільноти',
+  FACILITATOR: 'У вашому дереві новий учасник, через стискання спільноти',
+  MEMBER: 'У вас нове коло, через стискання спільноти',
+};
+
 export const SET_NET_ID_FOR: NetEventKeys[] = [
   'CONFIRM',
   'CONNECT_VOTE',
   'CONNECT_DISVOTE',
+  'TIGHTEN',
 ];
 
 export const INSTANT_EVENTS: NetEventKeys[] = [
