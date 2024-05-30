@@ -1,5 +1,5 @@
 import {
-  ITableMembers, ITableMembersToMembers,
+  ITableMembers, ITableMembersToMembers, INet,
   ITableNets, ITableNetsData, ITableNodes, OuterJoin,
 } from '../../../local/imports';
 import { IMemberResponse } from './member.types';
@@ -53,3 +53,5 @@ export type INetConnectByLink = {
     | 'already member or connected'
     | 'not parent net member';
 } | null;
+
+export type IWaitNets = Pick<INet, 'net_id' | 'name'>[];

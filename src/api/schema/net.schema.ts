@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import {
   IMemberResponse, INetCreateParams, INetResponse,
-  INetsResponse, INetUpdateParams, OmitNull,
+  INetsResponse, INetUpdateParams, IWaitNets, OmitNull,
 } from '../../client/common/server/types/types';
 import { TJoiSchema } from '../../controller/types';
 import { JOI_NULL } from '../../controller/constants';
@@ -54,3 +54,8 @@ export const NetConnectByTokenSchema = [JOI_NULL, {
   net_id: Joi.number().required(),
   error: Joi.string(),
 }];
+
+export const WaitNetsSchema = {
+  net_id: Joi.number(),
+  name: Joi.string(),
+} as Record<keyof IWaitNets[number], TJoiSchema>;

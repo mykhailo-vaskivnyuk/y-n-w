@@ -1,5 +1,6 @@
 /* eslint-disable import/no-cycle */
 import * as T from '../../server/types/types';
+import { AppStatus } from '../constants';
 import { INITIAL_NETS, IClientAppThis, INets } from '../types';
 
 type IApp = IClientAppThis;
@@ -7,11 +8,15 @@ type IApp = IClientAppThis;
 export class UserNets {
   private allNets: T.INetsResponse = [];
   private nets: INets = INITIAL_NETS;
+  private waitNets: T.IWaitNets = [];
 
   constructor(private app: IApp) {}
 
   getUserNets() {
-    return this.nets;
+    return {
+      nets: this.nets,
+      waitNets: this.waitNets,
+    };
   }
 
   private setAllNets(nets: T.INetsResponse) {
@@ -28,7 +33,7 @@ export class UserNets {
   }
 
   async getAllNets() {
-    const allNets = await this.app.api.user.nets.get();
+    const allNets = await this.app.api.user.nets.get.all();
     this.setAllNets(allNets);
   }
 
@@ -57,5 +62,16 @@ export class UserNets {
       }, [...nets.parentNets])
       .reverse();
     this.setNets(nets);
+  }
+
+  async getWaitNets() {
+    try {
+      await this.app.setStatus(AppStatus.LOADING);
+      this.waitNets = await this.app.api.user.nets.get.wait();
+      this.app.setStatus(AppStatus.READY);
+      this.app.emit('waitNets', this.waitNets);
+    } catch (e: any) {
+      this.app.setError(e);
+    }
   }
 }

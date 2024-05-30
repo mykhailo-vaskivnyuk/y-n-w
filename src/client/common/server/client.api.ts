@@ -189,8 +189,12 @@ export const getApi = (
 
     },
     'nets': {
-      'get': () => fetch<P.INetsResponse>('/user/nets/get'),
+      'get': {
+        'all': () => fetch<P.INetsResponse>('/user/nets/get/all'),
 
+        'wait': () => fetch<P.IWaitNets>('/user/nets/get/wait'),
+
+      },
     },
   },
 });
