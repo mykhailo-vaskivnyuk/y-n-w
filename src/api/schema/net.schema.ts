@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import {
   IMemberResponse, INetCreateParams, INetResponse,
-  INetsResponse, INetUpdateParams, OmitNull,
+  INetsResponse, INetUpdateParams, IWaitNets, OmitNull,
 } from '../../client/common/server/types/types';
 import { TJoiSchema } from '../../controller/types';
 import { JOI_NULL } from '../../controller/constants';
@@ -26,6 +26,7 @@ export const NetResponseSchema = [JOI_NULL, {
   parent_net_id: [Joi.number(), JOI_NULL],
   name: Joi.string(),
   goal: [Joi.string(), JOI_NULL],
+  net_link: [Joi.string(), JOI_NULL],
   node_id: Joi.number(),
   parent_node_id: [Joi.number(), JOI_NULL],
   total_count_of_members: Joi.number(),
@@ -53,3 +54,8 @@ export const NetConnectByTokenSchema = [JOI_NULL, {
   net_id: Joi.number().required(),
   error: Joi.string(),
 }];
+
+export const WaitNetsSchema = {
+  net_id: Joi.number(),
+  name: Joi.string(),
+} as Record<keyof IWaitNets[number], TJoiSchema>;

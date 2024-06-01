@@ -1,5 +1,5 @@
 import {
-  ITableMembers, ITableMembersToMembers,
+  ITableMembers, ITableMembersToMembers, INet,
   ITableNets, ITableNetsData, ITableNodes, OuterJoin,
 } from '../../../local/imports';
 import { IMemberResponse } from './member.types';
@@ -19,7 +19,7 @@ export type INetUpdateParams  = {
 
 export type INetResponse = null | (
   Pick<ITableNets, 'net_id' | 'parent_net_id' | 'net_level'> &
-  Pick<ITableNetsData, 'name' | 'goal'> &
+  Pick<ITableNetsData, 'name' | 'goal' | 'net_link'> &
   Pick<ITableNodes, 'node_id' | 'parent_node_id'> & {
     total_count_of_members: number;
   }
@@ -43,5 +43,15 @@ export type IUserNetDataResponse =
 
 export type INetConnectByToken = {
   net_id: number;
-  error?: 'already connected' | 'not parent net member';
+  error?: 'already member or connected' | 'not parent net member';
 } | null;
+
+export type INetConnectByLink = {
+  net_id: number;
+  error?:
+    | 'already waiting'
+    | 'already member or connected'
+    | 'not parent net member';
+} | null;
+
+export type IWaitNets = Pick<INet, 'net_id' | 'name'>[];

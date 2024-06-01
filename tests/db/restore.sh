@@ -10,6 +10,6 @@ export PGPASSWORD=postgres
 psql -f create.sql -U postgres
 
 export PGPASSWORD=merega
-psql -d $DATABASE -f backup.sql -U $USER
+psql -d $DATABASE -f ../../src/db/setup/backup.sql -U $USER
 
 echo 'end'

@@ -22,6 +22,7 @@ export const NET_EVENT_MAP = {
   NOT_VOTE_DISCONNECT: 'not_vote_disconnect',
   BOARD_MESSAGE: 'board_message',
   TIGHTEN: 'tighten',
+  WAIT: 'wait',
 };
 export type NetEventKeys = keyof typeof NET_EVENT_MAP;
 

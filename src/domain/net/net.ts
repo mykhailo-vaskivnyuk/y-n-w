@@ -37,7 +37,8 @@ export const createNet = async (
   await createTree(t, node!);
 
   /* create net data */
-  const [netData] = await t.execQuery.net.data.create([net_id, name]);
+  const token = cryptoService.createUnicCode(15);
+  const [netData] = await t.execQuery.net.data.create([net_id, name, token]);
 
   /* create first member */
   await t.execQuery.member.create([node_id, user_id]);

@@ -151,11 +151,23 @@ CREATE TABLE public.nets_data (
     name character varying(50) NOT NULL,
     goal text DEFAULT NULL::character varying,
     resource_name character varying(50) DEFAULT NULL::character varying,
-    resource_link character varying(255) DEFAULT NULL::character varying
+    net_link character varying(255) DEFAULT NULL::character varying
 );
 
 
 ALTER TABLE public.nets_data OWNER TO merega;
+
+--
+-- Name: nets_guests; Type: TABLE; Schema: public; Owner: merega
+--
+
+CREATE TABLE public.nets_guests (
+    net_id bigint NOT NULL,
+    user_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.nets_guests OWNER TO merega;
 
 --
 -- Name: nets_net_id_seq; Type: SEQUENCE; Schema: public; Owner: merega
@@ -343,8 +355,16 @@ COPY public.nets (net_id, net_level, parent_net_id, root_net_id, count_of_nets) 
 -- Data for Name: nets_data; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.nets_data (net_id, name, goal, resource_name, resource_link) FROM stdin;
+COPY public.nets_data (net_id, name, goal, resource_name, net_link) FROM stdin;
 1	Моя спільнота	Мета моєї спільноти	\N	\N
+\.
+
+
+--
+-- Data for Name: nets_guests; Type: TABLE DATA; Schema: public; Owner: merega
+--
+
+COPY public.nets_guests (net_id, user_id) FROM stdin;
 \.
 
 
@@ -510,6 +530,14 @@ ALTER TABLE ONLY public.nets_data
 
 
 --
+-- Name: nets_guests pk_nets_guests; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.nets_guests
+    ADD CONSTRAINT pk_nets_guests PRIMARY KEY (net_id, user_id);
+
+
+--
 -- Name: nodes pk_nodes; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -614,6 +642,20 @@ CREATE INDEX sk_members_to_members_branch ON public.members_to_members USING btr
 --
 
 CREATE INDEX sk_members_user ON public.members USING btree (user_id);
+
+
+--
+-- Name: sk_nets_guests_net; Type: INDEX; Schema: public; Owner: merega
+--
+
+CREATE INDEX sk_nets_guests_net ON public.nets_guests USING btree (net_id);
+
+
+--
+-- Name: sk_nets_guests_user; Type: INDEX; Schema: public; Owner: merega
+--
+
+CREATE INDEX sk_nets_guests_user ON public.nets_guests USING btree (user_id);
 
 
 --
@@ -738,6 +780,22 @@ ALTER TABLE ONLY public.members
 
 ALTER TABLE ONLY public.nets_data
     ADD CONSTRAINT fk_nets_data_net FOREIGN KEY (net_id) REFERENCES public.nets(net_id) ON DELETE CASCADE;
+
+
+--
+-- Name: nets_guests fk_nets_guests_net; Type: FK CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.nets_guests
+    ADD CONSTRAINT fk_nets_guests_net FOREIGN KEY (net_id) REFERENCES public.nets(net_id) ON DELETE CASCADE;
+
+
+--
+-- Name: nets_guests fk_nets_guests_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.nets_guests
+    ADD CONSTRAINT fk_nets_guests_user FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
 
 
 --

@@ -146,6 +146,14 @@ export const getApi = (
     'update': (options: P.INetUpdateParams) =>
       fetch<P.INetResponse>('/net/update', options),
 
+    'wait': {
+      'create': (options: P.ITokenParams) =>
+        fetch<P.INetConnectByToken>('/net/wait/create', options),
+
+      'remove': (options: P.INetEnterParams) =>
+        fetch<boolean>('/net/wait/remove', options),
+
+    },
     'board': {
       'clear': (options: Q.TNetBoardClear) =>
         fetch<boolean>('/net/board/clear', options),
@@ -181,8 +189,12 @@ export const getApi = (
 
     },
     'nets': {
-      'get': () => fetch<P.INetsResponse>('/user/nets/get'),
+      'get': {
+        'all': () => fetch<P.INetsResponse>('/user/nets/get/all'),
 
+        'wait': () => fetch<P.IWaitNets>('/user/nets/get/wait'),
+
+      },
     },
   },
 });

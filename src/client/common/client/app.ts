@@ -44,7 +44,7 @@ export class ClientApp extends EventEmitter {
       error: this.error,
       ...this.account.getState(),
       userStatus: this.userStatus,
-      nets: this.userNets.getUserNets(),
+      ...this.userNets.getUserNets(),
       events: this.userEvents.getEvents(),
       ...this.net.getNetState(),
       ...this.chat.getChatState(),

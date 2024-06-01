@@ -15,6 +15,13 @@ export interface IQueriesNetFind {
     ['net_id', number],
     ['user_id', number],
   ], OmitNull<INetResponse>>;
+  byNetLink: TQuery<[
+    ['token', string]
+  ], ITableNets>;
+  byWaitingUser: TQuery<[
+    ['net_id', number],
+    ['user_id', number],
+  ], ITableNets>;
 }
 
 export const byToken = `
@@ -40,6 +47,7 @@ export const byUser = `
     nets.parent_net_id,
     nets_data.name,
     nets_data.goal,
+    nets_data.net_link,
     nodes.node_id,
     nodes.parent_node_id,
     root_node.count_of_members AS total_count_of_members
@@ -56,4 +64,20 @@ export const byUser = `
   WHERE
     nets.net_id = $1 AND
     members.user_id = $2
+`;
+
+export const byNetLink = `
+  SELECT *
+  FROM nets
+  INNER JOIN nets_data ON
+    nets.net_id = nets_data.net_id
+  WHERE net_link = $1
+`;
+
+export const byWaitingUser = `
+  SELECT *
+  FROM nets_guests
+  WHERE
+    net_id = $1 AND 
+    user_id = $2
 `;
