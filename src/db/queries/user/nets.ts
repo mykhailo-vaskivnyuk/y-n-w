@@ -41,11 +41,11 @@ export const getWait = `
     nets_data.*
   FROM nets_guests
   INNER JOIN nets ON
-    nets.nets_id = nets_guests.net_id
+    nets.net_id = nets_guests.net_id
   INNER JOIN nets_data ON
     nets_data.net_id = nets.net_id
   WHERE nets_guests.user_id = $1
-  ORDER BY nets.name
+  ORDER BY nets_data.name
 `;
 
 export const getTop = `

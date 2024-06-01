@@ -9,7 +9,7 @@ import {
   NetEnterParamsSchema,
 } from '../schema/schema';
 
-export const connect: THandler<ITokenParams, INetConnectByLink> =
+export const create: THandler<ITokenParams, INetConnectByLink> =
   async ({ session }, { token }) => {
     const user_id = session.read('user_id')!;
     const [net] = await execQuery.net.find.byNetLink([token]);
@@ -47,9 +47,9 @@ export const connect: THandler<ITokenParams, INetConnectByLink> =
     event?.send();
     return result;
   };
-connect.paramsSchema = TokenParamsSchema;
-connect.responseSchema = NetConnectByTokenSchema;
-connect.checkNet = false;
+create.paramsSchema = TokenParamsSchema;
+create.responseSchema = NetConnectByTokenSchema;
+create.checkNet = false;
 
 export const remove: THandler<INetEnterParams, boolean> =
   async ({ session }, { net_id }) => {

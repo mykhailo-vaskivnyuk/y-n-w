@@ -69,6 +69,8 @@ export const byUser = `
 export const byNetLink = `
   SELECT *
   FROM nets
+  INNER JOIN nets_data ON
+    nets.net_id = nets_data.net_id
   WHERE net_link = $1
 `;
 
