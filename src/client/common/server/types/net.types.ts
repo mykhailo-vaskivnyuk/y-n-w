@@ -56,6 +56,11 @@ export type INetConnectByLink = {
     | 'not parent net member';
 } | null;
 
+export type IWaitCreateParams = {
+  token: string,
+  comment: string,
+};
+
 export type IWaitNets = Pick<INet, 'net_id' | 'name'>[];
 
 export type INetWaiting =

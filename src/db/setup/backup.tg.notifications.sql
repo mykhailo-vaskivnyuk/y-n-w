@@ -163,7 +163,8 @@ ALTER TABLE public.nets_data OWNER TO merega;
 
 CREATE TABLE public.nets_guests (
     net_id bigint NOT NULL,
-    user_id bigint NOT NULL
+    user_id bigint NOT NULL,
+    comment character varying(255) NOT NULL
 );
 
 
@@ -364,7 +365,7 @@ COPY public.nets_data (net_id, name, goal, resource_name, net_link) FROM stdin;
 -- Data for Name: nets_guests; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.nets_guests (net_id, user_id) FROM stdin;
+COPY public.nets_guests (net_id, user_id, comment) FROM stdin;
 \.
 
 

@@ -77,7 +77,7 @@ export class UserNets {
     }
   }
 
-  async waitCreate(args: T.ITokenParams) {
+  async waitCreate(args: T.IWaitCreateParams) {
     try {
       await this.app.setStatus(AppStatus.LOADING);
       const result = await this.app.api.net.wait.create(args);

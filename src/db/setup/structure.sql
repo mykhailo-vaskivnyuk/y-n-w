@@ -179,7 +179,8 @@ ALTER TABLE public.nets_data OWNER TO merega;
 
 CREATE TABLE public.nets_guests (
     net_id bigint NOT NULL,
-    user_id bigint NOT NULL
+    user_id bigint NOT NULL,
+    comment character varying(255) NOT NULL
 );
 
 

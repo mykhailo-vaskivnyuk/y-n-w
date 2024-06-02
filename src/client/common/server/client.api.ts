@@ -147,7 +147,7 @@ export const getApi = (
       fetch<P.INetResponse>('/net/update', options),
 
     'wait': {
-      'create': (options: P.ITokenParams) =>
+      'create': (options: P.IWaitCreateParams) =>
         fetch<P.INetConnectByToken>('/net/wait/create', options),
 
       'remove': (options: P.INetEnterParams) =>
