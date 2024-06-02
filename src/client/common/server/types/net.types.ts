@@ -1,6 +1,8 @@
 import {
   ITableMembers, ITableMembersToMembers, INet,
   ITableNets, ITableNetsData, ITableNodes, OuterJoin,
+  ITableNetsGuests,
+  ITableUsers,
 } from '../../../local/imports';
 import { IMemberResponse } from './member.types';
 
@@ -55,3 +57,8 @@ export type INetConnectByLink = {
 } | null;
 
 export type IWaitNets = Pick<INet, 'net_id' | 'name'>[];
+
+export type INetWaiting =
+  Pick<ITableUsers, 'name'> &
+  Pick<ITableNetsGuests, 'comment'>;
+export type INetWaitingResponse = INetWaiting[];

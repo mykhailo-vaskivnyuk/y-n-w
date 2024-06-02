@@ -153,6 +153,9 @@ export const getApi = (
       'remove': (options: P.INetEnterParams) =>
         fetch<boolean>('/net/wait/remove', options),
 
+      'get': (options: P.INetReadParams) =>
+        fetch<P.INetWaitingResponse>('/net/wait/get', options),
+
     },
     'board': {
       'clear': (options: Q.TNetBoardClear) =>

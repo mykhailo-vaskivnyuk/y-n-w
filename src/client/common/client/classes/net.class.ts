@@ -238,4 +238,18 @@ export class Net {
       throw e;
     }
   }
+
+  async getNetWaiting() {
+    try {
+      await this.app.setStatus(AppStatus.LOADING);
+      const { node_id } = this.userNet || {};
+      if (!node_id) throw new Error('Net is not defined');
+      const result = await this.app.api.net.wait.get({ node_id });
+      this.app.setStatus(AppStatus.READY);
+      return result;
+    } catch (e: any) {
+      this.app.setError(e);
+      throw e;
+    }
+  }
 }

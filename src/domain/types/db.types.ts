@@ -53,6 +53,12 @@ export type ITableNetsData = {
   net_link: string | null;
 }
 
+export type ITableNetsGuests = {
+  net_id: number;
+  user_id: number;
+  comment: string;
+}
+
 export type ITableMembers = {
   member_id: number;
   user_id: number;

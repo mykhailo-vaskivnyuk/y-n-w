@@ -1,12 +1,14 @@
 import Joi from 'joi';
 import { THandler } from '../../controller/types';
 import {
-  INetConnectByLink, INetEnterParams, ITokenParams,
+  INetConnectByLink, INetEnterParams, INetReadParams,
+  INetWaitingResponse, ITokenParams,
 } from '../../client/common/server/types/types';
 import { NetEvent } from '../../domain/event/event';
 import {
   TokenParamsSchema, NetConnectByTokenSchema,
-  NetEnterParamsSchema,
+  NetEnterParamsSchema, NetReadParamsSchema,
+  NetWaitingResponseSchema,
 } from '../schema/schema';
 
 export const create: THandler<ITokenParams, INetConnectByLink> =
@@ -34,7 +36,7 @@ export const create: THandler<ITokenParams, INetConnectByLink> =
       }
 
       /* create new waiting member */
-      await t.execQuery.net.wait.connect([net_id, user_id]);
+      await t.execQuery.net.wait.create([net_id, user_id, 'comment']);
 
       /* create messages */
       const eventType = 'WAIT';
@@ -59,3 +61,12 @@ export const remove: THandler<INetEnterParams, boolean> =
   };
 remove.paramsSchema = NetEnterParamsSchema;
 remove.responseSchema = Joi.boolean();
+
+export const get: THandler<INetReadParams, INetWaitingResponse> =
+  async ({ member }) => {
+    const { net_id } = member!.get();
+    const result = await execQuery.net.wait.get([net_id]);
+    return result;
+  };
+get.paramsSchema = NetReadParamsSchema;
+get.responseSchema = NetWaitingResponseSchema;
