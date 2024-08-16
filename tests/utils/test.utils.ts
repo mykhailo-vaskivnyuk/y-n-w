@@ -82,8 +82,12 @@ export const prepareTest = async (testCase: ITestCase) => {
   await app.start();
 
   /* result */
-  const testRunnerData =
-    { title, connections, onMessage, testUnits } as ITestRunnerData;
+  const testRunnerData = {
+    title,
+    connections,
+    onMessage,
+    testUnits,
+  } as ITestRunnerData;
   const finalize = async () => {
     closeConnections.forEach((fn) => fn());
     await app.stop();
