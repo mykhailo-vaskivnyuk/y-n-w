@@ -11,7 +11,7 @@ export const runTest = ({
   test(title, async (t) => {
     const global: Record<string, any> = {};
     const states: Record<string, any>[] = [];
-    const calls: number[] = [];
+    const calls = Array(connections.length).fill(0);
     for (const [getUnit, connId] of testUnits) {
       const state = states[connId] || { global };
       states[connId] = state;
@@ -25,9 +25,8 @@ export const runTest = ({
             const connection = connections[connId]!;
             if (query) await assertDb(operation);
             else if (!params) {
-              const callId = calls[connId] || 0;
+              const callId = calls[connId]++;
               await assertMessage(operation, onMessage[connId]!, callId);
-              calls[connId] = callId + 1;
             } else await assertResponse(operation, connection);
           });
         }

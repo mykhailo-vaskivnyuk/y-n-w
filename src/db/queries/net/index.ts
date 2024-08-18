@@ -94,6 +94,7 @@ export const get = `
     nets.parent_net_id,
     nets_data.name,
     nets_data.goal,
+    nets_data.net_link,
     root_node.count_of_members AS total_count_of_members
   FROM members
   INNER JOIN nodes ON
