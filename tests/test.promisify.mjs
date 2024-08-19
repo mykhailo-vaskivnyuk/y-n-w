@@ -1,4 +1,4 @@
-import { promisify1 } from '../lib/promisify.mjs';
+import { promisify6 } from '../lib/promisify.mjs';
 
 const fn = async (arg, callback) => {
   new Promise((rv, rj) => setTimeout(rv, arg, 'done'))
@@ -6,8 +6,8 @@ const fn = async (arg, callback) => {
     .catch((e) => callback(e, undefined));
 };
 
-const fnPromisified = promisify1(fn);
+const fnPromisified = promisify6(fn);
 
-fnPromisified(500, 1000)
+fnPromisified(5000, 2000)
   .then(console.log)
   .catch(console.log);
