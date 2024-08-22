@@ -54,7 +54,7 @@
     "nodemon": "^2.0.20"
   },
   "dependencies": {
-    "@types/node": "^20.2.1",
+    "@types/node": "^22.5.0",
     "@types/nodemailer": "^6.4.6",
     "@types/pg": "^8.6.5",
     "@types/ws": "^8.5.3",

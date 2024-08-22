@@ -24,10 +24,11 @@ export const runTest = ({
             const { query, params } = operation;
             const connection = connections[connId]!;
             if (query) await assertDb(operation);
-            else if (!params) {
+            else if (params) await assertResponse(operation, connection);
+            else {
               const callId = calls[connId]++;
               await assertMessage(operation, onMessage[connId]!, callId);
-            } else await assertResponse(operation, connection);
+            }
           });
         }
       });
