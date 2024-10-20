@@ -4,7 +4,12 @@ import { TPromiseExecutor } from '../../src/client/common/types';
 
 export const createUnicCode = (
   length: number,
-): string => crypto.randomBytes(length).toString('hex');
+): string => {
+  const byteLenth = Math.ceil(length / 2);
+  const codeBuffer = crypto.randomBytes(byteLenth);
+  const codeHexString = codeBuffer.toString('hex');
+  return codeHexString;
+};
 
 export const createHash = (password: string) => {
   const executor: TPromiseExecutor<string> = (rv, rj) => {
