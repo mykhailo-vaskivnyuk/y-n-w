@@ -58,6 +58,7 @@ export const NetConnectByTokenSchema = [JOI_NULL, {
 export const WaitCreateParamsSchema = {
   token: Joi.string().required(),
   comment: Joi.string().required().max(255),
+  test: Joi.boolean().required(),
 };
 
 export const WaitNetsSchema = {

@@ -11,7 +11,7 @@ import {
 } from '../schema/schema';
 
 export const create: THandler<IWaitCreateParams, INetConnectByLink> =
-  async ({ session }, { token, comment }) => {
+  async ({ session }, { token, comment, test }) => {
     const user_id = session.read('user_id')!;
     const [net] = await execQuery.net.find.byNetLink([token]);
     if (!net) return null;
@@ -33,6 +33,8 @@ export const create: THandler<IWaitCreateParams, INetConnectByLink> =
           .net.find.byUser([parent_net_id, user_id]);
         if (!parentNet) return { net_id, error: 'not parent net member' };
       }
+
+      if (test) return { net_id };
 
       /* create new waiting member */
       await t.execQuery.net.wait.create([net_id, user_id, comment]);

@@ -59,6 +59,7 @@ export type INetConnectByLink = {
 export type IWaitCreateParams = {
   token: string,
   comment: string,
+  test: boolean,
 };
 
 export type IWaitNets = Pick<INet, 'net_id' | 'name'>[];
