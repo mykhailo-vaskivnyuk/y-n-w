@@ -26,10 +26,11 @@ export class EventMessages {
   }
 
   async create(t?: ITransaction) {
-    if (!this.member) return;
-    await this.createInCircle(t);
-    await this.createInTree(t);
-    await this.createMessageToMember();
+    if (this.member) {
+      await this.createInCircle(t);
+      await this.createInTree(t);
+      await this.createMessageToMember();
+    }
     this.createInNet();
   }
 

@@ -26,7 +26,7 @@ export const create: THandler<IWaitCreateParams, INetConnectByLink> =
 
       const [waiting] = await execQuery
         .net.find.byWaitingUser([net_id, user_id]);
-      if (waiting) return { net_id, error: 'already waitnig' };
+      if (waiting) return { net_id, error: 'already waiting' };
 
       if (parent_net_id) {
         const [parentNet] = await execQuery
@@ -43,7 +43,6 @@ export const create: THandler<IWaitCreateParams, INetConnectByLink> =
       const eventType = 'WAIT';
       event = new domain.event.NetEvent(net_id, eventType);
       await event.messages.create(t);
-      // await event.commit(t);
 
       return { net_id };
     }) as INetConnectByLink;
