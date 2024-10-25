@@ -98,6 +98,7 @@ export class Net {
 
   setView(netView?: T.NetViewEnum) {
     this.netView = netView;
+    this.app.emit('netView', this.netView);
   }
 
   private setCircle(circle: IMember[] = []) {
