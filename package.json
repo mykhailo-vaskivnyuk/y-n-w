@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "build:front": "cd ../node-u-n-w-front && rimraf build && cross-env NODE_ENV=production npx webpack --config webpack/webpack.config.js",
+    "build:front": "cd ../node-u-n-w-front && npm run build",
     "start": "node js/src/index.js",
-    "pack": "npm run rmjs && npm run build && cross-env RUN_ONCE=true PORT=8001 npm start && npm run sync && npm run build:front && npm run sync",
+    "pack": "npm run sync && npm run build:front && npm run rmassets && npm run sync",
     "dev": "cross-env NODE_ENV=development nodemon js/src/index.js",
     "debug": "nodemon --inspect js/src/index.js",
     "test": "cross-env NODE_ENV=test node js/tests/app.test.js",
@@ -26,6 +26,7 @@
     "copy:tofront": "node src/scripts/js/copy.all.to.front.js",
     "copy:toback": "node src/scripts/js/copy.all.to.back.js",
     "rmjs": "node src/scripts/js/remove.js.js",
+    "rmassets": "node src/scripts/js/remove.assets.js",
     "tunel": "node scripts/tunel.js"
   },
   "repository": {

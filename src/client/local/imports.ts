@@ -4,3 +4,4 @@ export * from '../../domain/types/net.types';
 export {
   getEnumFromMap, createEnumFromMap, createEnumFromArray,
 } from '../../utils/utils';
+export * from './constants';

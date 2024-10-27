@@ -13,7 +13,6 @@ export const sendResponse: TWsResModule = () =>
       data,
     };
     const responseMessage = JSON.stringify(response);
-    connection.send(responseMessage, { binary: false });
     await new Promise((rv, rj) => {
       const cb = (e?: Error) => {
         e ? rj(e) : rv(true);

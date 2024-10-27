@@ -124,7 +124,7 @@ class WsConnection extends EventEmitter {
 
   createRequestExecutor(message: string): TPromiseExecutor<void> {
     return (rv, rj) => {
-      let timeout: NodeJS.Timer | undefined = setTimeout(() => {
+      let timeout: NodeJS.Timeout | undefined = setTimeout(() => {
         this.requests.delete(this.id);
         timeout = undefined;
         rj(new HttpResponseError(503));

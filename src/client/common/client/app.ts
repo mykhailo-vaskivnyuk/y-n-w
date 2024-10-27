@@ -3,6 +3,7 @@
 import * as T from '../server/types/types';
 import { TPromiseExecutor } from '../types';
 import { AppStatus } from './constants';
+import { API_URL } from '../../local/imports';
 import { HttpResponseError } from './connection/errors';
 import { EventEmitter } from './lib/event.emitter';
 import { getApi, IClientApi } from '../server/client.api';
@@ -30,7 +31,7 @@ export class ClientApp extends EventEmitter {
 
   constructor() {
     super();
-    this.baseUrl = process.env.API || `${window.location.origin}/api`;
+    this.baseUrl = API_URL || `${window.location.origin}/api`;
     this.account = new Account(this as any);
     this.net = new Net(this as any);
     this.chat = new Chat(this as any);

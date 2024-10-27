@@ -16,12 +16,12 @@ export const sendChatMessage: TWsResModule = () =>
       const cb = (e?: Error) => {
         if (!needed) return;
         needed--;
-        if (!e) {
+        if (e) {
           needed = 0;
-          rv(true);
+          rv(false);
         } else {
           if (needed) return;
-          rv(false);
+          rv(true);
         }
       };
       for (const connection of connections) {
