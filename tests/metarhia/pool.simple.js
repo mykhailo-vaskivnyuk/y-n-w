@@ -29,10 +29,6 @@ class PoolSimple {
     return this.#pool.has(item);
   }
 
-  isFree(item) {
-    return this.#items.has(item);
-  }
-
   async #_get(exclusive) {
     let item;
     const ready = this.#items.size;
