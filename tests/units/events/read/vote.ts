@@ -38,7 +38,7 @@ export const forMembers: TTestUnit = (state: any) => (
 
 export const forMembersInTree: TTestUnit = (state: any) => (
   {
-    title: 'read events on vote for circle member',
+    title: 'read events on vote for tree member',
     operations: [
       {
         name: '/events/read',
@@ -177,7 +177,7 @@ export const forConnectedInCircle: TTestUnit = (state: any) => (
 
 export const forConnectedInTree: TTestUnit = (state: any) => (
   {
-    title: 'read events on vote for connected member in circle',
+    title: 'read events on vote for connected member in tree',
     operations: [
       {
         name: '/events/read',

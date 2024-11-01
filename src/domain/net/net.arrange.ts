@@ -57,7 +57,7 @@ export class NetArrange {
 
     // 3 - remove member in net
     logger.debug('MEMBER REMOVE');
-    await t.execQuery.member.remove([user_id, net_id]);
+    await t.execQuery.member.removeByNet([user_id, net_id]);
 
     // 4 - update nodes data in net
     confirmed && await this.updateCountOfMembers(node_id, -1);
@@ -79,7 +79,7 @@ export class NetArrange {
 
   async removeConnectedMember(event: NetEvent, user_id: number) {
     const { net_id } = event;
-    await this.t.execQuery.member.remove([user_id, net_id]);
+    await this.t.execQuery.member.removeByNet([user_id, net_id]);
     await event.messages.createToConnected(user_id);
   }
 
@@ -235,7 +235,7 @@ export class NetArrange {
     const [disvote_member] = await t.execQuery
       .member.get([parent_node_id]);
     const { user_id, net_id, count_of_members } = vote_member!;
-    const { user_id: parentUserId } = disvote_member!;
+    const { user_id: parentUserId } = disvote_member || {};
 
     /* vote */
     /* create event */
@@ -272,21 +272,32 @@ export class NetArrange {
     /* remove all votes*/
     await t.execQuery.member.data.clearVotes([parent_node_id]);
     /* replace member_to_member data */
+    if (!parentUserId) {
+      await t.execQuery.member.create([parent_node_id, user_id]);
+      await t.execQuery.member.confirm([parent_node_id]);
+    }
     await t.execQuery.member.data.replace([node_id, parent_node_id]);
     /* replace users */
-    await t.execQuery
-      .member.replace([node_id, parent_node_id, user_id, parentUserId]);
+    if (parentUserId) {
+      await t.execQuery
+        .member.replace([node_id, parent_node_id, user_id, parentUserId]);
+    } else {
+      await t.execQuery.member.remove([node_id]);
+    }
 
     /* correct count_of_members */
     if (!parentUserId) {
       await t.execQuery.node.updateCountOfMembers([node_id, -1]);
       if (count_of_members - 1) return;
-      await t.execQuery.node.tree.remove([parent_node_id]);
+      await t.execQuery.node.tree.remove([node_id]);
     }
 
     /* create messages */
     const voteMemeber = {
-      ...disvote_member!,
+      ...vote_member!,
+      node_id: parent_node_id,
+      parent_node_id: null,
+      ...disvote_member,
       user_id,
     };
     await event
