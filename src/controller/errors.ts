@@ -1,10 +1,10 @@
 import { ValidationErrorItem } from 'joi';
 import { TOperationResponse } from '../types/operation.types';
 
-export const ROUTER_ERROR_MAP = {
-  ROUTER_ERROR: 'ROUTER ERROR',
-  ROUTES_CREATE_ERROR: 'CAN\'T CREATE ROUTES',
-  CANT_FIND_ROUTE: 'CAN\'T FIND ROUTE',
+export const CONTROLLER_ERROR_MAP = {
+  CONTROLLER_ERROR: 'CONTROLLER ERROR',
+  ENDPOINTS_CREATE_ERROR: 'CAN\'T CREATE ENDPOINTS',
+  CANT_FIND_ENDPOINT: 'CAN\'T FIND ENDPOINT',
   MODULE_ERROR: 'MODULE ERROR',
   SERVICE_ERROR: 'SERVICE ERROR',
   DOMAIN_ERROR: 'DOMAIN ERROR',
@@ -15,15 +15,15 @@ export const ROUTER_ERROR_MAP = {
   NOT_CONFIRMED: 'USER ISN\'T CONFIRMED',
   FORBIDDEN: 'USER ISN\'T INSIDE NET OR MEMBER PARENT NET',
 } as const;
-export type RouterErrorCode = keyof typeof ROUTER_ERROR_MAP;
-export type TRouterErrorDetails = RouterError['details'];
+export type ControllerErrorCode = keyof typeof CONTROLLER_ERROR_MAP;
+export type TControllerErrorDetails = ControllerError['details'];
 
-export class RouterError extends Error {
-  public code: RouterErrorCode;
+export class ControllerError extends Error {
+  public code: ControllerErrorCode;
   public details?: TOperationResponse;
 
-  constructor(code: RouterErrorCode, details: TOperationResponse = null) {
-    super(ROUTER_ERROR_MAP[code]);
+  constructor(code: ControllerErrorCode, details: TOperationResponse = null) {
+    super(CONTROLLER_ERROR_MAP[code]);
     this.name = this.constructor.name;
     this.code = code;
     this.details = details;

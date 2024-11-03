@@ -27,6 +27,8 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
 
       /* remove token */
       await t.execQuery.member.invite.remove([node_id]);
+      /* remove wait */
+      await t.execQuery.net.wait.remove([net_id, user_id]);
 
       /* create new member */
       const confirmed = !env.INVITE_CONFIRM;
@@ -38,10 +40,15 @@ const connectByToken: THandler<ITokenParams, INetConnectByToken> =
       }
 
       /* create messages */
-      const newMember = { parent_node_id, node_id } as IMember;
-      event = new domain.event.NetEvent(net_id, 'CONNECT', newMember);
+      const newMember = {
+        parent_node_id,
+        node_id,
+        confirmed,
+      } as IMember;
+      const eventType = confirmed ? 'CONNECT_AND_CONFIRM' : 'CONNECT';
+      event = new domain.event.NetEvent(net_id, eventType, newMember);
       await event.messages.create(t);
-      await event.commit(notificationService, t);
+      await event.commit(t);
 
       return { net_id };
     }) as INetConnectByToken;

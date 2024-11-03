@@ -13,6 +13,7 @@ import { IQueriesNetFind } from './find';
 import { IQueriesNetBoard } from './boardMessages';
 import { IQueriesNetUsers } from './users';
 import { IQueriesNetStructure } from './structure/get';
+import { IQueriesNetWait } from './wait';
 
 export interface IQueriesNet {
   createRoot: TQuery<[], ITableNets>;
@@ -46,6 +47,7 @@ export interface IQueriesNet {
   boardMessages: IQueriesNetBoard;
   users: IQueriesNetUsers;
   structure: { get: IQueriesNetStructure; };
+  wait: IQueriesNetWait;
 }
 
 export const createRoot = `
@@ -92,6 +94,7 @@ export const get = `
     nets.parent_net_id,
     nets_data.name,
     nets_data.goal,
+    nets_data.net_link,
     root_node.count_of_members AS total_count_of_members
   FROM members
   INNER JOIN nodes ON

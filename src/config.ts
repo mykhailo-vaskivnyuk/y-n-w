@@ -11,10 +11,13 @@ const {
   HOST: host,
   PORT: port,
   DATABASE_URL: dbUrl,
-  ORIGIN: origin,
   STATIC_PATH: staticPath,
   LOGGER_COLORIZE: colorize,
-  GMAIL: gmail,
+  MAIL: mail,
+  MAIL_HOST: mailHost,
+  MAIL_PORT: mailPort,
+  MAIL_USER: mailUser,
+  MAIL_PASSWORD: mailPass,
   ...restEnv
 } = getEnv();
 const connection = {
@@ -31,6 +34,22 @@ const connection = {
   },
 }[dbUrl ? 'heroku' : 'local'];
 
+const mailConfig = {
+  google: {
+    auth: {
+      user: 'm.vaskivnyuk@gmail.com',
+      pass: mailPass,
+    },
+  },
+  elastic: {
+    host: mailHost,
+    port: mailPort,
+    auth: {
+      user: mailUser,
+      pass: mailPass,
+    }
+  },
+}[mail || 'google'];
 
 const config: IConfig = {
   env: restEnv,
@@ -46,8 +65,8 @@ const config: IConfig = {
     connectionPath: resolvePath('db/connection/pg'),
     connection,
   },
-  router: {
-    path: resolvePath('controller/router'),
+  controller: {
+    path: resolvePath('controller/controller'),
     apiPath: resolvePath('api'),
     servicesPath: resolvePath('services'),
     modulesPath: resolvePath('controller/modules'),
@@ -68,13 +87,7 @@ const config: IConfig = {
       'validateOutput',
     ],
     modulesConfig: {
-      mailService: {
-        service: 'gmail',
-        auth: {
-          user: 'm.vaskivnyuk@gmail.com',
-          pass: gmail,
-        },
-      },
+      mailService: mailConfig,
     },
     tasks: [{
       path: 'member/disconnectUnactive',
@@ -122,7 +135,6 @@ const config: IConfig = {
       path: resolvePath('server/tg/tg'),
       token: restEnv.TG_BOT_TOKEN,
       user_name: restEnv.TG_BOT,
-      origin,
     }
   },
 };

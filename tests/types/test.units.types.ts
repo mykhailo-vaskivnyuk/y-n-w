@@ -43,14 +43,22 @@ export interface ITestUnitsMap {
       'disconnect': {
         'dislike': TTestUnit;
         'dislikeFacilitator': TTestUnit;
+        'leaveFacilitator': TTestUnit;
       };
       'getEvent': (...args: any[]) => TTestUnit;
       'confirm': TTestUnit;
+      'confirmInCircle': TTestUnit;
       'connect': TTestUnit;
+      'connectAndConfirmInTree': TTestUnit;
+      'connectAndConfirmInCircle': TTestUnit;
+      'boardMessage': TTestUnit;
+      'tightenInTree': TTestUnit;
+      'tighten': TTestUnit;
       'leave': {
         'dislikeInTree': TTestUnit;
         'dislikeInCircle': TTestUnit;
         'dislikeFacilitator': TTestUnit;
+        'leaveFacilitator': TTestUnit;
         'inTree': TTestUnit;
         'inCircle': TTestUnit;
       };
@@ -75,6 +83,9 @@ export interface ITestUnitsMap {
     };
   };
   'net': {
+    'board': {
+      'write': TTestUnit;
+    };
     'connectByToken': {
       'toNet': (...args: any[]) => TTestUnit;
       'withErrorToNet': (...args: any[]) => TTestUnit;

@@ -4,7 +4,7 @@ import { IEnterParams } from '../../client/common/server/types/types';
 import { EnterParamsSchema } from '../schema/schema';
 
 const overmail: THandler<IEnterParams, boolean> = async (
-  { origin }, { email },
+  _, { email },
 ) => {
   const [user] = await execQuery.user.findByEmail([email]);
   if (!user) return false;
@@ -12,7 +12,7 @@ const overmail: THandler<IEnterParams, boolean> = async (
   const { user_id, confirmed } = user;
   await execQuery.user.token.create([user_id, token]);
   const type = confirmed ? 'restore' : 'confirm';
-  await mailService[type](email, origin, token);
+  await mailService[type](email, token);
   return true;
 };
 overmail.paramsSchema = EnterParamsSchema;

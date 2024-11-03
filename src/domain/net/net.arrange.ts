@@ -19,7 +19,7 @@ export class NetArrange {
       const nodesToArrange =
         await net.removeMemberFromNetAndSubnets(event);
       await net.arrangeNodes(event, nodesToArrange);
-      await event.commit(notificationService, t);
+      await event.commit(t);
     });
     event?.send();
   }
@@ -57,14 +57,14 @@ export class NetArrange {
 
     // 3 - remove member in net
     logger.debug('MEMBER REMOVE');
-    await t.execQuery.member.remove([user_id, net_id]);
+    await t.execQuery.member.removeByNet([user_id, net_id]);
 
     // 4 - update nodes data in net
     confirmed && await this.updateCountOfMembers(node_id, -1);
 
     // 5 - create messages
     logger.debug('CREATE MESSAGES');
-    event.messages.create(t);
+    await event.messages.create(t);
 
     return [parent_node_id, node_id];
   }
@@ -79,7 +79,7 @@ export class NetArrange {
 
   async removeConnectedMember(event: NetEvent, user_id: number) {
     const { net_id } = event;
-    await this.t.execQuery.member.remove([user_id, net_id]);
+    await this.t.execQuery.member.removeByNet([user_id, net_id]);
     await event.messages.createToConnected(user_id);
   }
 
@@ -101,8 +101,19 @@ export class NetArrange {
     while (nodesToArrange.length) {
       const node_id = nodesToArrange.shift();
       if (!node_id) continue;
-      const isTighten = await this.tightenNodes(node_id);
-      if (isTighten) continue;
+      const removed = await this.tightenNodes(node_id, event);
+      if (removed) {
+        if (!removed.length) continue;
+        let i = -1;
+        for (const node_id of [...nodesToArrange]) {
+          i++;
+          if (!node_id) continue;
+          if (!removed.includes(node_id)) continue;
+          nodesToArrange.splice(i--, 1);
+        }
+        event.messages.removeFromNodes(removed);
+        continue;
+      }
       const newNodesToArrange =
         await this.checkDislikes(event, node_id);
       nodesToArrange = [...newNodesToArrange, ...nodesToArrange];
@@ -111,47 +122,53 @@ export class NetArrange {
     }
   }
 
-  async tightenNodes(node_id: number) {
+  async tightenNodes(
+    node_id: number,
+    event: NetEvent,
+  ): Promise<number[] | undefined> {
     const { t } = this;
     const [node] = await t.execQuery.node.getIfEmpty([node_id]);
-    if (!node) return false;
+    if (!node) return;
     const {
-      node_level,
       parent_node_id,
       net_id,
       node_position,
       count_of_members,
     } = node;
     if (!count_of_members) {
-      if (parent_node_id) return true;
+      if (parent_node_id) return [];
       await t.execQuery.node.remove([node_id]);
       await this.updateCountOfNets(net_id, -1);
       await t.execQuery.net.remove([net_id]);
-      return true;
+      return [];
     }
     const [nodeWithMaxCount] = await t.execQuery
       .net.tree.getNodes([node_id]);
-    if (!nodeWithMaxCount) return false;
+    if (!nodeWithMaxCount) return;
     const {
       count_of_members: childCount,
       node_id: childNodeId,
     } = nodeWithMaxCount;
-    if (childCount !== count_of_members) return false;
+    if (childCount !== count_of_members) return;
     await t.execQuery.node.move([
       childNodeId,
-      node_level,
       parent_node_id,
       node_position,
       count_of_members,
     ]);
     if (parent_node_id) {
-      this.changeLevelFromNode(childNodeId);
+      await this.changeLevelFromNode(childNodeId);
     } else {
       await t.execQuery.node.changeLevelAll([net_id]);
     }
-    await t.execQuery.node.tree.remove([node_id]);
+    const nodes = await t.execQuery.node.tree.remove([node_id]);
     await t.execQuery.node.remove([node_id]);
-    return true;
+    const nodeIds = nodes.map(({ node_id }) => node_id);
+    nodeIds.push(node_id);
+    const [tightenMember] = await t.execQuery.member.get([childNodeId]);
+    const tightenEvent = event.createChild('TIGHTEN', tightenMember!);
+    await tightenEvent.messages.create(t);
+    return nodeIds;
   }
 
   async updateCountOfNets(
@@ -165,13 +182,14 @@ export class NetArrange {
     await this.updateCountOfNets(parent_net_id, addCount);
   }
 
-  async changeLevelFromNode(parentNodeId: number) {
+  async changeLevelFromNode(nodeId: number) {
+    const [node] = await this.t.execQuery.node.changeLevel([nodeId]);
+    if (!node!.count_of_members) return;
     for (let node_position = 0; node_position < 6; node_position++) {
-      const [node] = await this.t.execQuery
-        .node.getChild([parentNodeId, node_position]);
-      const { node_id, count_of_members } = node!;
-      await this.t.execQuery.node.changeLevel([node_id]);
-      if (count_of_members) await this.changeLevelFromNode(node_id);
+      const [childNode] = await this.t.execQuery
+        .node.getChild([nodeId, node_position]);
+      const { node_id } = childNode!;
+      await this.changeLevelFromNode(node_id);
     }
   }
 
@@ -217,7 +235,7 @@ export class NetArrange {
     const [disvote_member] = await t.execQuery
       .member.get([parent_node_id]);
     const { user_id, net_id, count_of_members } = vote_member!;
-    const { user_id: parentUserId } = disvote_member!;
+    const { user_id: parentUserId } = disvote_member || {};
 
     /* vote */
     /* create event */
@@ -254,21 +272,32 @@ export class NetArrange {
     /* remove all votes*/
     await t.execQuery.member.data.clearVotes([parent_node_id]);
     /* replace member_to_member data */
+    if (!parentUserId) {
+      await t.execQuery.member.create([parent_node_id, user_id]);
+      await t.execQuery.member.confirm([parent_node_id]);
+    }
     await t.execQuery.member.data.replace([node_id, parent_node_id]);
     /* replace users */
-    await t.execQuery
-      .member.replace([node_id, parent_node_id, user_id, parentUserId]);
+    if (parentUserId) {
+      await t.execQuery
+        .member.replace([node_id, parent_node_id, user_id, parentUserId]);
+    } else {
+      await t.execQuery.member.remove([node_id]);
+    }
 
     /* correct count_of_members */
     if (!parentUserId) {
       await t.execQuery.node.updateCountOfMembers([node_id, -1]);
       if (count_of_members - 1) return;
-      await t.execQuery.node.tree.remove([parent_node_id]);
+      await t.execQuery.node.tree.remove([node_id]);
     }
 
     /* create messages */
     const voteMemeber = {
-      ...disvote_member!,
+      ...vote_member!,
+      node_id: parent_node_id,
+      parent_node_id: null,
+      ...disvote_member,
       user_id,
     };
     await event

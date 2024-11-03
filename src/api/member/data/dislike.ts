@@ -31,7 +31,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
     const params = [parentNodeId!, node_id, member_node_id] as const;
     await t.execQuery.member.data.setDislike([...params]);
     await net.arrangeNodes(event, [parentNodeId]);
-    await event.commit(notificationService, t);
+    await event.commit(t);
     return true;
   });
   event?.send();

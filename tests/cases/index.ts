@@ -1,7 +1,11 @@
 export * as cases01 from './general';
 export * as cases02 from './net';
-export * as cases03 from './net.vote.1';
-export * as cases04 from './net.vote.2';
-export * as cases05 from './chat';
-export * as cases06 from './dislike';
-export * as cases07 from './invite';
+export * as cases03_1 from './net.vote.1';
+export * as cases03_2 from './net.vote.2';
+export * as cases03_3 from './net.vote.3';
+export * as cases04 from './chat';
+export * as cases05 from './dislike';
+export * as cases06_1 from './invite';
+export * as cases06_2 from './invite.confirm';
+export * as cases07 from './net.leave.tight';
+export * as cases08 from './net.board';

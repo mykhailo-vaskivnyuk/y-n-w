@@ -29,7 +29,7 @@ export const set: THandler<IMemberConfirmParams, boolean> = async (
     const net = new domain.net.NetArrange(t);
     const result = await net.checkVotes(event, parent_node_id);
     !result && await event.messages.create(t);
-    await event.commit(notificationService, t);
+    await event.commit(t);
     return true;
   });
   event?.send();
@@ -53,7 +53,7 @@ export const unSet: THandler<IMemberConfirmParams, boolean> = async (
   await execQuery.member.data.unsetVote([parent_node_id, node_id]);
   const event = new domain.event.NetEvent(net_id, 'VOTE', m);
   await event.messages.create();
-  await event.commit(notificationService);
+  await event.commit();
   event.send();
   return true;
 };

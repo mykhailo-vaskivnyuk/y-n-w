@@ -5,6 +5,7 @@ import { SyncCalc } from './calc';
 
 export const getEnv = () => {
   const DEV = env.NODE_ENV === 'development';
+  const TEST = env.NODE_ENV === 'test';
   new SyncCalc('.env.json')
     .next(readFileSync)
     .next(String)
@@ -23,15 +24,21 @@ export const getEnv = () => {
     MAIL_CONFIRM_OFF = false,
     TG_BOT = 'u_n_w_bot',
     TG_BOT_TOKEN = '',
-    ORIGIN = 'https://merega.herokuapp.com',
+    ORIGIN = DEV ? `http://localhost:${PORT}` : 'https://merega.herokuapp.com',
     STATIC_PATH = 'public',
     LOGGER_COLORIZE = false,
-    GMAIL = '',
+    MAIL = 'google',
+    MAIL_HOST = '',
+    MAIL_PORT = 2525,
+    MAIL_USER = '',
+    MAIL_PASSWORD = '',
     INVITE_CONFIRM = false,
+    NOTIFICATION_INTERVAL = 0,
   } = env as Record<CleanedEnvKeys, any>;
 
   const cleanedEnvObj: ICleanedEnv = {
     DEV,
+    TEST,
     TRANSPORT,
     HOST,
     PORT: +PORT,
@@ -46,8 +53,13 @@ export const getEnv = () => {
     ORIGIN,
     STATIC_PATH,
     LOGGER_COLORIZE,
-    GMAIL,
+    MAIL,
+    MAIL_HOST,
+    MAIL_PORT,
+    MAIL_USER,
+    MAIL_PASSWORD,
     INVITE_CONFIRM,
+    NOTIFICATION_INTERVAL,
   };
 
   return cleanedEnvObj;

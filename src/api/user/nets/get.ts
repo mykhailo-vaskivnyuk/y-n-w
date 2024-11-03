@@ -1,12 +1,21 @@
-import { INetsResponse } from '../../../client/common/server/types/types';
+import {
+  IWaitNets, INetsResponse,
+} from '../../../client/common/server/types/types';
 import { THandler } from '../../../controller/types';
-import { NetsResponseSchema } from '../../schema/schema';
+import {
+  NetsResponseSchema, WaitNetsSchema,
+} from '../../schema/schema';
 
-const get: THandler<never, INetsResponse> = async ({ session }) => {
+export const all: THandler<never, INetsResponse> = async ({ session }) => {
   const user_id = session.read('user_id');
-  const nets = await execQuery.user.nets.get([user_id!]);
+  const nets = await execQuery.user.nets.getAll([user_id!]);
   return nets;
 };
-get.responseSchema = NetsResponseSchema;
+all.responseSchema = NetsResponseSchema;
 
-export = get;
+export const wait: THandler<never, IWaitNets> = async ({ session }) => {
+  const user_id = session.read('user_id');
+  const nets = await execQuery.user.nets.getWait([user_id!]);
+  return nets;
+};
+wait.responseSchema = WaitNetsSchema;

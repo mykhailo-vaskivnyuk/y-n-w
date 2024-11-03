@@ -1,15 +1,16 @@
 import { mock } from 'node:test';
 import { TFetch } from '../../src/client/common/client/connection/types';
 import { TTransport } from '../../src/server/types';
+import { IConfig } from '../../src/types/config.types';
 import {
   IParams, TOperationResponse,
 } from '../../src/types/operation.types';
 
 export interface ITestCase {
   title: string;
-  dbDataFile: string;
+  dbDataFile?: string;
   connection: TTransport;
-  connCount?: number;
+  config?: Partial<IConfig>;
   caseUnits: ([TTestUnit, number] | TTestUnit)[];
 }
 

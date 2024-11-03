@@ -8,6 +8,7 @@ export const NET_EVENT_MAP = {
   LEAVE_CONNECTED: 'leave_connected',
   CONNECT: 'connect',
   CONFIRM: 'confirm',
+  CONNECT_AND_CONFIRM: 'connect_and_confirm',
   REFUSE: 'refuse',
   DISLIKE: 'dislike',
   DISLIKE_DISCONNECT: 'dislike_disconnect',
@@ -20,6 +21,8 @@ export const NET_EVENT_MAP = {
   NOT_VOTE: 'not_vote',
   NOT_VOTE_DISCONNECT: 'not_vote_disconnect',
   BOARD_MESSAGE: 'board_message',
+  TIGHTEN: 'tighten',
+  WAIT: 'wait',
 };
 export type NetEventKeys = keyof typeof NET_EVENT_MAP;
 

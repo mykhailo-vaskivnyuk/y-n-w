@@ -1,7 +1,7 @@
 import { TWsResModule } from '../types';
 
 export const sendChatMessage: TWsResModule = () =>
-  function sendChatMessage(
+  async function sendChatMessage(
     connections, _, data) {
     if (!Array.isArray(connections)) return true;
     const response = {
@@ -10,7 +10,22 @@ export const sendChatMessage: TWsResModule = () =>
       data,
     };
     const responseMessage = JSON.stringify(response);
-    for (const connection of connections)
-      connection.send(responseMessage, { binary: false });
-    return true;
+
+    return new Promise((rv) => {
+      let needed = connections.length;
+      const cb = (e?: Error) => {
+        if (!needed) return;
+        needed--;
+        if (e) {
+          needed = 0;
+          rv(false);
+        } else {
+          if (needed) return;
+          rv(true);
+        }
+      };
+      for (const connection of connections) {
+        connection.send(responseMessage, { binary: false }, cb);
+      }
+    });
   };

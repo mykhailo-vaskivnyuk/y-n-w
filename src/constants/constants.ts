@@ -28,6 +28,12 @@ map.CONNECT = {
 
 map.CONFIRM = {
   MEMBER: 'Координатор підтвердив вашу участь в спільноті',
+  CIRCLE: 'У колі новий учасник',
+};
+
+map.CONNECT_AND_CONFIRM = {
+  FACILITATOR: 'У дереві новий учасник',
+  CIRCLE: 'У колі новий учасник',
 };
 
 map.REFUSE = {
@@ -88,17 +94,28 @@ map.NOT_VOTE_DISCONNECT = {
 };
 
 map.BOARD_MESSAGE = {
-  NET: '',
+  NET: 'Зміни на дошці',
+};
+
+map.WAIT = {
+  NET: 'Запит на приєднання до спільноти',
+};
+
+map.TIGHTEN = {
+  CIRCLE: 'У вашому колі новий учасник, через стискання спільноти',
+  FACILITATOR: 'У вашому дереві новий учасник, через стискання спільноти',
+  MEMBER: 'У вас нове коло, через стискання спільноти',
 };
 
 export const SET_NET_ID_FOR: NetEventKeys[] = [
   'CONFIRM',
   'CONNECT_VOTE',
   'CONNECT_DISVOTE',
+  'TIGHTEN',
 ];
 
 export const INSTANT_EVENTS: NetEventKeys[] = [
   // 'CONNECT',
   'VOTE',
-  'BOARD_MESSAGE',
+  // 'BOARD_MESSAGE',
 ];

@@ -1,12 +1,12 @@
 /* eslint-disable max-lines */
 import { Writable } from 'node:stream';
 import Joi from 'joi';
-import { IRoutes, TJoiSchema, THandler, THandlerSchema } from './types';
+import { IEndpoints, TJoiSchema, THandler, THandlerSchema } from './types';
 import { SIMPLE_TYPES } from './constants';
 import * as tpl from './methods/templates';
 
 export const isHandler = (
-  handler?: IRoutes | THandler,
+  handler?: IEndpoints | THandler,
 ): handler is THandler => typeof handler === 'function';
 
 export const getTypeNameFromPathname = (pathname: string) => 'T' + pathname

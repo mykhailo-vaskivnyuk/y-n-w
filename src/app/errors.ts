@@ -1,12 +1,12 @@
 import { IAppThis } from './types';
 import { DatabaseError } from '../db/errors';
 import {
-  RouterError, RouterErrorCode, TRouterErrorDetails,
+  ControllerError, ControllerErrorCode, TControllerErrorDetails,
 } from '../controller/errors';
 import { ServerError } from '../server/errors';
 
 export const AppErrorMap = {
-  ROUTER_ERROR: 'ROUTER ERROR',
+  CONTROLLER_ERROR: 'CONTROLLER ERROR',
   INIT_ERROR: 'API IS NOT INITIALIZED OR SET UNAVAILABLE',
 } as const;
 type AppErrorCode = keyof typeof AppErrorMap;
@@ -23,7 +23,7 @@ export class AppError extends Error {
 
 export const KNOWN_ERRORS_MAP = [
   DatabaseError.name,
-  RouterError.name,
+  ControllerError.name,
   ServerError.name,
   AppError.name,
 ];
@@ -60,34 +60,34 @@ export const handleAppInitError = async (e: any, parent: IAppThis) => {
 };
 
 const OPERATION_ERRORS_MAP: Partial<
-  Record<RouterErrorCode, (details: TRouterErrorDetails) => never>
+  Record<ControllerErrorCode, (details: TControllerErrorDetails) => never>
 > = {
-  CANT_FIND_ROUTE: (details: TRouterErrorDetails) => {
+  CANT_FIND_ENDPOINT: (details: TControllerErrorDetails) => {
     throw new ServerError('NOT_FOUND', details);
   },
-  MODULE_ERROR: (details: TRouterErrorDetails) => {
+  MODULE_ERROR: (details: TControllerErrorDetails) => {
     throw new ServerError('BED_REQUEST', details);
   },
-  REDIRECT: (details: TRouterErrorDetails) => {
+  REDIRECT: (details: TControllerErrorDetails) => {
     throw new ServerError('REDIRECT', details);
   },
-  UNAUTHORIZED: (details: TRouterErrorDetails) => {
+  UNAUTHORIZED: (details: TControllerErrorDetails) => {
     throw new ServerError('UNAUTHORIZED', details);
   },
-  NOT_CONFIRMED: (details: TRouterErrorDetails) => {
+  NOT_CONFIRMED: (details: TControllerErrorDetails) => {
     throw new ServerError('FORBIDDEN', details);
   },
-  FORBIDDEN: (details: TRouterErrorDetails) => {
+  FORBIDDEN: (details: TControllerErrorDetails) => {
     throw new ServerError('FORBIDDEN', details);
   },
 };
 
 export const handleOperationError = (e: any): never => {
-  if (e.name === RouterError.name) {
+  if (e.name === ControllerError.name) {
     const { code, details } = e;
-    OPERATION_ERRORS_MAP[code as RouterErrorCode]?.(details);
+    OPERATION_ERRORS_MAP[code as ControllerErrorCode]?.(details);
   } else {
     logger.error(e);
   }
-  throw new AppError('ROUTER_ERROR');
+  throw new AppError('CONTROLLER_ERROR');
 };

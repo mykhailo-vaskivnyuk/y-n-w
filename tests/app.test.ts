@@ -1,52 +1,34 @@
-import test from 'node:test';
-import { ITestRunnerData } from './types/types';
+import { ITestUnits } from './types/types';
 import { ITestUnitsMap } from './types/test.units.types';
-import { getCasesAll, getUnitsMap } from './utils/load.units';
+import { config } from './config';
+import * as casesMap from './cases';
+import { DirLoader } from '../lib/dir.loader';
+import { createUnitsTypes } from './utils/create.units.types';
 import { prepareTest } from './utils/test.utils';
-import { assertDb, assertMessage, assertResponse } from './utils/assert.utils';
+import { runTest } from './utils/test.runner';
 
-const runTest = ({
-  title,
-  connections,
-  onMessage,
-  testUnits,
-}: ITestRunnerData) =>
-  test(title, async (t) => {
-    const global: Record<string, any> = {};
-    const states: Record<string, any>[] = [];
-    const calls: number[] = [];
-    for (const [getUnit, connId] of testUnits) {
-      const state = states[connId] || { global };
-      states[connId] = state;
-      const { title, operations } = getUnit(state);
-      const connAndTitle = `${connId} - ${title}`;
-      await t.test(connAndTitle, async (t) => {
-        for (const operation of operations) {
-          const { name } = operation;
-          await t.test(name, async () => {
-            const { query, params } = operation;
-            const connection = connections[connId]!;
-            if (query) await assertDb(operation);
-            else if (!params) {
-              const callId = calls[connId] || 0;
-              await assertMessage(operation, onMessage[connId]!, callId);
-              calls[connId] = callId + 1;
-            } else await assertResponse(operation, connection);
-          });
-        }
-      });
-    }
-  });
+const getCasesAll = () => Object
+  .values(casesMap)
+  .map(Object.values)
+  .flat();
 
-const runTests = async () => {
-  const cases = getCasesAll();
-  const unitsMap = await getUnitsMap() as unknown as ITestUnitsMap;
-  for (const getCaseGroup of cases) {
-    const caseGroup = getCaseGroup(unitsMap);
-    for (const testCase of caseGroup) {
-      const { testRunnerData, finalize } = await prepareTest(testCase);
-      await runTest(testRunnerData);
-      await finalize();
+const getUnitsMap = async () => {
+  const { unitsPath } = config;
+  const loader = new DirLoader<ITestUnits>(unitsPath);
+  const units = await loader.load();
+  await createUnitsTypes(config, units);
+  return units;
+};
+
+export const runTests = async () => {
+  const casesAll = getCasesAll();
+  const unitsMap = await getUnitsMap();
+  for (const getCasesGroup of casesAll) {
+    const casesGroup = getCasesGroup(unitsMap as unknown as ITestUnitsMap);
+    for (const testCase of casesGroup) {
+      const test = await prepareTest(testCase);
+      await runTest(test.testRunnerData);
+      await test.finalize();
     }
   }
 };

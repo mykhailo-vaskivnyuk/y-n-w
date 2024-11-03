@@ -2,7 +2,8 @@
 /* eslint-disable import/no-cycle */
 import * as T from '../../server/types/types';
 import { IClientAppThis } from '../types';
-import { AppStatus, TELEGRAM, USE_TG } from '../constants';
+import { AppStatus, TELEGRAM } from '../constants';
+import { USE_TG } from '../../../local/imports';
 import { Messenger } from './messenger.class';
 
 type IApp = IClientAppThis & {

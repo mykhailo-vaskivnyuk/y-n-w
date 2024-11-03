@@ -20,6 +20,9 @@ export interface IQueriesMember {
     ['member_id', number],
   ]>;
   remove: TQuery<[
+    ['member_id', number],
+  ]>;
+  removeByNet: TQuery<[
     ['user_id', number],
     ['net_id', number | null],
   ]>;
@@ -66,6 +69,11 @@ export const confirm = `
 `;
 
 export const remove = `
+  DELETE FROM members
+  WHERE member_id = $1
+`;
+
+export const removeByNet = `
   DELETE FROM members
   WHERE member_id IN (
     SELECT members.member_id

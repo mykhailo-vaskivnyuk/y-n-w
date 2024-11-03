@@ -1,17 +1,20 @@
 import { TQuery } from '../../types/types';
-import { IUserNet } from '../../../domain/types/net.types';
+import { INet, IUserNet } from '../../../domain/types/net.types';
 import { IMember } from '../../../domain/types/member.types';
 
 export interface IQueriesUserNets {
-  get: TQuery<[
+  getAll: TQuery<[
     ['user_id', number],
   ], IUserNet>;
+  getWait: TQuery<[
+    ['user_id', number],
+  ], INet>;
   getTop: TQuery<[
     ['user_id', number],
   ], IMember>,
 }
 
-export const get = `
+export const getAll = `
   SELECT
     nets.*,
     nodes.*,
@@ -30,6 +33,19 @@ export const get = `
     nets_data.net_id = nets.net_id
   WHERE members.user_id = $1
   ORDER BY nets.net_level
+`;
+
+export const getWait = `
+  SELECT
+    nets.*,
+    nets_data.*
+  FROM nets_guests
+  INNER JOIN nets ON
+    nets.net_id = nets_guests.net_id
+  INNER JOIN nets_data ON
+    nets_data.net_id = nets.net_id
+  WHERE nets_guests.user_id = $1
+  ORDER BY nets_data.name
 `;
 
 export const getTop = `

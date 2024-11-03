@@ -3,12 +3,12 @@ echo 'start'
 # prod
 # export DATABASE=postgresql-asymmetrical-81951
 # export APP=merega
+
 # dev
-export DATABASE=postgresql-animated-67025
-export APP=younworld
+DATABASE=postgresql-animated-67025
+APP=younworld
 
 heroku pg:psql $DATABASE --app $APP -f create.heroku.sql
 heroku pg:psql $DATABASE --app $APP -f ../structure.sql
-# heroku pg:psql $DATABASE --app $APP -f data.sql
 
 echo 'end'

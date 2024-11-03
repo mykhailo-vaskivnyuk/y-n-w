@@ -16,7 +16,6 @@ export const CONNECTION_ATTEMPT_COUNT = 3;
 export const CONNECTION_ATTEMPT_DELAY = 3000;
 export const CONNECTION_TIMEOUT = 20000;
 
-export const USE_TG = process.env.USE_TG === 'true';
 export const TELEGRAM = JSON.parse(`{
   "WebView": {
     "initParams": {

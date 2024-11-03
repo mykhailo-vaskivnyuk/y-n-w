@@ -23,7 +23,7 @@ const runProcess = (commandString: string, options = defaultOptions) => {
   return new Promise((rv) => {
     ls.on('close', (code: number) => {
       options.showLog && console.log('Exited with code:', `${code}`);
-      rv(undefined);
+      rv(code);
     });
   });
 };

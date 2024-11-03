@@ -13,12 +13,16 @@ export const root2: TTestUnit = (state: any) => (
           name: 'net 2',
           net_id: 2,
           net_level: 0,
+          net_link: 'net_link',
           node_id: 20,
           parent_net_id: null,
           parent_node_id: null,
           total_count_of_members: 1
         },
-        setToState: (actual) => state.net = actual,
+        setToState: (actual) => {
+          state.net = { ...actual };
+          actual.net_link = 'net_link';
+        },
       },
       {
         name: 'query net',
@@ -28,6 +32,7 @@ export const root2: TTestUnit = (state: any) => (
           name: state.net.name,
           net_id: 2,
           net_level: 0,
+          net_link: state.net.net_link,
           node_id: 20,
           parent_net_id: null,
           parent_node_id: null,
@@ -62,21 +67,26 @@ export const first: TTestUnit = (state: any) => (
           name: 'test net',
           net_id: 2,
           net_level: 0,
+          net_link: 'net_link',
           node_id: 20,
           parent_net_id: null,
           parent_node_id: null,
           total_count_of_members: 1
         },
-        setToState: (actual) => state.net = actual,
+        setToState: (actual) => {
+          state.net = { ...actual };
+          actual.net_link = 'net_link';
+        },
       },
       {
         name: 'query net',
         query: () => execQuery.net.get([state.net.net_id]),
-        expectedQueryResult: [{
+        expectedQueryResult: () => [{
           goal: null,
           name: 'test net',
           net_id: 2,
           net_level: 0,
+          net_link: state.net.net_link,
           node_id: 20,
           parent_net_id: null,
           parent_node_id: null,
