@@ -1,14 +1,16 @@
 import { SentMessageInfo } from 'nodemailer';
 
-export type TMailType = keyof IMailService['sendMail'];
+export type TMailType = 'restore' | 'confirm' | 'notify';
 
 export interface IMailService {
-  sendMail: {
+    send: () => Promise<SentMessageInfo>;
     confirm: (
-      to: string, origin: string, token: string,
+      to: string, token: string,
     ) => Promise<SentMessageInfo>;
     restore: (
-      to: string, origin: string, token: string,
+      to: string, token: string,
     ) => Promise<SentMessageInfo>;
-  };
+    notify: (
+      to: string,
+    ) => Promise<SentMessageInfo>;
 }

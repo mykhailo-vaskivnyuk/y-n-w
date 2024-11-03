@@ -39,8 +39,7 @@ export type IHttpContext = IOperation & {
 }
 
 export interface IHttpContextParams {
-  staticUnavailable: boolean;
-  apiUnavailable: boolean;
+  unavailable: boolean;
 }
 
 export interface IPreparedFile {

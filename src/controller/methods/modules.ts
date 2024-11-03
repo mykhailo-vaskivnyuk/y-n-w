@@ -1,9 +1,9 @@
 import { IOperation, TOperationResponse } from '../../types/operation.types';
-import { IRouterConfig, IContext, THandler } from '../types';
+import { IControllerConfig, IContext, THandler } from '../types';
 import { INPUT_MODULES_MAP, OUTPUT_MODULES_MAP } from '../constants';
 import { createPathResolve } from '../../utils/utils';
 
-export function createInputModules(config: IRouterConfig) {
+export function createInputModules(config: IControllerConfig) {
   const { modulesPath, inputModules, modulesConfig } = config;
   const resolvePath = createPathResolve(modulesPath);
 
@@ -28,7 +28,7 @@ export function createInputModules(config: IRouterConfig) {
   return execInputModules;
 }
 
-export const createOutputModules = (config: IRouterConfig) => {
+export const createOutputModules = (config: IControllerConfig) => {
   const { modulesPath, outputModules, modulesConfig } = config;
   const resolvePath = createPathResolve(modulesPath);
 

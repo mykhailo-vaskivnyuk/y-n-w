@@ -9,7 +9,6 @@ import {
 
 const getMailService = (config: MailOptions) => {
   const transporter = nodemailer.createTransport(config);
-
   const send = (mailOptions: MailOptions) => {
     const executor: TPromiseExecutor<SentMessageInfo> = (rv, rj) => {
       const options = { ...MAIL_COMMON_OPTIONS, ...mailOptions };
@@ -20,12 +19,10 @@ const getMailService = (config: MailOptions) => {
     return new Promise(executor);
   };
 
-  const sendMail = async (
-    type: TMailType, to: string, origin: string, token: string,
-  ) => {
-    const { text, subject } = MAIL_OPTIONS_MAP[type];
-    const link = `${origin}/#/account/${type}/${token}`;
-    const html = format(MAIL_TEMPLATE, text, link);
+  const sendMail = async (type: TMailType, to: string, token: string) => {
+    const { subject, text, link: tplLink, button } = MAIL_OPTIONS_MAP[type];
+    const link = format(tplLink, env.ORIGIN, token);
+    const html = format(MAIL_TEMPLATE, text, link, button);
     const options = { to, subject, html };
     try {
       return await send(options);
@@ -35,13 +32,14 @@ const getMailService = (config: MailOptions) => {
   };
 
   const getSendMethod = (type: TMailType) => async (
-    to: string, origin: string, token: string,
-  ) => sendMail(type, to, origin, token);
+    to: string, token = '',
+  ) => sendMail(type, to, token);
 
   return {
     send,
     confirm: getSendMethod('confirm'),
     restore: getSendMethod('restore'),
+    notify: getSendMethod('notify'),
   };
 };
 

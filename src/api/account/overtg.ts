@@ -8,8 +8,9 @@ import { UserResponseSchema } from '../schema/schema';
 const overtg: THandler<{ initData: string }, IUserResponse> = async (
   { session }, { initData },
 ) => {
-  const chat_id = cryptoService.verifyTgData(initData);
-  if (!chat_id) return null;
+  const tgUser = cryptoService.verifyTgData(initData);
+  if (!tgUser) return null;
+  const { id: chat_id } = tgUser;
 
   const [user] = await execQuery.user.findByChatId([chat_id]);
   if (!user) return null;

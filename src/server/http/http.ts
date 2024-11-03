@@ -3,8 +3,7 @@ import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
 import { TPromiseExecutor } from '../../../src/client/common/types';
 import { IOperation, TOperationResponse } from '../../types/operation.types';
-import {
-  IInputConnection, IRequest, TServerService } from '../types';
+import { IInputConnection, IRequest } from '../types';
 import {
   IResponse, IHttpServer,
   THttpReqModule, THttpResModule, IHttpConfig } from './types';
@@ -20,8 +19,7 @@ class HttpConnection implements IInputConnection {
   private exec?: (operation: IOperation) => Promise<TOperationResponse>;
   private reqModules: ReturnType<THttpReqModule>[] = [];
   private resModules: ReturnType<THttpResModule>[] = [];
-  private staticUnavailable = false;
-  private apiUnavailable = false;
+  private unavailable = false;
 
   constructor(config: IHttpConfig) {
     this.config = config;
@@ -32,9 +30,8 @@ class HttpConnection implements IInputConnection {
     this.exec = cb;
   }
 
-  setUnavailable(service: TServerService) {
-    service === 'static' && (this.staticUnavailable = true);
-    service === 'api' && (this.apiUnavailable = true);
+  setUnavailable(value: boolean) {
+    this.unavailable = value;
   }
 
   getServer() {
@@ -42,11 +39,6 @@ class HttpConnection implements IInputConnection {
   }
 
   start() {
-    if (!this.exec && !this.apiUnavailable) {
-      const e = new ServerError('NO_CALLBACK');
-      logger.error(e);
-      throw e;
-    }
     try {
       this.reqModules = applyReqModules(this.config);
       this.resModules = applyResModules(this.config);
@@ -71,18 +63,14 @@ class HttpConnection implements IInputConnection {
   }
 
   private async handleRequest(req: IRequest, res: IResponse) {
-    const contextParams = {
-      staticUnavailable: this.staticUnavailable,
-      apiUnavailable: this.apiUnavailable,
-    };
+    const contextParams = { unavailable: this.unavailable };
     try {
       const context = await runReqModules(
         req, res, this.reqModules, contextParams,
       );
-      if (!context) return;
-      if (this.apiUnavailable) throw new ServerError('SERVICE_UNAVAILABLE');
+      if (!context) return; // ???
+      if (!this.exec) throw new ServerError('SERVICE_UNAVAILABLE');
       const { ...operation } = context;
-
       let response = await this.exec!(operation);
 
       if (!(response instanceof Readable)) response = JSON.stringify(response);

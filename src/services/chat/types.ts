@@ -1,5 +1,4 @@
-export interface IChatIdMapValue {
-  user_id?: number;
+export interface IChatMapValue {
   net_id?: number;
   node_id?: number;
 }

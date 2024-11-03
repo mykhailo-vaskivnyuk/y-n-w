@@ -1,3 +1,4 @@
+import { ITableNodes } from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNodeTree {
@@ -8,11 +9,7 @@ export interface IQueriesNodeTree {
   ]>;
   remove: TQuery<[
     ['parent_node_id', number],
-  ]>;
-  replace: TQuery<[
-    ['first_node_id', number],
-    ['second_node_id', number],
-  ]>;
+  ], Pick<ITableNodes, 'node_id'>>;
 }
 
 export const create = `
@@ -31,14 +28,5 @@ export const create = `
 export const remove = `
   DELETE FROM nodes
   WHERE parent_node_id = $1
-`;
-
-export const replace = `
-  UPDATE nodes
-  SET parent_node_id =
-    CASE WHEN parent_node_id = $1
-      THEN $2
-      ELSE $1
-    END
-  WHERE parent_node_id IN ($1, $2) AND NOT node_id IN ($1, $2)
+  RETURNING node_id::int
 `;

@@ -1,4 +1,5 @@
 import { TInputModule } from '../types';
+import { Buffer } from 'node:buffer';
 
 export class GetStreamError extends Error {
   constructor(message?: string) {

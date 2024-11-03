@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
-import { IRouterContext } from './types';
+import { IControllerContext } from './types';
 import { IConfig } from '../types/config.types';
 import { IOperation } from '../types/operation.types';
 import { ILogger } from '../logger/types';
 import { IDatabase } from '../db/types/types';
-import { IRouter } from '../controller/types';
+import { IController } from '../controller/types';
 import { IInputConnection } from '../server/types';
 import {
   AppError, handleAppInitError,
@@ -18,7 +18,7 @@ export default class App {
   protected config: IConfig;
   protected logger?: ILogger;
   private db?: IDatabase;
-  protected router?: IRouter;
+  protected controller?: IController;
   protected server?: IInputConnection;
   protected apiServer?: IInputConnection;
   private messenger?: IInputConnection;
@@ -37,16 +37,14 @@ export default class App {
       this.setLogger();
       setToGlobal('logger', this.logger);
       logger.info('LOGGER IS READY');
-      if (env.API_UNAVAILABLE)
-        throw new AppError('INIT_ERROR', 'API set UNAVAILABLE');
       await this.setDatabase();
       logger.info('DATABASE IS READY');
       this.setInputConnection();
       logger.info('SERVER IS READY TO START');
       this.setMessenger();
       logger.info('MESSENGER IS READY TO START');
-      await this.setRouter();
-      logger.info('ROUTER IS READY');
+      await this.setController();
+      logger.info('CONTROLLER IS READY');
       await this.messenger!.start();
       logger.info('MESSENGER IS RUNNING');
       this.apiServer && await this.apiServer.start();
@@ -88,7 +86,7 @@ export default class App {
     return this;
   }
 
-  private async setRouter() {
+  private async setController() {
     const execQuery = this.db?.getQueries();
     if (!execQuery)
       throw new AppError('INIT_ERROR', 'DB is not INITIALIZED');
@@ -102,8 +100,8 @@ export default class App {
 
     const connectionService = server.getConnectionService();
     const messengerService = this.messenger!.getConnectionService();
-    const { router, env } = this.config;
-    const context: IRouterContext = {
+    const { controller, env } = this.config;
+    const context: IControllerContext = {
       logger,
       execQuery,
       startTransaction: () => this.db!.startTransaction(),
@@ -112,8 +110,8 @@ export default class App {
       console,
       env,
     };
-    const Router = loadModule(__dirname, router.path, context);
-    this.router = await new Router(router).init();
+    const Controller = loadModule(__dirname, controller.path, context);
+    this.controller = await new Controller(controller).init();
     return this;
   }
 
@@ -124,7 +122,7 @@ export default class App {
 
     const handleOperation = async (operation: IOperation) => {
       try {
-        return await this.router!.exec(operation);
+        return await this.controller!.exec(operation);
       } catch (e: any) {
         return handleOperationError(e);
       }

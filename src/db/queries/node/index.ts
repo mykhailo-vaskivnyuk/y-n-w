@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { ITableNodes } from '../../types/db.tables.types';
+import { ITableNodes } from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
 import { IQueriesNodeTree } from './tree';
 
@@ -23,7 +23,6 @@ export interface IQueriesNode {
   ], ITableNodes>;
   move: TQuery<[
     ['node_id', number],
-    ['new_node_level', number],
     ['new_parent_node_id', number | null],
     ['new_node_position', number],
     ['new_count_of_members', number],
@@ -83,10 +82,9 @@ export const getChild = `
 export const move = `
   UPDATE nodes
   SET
-    node_level = $2,
-    parent_node_id = $3,
-    node_position = $4,
-    count_of_members = $5
+    parent_node_id = $2,
+    node_position = $3,
+    count_of_members = $4
   WHERE node_id = $1
 `;
 
@@ -94,6 +92,7 @@ export const changeLevel = `
   UPDATE nodes
   SET node_level = node_level - 1
   WHERE node_id = $1
+  RETURNING *
 `;
 
 export const changeLevelAll = `

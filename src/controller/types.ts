@@ -4,8 +4,7 @@ import { IObject } from '../types/types';
 import {
   IOperation, TOperationResponse, IParams,
 } from '../types/operation.types';
-import { ITableUsers } from '../db/types/db.tables.types';
-import { IUserNetData } from '../db/types/member.types';
+import { ITableUsers } from '../domain/types/db.types';
 import {
   PartialUserNetStatusKeys, PartialUserStatusKeys, UserStatusKeys,
 } from '../client/common/server/types/types';
@@ -16,8 +15,9 @@ import { NotificationService } from '../services/notification/notification';
 import {
   TInputModulesKeys, TOutputModulesKeys, TServicesKeys,
 } from './constants';
+import { Member } from '../domain/member/member';
 
-export interface IRouterConfig {
+export interface IControllerConfig {
   path: string;
   apiPath: string;
   servicesPath: string;
@@ -43,13 +43,13 @@ export interface ITask {
   interval?: number,
 }
 
-export interface IRouter {
+export interface IController {
   init(): Promise<this>;
   exec(operation: IOperation): Promise<TOperationResponse>;
 }
 
-export interface IRoutes {
-  [key: string]: THandler | IRoutes;
+export interface IEndpoints {
+  [key: string]: THandler | IEndpoints;
 }
 
 export type THandler<
@@ -66,6 +66,7 @@ export type THandler<
     : Q extends Array<IObject> ? | TObjectSchema<Q[number]> : TJoiSchema;
   allowedForUser?: PartialUserStatusKeys;
   allowedForNetUser?: PartialUserNetStatusKeys;
+  checkNet?: boolean;
 };
 
 export type TObjectSchema<T extends IObject> = {
@@ -78,8 +79,7 @@ export type THandlerSchema = THandler['responseSchema' | 'paramsSchema'];
 export type IContext = {
   session: Session<ISessionContent>;
   origin: string;
-  userNetData?: IUserNetData;
-  userNetStatus?: UserStatusKeys;
+  member?: Member;
   connectionId?: number;
   isAdmin?: boolean;
 };

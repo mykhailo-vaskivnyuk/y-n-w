@@ -26,10 +26,10 @@ Table "nets" {
 Table "users" {
   "user_id" bigint [primary key, not null]
   "email" "character varying(50)" [default: NULL]
-  "name" "character varying(50)" [default: NULL]
+  "name" "character varying(50)" [default: NULL] // not null ?
   "mobile" "character varying(50)" [default: NULL]
   "password" "character varying(255)" [default: NULL]
-  "confirmed" boolean [not null, default: false]
+  "confirmed" boolean [not null, default: false] // default true ?
   "chat_id" "character varying(50)" [default: NULL]
   Indexes {
     email [type: btree, unique, name: "users_email_idx"]
@@ -41,20 +41,31 @@ Table "nets_data" {
   "net_id" bigint [primary key, not null]
   "name" "character varying(50)" [not null]
   "goal" text [default: NULL]
+  "net_link" "character varying(255)" [default: NULL]
   "resource_name" "character varying(50)" [default: NULL]
-  "resource_link" "character varying(255)" [default: NULL]
+}
+
+Table "nets_guests" {
+  "net_id" bigint [not null]
+  "user_id" bigint [not NULL]
+  "comment" text [default: NULL]
+  Indexes {
+    (net_id, user_id) [pk]
+    net_id [name: "sk_nets_guests_net"]
+    user_id [name: "sk_nets_guests_user"]
+  }
 }
 
 Table "members" {
   "member_id" bigint [primary key, not null]
-  "user_id" bigint [not null]
+  "user_id" bigint [default: NULL]
   "email_show" boolean [not null, default: false]
   "name_show" boolean [not null, default: false]
   "mobile_show" boolean [not null, default: false]
   "confirmed" boolean [not null, default: false]
   "active_date" timestamp [not null, default: 'now()']
   Indexes {
-    (user_id) [name: "sk_members_user"]
+    user_id [name: "sk_members_user"]
     // active_date
   }
 }
@@ -86,7 +97,7 @@ Table "events" {
   "net_view" "character(10)" [default: NULL]
   "event_type" "character(20)" [not null]
   "message" "character varying(255)" [not null]
-  "date" timestamp [not null]
+  "date" timestamp [not null, default: 'now()']
   Indexes {
     user_id [name: "sk_events_user"]
     // date ?
@@ -109,9 +120,7 @@ Table "board_messages" {
 
 Table "users_events" {
   "user_id" bigint [primary key, not null]
-  "notification_date" timestamp [not null]
-  // "last_event_date" timestamp [not null]
-  // "read_event_date" timestamp [default: NULL]
+  "notification_date" timestamp [not null, default: 'now()']
 }
 
 Table "members_to_members" {
@@ -139,6 +148,8 @@ Table "sessions" {
 
 Ref "fk_nodes_net":"nets"."net_id" < "nodes"."net_id"
 Ref "fk_nets_data_net":"nets"."net_id" - "nets_data"."net_id" [delete: cascade]
+Ref "fk_nets_guests_net":"nets"."net_id" - "nets_guests"."net_id" [delete: cascade]
+Ref "fk_nets_guests_user":"users"."user_id" - "nets_guests"."user_id" [delete: cascade]
 Ref "fk_members_node":"nodes"."node_id" - "members"."member_id"
 Ref "fk_members_user":"users"."user_id" < "members"."user_id" [delete: cascade] // ON DELETE ?
 Ref "fk_members_invites_member":"members"."member_id" < "members_invites"."member_id" [delete: cascade]

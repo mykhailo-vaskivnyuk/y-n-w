@@ -1,25 +1,25 @@
 import { IConfig } from '../types/config.types';
 import { ILogger } from '../logger/types';
 import { IDatabase, IDatabaseQueries } from '../db/types/types';
-import { IRouter } from '../controller/types';
+import { IController } from '../controller/types';
 import { IInputConnection, IConnectionService } from '../server/types';
 import { IMailService } from '../services/mail/types';
 import { ChatService } from '../services/chat/chat';
 import { NotificationService } from '../services/notification/notification';
 import App from './app';
-import { IDomain } from '../domain/types';
+import { IDomain } from '../domain';
 
 export type IAppThis = App & {
   config: IConfig;
   logger?: ILogger;
-  router?: IRouter;
+  controller?: IController;
   server?: IInputConnection;
   apiServer?: IInputConnection;
   shutdown: () => Promise<void>;
   setInputConnection: () => Promise<IAppThis>;
 };
 
-export interface IRouterContext {
+export interface IControllerContext {
   execQuery: IDatabaseQueries;
   startTransaction: IDatabase['startTransaction'];
   logger: ILogger;

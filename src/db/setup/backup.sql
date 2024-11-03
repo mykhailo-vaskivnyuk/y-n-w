@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 15.1
--- Dumped by pg_dump version 15.1
+-- Dumped from database version 14.5
+-- Dumped by pg_dump version 14.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -61,7 +61,7 @@ CREATE TABLE public.events (
     from_node_id bigint,
     event_type character(20) NOT NULL,
     message character varying(255) NOT NULL,
-    date timestamp without time zone NOT NULL
+    date timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -87,7 +87,7 @@ ALTER TABLE public.events ALTER COLUMN event_id ADD GENERATED ALWAYS AS IDENTITY
 
 CREATE TABLE public.members (
     member_id bigint NOT NULL,
-    user_id bigint NOT NULL,
+    user_id bigint,
     email_show boolean DEFAULT false NOT NULL,
     name_show boolean DEFAULT false NOT NULL,
     mobile_show boolean DEFAULT false NOT NULL,
@@ -151,11 +151,24 @@ CREATE TABLE public.nets_data (
     name character varying(50) NOT NULL,
     goal text DEFAULT NULL::character varying,
     resource_name character varying(50) DEFAULT NULL::character varying,
-    resource_link character varying(255) DEFAULT NULL::character varying
+    net_link character varying(255) DEFAULT NULL::character varying
 );
 
 
 ALTER TABLE public.nets_data OWNER TO merega;
+
+--
+-- Name: nets_guests; Type: TABLE; Schema: public; Owner: merega
+--
+
+CREATE TABLE public.nets_guests (
+    net_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    comment character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.nets_guests OWNER TO merega;
 
 --
 -- Name: nets_net_id_seq; Type: SEQUENCE; Schema: public; Owner: merega
@@ -254,7 +267,7 @@ ALTER TABLE public.users OWNER TO merega;
 
 CREATE TABLE public.users_events (
     user_id bigint NOT NULL,
-    notification_date timestamp without time zone NOT NULL
+    notification_date timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -343,8 +356,16 @@ COPY public.nets (net_id, net_level, parent_net_id, root_net_id, count_of_nets) 
 -- Data for Name: nets_data; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.nets_data (net_id, name, goal, resource_name, resource_link) FROM stdin;
-1	My new network	My network goal	\N	\N
+COPY public.nets_data (net_id, name, goal, resource_name, net_link) FROM stdin;
+1	Моя спільнота	Мета моєї спільноти	\N	\N
+\.
+
+
+--
+-- Data for Name: nets_guests; Type: TABLE DATA; Schema: public; Owner: merega
+--
+
+COPY public.nets_guests (net_id, user_id, comment) FROM stdin;
 \.
 
 
@@ -388,10 +409,10 @@ COPY public.sessions (session_id, user_id, session_key, session_value, updated) 
 --
 
 COPY public.users (user_id, email, name, mobile, password, confirmed, chat_id) FROM stdin;
-1	user01@gmail.com	\N	\N	ee5d3bb0f5f23cf735caea21a4321116:53be5841d206ea53f4aab75bbe1072dac00f203dcc812ca77c0fab776e566a6cb519348d4a2a9eeb26d549d46792e9fa70092254a1cbc4bb58df316662147fbb	t	\N
-2	user02@gmail.com	\N	\N	8317b53f9189781a5aec6b8c4d1fdd83:235c7d0fff5c8d74fa0de478da7b1269397f6f14cc81f9f1f1d04d96637cfc41de78a375e728eaf0ab985877c5fcfdf40becaf2a458f52c1f36eea5fb96ca9d3	t	\N
-3	user03@gmail.com	\N	\N	428505ea613e395075de8335d6c11f1a:801e1098928a65226c5ea0edb379c5bedfd81e07211b15b80ad5e48e4efc89bb2de79e038da105aaf70a19d59e318c0c45648b1f4c38a14fc1e8a6aadae3ba56	t	\N
-4	user04@gmail.com	\N	\N	72f7b8c5e2f2a7eca7d4f86667274ef2:83ea46cd83030580f8d97fa4d622de348c536377228a759472419275630cd91be64db1bdf304795988b539f35f836883f6f8618ad5aaeb6c50bf5aaf538682ef	t	\N
+1	user01@gmail.com	Учасник 1	\N	ee5d3bb0f5f23cf735caea21a4321116:53be5841d206ea53f4aab75bbe1072dac00f203dcc812ca77c0fab776e566a6cb519348d4a2a9eeb26d549d46792e9fa70092254a1cbc4bb58df316662147fbb	t	\N
+2	user02@gmail.com	Учасник 2	\N	8317b53f9189781a5aec6b8c4d1fdd83:235c7d0fff5c8d74fa0de478da7b1269397f6f14cc81f9f1f1d04d96637cfc41de78a375e728eaf0ab985877c5fcfdf40becaf2a458f52c1f36eea5fb96ca9d3	t	\N
+3	user03@gmail.com	Учасник 3	\N	428505ea613e395075de8335d6c11f1a:801e1098928a65226c5ea0edb379c5bedfd81e07211b15b80ad5e48e4efc89bb2de79e038da105aaf70a19d59e318c0c45648b1f4c38a14fc1e8a6aadae3ba56	t	\N
+4	user04@gmail.com	Учасник 4	\N	72f7b8c5e2f2a7eca7d4f86667274ef2:83ea46cd83030580f8d97fa4d622de348c536377228a759472419275630cd91be64db1bdf304795988b539f35f836883f6f8618ad5aaeb6c50bf5aaf538682ef	t	\N
 \.
 
 
@@ -510,6 +531,14 @@ ALTER TABLE ONLY public.nets_data
 
 
 --
+-- Name: nets_guests pk_nets_guests; Type: CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.nets_guests
+    ADD CONSTRAINT pk_nets_guests PRIMARY KEY (net_id, user_id);
+
+
+--
 -- Name: nodes pk_nodes; Type: CONSTRAINT; Schema: public; Owner: merega
 --
 
@@ -614,6 +643,20 @@ CREATE INDEX sk_members_to_members_branch ON public.members_to_members USING btr
 --
 
 CREATE INDEX sk_members_user ON public.members USING btree (user_id);
+
+
+--
+-- Name: sk_nets_guests_net; Type: INDEX; Schema: public; Owner: merega
+--
+
+CREATE INDEX sk_nets_guests_net ON public.nets_guests USING btree (net_id);
+
+
+--
+-- Name: sk_nets_guests_user; Type: INDEX; Schema: public; Owner: merega
+--
+
+CREATE INDEX sk_nets_guests_user ON public.nets_guests USING btree (user_id);
 
 
 --
@@ -738,6 +781,22 @@ ALTER TABLE ONLY public.members
 
 ALTER TABLE ONLY public.nets_data
     ADD CONSTRAINT fk_nets_data_net FOREIGN KEY (net_id) REFERENCES public.nets(net_id) ON DELETE CASCADE;
+
+
+--
+-- Name: nets_guests fk_nets_guests_net; Type: FK CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.nets_guests
+    ADD CONSTRAINT fk_nets_guests_net FOREIGN KEY (net_id) REFERENCES public.nets(net_id) ON DELETE CASCADE;
+
+
+--
+-- Name: nets_guests fk_nets_guests_user; Type: FK CONSTRAINT; Schema: public; Owner: merega
+--
+
+ALTER TABLE ONLY public.nets_guests
+    ADD CONSTRAINT fk_nets_guests_user FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
 
 
 --

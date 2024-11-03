@@ -22,7 +22,7 @@ class WsConnection implements IInputConnection {
   private connections = new Map<number, IWsConnection>();
   private exec?: (operation: IOperation) => Promise<TOperationResponse>;
   private resModules: ReturnType<TWsResModule>[] = [];
-  private apiUnavailable = false;
+  private unavailable = false;
 
   constructor(config: IWsConfig, server: IHttpServer) {
     this.config = config;
@@ -33,8 +33,8 @@ class WsConnection implements IInputConnection {
     this.exec = cb;
   }
 
-  setUnavailable() {
-    this.apiUnavailable = true;
+  setUnavailable(value: boolean) {
+    this.unavailable = value;
   }
 
   getServer() {
@@ -42,7 +42,7 @@ class WsConnection implements IInputConnection {
   }
 
   async start() {
-    if (!this.exec && !this.apiUnavailable) {
+    if (!this.exec && !this.unavailable) {
       const e = new ServerError('NO_CALLBACK');
       logger.error(e);
       throw e;
@@ -98,11 +98,13 @@ class WsConnection implements IInputConnection {
   ) {
     try {
       if (connection.readyState === connection.CLOSED) return;
-      if (this.apiUnavailable) throw new ServerError('SERVICE_UNAVAILABLE');
+      if (this.unavailable) throw new ServerError('SERVICE_UNAVAILABLE');
       const operation = await this.getOperation(message, options);
       options = operation.options;
       const data = await this.exec!(operation);
-      this.resModules.forEach((module) => module(connection, options, data));
+      for (const module of this.resModules) {
+        await module(connection, options, data);
+      }
     } catch (e) {
       if (connection.readyState === connection.CLOSED) return;
       handleError(e, options, connection);
@@ -177,8 +179,12 @@ class WsConnection implements IInputConnection {
       const connections = [...connectionIds]
         .map((connectionId) => this.getConnection(connectionId))
         .filter(excludeNullUndefined);
-      this.resModules.forEach((module) => module(connections, null, data));
-      return true;
+      let result = true;
+      for (const module of this.resModules) {
+        const moduleResult = await module(connections, null, data);
+        result = result && moduleResult;
+      }
+      return result;
     } catch (e) {
       logger.error(e);
       return false;

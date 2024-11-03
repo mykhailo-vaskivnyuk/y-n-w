@@ -19,5 +19,6 @@ const cancel: THandler<IMemberConfirmParams, boolean> = async (
 };
 cancel.paramsSchema = MemberConfirmParamsSchema;
 cancel.responseSchema = Joi.boolean();
+cancel.checkNet = true;
 
 export = cancel;

@@ -1,24 +1,83 @@
-import { ITableUsers } from '../../types/db.tables.types';
+import { ITableUsers } from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNetUsers {
-  toNotify: TQuery<[
+  toSendNewEvents: TQuery<[
     ['net_id', number],
+    ['from_node_id', number | null],
+    ['event_type', string],
+  ], Pick<ITableUsers, 'user_id'>>;
+  toNotifyOnTg: TQuery<[
+    ['net_id', number],
+    ['from_node_id', number | null],
+    ['notification_date', string],
+  ], ITableUsers>;
+  toNotifyOnEmail: TQuery<[
+    ['net_id', number],
+    ['from_node_id', number | null],
+    ['notification_date', string],
   ], ITableUsers>;
 }
 
-export const toNotify = `
-  SELECT users.*, users.user_id::int
+export const toSendNewEvents = `
+  SELECT DISTINCT users.user_id::int
   FROM nodes
   INNER JOIN members ON
-    members.member_id = nodes.node_id
+    members.member_id = nodes.node_id AND
+    members.confirmed = true
   INNER JOIN users ON
     users.user_id = members.user_id
+  LEFT JOIN events ON
+    events.net_id = nodes.net_id AND
+    events.user_id = users.user_id AND
+    events.event_type <> $3 AND
+    events.event_id ISNULL
+  WHERE
+    nodes.net_id = $1 AND (
+    $2::int ISNULL OR
+    nodes.node_id <> $2
+  )
+`;
+
+export const toNotifyOnTg = `
+  SELECT DISTINCT ON (users.user_id) users.*, users.user_id::int
+  FROM nodes
+  INNER JOIN members ON
+    members.member_id = nodes.node_id AND
+    members.confirmed = true
+  INNER JOIN users ON
+    users.user_id = members.user_id AND
+    users.chat_id IS NOT NULL
   LEFT JOIN users_events ON
     users_events.user_id = users.user_id
   WHERE
-    nodes.net_id = $1 AND
-    members.confirmed = true AND
-    users.chat_id NOTNULL AND
-    users_events.notification_date ISNULL
+    nodes.net_id = $1 AND (
+      $2::int ISNULL OR
+      nodes.node_id <> $2
+    ) AND (
+      users_events.user_id ISNULL OR
+      users_events.notification_date < $3
+    )
+`;
+
+
+export const toNotifyOnEmail = `
+  SELECT DISTINCT users.*, users.user_id::int
+  FROM nodes
+  INNER JOIN members ON
+    members.member_id = nodes.node_id AND
+    members.confirmed = true
+  INNER JOIN users ON
+    users.user_id = members.user_id AND
+    users.chat_id ISNULL
+  LEFT JOIN users_events ON
+    users_events.user_id = users.user_id
+  WHERE
+    nodes.net_id = $1 AND (
+      $2::int ISNULL OR
+      nodes.node_id <> $2
+    ) AND (
+      users_events.user_id ISNULL OR
+      users_events.notification_date < $3
+    )
 `;

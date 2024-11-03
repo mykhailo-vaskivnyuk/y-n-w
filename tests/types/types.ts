@@ -1,28 +1,28 @@
 import { mock } from 'node:test';
 import { TFetch } from '../../src/client/common/client/connection/types';
 import { TTransport } from '../../src/server/types';
+import { IConfig } from '../../src/types/config.types';
 import {
   IParams, TOperationResponse,
 } from '../../src/types/operation.types';
-import { ITestCasesTree } from './test.cases.types';
-
-export interface ITestData {
-  title: string;
-  dbDataFile: string;
-  connection: TTransport;
-  connCount?: number;
-  cases: (cases: ITestCasesTree) => ([TTestCase, number] | TTestCase)[];
-}
-
-export type TTestCase = (state: Record<string, any>) => ITestCase;
 
 export interface ITestCase {
+  title: string;
+  dbDataFile?: string;
+  connection: TTransport;
+  config?: Partial<IConfig>;
+  caseUnits: ([TTestUnit, number] | TTestUnit)[];
+}
+
+export type TTestUnit = (state: Record<string, any>) => ITestUnit;
+
+export interface ITestUnit {
   title: string;
   operations: IOperationData[];
 }
 
-export interface ITestCases {
-  [key: string]: TTestCase | ITestCases;
+export interface ITestUnits {
+  [key: string]: ((...args: any[]) => TTestUnit) | TTestUnit | ITestUnits;
 }
 
 export interface IOperationData {
@@ -33,14 +33,16 @@ export interface IOperationData {
     | ((actual: any) => void);
   setToState?: (actual: any) => void;
   query?: () => Promise<Record<string, any>[]>;
-  expectedQueryResult?: Record<string, any>[];
+  expectedQueryResult?:
+    | TOperationResponse
+    | ((actual: any) => void);
 }
 
 export interface ITestRunnerData {
   title: string;
   connections: TFetch[];
-  onConnMessage: TMockFunction[];
-  testCases: [ITestCase, number][];
+  onMessage: TMockFunction[];
+  testUnits: [TTestUnit, number][];
 }
 
 export type TMockFunction = ReturnType<typeof mock.fn<(data: any) => void>>;

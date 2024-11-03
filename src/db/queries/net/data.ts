@@ -1,4 +1,4 @@
-import { ITableNetsData } from '../../types/db.tables.types';
+import { ITableNetsData } from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNetData {
@@ -8,6 +8,7 @@ export interface IQueriesNetData {
   create: TQuery<[
     ['net_id', number],
     ['name', string],
+    ['token', string],
   ], ITableNetsData>;
   update: TQuery<[
     ['net_id', number],
@@ -23,9 +24,9 @@ export const get = `
 
 export const create = `
   INSERT INTO nets_data (
-    net_id, name
+    net_id, name, net_link
   )
-  VALUES ($1, $2)
+  VALUES ($1, $2, $3)
   RETURNING *
 `;
 

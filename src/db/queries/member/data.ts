@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { TQuery } from '../../types/types';
 
 export interface IQueriesMemberData {
@@ -19,12 +20,19 @@ export interface IQueriesMemberData {
     ['branch_id', number],
     ['from_member_id', number],
   ]>;
+  clearVotes: TQuery<[
+    ['branch_id', number],
+  ]>;
   removeFromCircle: TQuery<[
     ['node_id', number],
     ['branch_id', number | null],
   ]>;
   removeFromTree: TQuery<[
     ['node_id', number],
+  ]>;
+  replace: TQuery<[
+    ['node_id', number],
+    ['parent_node_id', number],
   ]>;
 }
 
@@ -78,6 +86,12 @@ export const unsetVote = `
     from_member_id = $2
 `;
 
+export const clearVotes = `
+  UPDATE members_to_members
+  SET vote = false
+  WHERE branch_id = $1
+`;
+
 export const removeFromCircle = `
   DELETE FROM members_to_members AS mtm
   WHERE
@@ -94,4 +108,28 @@ export const removeFromTree = `
       from_member_id = $1 OR
       to_member_id = $1
   )
+`;
+
+export const replace = `
+  UPDATE members_to_members AS mtm
+  SET
+    from_member_id =
+      CASE WHEN from_member_id = $1
+        THEN $2
+        ELSE
+          CASE WHEN from_member_id = $2
+            THEN $1
+            ELSE from_member_id
+          END
+      END,
+    to_member_id =
+      CASE WHEN to_member_id = $1
+        THEN $2
+        ELSE
+          CASE WHEN to_member_id = $2
+            THEN $1
+            ELSE to_member_id
+          END
+      END
+  WHERE branch_id = $2
 `;

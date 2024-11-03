@@ -15,16 +15,26 @@ export const UserResponseSchema = [JOI_NULL, {
 } as Record<keyof OmitNull<IUserResponse>, TJoiSchema>];
 
 export const SignupParamsSchema = {
+  name: Joi.string().required(),
   email: Joi.string().required().email(),
 };
 
 export const LoginParamsSchema = {
-  ...SignupParamsSchema,
+  email: Joi.string().required().email(),
   password: Joi.string().required(),
 };
 
+export const EnterParamsSchema = {
+  email: Joi.string().required().email(),
+};
+
 export const UserUpdateParamsSchema = {
-  name: Joi.string().empty(''),
-  mobile: Joi.string().empty(''),
-  password: Joi.string().empty(''),
+  name: [Joi.string().empty(''), JOI_NULL],
+  mobile: [Joi.string().empty(''), JOI_NULL],
+  password: [Joi.string().empty(''), JOI_NULL],
+};
+
+export const MessengerLinkConnectParamsSchema = {
+  chatId: Joi.string().required(),
+  token: Joi.string().required(),
 };

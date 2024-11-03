@@ -5,7 +5,7 @@ const logout: THandler<never, boolean> = async (
   { session, connectionId },
 ) => {
   await session.clear();
-  connectionId && chatService.removeConnection(connectionId);
+  chatService.removeConnection(connectionId);
   return true;
 };
 logout.responseSchema = Joi.boolean();

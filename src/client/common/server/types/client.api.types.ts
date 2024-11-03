@@ -7,12 +7,10 @@ export type TAccountSignupTg = {
   initData: string;
 };
 export type TAccountMessengerLinkGetResponse = string | null;
-export type TAccountMessengerLinkConnect = {
-  chatId: string;
-  token: string;
+export type TAdminNetGetResponse = {
 };
 export type TEventsRead = {
-  date?: string;
+  event_id?: number;
 };
 export type TEventsConfirm = {
   event_id: number;
@@ -24,10 +22,6 @@ export type TMemberDisconnectUnactive = {
   monthAgo: number;
 };
 export type TMemberInviteCreateResponse = string | null;
-export type TNetConnectByTokenResponse = null | {
-  net_id: number;
-  error?: string;
-};
 export type TNetBoardClear = {
   weekAgo: number;
 };

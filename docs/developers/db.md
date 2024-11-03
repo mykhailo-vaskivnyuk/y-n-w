@@ -29,11 +29,9 @@
 - net/leave
 - net/create
 - member/data/vote/set
-- member/data/dislik/set
+- member/data/dislike/set
 - member/disconnectNotVote
 - member/disconnectUnactive
 - member/invite/confirm
 - net/connectByToken
 - todo: ? net/board/save
-
-? retry receiving net data after locking?

@@ -2,7 +2,8 @@
 import {
   INetResponse, OmitNull,
 } from '../../../client/common/server/types/types';
-import { ITableNets } from '../../types/db.tables.types';
+import { ITableNets } from '../../../domain/types/db.types';
+import { INet } from '../../../domain/types/net.types';
 import { TQuery } from '../../types/types';
 import { IQueriesNetData } from './data';
 import { IQueriesNetCircle } from './circle';
@@ -11,6 +12,8 @@ import { IQueriesNetBranch } from './branch';
 import { IQueriesNetFind } from './find';
 import { IQueriesNetBoard } from './boardMessages';
 import { IQueriesNetUsers } from './users';
+import { IQueriesNetStructure } from './structure/get';
+import { IQueriesNetWait } from './wait';
 
 export interface IQueriesNet {
   createRoot: TQuery<[], ITableNets>;
@@ -30,6 +33,9 @@ export interface IQueriesNet {
   get: TQuery<[
     ['net_id', number],
   ], OmitNull<INetResponse>>
+  getData: TQuery<[
+    ['net_id', number],
+  ], INet>
   lock: TQuery<[
     ['net_id', number],
   ]>;
@@ -40,6 +46,8 @@ export interface IQueriesNet {
   find: IQueriesNetFind;
   boardMessages: IQueriesNetBoard;
   users: IQueriesNetUsers;
+  structure: { get: IQueriesNetStructure; };
+  wait: IQueriesNetWait;
 }
 
 export const createRoot = `
@@ -86,6 +94,7 @@ export const get = `
     nets.parent_net_id,
     nets_data.name,
     nets_data.goal,
+    nets_data.net_link,
     root_node.count_of_members AS total_count_of_members
   FROM members
   INNER JOIN nodes ON
@@ -98,6 +107,19 @@ export const get = `
     root_node.net_id = nets.net_id AND
     root_node.parent_node_id ISNULL
   WHERE nodes.net_id = $1
+`;
+
+export const getData = `
+  SELECT
+    nets.*,
+    nets.net_id::int,
+    nets.net_level::int,
+    nets.parent_net_id::int,
+    nets_data.*
+  FROM nets
+  INNER JOIN nets_data ON
+    nets_data.net_id = nets.net_id
+  WHERE nets.net_id = $1
 `;
 
 export const lock = `

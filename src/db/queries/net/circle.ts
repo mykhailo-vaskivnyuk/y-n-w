@@ -1,6 +1,6 @@
 import { IMemberResponse } from '../../../client/common/server/types/types';
 import { TQuery } from '../../types/types';
-import { IMember } from '../../types/member.types';
+import { IMember } from '../../../domain/types/member.types';
 
 export interface IQueriesNetCircle {
   getData: TQuery<[
@@ -19,7 +19,7 @@ export const getData = `
     nodes.count_of_members,
     members.user_id,
     members.confirmed,
-    users.email AS name,
+    users.name,
     null AS member_name,
     null AS token,
     members_to_members.dislike,
@@ -51,7 +51,7 @@ export const getData = `
     nodes.count_of_members,
     members.user_id,
     members.confirmed,
-    users.email,
+    users.name,
     member_name,
     token,
     members_to_members.dislike,
@@ -63,6 +63,7 @@ export const getMembers = `
   SELECT
     nodes.*,
     nodes.node_id::int,
+    nodes.parent_node_id::int,
     nodes.net_id::int,
     members.user_id::int,
     members.confirmed

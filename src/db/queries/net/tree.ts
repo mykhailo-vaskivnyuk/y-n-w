@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
 import { IMemberResponse } from '../../../client/common/server/types/types';
-import { ITableNodes } from '../../types/db.tables.types';
+import { ITableNodes } from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
-import { IMember } from '../../types/member.types';
+import { IMember } from '../../../domain/types/member.types';
 
 export interface IQueriesNetTree {
   getData: TQuery<[
@@ -22,7 +22,7 @@ export const getData = `
     nodes.count_of_members,
     members.user_id,
     members.confirmed,
-    users.email as name,
+    users.name,
     members_invites.member_name,
     members_invites.token,
     members_to_members.dislike,

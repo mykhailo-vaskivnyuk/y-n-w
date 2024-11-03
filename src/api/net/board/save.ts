@@ -4,19 +4,22 @@ import { IBoardSaveParams } from '../../../client/common/server/types/types';
 import { BoardSaveParamsSchema } from '../../schema/schema';
 
 const save: THandler<IBoardSaveParams, boolean> = async (
-  { userNetData }, { node_id, message_id, message }
+  { member }, { node_id, message_id, message }
 ) => {
-  const { net_id } = userNetData!;
+  const m = member!.get();
+  const { net_id } = m;
   if (message_id)
     await execQuery.net.boardMessages.update([message_id, node_id, message]);
   else
     await execQuery.net.boardMessages.create([net_id, node_id, message]);
-  const event = new domain.event.NetEvent(net_id, 'BOARD_MESSAGE', userNetData);
+  const event = new domain.event.NetEvent(net_id, 'BOARD_MESSAGE', m);
   await event.messages.create();
-  await event.commit(notificationService);
+  await event.commit();
+  event.send();
   return true;
 };
 save.paramsSchema = BoardSaveParamsSchema;
 save.responseSchema = Joi.boolean();
+save.checkNet = true;
 
 export = save;

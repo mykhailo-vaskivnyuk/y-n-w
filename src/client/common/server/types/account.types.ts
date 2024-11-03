@@ -7,11 +7,17 @@ export type IUserResponse = null |
   };
 
 export type ISignupParams = {
+  name: string,
   email: string,
 };
 
-export type ILoginParams = ISignupParams & {
+export type ILoginParams = {
+  email: string,
   password: string,
+};
+
+export type IEnterParams = {
+  email: string,
 };
 
 export type IUserUpdateParams = {
@@ -19,3 +25,8 @@ export type IUserUpdateParams = {
   mobile: string,
   password: string,
 };
+
+export type IMessengerLinkConnectParams = {
+  chatId: string;
+  token: string;
+}

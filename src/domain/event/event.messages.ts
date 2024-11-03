@@ -2,12 +2,13 @@
 import { format } from 'node:util';
 import { IEventRecord, INetResponse,
 } from '../../client/common/server/types/types';
-import { IMember } from '../../db/types/member.types';
-import { INetEventTo } from '../../api/types/net.types';
-import { NetEvent } from './event';
+import { ITransaction } from '../../db/types/types';
+import { IMember } from '../types/member.types';
+import { INetEventTo } from '../../domain/types/net.event.types';
 import {
-  INSTANT_EVENTS, NET_MESSAGES_MAP, SET_USER_NODE_ID_FOR,
+  INSTANT_EVENTS, NET_MESSAGES_MAP, SET_NET_ID_FOR,
 } from '../../constants/constants';
+import { NetEvent } from './event';
 
 export class EventMessages {
   private event: NetEvent;
@@ -24,12 +25,23 @@ export class EventMessages {
     this.eventToMessages = NET_MESSAGES_MAP[event_type];
   }
 
-  async create() {
-    if (!this.member) return;
-    await this.createInCircle();
-    await this.createInTree();
-    await this.createMessageToMember();
-    this.createInstantMessageInNet();
+  async create(t?: ITransaction) {
+    if (this.member) {
+      await this.createInCircle(t);
+      await this.createInTree(t);
+      await this.createMessageToMember();
+    }
+    this.createInNet();
+  }
+
+  removeFromNodes(nodeIds: number[]) {
+    let i = -1;
+    for (const { from_node_id } of [...this.records]) {
+      i++;
+      if (!from_node_id) continue;
+      if (!nodeIds.includes(from_node_id)) continue;
+      this.records.splice(i--, 1);
+    }
   }
 
   private async getNet() {
@@ -41,43 +53,44 @@ export class EventMessages {
     return this.net;
   }
 
-  async createInCircle() {
-    const {
-      node_id: member_node_id,
-      parent_node_id,
-      confirmed: member_confirmed,
-    } = this.member!;
+  async createInCircle(t?: ITransaction) {
+    const { node_id, parent_node_id } = this.member!;
     if (!parent_node_id) return;
     const toFacilitator = this.eventToMessages.FACILITATOR;
     const toCircleMember = this.eventToMessages.CIRCLE;
     if (!toFacilitator && !toCircleMember) return;
-    const users = await execQuery.net.circle
-      .getMembers([member_node_id, parent_node_id]);
-    for (const user of users) {
-      const { node_id: user_node_id, confirmed: user_confirmed } = user;
-      if (user_node_id === parent_node_id) {
-        this.createMessageToFacilitator(user);
-      } else if (!member_confirmed) continue;
-      else if (!user_confirmed) continue;
-      else {
-        this.cretaeMessagesToCircleMember(user);
-      }
+    const members = await (t?.execQuery || execQuery)
+      .net.circle.getMembers([node_id, parent_node_id]);
+    for (const member of members) {
+      const { node_id: member_node_id, confirmed: member_confirmed } = member;
+      if (member_node_id === parent_node_id)
+        this.createMessageToFacilitator(member);
+      else if (!member_confirmed) continue;
+      else this.cretaeMessagesToCircleMember(member);
     }
   }
 
-  createMessageToFacilitator(user: IMember) {
+  createMessageToFacilitator(member: IMember) {
     const message = this.eventToMessages.FACILITATOR;
-    if (!message) return [];
-    const { user_id } = user;
+    if (message === undefined) return;
+    const { user_id } = member;
     const { node_id: from_node_id } = this.member!;
-    this.records.push({ user_id, net_view: 'tree', from_node_id, message });
+    const record: IEventRecord = {
+      user_id,
+      net_view: 'tree',
+      from_node_id,
+      message,
+    };
+    const { event_type } = this.event;
+    if (INSTANT_EVENTS.includes(event_type))
+      this.instantRecords.push(record);
+    else this.records.push(record);
   }
 
-  cretaeMessagesToCircleMember(user: IMember) {
-    const { event_type } = this.event;
+  cretaeMessagesToCircleMember(member: IMember) {
     const message = this.eventToMessages.CIRCLE;
-    if (!message) return;
-    const { user_id } = user;
+    if (message === undefined) return;
+    const { user_id } = member;
     const { node_id: from_node_id } = this.member!;
     const record: IEventRecord = {
       user_id,
@@ -85,53 +98,62 @@ export class EventMessages {
       from_node_id,
       message,
     };
-    if (INSTANT_EVENTS.includes(event_type)) {
+    const { event_type } = this.event;
+    if (INSTANT_EVENTS.includes(event_type))
       this.instantRecords.push(record);
-    } else {
-      this.records.push(record);
-    }
+    else this.records.push(record);
   }
 
-  async createInTree() {
+  async createInTree(t?: ITransaction) {
     const message = this.eventToMessages.TREE;
-    if (!message) return;
-    const { node_id: from_node_id, confirmed } = this.member!;
-    if (!confirmed) return;
-    const members = await execQuery.net.tree.getMembers([from_node_id]);
+    if (message === undefined) return;
+    const { node_id: from_node_id } = this.member!;
+    const members = await (t?.execQuery || execQuery)
+      .net.tree.getMembers([from_node_id]);
     for (const { user_id } of members) {
-      this.records.push({ user_id, net_view: 'circle', from_node_id, message });
+      this.records.push({
+        user_id,
+        net_view: 'circle',
+        from_node_id,
+        message,
+      });
     }
   }
 
   async createMessageToMember() {
     const { event_type } = this.event;
     let message = this.eventToMessages.MEMBER;
-    if (!message) return;
-    const { user_id, node_id, net_id } = this.member!;
-    const [net] = await execQuery.net.data.get([net_id]);
-    const { name } = net!;
-    const user_node_id =
-      SET_USER_NODE_ID_FOR.includes(event_type) ? node_id : null;
-    if (!user_node_id) message = format(message, name);
+    if (message === undefined) return;
+    const { user_id, net_id } = this.member!;
+    const net_view = SET_NET_ID_FOR.includes(event_type) ? 'net' : null;
+    if (!net_view) {
+      const [net] = await execQuery.net.data.get([net_id]);
+      const { name } = net!;
+      message = format(message, name);
+    }
     this.records.push({
       user_id,
-      net_view: 'net',
+      net_view,
       from_node_id: null,
       message,
     });
   }
 
-  async createInstantMessageInNet() {
-    const { event_type, member } = this.event;
-    if (!INSTANT_EVENTS.includes(event_type)) return;
+  createInNet() {
     const message = this.eventToMessages.NET;
     if (message === undefined) return;
-    this.instantRecords.push({
+    const { event_type, member } = this.event;
+    const record: IEventRecord = {
       user_id: 0,
       net_view: 'net',
       from_node_id: member && member.node_id,
       message,
-    });
+    };
+    if (INSTANT_EVENTS.includes(event_type)) {
+      this.instantRecords.push(record);
+    } else {
+      this.records.push(record);
+    }
   }
 
   async createToConnected(user_id: number) {
@@ -146,33 +168,3 @@ export class EventMessages {
     });
   }
 }
-
-/**
- * voteNetUser
- * removeMemberFromNetAndSubnets
- * api.net.board.save
- * api.net.board.remove
- * api.net.board.clear
- * api.member.data.vote.set
- * api.member.data.vote.unset
- * tighten
- */
-
-/*
-createMessagesInTree
-  execQuery.events.create
-  commitEvents(user_id, date)
-createMessagesInCircle
-  createMessageToFacilitator
-  cretaeMessagesToCircleMember
-    sendInstantMessage
-    execQuery.events.create
-    commitEvents(user_id, date)
-    execQuery.events.create
-    commitEvents(user_id, date)
-createMessageToMember
-  execQuery.events.create
-  commitEvents(user_id, date)
-createInstantMessageInNet
-  sendInstantMessageInNet
-*/

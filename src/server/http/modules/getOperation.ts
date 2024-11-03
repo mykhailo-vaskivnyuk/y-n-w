@@ -57,14 +57,14 @@ export const getOperation: THttpReqModule = (
 
 const getRequestParams = (req: IRequest, context: IHttpContext) => {
   const { headers, url } = req;
-  const { origin, host } = headers;
+  const { origin = '', host } = headers;
   const { pathname, searchParams } = getUrlInstance(url, host);
   const { options, contextParams } = context;
   const { apiPathname } = thisConfig;
   const strNames = pathname.replace(`/${apiPathname}/`, '');
   const names = pathToArray(strNames || 'index');
   const params: IParams = Object.fromEntries(searchParams);
-  options.origin = origin || '';
+  options.origin = origin;
 
   return { names, params, options, contextParams };
 };

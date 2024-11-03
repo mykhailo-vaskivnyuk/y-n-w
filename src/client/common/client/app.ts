@@ -3,8 +3,9 @@
 import * as T from '../server/types/types';
 import { TPromiseExecutor } from '../types';
 import { AppStatus } from './constants';
+import { API_URL } from '../../local/imports';
 import { HttpResponseError } from './connection/errors';
-import { EventEmitter } from './event.emitter';
+import { EventEmitter } from './lib/event.emitter';
 import { getApi, IClientApi } from '../server/client.api';
 import { Account } from './classes/account.class';
 import { UserNets } from './classes/user.nets.class';
@@ -20,7 +21,7 @@ export class ClientApp extends EventEmitter {
   private status: AppStatus = AppStatus.INITING;
   private error: Error | null = null;
   private userStatus: T.UserStatusKeys = 'NOT_LOGGEDIN';
-  private loadingQueue: (Parameters<TPromiseExecutor<void>>)[] = [];
+  private loadingQueue: Parameters<TPromiseExecutor<void>>[] = [];
 
   account: Account;
   userNets: UserNets;
@@ -30,7 +31,7 @@ export class ClientApp extends EventEmitter {
 
   constructor() {
     super();
-    this.baseUrl = process.env.API || `${window.location.origin}/api`;
+    this.baseUrl = API_URL || `${window.location.origin}/api`;
     this.account = new Account(this as any);
     this.net = new Net(this as any);
     this.chat = new Chat(this as any);
@@ -42,9 +43,9 @@ export class ClientApp extends EventEmitter {
     return {
       status: this.status,
       error: this.error,
-      ...this.account.getUser(),
+      ...this.account.getState(),
       userStatus: this.userStatus,
-      nets: this.userNets.getUserNets(),
+      ...this.userNets.getUserNets(),
       events: this.userEvents.getEvents(),
       ...this.net.getNetState(),
       ...this.chat.getChatState(),
@@ -131,6 +132,8 @@ export class ClientApp extends EventEmitter {
 
   private handleConnect() {
     if (this.status === AppStatus.INITING) return;
+    const { user_status } = this.getState().user || {};
+    if (user_status === 'NOT_LOGGEDIN') return;
     this.chat.connectAll().catch((e) => this.setError(e));
     this.userEvents.read(true).catch((e) => this.setError(e));
   }
@@ -143,10 +146,11 @@ export class ClientApp extends EventEmitter {
       readChanges && await this.userEvents.read(true);
     }
     this.setUserStatus();
+    this.emit('user', user);
   }
 
   private setUserStatus() {
-    const { user } = this.account.getUser();
+    const { user } = this.account.getState();
     this.userStatus = 'NOT_LOGGEDIN';
     if (!user) return;
     const { net, userNetData } = this.net.getNetState();
@@ -169,35 +173,31 @@ export class ClientApp extends EventEmitter {
     this.setUserStatus();
   }
 
-  async setEvents(events: T.IEvents) {
+  private async onNewEvents(events: T.IEvents) {
     const { net } = this.getState();
     const { net_id } = net || {};
     let updateUser = false;
     let updateNet = false;
     for (const event of events) {
-      const { net_id: eventNetId } = event;
-      if (!eventNetId) {
+      const { net_id: eventNetId, net_view: netView, message } = event;
+      if (!netView) {
         updateUser = true;
-        net_id && (updateNet = true);
         break;
       }
       if (eventNetId === net_id) updateNet = true;
+      if (!message) this.userEvents.drop(event);
     }
-    if (updateUser) await this.onNewUser(false) // ?
-      .catch(console.log);
-    if (updateNet) await this.net.enter(net_id!, true)
-      .catch(console.log);
+    if (updateUser) await this.onNewUser(false).catch(console.log);
+    if (updateNet) await this.net.enter(net_id!, true).catch(console.log);
+    this.emit('events', this.userEvents.getEvents());
   }
 
-  setMessage<T extends T.MessageTypeKeys>(
-    messageData: T.IMessage<T>,
-  ) {
+  setMessage<T extends T.MessageTypeKeys>(messageData: T.IMessage<T>) {
     if (!messageData) return;
 
-    if (this.userEvents.isNewEvents(messageData))
-      return this.userEvents.read();
-    if (this.userEvents.isEvent(messageData))
-      return this.setEvents([messageData]);
+    if (this.userEvents.isEventMessage(messageData)) {
+      return this.userEvents.newEventMessage(messageData);
+    }
 
     this.chat.setMessage(messageData);
   }

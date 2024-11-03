@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
-import { IRouterContext } from '../app/types';
+import { IControllerContext } from '../app/types';
 import { log, resolve } from './utils';
 
 const options = { displayErrors: true };
@@ -9,7 +9,7 @@ const options = { displayErrors: true };
 export const loadModule = (
   parentModuleDir: string,
   modulePath: string,
-  { ...modulesContext } = {} as IRouterContext,
+  { ...modulesContext } = {} as IControllerContext,
 ) => {
   try {
     return loader(modulePath, parentModuleDir, modulesContext);
@@ -21,7 +21,7 @@ export const loadModule = (
 export const loader = (
   modulePath: string,
   parentModuleDir: string,
-  modulesContext?: IRouterContext,
+  modulesContext?: IControllerContext,
 ) => {
   const __filename = resolve(parentModuleDir, modulePath);
   if (!__filename) return require(modulePath);

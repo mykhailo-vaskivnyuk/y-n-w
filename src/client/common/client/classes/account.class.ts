@@ -21,15 +21,17 @@ export class Account {
     this.tg = webApp.initData ? webApp : undefined;
   }
 
-  getUser() {
+  getState() {
     return {
       user: this.user,
       tg: this.tg,
+      bot: this.messenger.getState(),
     };
   }
 
   async init() {
     let user;
+    await this.messenger.init();
     if (this.tg) {
       user = await this.app.api.account.overtg(this.tg);
     } else {
@@ -42,15 +44,25 @@ export class Account {
     if (this.user === user) return;
     this.user = user;
     await this.app.onNewUser();
-    this.app.emit('user', user);
   }
 
-  async loginOrSignup(
-    type: 'login' | 'signup', args: T.ILoginParams | T.ISignupParams,
-  ) {
+  async signup(args: T.ISignupParams) {
     try {
       await this.app.setStatus(AppStatus.LOADING);
-      const user = await this.app.api.account[type](args as any);
+      const user = await this.app.api.account.signup(args);
+      user && await this.setUser(user);
+      this.app.setStatus(AppStatus.READY);
+      return user;
+    } catch (e: any) {
+      this.app.setError(e);
+      throw e;
+    }
+  }
+
+  async login(args: T.ILoginParams) {
+    try {
+      await this.app.setStatus(AppStatus.LOADING);
+      const user = await this.app.api.account.login(args);
       user && await this.setUser(user);
       this.app.setStatus(AppStatus.READY);
       return user;
@@ -73,7 +85,7 @@ export class Account {
     }
   }
 
-  async overmail(args: T.ISignupParams) {
+  async overmail(args: T.IEnterParams) {
     try {
       await this.app.setStatus(AppStatus.LOADING);
       const success = await this.app.api.account.overmail(args);

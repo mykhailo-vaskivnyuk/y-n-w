@@ -8,22 +8,26 @@ import {
 } from '../../schema/schema';
 
 export const read: THandler<INetReadParams, INetBoardReadResponse> =
-  async ({ userNetData }) => {
-    const { net_id } = userNetData!;
+  async ({ member }) => {
+    const { net_id } = member!.get();
     return await execQuery.net.boardMessages.get([net_id]);
   };
 read.paramsSchema = NetReadParamsSchema;
 read.responseSchema = NetBoardReadResponseSchema;
+read.checkNet = true;
 
 export const remove: THandler<IBoardRemoveParams, boolean> = async (
-  { userNetData }, { node_id, message_id }
+  { member }, { node_id, message_id }
 ) => {
   await execQuery.net.boardMessages.remove([message_id, node_id]);
-  const { net_id } = userNetData!;
-  const event = new domain.event.NetEvent(net_id, 'BOARD_MESSAGE', userNetData);
+  const m = member!.get();
+  const { net_id } = m;
+  const event = new domain.event.NetEvent(net_id, 'BOARD_MESSAGE', m);
   await event.messages.create();
-  await event.commit(notificationService);
+  await event.commit();
+  event.send();
   return true;
 };
 remove.paramsSchema = BoardRemoveParamsSchema;
 remove.responseSchema = Joi.boolean();
+remove.checkNet = true;

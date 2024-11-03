@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { IMember, IMemberNode } from '../../../db/types/member.types';
+import { IMember, IMemberNode } from '../../../domain/types/member.types';
 import { THandler } from '../../../controller/types';
 
 const clear: THandler<{ weekAgo: number }, boolean> =
@@ -20,11 +20,13 @@ const clear: THandler<{ weekAgo: number }, boolean> =
         memberNode.net_id, 'BOARD_MESSAGE', memberNode as IMember
       );
       await event.messages.create();
-      await event.commit(notificationService);
+      await event.commit();
+      event.send();
     } while (memberMessage);
     return true;
   };
 clear.paramsSchema = { weekAgo: Joi.number().required() };
 clear.responseSchema = Joi.boolean();
+clear.checkNet = false;
 
 export = clear;

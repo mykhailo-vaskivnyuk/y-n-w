@@ -22,7 +22,7 @@ export const getApi = (
 
     'logout': () => fetch<boolean>('/account/logout'),
 
-    'overmail': (options: P.ISignupParams) =>
+    'overmail': (options: P.IEnterParams) =>
       fetch<boolean>('/account/overmail', options),
 
     'overtg': (options: Q.TAccountOvertg) =>
@@ -40,13 +40,24 @@ export const getApi = (
       fetch<P.IUserResponse>('/account/signupTg', options),
 
     'messenger': {
+      'get': {
+        'name': () => fetch<string>('/account/messenger/get/name'),
+
+      },
       'link': {
         'get': () => fetch<Q.TAccountMessengerLinkGetResponse>('/account/messenger/link/get'),
 
-        'connect': (options: Q.TAccountMessengerLinkConnect) =>
+        'connect': (options: P.IMessengerLinkConnectParams) =>
           fetch<boolean>('/account/messenger/link/connect', options),
 
       },
+    },
+  },
+  'admin': {
+    'net': {
+      'get': (options: P.INetEnterParams) =>
+        fetch<Q.TAdminNetGetResponse>('/admin/net/get', options),
+
     },
   },
   'chat': {
@@ -115,7 +126,7 @@ export const getApi = (
   },
   'net': {
     'connectByToken': (options: P.ITokenParams) =>
-      fetch<Q.TNetConnectByTokenResponse>('/net/connectByToken', options),
+      fetch<P.INetConnectByToken>('/net/connectByToken', options),
 
     'create': (options: P.INetCreateParams) =>
       fetch<P.INetResponse>('/net/create', options),
@@ -135,6 +146,17 @@ export const getApi = (
     'update': (options: P.INetUpdateParams) =>
       fetch<P.INetResponse>('/net/update', options),
 
+    'wait': {
+      'create': (options: P.IWaitCreateParams) =>
+        fetch<P.INetConnectByToken>('/net/wait/create', options),
+
+      'remove': (options: P.INetEnterParams) =>
+        fetch<boolean>('/net/wait/remove', options),
+
+      'get': (options: P.INetReadParams) =>
+        fetch<P.INetWaitingResponse>('/net/wait/get', options),
+
+    },
     'board': {
       'clear': (options: Q.TNetBoardClear) =>
         fetch<boolean>('/net/board/clear', options),
@@ -170,8 +192,12 @@ export const getApi = (
 
     },
     'nets': {
-      'get': () => fetch<P.INetsResponse>('/user/nets/get'),
+      'get': {
+        'all': () => fetch<P.INetsResponse>('/user/nets/get/all'),
 
+        'wait': () => fetch<P.IWaitNets>('/user/nets/get/wait'),
+
+      },
     },
   },
 });

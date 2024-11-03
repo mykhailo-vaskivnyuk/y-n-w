@@ -3,17 +3,17 @@ import { INetReadParams } from '../../client/common/server/types/types';
 import { THandler } from '../../controller/types';
 import { NetReadParamsSchema } from '../schema/schema';
 
-const leave: THandler<INetReadParams> = async (
-  { userNetData },
-) => {
-  const { net_id, confirmed } = userNetData!;
+const leave: THandler<INetReadParams> = async ({ member: m }) => {
+  const member = m!.get();
+  const { confirmed } = member;
   const event_type = confirmed ? 'LEAVE' : 'LEAVE_CONNECTED';
-  const event = new domain.event.NetEvent(net_id, event_type, userNetData);
-  await domain.net.removeMemberFromNet(event);
+  const remove = domain.net.NetArrange.removeMemberFromNet;
+  await remove(event_type, member);
   return true;
 };
 leave.paramsSchema = NetReadParamsSchema;
 leave.responseSchema = Joi.boolean();
 leave.allowedForNetUser = 'INVITING';
+leave.checkNet = true;
 
 export = leave;

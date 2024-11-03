@@ -1,40 +1,43 @@
 import { IOperation } from '../../types/operation.types';
 import { IAppThis } from '../types';
 import { handleOperationError } from '../errors';
+import { ServerError } from '../../server/errors';
 
 export const createSetInputConnection = (parent: IAppThis) => () => {
   const { env } = parent.config;
 
-  const handleOperation = async (operation: IOperation) => {
-    try {
-      return await parent.router!.exec(operation);
-    } catch (e: any) {
-      return handleOperationError(e);
-    }
-  };
-
   const { inConnection } = parent.config;
   const { transport } = inConnection;
-  const serverConfig = inConnection['http'];
-  const apiServerConfig = transport !== 'http' && inConnection[transport];
+  const httpConfig = inConnection['http'];
+  const apiConfig = transport !== 'http' && inConnection[transport];
 
-  const InConnection = require(serverConfig.path);
-  const InApiConnection = apiServerConfig && require(apiServerConfig.path);
-  parent.server = new InConnection(serverConfig);
-  if (InApiConnection) {
-    parent.apiServer = new InApiConnection(
-      apiServerConfig, parent.server!.getServer()
-    );
+  const HttpConnection = require(httpConfig.path);
+  parent.server = new HttpConnection(httpConfig);
+  env.STATIC_UNAVAILABLE && parent.server!.setUnavailable(true);
+  const httpServer = parent.server!.getServer();
+
+  if (apiConfig) {
+    const ApiConnection = require(apiConfig.path);
+    parent.apiServer = new ApiConnection(apiConfig, httpServer);
   }
 
+  let handleOperation;
+  if (env.API_UNAVAILABLE) {
+    handleOperation = () => {
+      throw new ServerError('SERVICE_UNAVAILABLE');
+    };
+  } else {
+    handleOperation = async (operation: IOperation) => {
+      try {
+        return await parent.controller!.exec(operation);
+      } catch (e: any) {
+        return handleOperationError(e);
+      }
+    };
+  }
   if (parent.apiServer) {
-    parent.server!.setUnavailable('api');
     parent.apiServer.onOperation(handleOperation);
-    env.API_UNAVAILABLE && parent.apiServer.setUnavailable('api');
   } else {
     parent.server!.onOperation(handleOperation);
-    env.API_UNAVAILABLE && parent.server!.setUnavailable('api');
   }
-
-  env.STATIC_UNAVAILABLE && parent.server!.setUnavailable('static');
 };

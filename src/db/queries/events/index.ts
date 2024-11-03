@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import {
   IEvent, NetEventKeys, NetViewKeys,
 } from '../../../client/common/server/types/types';
@@ -11,23 +12,15 @@ export interface IQueriesEvents {
     ['from_node_id', number | null],
     ['event_type', NetEventKeys],
     ['message', string],
-    ['date', string],
   ]>;
+  readAll: TQuery<[], IEvent>;
   read: TQuery<[
     ['user_id', number],
-    ['date', string | null],
+    ['event_id', number],
   ], IEvent>;
   confirm: TQuery<[
     ['user_id', number],
     ['event_id', number],
-  ]>;
-  removeFromCircle: TQuery<[
-    ['user_id', number],
-    ['net_id', number],
-  ]>;
-  removeFromTree: TQuery<[
-    ['user_id', number],
-    ['net_id', number],
   ]>;
   removeFromNet: TQuery<[
     ['user_id', number],
@@ -42,22 +35,29 @@ export const create = `
     net_view,
     from_node_id,
     event_type,
-    message,
-    date
+    message
   )
-  VALUES ($1, $2, $3, $4, $5, $6, $7)
+  VALUES ($1, $2, $3, $4, $5, $6)
 `;
 
 export const read = `
-  SELECT *,
+  SELECT
+    *,
     TRIM(net_view) as net_view,
     TRIM(event_type) as event_type
   FROM events
   WHERE
-    user_id = $1 AND (
-      $2::timestamp ISNULL OR
-      date > $2
-    )
+    user_id = $1 AND
+    event_id > $2
+  ORDER BY event_id
+`;
+
+export const readAll = `
+  SELECT
+    *,
+    TRIM(net_view) as net_view,
+    TRIM(event_type) as event_type
+  FROM events
   ORDER BY event_id
 `;
 
@@ -68,26 +68,11 @@ export const confirm = `
     event_id = $2
 `;
 
-export const removeFromCircle = `
-  DELETE FROM events
-  WHERE
-    user_id = $1 AND
-    net_id = $2 AND
-    net_view = 'circle'
-`;
-
-export const removeFromTree = `
-  DELETE FROM events
-  WHERE
-    user_id = $1 AND
-    net_id = $2 AND
-    net_view = 'tree'
-`;
-
 export const removeFromNet = `
   DELETE FROM events
   WHERE
-    user_id = $1 AND (
+    user_id = $1 AND
+    (
       $2::int ISNULL OR
       net_id = $2
     )

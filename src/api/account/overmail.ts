@@ -1,10 +1,10 @@
 import Joi from 'joi';
 import { THandler } from '../../controller/types';
-import { ISignupParams } from '../../client/common/server/types/types';
-import { SignupParamsSchema } from '../schema/schema';
+import { IEnterParams } from '../../client/common/server/types/types';
+import { EnterParamsSchema } from '../schema/schema';
 
-const overmail: THandler<ISignupParams, boolean> = async (
-  { origin }, { email },
+const overmail: THandler<IEnterParams, boolean> = async (
+  _, { email },
 ) => {
   const [user] = await execQuery.user.findByEmail([email]);
   if (!user) return false;
@@ -12,10 +12,10 @@ const overmail: THandler<ISignupParams, boolean> = async (
   const { user_id, confirmed } = user;
   await execQuery.user.token.create([user_id, token]);
   const type = confirmed ? 'restore' : 'confirm';
-  await mailService.sendMail[type](email, origin, token);
+  await mailService[type](email, token);
   return true;
 };
-overmail.paramsSchema = SignupParamsSchema;
+overmail.paramsSchema = EnterParamsSchema;
 overmail.responseSchema = Joi.boolean();
 overmail.allowedForUser = 'NOT_LOGGEDIN';
 

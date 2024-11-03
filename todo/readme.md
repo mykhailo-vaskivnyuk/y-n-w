@@ -28,6 +28,7 @@
 
 ## ENDPOINTS
 
+- how do set admin endpoints?
 - combine `getMemberStatus()` on backend with `app.member.getStatus()` on frontend
 - add metadata `handler.allowedForNetUser` and error type `HandlerError('FORBIDDEN')`
 - confirm event - additionaly verify user_id
@@ -45,7 +46,7 @@
 4. logger error params
 5. endpoints in try catch
 6. ws session finalize, if error?
-7. arrange routes and db queries by names
+7. arrange endpoints and db queries by names
 8. ws request params log similar to http request log
 9. rename operationData operationDataHandler/s operationAnswer operationAnswerHandler/s requestHndler/s responseHandler/s
 10. applyHandlers combine with createHandlers
@@ -68,7 +69,7 @@
 27. users_nets_nodes
 28. readUser - remove net from session or clear session
 29. members_invites
-30. refactor net router and net enter and net comeout add control on back for netid and nodeid depends on user status, refactor redirect
+30. refactor net controller and net enter and net comeout add control on back for netid and nodeid depends on user status, refactor redirect
 31. CONNECTED is not net user
 32. add level limit 6 and net limit
 33. refactor net menu
@@ -121,7 +122,7 @@
 ## ROUTING
 
 - set `netView` correctly
-- control routes access in acсordance with `user_state`
+- control endpoints access in acсordance with `user_state`
 
 ## OTHER
 
@@ -149,7 +150,7 @@
 22. useRedirect
 23. /#xxxx ?
 24. showMessage move outside
-25. setNetView on tree/circle routes
+25. setNetView on tree/circle endpoints
 26. do INVITED user UI
 27. redirect replace: true
 28. copy button for invite

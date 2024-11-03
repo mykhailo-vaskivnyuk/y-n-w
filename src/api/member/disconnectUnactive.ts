@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { IMember } from '../../db/types/member.types';
+import { IMember } from '../../domain/types/member.types';
 import { THandler } from '../../controller/types';
 
 const disconnectUnactive: THandler<{ monthAgo: number }, boolean> =
@@ -10,13 +10,11 @@ const disconnectUnactive: THandler<{ monthAgo: number }, boolean> =
     date.setMonth(month - monthAgo);
     const strDate = date.toUTCString();
     let member: IMember | undefined;
+    const remove = domain.net.NetArrange.removeMemberFromNet;
     do {
       [member] = await execQuery.member.find.unactive([strDate]);
       if (!member) return true;
-      const { net_id } = member;
-      const event = new domain
-        .event.NetEvent(net_id, 'UNACTIVE_DISCONNECT', member);
-      await domain.net.removeMemberFromNet(event);
+      await remove('UNACTIVE_DISCONNECT', member);
     } while (member);
     return true;
   };

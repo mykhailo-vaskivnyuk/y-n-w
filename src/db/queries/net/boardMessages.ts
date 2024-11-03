@@ -1,6 +1,6 @@
 import { TQuery } from '../../types/types';
-import { ITableBoardMessages } from '../../types/db.tables.types';
-import { IMemberNode } from '../../types/member.types';
+import { ITableBoardMessages } from '../../../domain/types/db.types';
+import { IMemberNode } from '../../../domain/types/member.types';
 
 export interface IQueriesNetBoard {
   create: TQuery<[

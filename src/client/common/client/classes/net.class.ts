@@ -39,6 +39,12 @@ export class Net {
     if (this.member) this.findMember(this.member.getMember().node_id);
   }
 
+  async onUserNetDataChanged() {
+    await this.getUserData(true);
+    if (this.netView === 'tree') this.app.emit('tree', { ...this.tree });
+    else this.app.emit('circle', { ...this.circle });
+  }
+
   getNetState() {
     return {
       userNetData: this.userNetData,
@@ -70,6 +76,7 @@ export class Net {
       confirmed && await this.board.read();
       await this.getCircle();
       await this.getTree();
+      if (this.member) this.findMember(this.member.getMember().node_id);
     } else {
       this.setUserNetData();
       this.board = new NetBoard(this.app);
@@ -91,6 +98,7 @@ export class Net {
 
   setView(netView?: T.NetViewEnum) {
     this.netView = netView;
+    this.app.emit('netView', this.netView);
   }
 
   private setCircle(circle: IMember[] = []) {
@@ -137,15 +145,16 @@ export class Net {
     }
   }
 
-  async getUserData() {
+  async getUserData(inChain = false) {
     try {
-      await this.app.setStatus(AppStatus.LOADING);
+      !inChain && await this.app.setStatus(AppStatus.LOADING);
       const net_id = this.userNet!.net_id;
       const userNetData = await this.app.api.user.net.getData({ net_id });
       await this.setUserNetData(userNetData);
-      this.app.setStatus(AppStatus.READY);
+      !inChain && this.app.setStatus(AppStatus.READY);
       return userNetData;
     } catch (e: any) {
+      if (inChain) throw e;
       await this.setUserNetData();
       this.app.setError(e);
     }
@@ -225,6 +234,20 @@ export class Net {
       net && this.setNet(net);
       this.app.setStatus(AppStatus.READY);
       return net;
+    } catch (e: any) {
+      this.app.setError(e);
+      throw e;
+    }
+  }
+
+  async getNetWaiting() {
+    try {
+      await this.app.setStatus(AppStatus.LOADING);
+      const { node_id } = this.userNet || {};
+      if (!node_id) throw new Error('Net is not defined');
+      const result = await this.app.api.net.wait.get({ node_id });
+      this.app.setStatus(AppStatus.READY);
+      return result;
     } catch (e: any) {
       this.app.setError(e);
       throw e;
