@@ -7,40 +7,28 @@ import { IQueriesMemberInvite } from './invite';
 import { IQueriesMemberFind } from './find';
 
 export interface IQueriesMember {
-  create: TQuery<[
-    ['node_id', number],
-    ['user_id', number],
-  ], ITableMembers>;
-  connect: TQuery<[
-    ['node_id', number],
-    ['user_id', number],
-    ['confirmed', boolean],
-  ], ITableMembers>;
-  confirm: TQuery<[
-    ['member_id', number],
-  ]>;
-  remove: TQuery<[
-    ['member_id', number],
-  ]>;
-  removeByNet: TQuery<[
-    ['user_id', number],
-    ['net_id', number | null],
-  ]>;
-  get: TQuery<[
-    ['node_id', number],
-  ], IMember>;
-  getConnected: TQuery<[
-    ['parent_node_id', number],
-  ], Pick<ITableMembers, 'user_id'>>;
-  updateDate: TQuery<[
-    ['member_id', number],
-  ]>;
-  replace: TQuery<[
-    ['node_id', number],
-    ['parent_node_id', number],
-    ['user_id', number],
-    ['parent_user_id', number],
-  ]>;
+  create: TQuery<[['node_id', number], ['user_id', number]], ITableMembers>;
+  connect: TQuery<
+    [['node_id', number], ['user_id', number], ['confirmed', boolean]],
+    ITableMembers
+  >;
+  confirm: TQuery<[['member_id', number]]>;
+  remove: TQuery<[['member_id', number]]>;
+  removeByNet: TQuery<[['user_id', number], ['net_id', number | null]]>;
+  get: TQuery<[['node_id', number]], IMember>;
+  getConnected: TQuery<
+    [['parent_node_id', number]],
+    Pick<ITableMembers, 'user_id'>
+  >;
+  updateDate: TQuery<[['member_id', number]]>;
+  replace: TQuery<
+    [
+      ['node_id', number],
+      ['parent_node_id', number],
+      ['user_id', number],
+      ['parent_user_id', number],
+    ]
+  >;
   data: IQueriesMemberData;
   invite: IQueriesMemberInvite;
   find: IQueriesMemberFind;

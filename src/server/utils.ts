@@ -10,8 +10,8 @@ export const getSessionKey = (req: IRequest, res?: IResponse) => {
     [, result] = cookie.match(regExp) || [];
   }
   const sessionKey = result || createUnicCode(15);
-  res && !result && res.setHeader(
-    'set-cookie', `sessionKey=${sessionKey}; Path=/; httpOnly;`,
-  );
+  res &&
+    !result &&
+    res.setHeader('set-cookie', `sessionKey=${sessionKey}; Path=/; httpOnly;`);
   return sessionKey;
 };

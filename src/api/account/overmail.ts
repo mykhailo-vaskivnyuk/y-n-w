@@ -3,9 +3,7 @@ import { THandler } from '../../controller/types';
 import { IEnterParams } from '../../client/common/server/types/types';
 import { EnterParamsSchema } from '../schema/schema';
 
-const overmail: THandler<IEnterParams, boolean> = async (
-  _, { email },
-) => {
+const overmail: THandler<IEnterParams, boolean> = async (_, { email }) => {
   const [user] = await execQuery.user.findByEmail([email]);
   if (!user) return false;
   const token = cryptoService.createUnicCode(15);

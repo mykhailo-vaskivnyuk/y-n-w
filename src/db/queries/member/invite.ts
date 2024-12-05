@@ -1,18 +1,16 @@
 import { TQuery } from '../../types/types';
 
 export interface IQueriesMemberInvite {
-  create: TQuery<[
-    ['member_id', number],
-    ['node_id', number],
-    ['member_name', string],
-    ['token', string],
-  ]>;
-  remove: TQuery<[
-    ['node_id', number],
-  ]>;
-  removeAll: TQuery<[
-    ['member_id', number],
-  ]>;
+  create: TQuery<
+    [
+      ['member_id', number],
+      ['node_id', number],
+      ['member_name', string],
+      ['token', string],
+    ]
+  >;
+  remove: TQuery<[['node_id', number]]>;
+  removeAll: TQuery<[['member_id', number]]>;
 }
 
 export const create = `

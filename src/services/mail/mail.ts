@@ -1,10 +1,13 @@
+/* eslint-disable indent */
 import nodemailer from 'nodemailer';
 import { format } from 'node:util';
 import { SentMessageInfo, MailOptions } from 'nodemailer/lib/smtp-transport';
 import { TMailType } from './types';
 import { TPromiseExecutor } from '../../../src/client/common/types';
 import {
-  MAIL_COMMON_OPTIONS, MAIL_OPTIONS_MAP, MAIL_TEMPLATE,
+  MAIL_COMMON_OPTIONS,
+  MAIL_OPTIONS_MAP,
+  MAIL_TEMPLATE,
 } from './constants';
 
 const getMailService = (config: MailOptions) => {
@@ -31,9 +34,10 @@ const getMailService = (config: MailOptions) => {
     }
   };
 
-  const getSendMethod = (type: TMailType) => async (
-    to: string, token = '',
-  ) => sendMail(type, to, token);
+  const getSendMethod =
+    (type: TMailType) =>
+    async (to: string, token = '') =>
+      sendMail(type, to, token);
 
   return {
     send,

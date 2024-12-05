@@ -5,8 +5,10 @@ export class Member {
   private member!: IMember;
 
   async init(user_id: number, node_id: number) {
-    const [member] = await execQuery
-      .user.netData.findByNode([user_id, node_id]);
+    const [member] = await execQuery.user.netData.findByNode([
+      user_id,
+      node_id,
+    ]);
     if (!member) throw new DomainError('NOT_FOUND');
     this.member = member;
     return this;

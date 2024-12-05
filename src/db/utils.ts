@@ -15,18 +15,14 @@ const createQueries = (
   sqlToQuery: (sql: string, filePath: string) => TQuery,
 ): IQueries | TQuery => {
   let moduleExport = require(filePath);
-  moduleExport = moduleExport.default || moduleExport as TQueriesModule;
+  moduleExport = moduleExport.default || (moduleExport as TQueriesModule);
   if (typeof moduleExport === 'string') {
     return sqlToQuery(moduleExport, filePath);
   }
-  return Object
-    .keys(moduleExport)
-    .reduce<IQueries>((queries, key) => {
-      queries[key] = sqlToQuery(
-        moduleExport[key]!, filePath + '/' + key,
-      );
-      return queries;
-    }, {});
+  return Object.keys(moduleExport).reduce<IQueries>((queries, key) => {
+    queries[key] = sqlToQuery(moduleExport[key]!, filePath + '/' + key);
+    return queries;
+  }, {});
 };
 
 export const readQueries = async (
@@ -51,7 +47,6 @@ export const readQueries = async (
     const queries = createQueries(filePath, sqlToQuery);
     if (name === 'index') Object.assign(query, queries);
     else query[name] = queries;
-
   }
   // dir.close();
   return query;

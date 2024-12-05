@@ -143,7 +143,7 @@ export class ClientApp extends EventEmitter {
     if (!user) this.setInitialValues();
     else if (user.user_status === 'LOGGEDIN') {
       await this.onNewNets();
-      readChanges && await this.userEvents.read(true);
+      readChanges && (await this.userEvents.read(true));
     }
     this.setUserStatus();
     this.emit('user', user);

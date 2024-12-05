@@ -1,15 +1,12 @@
 import { TQuery } from '../../types/types';
 import {
-  IBranchDislikes, IBranchVotes,
+  IBranchDislikes,
+  IBranchVotes,
 } from '../../../domain/types/member.types';
 
 export interface IQueriesNetBranch {
-  getDislikes: TQuery<[
-    ['branch_id', number],
-  ], IBranchDislikes>;
-  getVotes: TQuery<[
-    ['branch_id', number],
-  ], IBranchVotes>;
+  getDislikes: TQuery<[['branch_id', number]], IBranchDislikes>;
+  getVotes: TQuery<[['branch_id', number]], IBranchVotes>;
 }
 
 export const getDislikes = `

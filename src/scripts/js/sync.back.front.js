@@ -1,7 +1,13 @@
 const {
-  backPath, frontPath, fromBackToFront, excludeFromBack,
-  fromFrontToBack, excludeFromFront,
-  frontStaticPath, backStaticPath, excludeStatic,
+  backPath,
+  frontPath,
+  fromBackToFront,
+  excludeFromBack,
+  fromFrontToBack,
+  excludeFromFront,
+  frontStaticPath,
+  backStaticPath,
+  excludeStatic,
   filesToCopyFromBackToFront,
 } = require('./constants');
 const { copyDir, logFromTo, copyFiles } = require('./utils');

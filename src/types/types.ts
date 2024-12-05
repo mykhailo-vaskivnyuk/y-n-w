@@ -1,10 +1,6 @@
 import { Readable } from 'node:stream';
 
-export type TPrimitiv =
-  | string
-  | number
-  | boolean
-  | null;
+export type TPrimitiv = string | number | boolean | null;
 
 export interface IObject {
   [key: string | number | symbol]:
@@ -15,5 +11,6 @@ export interface IObject {
     | Readable;
 }
 
-export type GetParamsTypes<T extends [string, any][]> =
-  { [key in keyof T]: T[key][1] };
+export type GetParamsTypes<T extends [string, any][]> = {
+  [key in keyof T]: T[key][1];
+};

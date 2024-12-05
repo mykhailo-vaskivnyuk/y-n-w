@@ -2,21 +2,10 @@ import { ITableSessions } from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesSession {
-  read: TQuery<[
-    ['key', string],
-  ], ITableSessions>;
-  create: TQuery<[
-    ['user_id', number],
-    ['key', string],
-    ['value', string],
-  ]>;
-  update: TQuery<[
-    ['key', string],
-    ['value', string],
-  ]>;
-  remove: TQuery<[
-    ['key', string],
-  ]>;
+  read: TQuery<[['key', string]], ITableSessions>;
+  create: TQuery<[['user_id', number], ['key', string], ['value', string]]>;
+  update: TQuery<[['key', string], ['value', string]]>;
+  remove: TQuery<[['key', string]]>;
 }
 
 export const read = `

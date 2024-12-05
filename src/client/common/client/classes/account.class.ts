@@ -8,7 +8,7 @@ import { Messenger } from './messenger.class';
 
 type IApp = IClientAppThis & {
   onNewUser: (readChanges?: boolean) => Promise<void>;
-}
+};
 
 export class Account {
   private user: T.IUserResponse = null;
@@ -50,7 +50,7 @@ export class Account {
     try {
       await this.app.setStatus(AppStatus.LOADING);
       const user = await this.app.api.account.signup(args);
-      user && await this.setUser(user);
+      user && (await this.setUser(user));
       this.app.setStatus(AppStatus.READY);
       return user;
     } catch (e: any) {
@@ -63,7 +63,7 @@ export class Account {
     try {
       await this.app.setStatus(AppStatus.LOADING);
       const user = await this.app.api.account.login(args);
-      user && await this.setUser(user);
+      user && (await this.setUser(user));
       this.app.setStatus(AppStatus.READY);
       return user;
     } catch (e: any) {
@@ -76,7 +76,7 @@ export class Account {
     try {
       await this.app.setStatus(AppStatus.LOADING);
       const success = await this.app.api.account[type]();
-      success && await this.setUser(null);
+      success && (await this.setUser(null));
       this.app.setStatus(AppStatus.READY);
       return success;
     } catch (e: any) {
@@ -100,7 +100,7 @@ export class Account {
     try {
       await this.app.setStatus(AppStatus.LOADING);
       const user = await this.app.api.account.signupTg(this.tg!);
-      user && await this.setUser(user);
+      user && (await this.setUser(user));
       this.app.setStatus(AppStatus.READY);
       return user;
     } catch (e: any) {
@@ -109,13 +109,11 @@ export class Account {
     }
   }
 
-  async loginOverLink(
-    type: 'confirm' | 'restore', args: T.ITokenParams,
-  ): Promise<T.IUserResponse> {
+  async loginOverLink(type: 'confirm' | 'restore', args: T.ITokenParams): Promise<T.IUserResponse> {
     try {
       await this.app.setStatus(AppStatus.LOADING);
       const user = await this.app.api.account[type](args);
-      user && await this.setUser(user);
+      user && (await this.setUser(user));
       this.app.setStatus(AppStatus.READY);
       return user;
     } catch (e: any) {
@@ -128,7 +126,7 @@ export class Account {
     try {
       await this.app.setStatus(AppStatus.LOADING);
       const user = await this.app.api.user.update(data);
-      user && await this.setUser(user);
+      user && (await this.setUser(user));
       this.app.setStatus(AppStatus.READY);
       return user;
     } catch (e: any) {

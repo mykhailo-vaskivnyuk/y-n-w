@@ -1,13 +1,14 @@
+/* eslint-disable indent */
 import { format } from 'node:util';
 import { TLoggerParameters } from './types';
 import { COLORS_MAP } from './constants';
 
-export const colorize = (
-  message: string, color: keyof typeof COLORS_MAP,
-) => '\x1b[' + COLORS_MAP[color] + message + '\x1b[0m';
+export const colorize = (message: string, color: keyof typeof COLORS_MAP) =>
+  '\x1b[' + COLORS_MAP[color] + message + '\x1b[0m';
 
-export const getFormatLog = (isColor: boolean) =>
-  (message: TLoggerParameters, color: keyof typeof COLORS_MAP,): any[] => {
+export const getFormatLog =
+  (isColor: boolean) =>
+  (message: TLoggerParameters, color: keyof typeof COLORS_MAP): any[] => {
     let first = {};
     let second = '';
     if (typeof message[0] === 'object') {

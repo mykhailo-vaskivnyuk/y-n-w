@@ -7,22 +7,29 @@ import { getMemberStatus } from '../../../client/common/server/utils';
 import { exeWithNetLock } from '../../../domain/utils/utils';
 
 const create: THandler<IMemberInviteParams, string | null> = async (
-  { member: m }, { node_id, member_node_id, member_name },
+  { member: m },
+  { node_id, member_node_id, member_name },
 ) => {
   const { goal, net_id } = await m!.getNet();
   if (!goal) return null; // bad request
   return exeWithNetLock(net_id, async () => {
     await m!.reinit();
-    const [member] = await execQuery
-      .member.find.inTree([node_id, member_node_id]);
+    const [member] = await execQuery.member.find.inTree([
+      node_id,
+      member_node_id,
+    ]);
     if (!member) return null; // bad request
 
     const memberStatus = getMemberStatus(member);
     if (memberStatus !== 'EMPTY') return null; // bad request
 
     const token = cryptoService.createUnicCode(15);
-    await execQuery
-      .member.invite.create([node_id, member_node_id, member_name, token]);
+    await execQuery.member.invite.create([
+      node_id,
+      member_node_id,
+      member_name,
+      token,
+    ]);
 
     return token;
   });

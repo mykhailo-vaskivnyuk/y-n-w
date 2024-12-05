@@ -1,26 +1,24 @@
 import { DatabaseError } from './errors';
 import {
-  IDatabaseQueries, ITransaction, ITransactionConnection,
+  IDatabaseQueries,
+  ITransaction,
+  ITransactionConnection,
 } from './types/types';
 
 export class Transaction implements ITransaction {
-
   constructor(
     private connection: ITransactionConnection,
     public execQuery: IDatabaseQueries,
   ) {
     const handler = {
-      get(
-        target: IDatabaseQueries,
-        name: keyof IDatabaseQueries,
-      ) {
+      get(target: IDatabaseQueries, name: keyof IDatabaseQueries) {
         if (!(name in target)) return;
         const newTarget = target[name];
         if (typeof newTarget !== 'function')
           return new Proxy(newTarget, handler as any);
         const func = newTarget as any;
         return (...args: any[]) => func(...args, connection);
-      }
+      },
     };
     this.execQuery = new Proxy(execQuery, handler as any);
   }

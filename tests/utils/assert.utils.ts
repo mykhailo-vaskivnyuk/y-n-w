@@ -3,9 +3,7 @@ import { IOperationData, TMockFunction } from '../types/types';
 import { delay } from '../../src/client/common/client/connection/utils';
 import { TFetch } from '../../src/client/common/client/connection/types';
 
-export const assertDb = async (
-  operation: IOperationData,
-) => {
+export const assertDb = async (operation: IOperationData) => {
   const { query, expectedQueryResult: expected } = operation;
   const actual = await query!();
   if (typeof expected === 'function') expected(actual);

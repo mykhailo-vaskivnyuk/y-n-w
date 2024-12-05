@@ -1,6 +1,10 @@
 import {
-  IDatabase, IDatabaseConfig, IDatabaseConnection,
-  IDatabaseQueries, ITransaction, TQuery,
+  IDatabase,
+  IDatabaseConfig,
+  IDatabaseConnection,
+  IDatabaseQueries,
+  ITransaction,
+  TQuery,
 } from './types/types';
 import { DatabaseError } from './errors';
 import { readQueries } from './utils';

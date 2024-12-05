@@ -9,7 +9,7 @@ export const ServerErrorMap = {
   SERVER_ERROR: 'Internal server error',
   SERVICE_UNAVAILABLE: 'Service unavailable',
   NO_CALLBACK: 'onOperation callback is not set',
-  LISTEN_ERROR: 'Can\'t start server',
+  LISTEN_ERROR: "Can't start server",
 } as const;
 export type ServerErrorCode = keyof typeof ServerErrorMap;
 
@@ -26,11 +26,12 @@ export type ErrorStatusCode = keyof typeof ErrorStatusCodeMap;
 
 export class ServerError extends Error {
   public code: ServerErrorCode;
-  public details: { location?: string } & TOperationResponse | null;
+  public details: ({ location?: string } & TOperationResponse) | null;
   public statusCode: number | undefined;
 
   constructor(
-    code: ServerErrorCode, details: TOperationResponse | null = null,
+    code: ServerErrorCode,
+    details: TOperationResponse | null = null,
   ) {
     super(ServerErrorMap[code]);
     this.name = this.constructor.name;

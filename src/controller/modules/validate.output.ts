@@ -10,9 +10,7 @@ const options = {
 };
 
 const validateOutput: TOutputModule = () =>
-  async function validateOutput(
-    response, context, handler
-  ): Promise<any> {
+  async function validateOutput(response, context, handler): Promise<any> {
     if (Array.isArray(response)) {
       const value = [];
       for (const item of response) {
@@ -29,8 +27,7 @@ const validateOutput: TOutputModule = () =>
     const schema = outputSchemaToSchema(responseSchema);
     let result;
     if (Array.isArray(schema)) {
-      result = Joi
-        .alternatives()
+      result = Joi.alternatives()
         .match('any')
         .try(...schema)
         .validate(response, options);

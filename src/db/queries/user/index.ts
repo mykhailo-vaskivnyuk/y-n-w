@@ -8,38 +8,26 @@ import { IQueriesUserEvents } from './events';
 import { IQueriesUserMessenger } from './messenger';
 
 export interface IQueriesUser {
-  get: TQuery<[
-    ['user_id', number],
-  ], ITableUsers>;
-  findByEmail: TQuery<[
-    ['email', string],
-  ], ITableUsers>;
-  findByToken: TQuery<[
-    ['token', string],
-  ], ITableUsers>;
-  findByChatId: TQuery<[
-    ['chatId', number],
-  ], ITableUsers>;
-  create: TQuery<[
-    ['name', string],
-    ['email', string],
-  ], ITableUsers>;
-  createByChatId: TQuery<[
-    ['name', string | null],
-    ['chat_id', number],
-  ], ITableUsers>;
-  confirm: TQuery<[
-    ['user_id', number],
-  ], ITableUsers>;
-  remove: TQuery<[
-    ['user_id', number],
-  ]>;
-  update: TQuery<[
-    ['user_id', number],
-    ['name', string | null],
-    ['mobile', string | null],
-    ['password', string | null],
-  ], ITableUsers>;
+  get: TQuery<[['user_id', number]], ITableUsers>;
+  findByEmail: TQuery<[['email', string]], ITableUsers>;
+  findByToken: TQuery<[['token', string]], ITableUsers>;
+  findByChatId: TQuery<[['chatId', number]], ITableUsers>;
+  create: TQuery<[['name', string], ['email', string]], ITableUsers>;
+  createByChatId: TQuery<
+    [['name', string | null], ['chat_id', number]],
+    ITableUsers
+  >;
+  confirm: TQuery<[['user_id', number]], ITableUsers>;
+  remove: TQuery<[['user_id', number]]>;
+  update: TQuery<
+    [
+      ['user_id', number],
+      ['name', string | null],
+      ['mobile', string | null],
+      ['password', string | null],
+    ],
+    ITableUsers
+  >;
   netData: IQueriesUserNetData;
   nets: IQueriesUserNets;
   token: IQueriesUserToken;

@@ -47,7 +47,7 @@ const mailConfig = {
     auth: {
       user: mailUser,
       pass: mailPass,
-    }
+    },
   },
 }[mail || 'google'];
 
@@ -71,11 +71,7 @@ const config: IConfig = {
     servicesPath: resolvePath('services'),
     modulesPath: resolvePath('controller/modules'),
     clientApiPath: resolve('src/client/common/server/client.api.ts'),
-    services: [
-      'mailService',
-      'chatService',
-      'notificationService',
-    ],
+    services: ['mailService', 'chatService', 'notificationService'],
     inputModules: [
       'setSession',
       'checkAuthorized',
@@ -83,28 +79,30 @@ const config: IConfig = {
       'validateInput',
       'setUserNet',
     ],
-    outputModules: [
-      'validateOutput',
-    ],
+    outputModules: ['validateOutput'],
     modulesConfig: {
       mailService: mailConfig,
     },
-    tasks: [{
-      path: 'member/disconnectUnactive',
-      params: { monthAgo: 2 },
-      time: 86_400_000,
-      interval: 86_400_000,
-    }, {
-      path: 'member/disconnectNotVote',
-      params: { monthAgo: 2 },
-      time: 86_400_000,
-      interval: 86_400_000,
-    }, {
-      path: 'net/board/clear',
-      params: { weekAgo: 0 },
-      time: 86_400_000,
-      interval: 86_400_000,
-    }],
+    tasks: [
+      {
+        path: 'member/disconnectUnactive',
+        params: { monthAgo: 2 },
+        time: 86_400_000,
+        interval: 86_400_000,
+      },
+      {
+        path: 'member/disconnectNotVote',
+        params: { monthAgo: 2 },
+        time: 86_400_000,
+        interval: 86_400_000,
+      },
+      {
+        path: 'net/board/clear',
+        params: { weekAgo: 0 },
+        time: 86_400_000,
+        interval: 86_400_000,
+      },
+    ],
   },
   inConnection: {
     transport,
@@ -113,12 +111,7 @@ const config: IConfig = {
       modulesPath: resolvePath('server/http/modules'),
       staticPath: resolve(staticPath),
       apiPathname: 'api',
-      reqModules: [
-        'allowCors',
-        'setSession',
-        'staticServer',
-        'getOperation',
-      ],
+      reqModules: ['allowCors', 'setSession', 'staticServer', 'getOperation'],
       resModules: ['sendResponse'],
       host,
       port,
@@ -135,7 +128,7 @@ const config: IConfig = {
       path: resolvePath('server/tg/tg'),
       token: restEnv.TG_BOT_TOKEN,
       user_name: restEnv.TG_BOT,
-    }
+    },
   },
 };
 

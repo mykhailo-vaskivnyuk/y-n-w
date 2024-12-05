@@ -1,4 +1,3 @@
-
 import path from 'node:path';
 import fs from 'node:fs';
 import { Writable } from 'node:stream';
@@ -22,7 +21,7 @@ export const createClientApi = (
     const apiStream = fs.createWriteStream(apiPath);
     const typesStream = fs.createWriteStream(typesPath);
     let done = false;
-    const handleFinish = () => (done ? rv() : done = true);
+    const handleFinish = () => (done ? rv() : (done = true));
     const handleError = (e: Error) => {
       apiStream.close();
       typesStream.close();
@@ -48,32 +47,46 @@ export const createClientApi = (
 export const createJs = (
   apiTypes: Record<string, TJoiSchema>,
   apiStream: Writable,
-  typesStream: Writable
-) => function createJs(endpoints: IEndpoints, pathname = '', indent = '') {
-  apiStream.write('{');
-  const nextIndent = indent + '  ';
-  const routesKeys = Object.keys(endpoints);
+  typesStream: Writable,
+) =>
+  function createJs(endpoints: IEndpoints, pathname = '', indent = '') {
+    apiStream.write('{');
+    const nextIndent = indent + '  ';
+    const routesKeys = Object.keys(endpoints);
 
-  for (const key of routesKeys) {
-    apiStream.write(tpl.strKey(nextIndent, key));
-    const handler = endpoints[key] as THandler | IEndpoints;
-    const nextPathname = pathname + '/' + key;
-    if (!isHandler(handler)) {
-      createJs(handler, nextPathname, nextIndent);
-      apiStream.write(',');
-      continue;
+    for (const key of routesKeys) {
+      apiStream.write(tpl.strKey(nextIndent, key));
+      const handler = endpoints[key] as THandler | IEndpoints;
+      const nextPathname = pathname + '/' + key;
+      if (!isHandler(handler)) {
+        createJs(handler, nextPathname, nextIndent);
+        apiStream.write(',');
+        continue;
+      }
+      const typeName = getTypeNameFromPathname(nextPathname);
+      const paramsTypeName = getTypeName(
+        'params',
+        apiTypes,
+        typesStream,
+        typeName,
+        handler,
+      );
+      const responseTypeName = getTypeName(
+        'response',
+        apiTypes,
+        typesStream,
+        typeName,
+        handler,
+      );
+      apiStream.write(
+        tpl.strMethod(
+          paramsTypeName,
+          responseTypeName,
+          nextPathname,
+          nextIndent,
+        ),
+      );
     }
-    const typeName = getTypeNameFromPathname(nextPathname);
-    const paramsTypeName = getTypeName(
-      'params', apiTypes, typesStream, typeName, handler,
-    );
-    const responseTypeName = getTypeName(
-      'response', apiTypes, typesStream, typeName, handler,
-    );
-    apiStream.write(
-      tpl.strMethod(paramsTypeName, responseTypeName, nextPathname, nextIndent),
-    );
-  }
 
-  apiStream.write('\n' + indent + '}');
-};
+    apiStream.write('\n' + indent + '}');
+  };

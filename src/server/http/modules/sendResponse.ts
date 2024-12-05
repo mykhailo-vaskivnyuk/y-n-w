@@ -18,10 +18,7 @@ export const sendResponse: THttpResModule = () =>
       return false;
     }
 
-    res.setHeader(
-      'content-type',
-      REQ_MIME_TYPES_ENUM['application/json'],
-    );
+    res.setHeader('content-type', REQ_MIME_TYPES_ENUM['application/json']);
     res.end(body);
     return false;
   };

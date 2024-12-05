@@ -3,25 +3,34 @@ import { ITableUsers } from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNetUsers {
-  toSendNewEvents: TQuery<[
-    ['net_id', number],
-    ['from_node_id', number | null],
-    ['event_type', string],
-  ], Pick<ITableUsers, 'user_id'>>;
-  toSendWaitingEvents: TQuery<[
-    ['net_id', number],
-    ['event_type', string],
-  ], Pick<ITableUsers, 'user_id'>>;
-  toNotifyOnTg: TQuery<[
-    ['net_id', number],
-    ['from_node_id', number | null],
-    ['notification_date', string],
-  ], ITableUsers>;
-  toNotifyOnEmail: TQuery<[
-    ['net_id', number],
-    ['from_node_id', number | null],
-    ['notification_date', string],
-  ], ITableUsers>;
+  toSendNewEvents: TQuery<
+    [
+      ['net_id', number],
+      ['from_node_id', number | null],
+      ['event_type', string],
+    ],
+    Pick<ITableUsers, 'user_id'>
+  >;
+  toSendWaitingEvents: TQuery<
+    [['net_id', number], ['event_type', string]],
+    Pick<ITableUsers, 'user_id'>
+  >;
+  toNotifyOnTg: TQuery<
+    [
+      ['net_id', number],
+      ['from_node_id', number | null],
+      ['notification_date', string],
+    ],
+    ITableUsers
+  >;
+  toNotifyOnEmail: TQuery<
+    [
+      ['net_id', number],
+      ['from_node_id', number | null],
+      ['notification_date', string],
+    ],
+    ITableUsers
+  >;
 }
 
 export const toSendNewEvents = `
@@ -85,7 +94,6 @@ export const toNotifyOnTg = `
       users_events.notification_date < $3
     )
 `;
-
 
 export const toNotifyOnEmail = `
   SELECT DISTINCT users.*, users.user_id::int

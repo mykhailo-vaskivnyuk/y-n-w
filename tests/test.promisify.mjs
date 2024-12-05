@@ -8,6 +8,4 @@ const fn = async (arg, callback) => {
 
 const fnPromisified = promisify6(fn);
 
-fnPromisified(5000, 2000)
-  .then(console.log)
-  .catch(console.log);
+fnPromisified(5000, 2000).then(console.log).catch(console.log);

@@ -1,12 +1,14 @@
 import { THandler } from '../../controller/types';
 import {
-  INetCreateParams, INetResponse,
+  INetCreateParams,
+  INetResponse,
 } from '../../client/common/server/types/types';
 import { MAX_NET_LEVEL } from '../../client/common/server/constants';
 import { NetResponseSchema, NetCreateParamsSchema } from '../schema/schema';
 
 const create: THandler<INetCreateParams, INetResponse> = async (
-  { session, member }, { name },
+  { session, member },
+  { name },
 ) => {
   const user_id = session.read('user_id')!;
   let parentNetId: number | null = null;
@@ -17,7 +19,7 @@ const create: THandler<INetCreateParams, INetResponse> = async (
     parentNetId = net_id;
   }
   return domain.utils.exeWithNetLock(parentNetId, async (t) => {
-    member && await member!.reinit();
+    member && (await member!.reinit());
     return domain.net.createNet(user_id, parentNetId, name, t);
   });
 };

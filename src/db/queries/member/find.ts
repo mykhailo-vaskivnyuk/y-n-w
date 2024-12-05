@@ -2,17 +2,15 @@ import { IMember, INodeMember } from '../../../domain/types/member.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesMemberFind {
-  unactive: TQuery<[
-    ['date', string],
-  ], IMember>;
-  inTree: TQuery<[
-    ['user_node_id', number],
-    ['member_node_id', number],
-  ], INodeMember>;
-  inCircle: TQuery<[
-    ['parent_node_id', number],
-    ['member_node_id', number],
-  ], INodeMember>;
+  unactive: TQuery<[['date', string]], IMember>;
+  inTree: TQuery<
+    [['user_node_id', number], ['member_node_id', number]],
+    INodeMember
+  >;
+  inCircle: TQuery<
+    [['parent_node_id', number], ['member_node_id', number]],
+    INodeMember
+  >;
 }
 
 export const unactive = `

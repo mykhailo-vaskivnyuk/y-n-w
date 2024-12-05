@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import {
-  INetResponse, OmitNull,
+  INetResponse,
+  OmitNull,
 } from '../../../client/common/server/types/types';
 import { ITableNets } from '../../../domain/types/db.types';
 import { INet } from '../../../domain/types/net.types';
@@ -17,28 +18,16 @@ import { IQueriesNetWait } from './wait';
 
 export interface IQueriesNet {
   createRoot: TQuery<[], ITableNets>;
-  setRootNet: TQuery<[
-    ['net_id', number],
-  ], ITableNets>;
-  createChild: TQuery<[
-    ['parent_net_id', number],
-  ], ITableNets>;
-  updateCountOfNets: TQuery<[
-    ['net_id', number | null],
-    ['addCount', number],
-  ], ITableNets>;
-  remove: TQuery<[
-    ['net_id', number],
-  ]>;
-  get: TQuery<[
-    ['net_id', number],
-  ], OmitNull<INetResponse>>
-  getData: TQuery<[
-    ['net_id', number],
-  ], INet>
-  lock: TQuery<[
-    ['net_id', number],
-  ]>;
+  setRootNet: TQuery<[['net_id', number]], ITableNets>;
+  createChild: TQuery<[['parent_net_id', number]], ITableNets>;
+  updateCountOfNets: TQuery<
+    [['net_id', number | null], ['addCount', number]],
+    ITableNets
+  >;
+  remove: TQuery<[['net_id', number]]>;
+  get: TQuery<[['net_id', number]], OmitNull<INetResponse>>;
+  getData: TQuery<[['net_id', number]], INet>;
+  lock: TQuery<[['net_id', number]]>;
   data: IQueriesNetData;
   circle: IQueriesNetCircle;
   tree: IQueriesNetTree;
@@ -46,7 +35,7 @@ export interface IQueriesNet {
   find: IQueriesNetFind;
   boardMessages: IQueriesNetBoard;
   users: IQueriesNetUsers;
-  structure: { get: IQueriesNetStructure; };
+  structure: { get: IQueriesNetStructure };
   wait: IQueriesNetWait;
 }
 

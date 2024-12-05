@@ -7,13 +7,12 @@ export function createInputModules(config: IControllerConfig) {
   const { modulesPath, inputModules, modulesConfig } = config;
   const resolvePath = createPathResolve(modulesPath);
 
-  const modules = inputModules.map(
-    (module) => {
-      const moduleConfig = modulesConfig[module];
-      const modulePath = resolvePath(INPUT_MODULES_MAP[module]);
-      const moduleExport = require(modulePath).default;
-      return moduleExport(moduleConfig);
-    });
+  const modules = inputModules.map((module) => {
+    const moduleConfig = modulesConfig[module];
+    const modulePath = resolvePath(INPUT_MODULES_MAP[module]);
+    const moduleExport = require(modulePath).default;
+    return moduleExport(moduleConfig);
+  });
 
   const execInputModules = async (
     { ...operation }: IOperation,
@@ -32,14 +31,12 @@ export const createOutputModules = (config: IControllerConfig) => {
   const { modulesPath, outputModules, modulesConfig } = config;
   const resolvePath = createPathResolve(modulesPath);
 
-  const modules = outputModules.map(
-    (module) => {
-      const moduleConfig = modulesConfig[module];
-      const modulePath = resolvePath(OUTPUT_MODULES_MAP[module]);
-      const moduleExport = require(modulePath).default;
-      return moduleExport(moduleConfig);
-    }
-  );
+  const modules = outputModules.map((module) => {
+    const moduleConfig = modulesConfig[module];
+    const modulePath = resolvePath(OUTPUT_MODULES_MAP[module]);
+    const moduleExport = require(modulePath).default;
+    return moduleExport(moduleConfig);
+  });
 
   const execOutputModules = async (
     response: TOperationResponse,

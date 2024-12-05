@@ -1,7 +1,8 @@
 import { TTestUnit } from '../../types/types';
 
-export const structure = (net_id: number): TTestUnit => () => (
-  {
+export const structure =
+  (net_id: number): TTestUnit =>
+  () => ({
     title: `get net structure: ${net_id}`,
     operations: [
       {

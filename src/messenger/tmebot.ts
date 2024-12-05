@@ -6,7 +6,6 @@ let screaming = false;
 //Create a new bot
 const bot = new Bot('');
 
-
 //This function handles the /scream command
 bot.command('scream', () => {
   screaming = true;
@@ -31,8 +30,9 @@ const tutorialButton = 'Tutorial';
 //Build keyboards
 const firstMenuMarkup = new InlineKeyboard().text(nextButton, nextButton);
 
-const secondMenuMarkup = new InlineKeyboard().text(backButton, backButton).text(tutorialButton, 'https://core.telegram.org/bots/tutorial');
-
+const secondMenuMarkup = new InlineKeyboard()
+  .text(backButton, backButton)
+  .text(tutorialButton, 'https://core.telegram.org/bots/tutorial');
 
 //This handler sends a menu with the inline buttons we pre-assigned above
 bot.command('menu', async (ctx) => {
@@ -59,7 +59,6 @@ bot.callbackQuery(nextButton, async (ctx) => {
     parse_mode: 'HTML',
   });
 });
-
 
 //This function would be added to the dispatcher as a handler
 //for messages coming from the Bot API

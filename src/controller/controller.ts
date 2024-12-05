@@ -1,8 +1,14 @@
 /* eslint-disable max-lines */
 import { setTimeout, setInterval } from 'node:timers';
 import {
-  THandler, IEndpoints, TInputModule, IContext,
-  TOutputModule, IController, IControllerConfig, ITask,
+  THandler,
+  IEndpoints,
+  TInputModule,
+  IContext,
+  TOutputModule,
+  IController,
+  IControllerConfig,
+  ITask,
 } from './types';
 import { IOperation, TOperationResponse } from '../types/operation.types';
 import { ControllerError } from './errors';
@@ -74,19 +80,27 @@ class Controller implements IController {
       time !== undefined &&
         handler(context, params).catch((e) => logger.error(e));
       if (!interval) return;
-      setInterval(() => handler(context, params)
-        .catch((e) => logger.error(e)), interval).unref();
+      setInterval(
+        () => handler(context, params).catch((e) => logger.error(e)),
+        interval,
+      ).unref();
     }, time || 0).unref();
   }
 
   async exec(operation: IOperation): Promise<TOperationResponse> {
     if (!this.inited) throw new ControllerError('CONTROLLER_ERROR');
-    const { options: { origin, connectionId }, names } = operation;
+    const {
+      options: { origin, connectionId },
+      names,
+    } = operation;
     const context = { origin, connectionId } as IContext;
     const handler = this.findRoute(names);
     try {
-      const { data } =
-        await this.execInputModules!(operation, context, handler);
+      const { data } = await this.execInputModules!(
+        operation,
+        context,
+        handler,
+      );
       const response = await handler(context, data.params);
       return await this.execOutputModules!(response, context, handler);
     } catch (e: any) {

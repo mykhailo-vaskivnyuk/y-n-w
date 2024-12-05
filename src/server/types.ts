@@ -18,9 +18,7 @@ export type TTransport = 'http' | 'ws' | 'link';
 export interface IInputConnection {
   start(): Promise<void>;
   stop(): Promise<void>;
-  onOperation(
-    cb: (operation: IOperation) => Promise<TOperationResponse>
-  ): void;
+  onOperation(cb: (operation: IOperation) => Promise<TOperationResponse>): void;
   setUnavailable(value: boolean): void;
   getServer(): IServer;
   getConnectionService: () => IConnectionService;
@@ -30,7 +28,8 @@ export type IServer = IHttpServer | IWsServer | ITgServer;
 export type IRequest = http.IncomingMessage;
 export interface IConnectionService {
   sendMessage: <T extends MessageTypeKeys>(
-    data: IMessage<T>, connectionIds?: Set<number>,
+    data: IMessage<T>,
+    connectionIds?: Set<number>,
   ) => Promise<boolean>;
-  sendNotification: (chatId: string) => Promise<boolean>,
+  sendNotification: (chatId: string) => Promise<boolean>;
 }

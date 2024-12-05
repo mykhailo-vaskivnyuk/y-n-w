@@ -1,4 +1,3 @@
-
 import fs from 'node:fs';
 import { Writable } from 'node:stream';
 import { TPromiseExecutor } from '../../src/client/common/types';
@@ -40,25 +39,24 @@ export const isTestUnit = (
   }
 };
 
-export const createTypes = (
-  stream: Writable,
-) => function createTypes(units: ITestUnits, pathname = '', indent = '') {
-  stream.write('{');
-  const nextIndent = indent + '  ';
-  const routesKeys = Object.keys(units);
+export const createTypes = (stream: Writable) =>
+  function createTypes(units: ITestUnits, pathname = '', indent = '') {
+    stream.write('{');
+    const nextIndent = indent + '  ';
+    const routesKeys = Object.keys(units);
 
-  for (const key of routesKeys) {
-    stream.write(tpl.strKey(nextIndent, key));
-    const testUnit = units[key] as ITestUnits[string];
-    const nextPathname = pathname + '/' + key;
-    if (isTestUnits(testUnit)) {
-      createTypes(testUnit, nextPathname, nextIndent);
-      stream.write(';');
-      continue;
+    for (const key of routesKeys) {
+      stream.write(tpl.strKey(nextIndent, key));
+      const testUnit = units[key] as ITestUnits[string];
+      const nextPathname = pathname + '/' + key;
+      if (isTestUnits(testUnit)) {
+        createTypes(testUnit, nextPathname, nextIndent);
+        stream.write(';');
+        continue;
+      }
+      if (isTestUnit(testUnit)) stream.write(tpl.strType());
+      else stream.write(tpl.strTypeGetUnit());
     }
-    if (isTestUnit(testUnit)) stream.write(tpl.strType());
-    else stream.write(tpl.strTypeGetUnit());
-  }
 
-  stream.write('\n' + indent + '}');
-};
+    stream.write('\n' + indent + '}');
+  };

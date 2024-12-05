@@ -5,15 +5,9 @@ import { TQuery } from '../../types/types';
 import { IMember } from '../../../domain/types/member.types';
 
 export interface IQueriesNetTree {
-  getData: TQuery<[
-    ['parent_node_id', number],
-  ], IMemberResponse>;
-  getNodes: TQuery<[
-    ['parent_node_id', number],
-  ], ITableNodes>;
-  getMembers: TQuery<[
-    ['parent_node_id', number],
-  ], IMember>;
+  getData: TQuery<[['parent_node_id', number]], IMemberResponse>;
+  getNodes: TQuery<[['parent_node_id', number]], ITableNodes>;
+  getMembers: TQuery<[['parent_node_id', number]], IMember>;
 }
 
 export const getData = `

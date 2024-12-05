@@ -1,5 +1,4 @@
-
-const  fsp = require('node:fs/promises');
+const fsp = require('node:fs/promises');
 const { join } = require('node:path');
 
 const copyDir = async (dirFrom, dirTo, include = null, exclude = null) => {
@@ -19,9 +18,7 @@ const copyDir = async (dirFrom, dirTo, include = null, exclude = null) => {
         await fsp.mkdir(nextDirTo);
         created = true;
       }
-      const count = await copyDir(
-        nextDirFrom, nextDirTo, include, exclude,
-      );
+      const count = await copyDir(nextDirFrom, nextDirTo, include, exclude);
       if (!count && created) {
         console.log('[-] remove dir:', nextDirTo);
         await fsp.rmdir(nextDirTo);
@@ -29,10 +26,8 @@ const copyDir = async (dirFrom, dirTo, include = null, exclude = null) => {
       counter += count;
       continue;
     }
-    if (exclude && exclude.includes(dirFrom))
-      continue;
-    if (include && !include.includes(dirFrom))
-      continue;
+    if (exclude && exclude.includes(dirFrom)) continue;
+    if (include && !include.includes(dirFrom)) continue;
     const filePathFrom = join(dirFrom, name);
     const filePathTo = join(dirTo, name);
     fsp.copyFile(filePathFrom, filePathTo);

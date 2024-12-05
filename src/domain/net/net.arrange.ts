@@ -16,8 +16,7 @@ export class NetArrange {
       const member = await new Member().init(user_id, node_id);
       event = new NetEvent(net_id, event_type, member.get());
       const net = new NetArrange(t);
-      const nodesToArrange =
-        await net.removeMemberFromNetAndSubnets(event);
+      const nodesToArrange = await net.removeMemberFromNetAndSubnets(event);
       await net.arrangeNodes(event, nodesToArrange);
       await event.commit(t);
     });
@@ -29,8 +28,10 @@ export class NetArrange {
     const { user_id } = member!;
 
     do {
-      const [member] = await execQuery
-        .user.netData.getFurthestSubnet([user_id, root_net_id]);
+      const [member] = await execQuery.user.netData.getFurthestSubnet([
+        user_id,
+        root_net_id,
+      ]);
       if (!member) break;
       await NetArrange.removeMemberFromNet(event_type, member);
     } while (true);
@@ -40,27 +41,22 @@ export class NetArrange {
 
   async removeMember(event: NetEvent) {
     const { t } = this;
-    const {
-      user_id,
-      net_id,
-      node_id,
-      parent_node_id,
-      confirmed,
-    } = event.member!;
+    const { user_id, net_id, node_id, parent_node_id, confirmed } =
+      event.member!;
     logger.debug('START REMOVE FROM NET:', net_id);
 
     // 1 - remove events
-    confirmed && await t.execQuery.events.removeFromNet([user_id, net_id]);
+    confirmed && (await t.execQuery.events.removeFromNet([user_id, net_id]));
 
     // 2 - remove connected users in net and subnets
-    confirmed && await this.removeConnectedAll(event);
+    confirmed && (await this.removeConnectedAll(event));
 
     // 3 - remove member in net
     logger.debug('MEMBER REMOVE');
     await t.execQuery.member.removeByNet([user_id, net_id]);
 
     // 4 - update nodes data in net
-    confirmed && await this.updateCountOfMembers(node_id, -1);
+    confirmed && (await this.updateCountOfMembers(node_id, -1));
 
     // 5 - create messages
     logger.debug('CREATE MESSAGES');
@@ -84,8 +80,10 @@ export class NetArrange {
   }
 
   async updateCountOfMembers(node_id: number, addCount = 1): Promise<void> {
-    const [node] =
-      await this.t.execQuery.node.updateCountOfMembers([node_id, addCount]);
+    const [node] = await this.t.execQuery.node.updateCountOfMembers([
+      node_id,
+      addCount,
+    ]);
     const { parent_node_id, count_of_members } = node!;
     if (!count_of_members) {
       await this.t.execQuery.node.tree.remove([node_id]);
@@ -114,8 +112,7 @@ export class NetArrange {
         event.messages.removeFromNodes(removed);
         continue;
       }
-      const newNodesToArrange =
-        await this.checkDislikes(event, node_id);
+      const newNodesToArrange = await this.checkDislikes(event, node_id);
       nodesToArrange = [...newNodesToArrange, ...nodesToArrange];
       if (newNodesToArrange.length) continue;
       await this.checkVotes(event, node_id);
@@ -129,12 +126,7 @@ export class NetArrange {
     const { t } = this;
     const [node] = await t.execQuery.node.getIfEmpty([node_id]);
     if (!node) return;
-    const {
-      parent_node_id,
-      net_id,
-      node_position,
-      count_of_members,
-    } = node;
+    const { parent_node_id, net_id, node_position, count_of_members } = node;
     if (!count_of_members) {
       if (parent_node_id) return [];
       await t.execQuery.node.remove([node_id]);
@@ -142,13 +134,10 @@ export class NetArrange {
       await t.execQuery.net.remove([net_id]);
       return [];
     }
-    const [nodeWithMaxCount] = await t.execQuery
-      .net.tree.getNodes([node_id]);
+    const [nodeWithMaxCount] = await t.execQuery.net.tree.getNodes([node_id]);
     if (!nodeWithMaxCount) return;
-    const {
-      count_of_members: childCount,
-      node_id: childNodeId,
-    } = nodeWithMaxCount;
+    const { count_of_members: childCount, node_id: childNodeId } =
+      nodeWithMaxCount;
     if (childCount !== count_of_members) return;
     await t.execQuery.node.move([
       childNodeId,
@@ -171,12 +160,11 @@ export class NetArrange {
     return nodeIds;
   }
 
-  async updateCountOfNets(
-    net_id: number,
-    addCount = 1,
-  ): Promise<void> {
-    const [net] = await this.t.execQuery
-      .net.updateCountOfNets([net_id, addCount]);
+  async updateCountOfNets(net_id: number, addCount = 1): Promise<void> {
+    const [net] = await this.t.execQuery.net.updateCountOfNets([
+      net_id,
+      addCount,
+    ]);
     const { parent_net_id } = net!;
     if (!parent_net_id) return;
     await this.updateCountOfNets(parent_net_id, addCount);
@@ -186,8 +174,10 @@ export class NetArrange {
     const [node] = await this.t.execQuery.node.changeLevel([nodeId]);
     if (!node!.count_of_members) return;
     for (let node_position = 0; node_position < 6; node_position++) {
-      const [childNode] = await this.t.execQuery
-        .node.getChild([nodeId, node_position]);
+      const [childNode] = await this.t.execQuery.node.getChild([
+        nodeId,
+        node_position,
+      ]);
       const { node_id } = childNode!;
       await this.changeLevelFromNode(node_id);
     }
@@ -197,8 +187,9 @@ export class NetArrange {
     event: NetEvent,
     parent_node_id: number,
   ): Promise<(number | null)[]> {
-    const members = await this.t.execQuery
-      .net.branch.getDislikes([parent_node_id]);
+    const members = await this.t.execQuery.net.branch.getDislikes([
+      parent_node_id,
+    ]);
     const count = members.length;
     if (!count) return [];
     const [memberWithMaxDislikes] = members;
@@ -212,8 +203,9 @@ export class NetArrange {
   }
 
   async checkVotes(event: NetEvent, parent_node_id: number) {
-    const members = await this.t.execQuery
-      .net.branch.getVotes([parent_node_id]);
+    const members = await this.t.execQuery.net.branch.getVotes([
+      parent_node_id,
+    ]);
     const count = members.length;
     if (count < 2) return false;
     const [memberWithMaxVotes] = members;
@@ -225,15 +217,10 @@ export class NetArrange {
     return true;
   }
 
-  async voteNetUser(
-    event: NetEvent,
-    node_id: number,
-    parent_node_id: number,
-  ) {
+  async voteNetUser(event: NetEvent, node_id: number, parent_node_id: number) {
     const { t } = this;
     const [vote_member] = await t.execQuery.member.get([node_id]);
-    const [disvote_member] = await t.execQuery
-      .member.get([parent_node_id]);
+    const [disvote_member] = await t.execQuery.member.get([parent_node_id]);
     const { user_id, net_id, count_of_members } = vote_member!;
     const { user_id: parentUserId } = disvote_member || {};
 
@@ -260,11 +247,12 @@ export class NetArrange {
       /* remove connected */
       await this.removeConnectedAll(eventDisvote);
       /* remove member_to_member data in circle */
-      await t.execQuery.member
-        .data.removeFromCircle([parentUserId, parent_node_id]);
+      await t.execQuery.member.data.removeFromCircle([
+        parentUserId,
+        parent_node_id,
+      ]);
       /* remove all events in net*/
-      await t.execQuery
-        .events.removeFromNet([parentUserId, net_id]);
+      await t.execQuery.events.removeFromNet([parentUserId, net_id]);
       /* create messages */
       await eventDisvote.messages.create(t);
     }
@@ -279,8 +267,12 @@ export class NetArrange {
     await t.execQuery.member.data.replace([node_id, parent_node_id]);
     /* replace users */
     if (parentUserId) {
-      await t.execQuery
-        .member.replace([node_id, parent_node_id, user_id, parentUserId]);
+      await t.execQuery.member.replace([
+        node_id,
+        parent_node_id,
+        user_id,
+        parentUserId,
+      ]);
     } else {
       await t.execQuery.member.remove([node_id]);
     }
@@ -300,9 +292,7 @@ export class NetArrange {
       ...disvote_member,
       user_id,
     };
-    await event
-      .createChild('CONNECT_VOTE', voteMemeber)
-      .messages.create(t);
+    await event.createChild('CONNECT_VOTE', voteMemeber).messages.create(t);
 
     if (!parentUserId) return;
 

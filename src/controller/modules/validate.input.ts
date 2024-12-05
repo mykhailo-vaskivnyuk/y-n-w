@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import Joi from 'joi';
 import { TInputModule } from '../types';
 import { InputValidationError } from '../errors';
@@ -8,7 +9,8 @@ const options = {
   errors: { render: false },
 };
 
-const validateInput: TInputModule = () =>
+const validateInput: TInputModule =
+  () =>
   async ({ ...operation }, context, handler) => {
     const { schema, paramsSchema } = handler || {};
     if (!paramsSchema) return operation;

@@ -17,7 +17,7 @@ export interface ICleanedEnv {
   TRANSPORT: TTransport;
   HOST: string;
   PORT: number;
-  DATABASE_URL : string;
+  DATABASE_URL: string;
   RUN_ONCE: boolean;
   STATIC_UNAVAILABLE: boolean;
   API_UNAVAILABLE: boolean;
@@ -29,9 +29,9 @@ export interface ICleanedEnv {
   STATIC_PATH: string;
   LOGGER_COLORIZE: boolean;
   MAIL: 'google' | 'elastic';
-  MAIL_HOST: '',
-  MAIL_PORT: number,
-  MAIL_USER: '',
+  MAIL_HOST: '';
+  MAIL_PORT: number;
+  MAIL_USER: '';
   MAIL_PASSWORD: string;
   INVITE_CONFIRM: boolean;
   NOTIFICATION_INTERVAL: number;

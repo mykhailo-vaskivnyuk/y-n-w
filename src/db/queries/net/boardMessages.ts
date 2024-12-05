@@ -3,29 +3,19 @@ import { ITableBoardMessages } from '../../../domain/types/db.types';
 import { IMemberNode } from '../../../domain/types/member.types';
 
 export interface IQueriesNetBoard {
-  create: TQuery<[
-    ['net_id', number],
-    ['member_id', number],
-    ['message', string],
-  ]>;
-  update: TQuery<[
-    ['message_id', number],
-    ['member_id', number],
-    ['message', string],
-  ]>;
-  remove: TQuery<[
-    ['message_id', number],
-    ['member_id', number],
-  ]>;
-  get: TQuery<[
-    ['net_id', number],
-  ], ITableBoardMessages>;
-  findUnactive: TQuery<[
-    ['date', string],
-  ], IMemberNode & { message_id: number }>;
-  clear: TQuery<[
-    ['message_id', number],
-  ]>;
+  create: TQuery<
+    [['net_id', number], ['member_id', number], ['message', string]]
+  >;
+  update: TQuery<
+    [['message_id', number], ['member_id', number], ['message', string]]
+  >;
+  remove: TQuery<[['message_id', number], ['member_id', number]]>;
+  get: TQuery<[['net_id', number]], ITableBoardMessages>;
+  findUnactive: TQuery<
+    [['date', string]],
+    IMemberNode & { message_id: number }
+  >;
+  clear: TQuery<[['message_id', number]]>;
 }
 
 export const create = `

@@ -9,7 +9,7 @@ import { IQueriesEvents } from '../queries/events';
 export interface IDatabaseConfig {
   path: string;
   queriesPath: string;
-  connectionPath: string
+  connectionPath: string;
   connection: Partial<{
     connectionString: string;
     ssl: {

@@ -1,6 +1,7 @@
 import { THandleOperation } from '../../types/operation.types';
 import {
-  IMessage, MessageTypeKeys,
+  IMessage,
+  MessageTypeKeys,
 } from '../../client/common/server/types/messages.types';
 import { IInputConnection, IServer } from '../types';
 import { ILinkConnection } from './types';
@@ -21,15 +22,16 @@ class LinkConnection implements IInputConnection {
     const handleRequest = (
       name: string,
       params: Record<string, any> = {},
-    ): Promise<any> => LinkConnection.exec!({
-      options: {
-        sessionKey,
-        origin: 'localhost',
-        connectionId,
-      },
-      names: name.split('/').filter(Boolean),
-      data: { params },
-    });
+    ): Promise<any> =>
+      LinkConnection.exec!({
+        options: {
+          sessionKey,
+          origin: 'localhost',
+          connectionId,
+        },
+        names: name.split('/').filter(Boolean),
+        data: { params },
+      });
     return handleRequest;
   }
 
@@ -66,7 +68,8 @@ class LinkConnection implements IInputConnection {
   }
 
   private static async sendMessage<T extends MessageTypeKeys>(
-    data: IMessage<T>, connectionIds?: Set<number>,
+    data: IMessage<T>,
+    connectionIds?: Set<number>,
   ) {
     if (!connectionIds) return false;
     try {

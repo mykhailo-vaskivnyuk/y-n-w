@@ -1,27 +1,31 @@
 import Joi from 'joi';
 import { THandler } from '../../../controller/types';
-import {
-  IMemberConfirmParams,
-} from '../../../client/common/server/types/types';
+// eslint-disable-next-line max-len
+import { IMemberConfirmParams } from '../../../client/common/server/types/types';
 import { NetEvent } from '../../../domain/event/event';
 import { MemberConfirmParamsSchema } from '../../schema/schema';
 import { getMemberStatus } from '../../../client/common/server/utils';
 
 export const set: THandler<IMemberConfirmParams, boolean> = async (
-  { member: m }, { node_id, member_node_id },
+  { member: m },
+  { node_id, member_node_id },
 ) => {
   const { net_id } = m!.get();
   let event!: NetEvent;
   const result = await domain.utils.exeWithNetLock(net_id, async (t) => {
     await m!.reinit();
     const { parent_node_id } = m!.get();
-    let [member] = await execQuery
-      .member.find.inTree([node_id, member_node_id]);
+    let [member] = await execQuery.member.find.inTree([
+      node_id,
+      member_node_id,
+    ]);
     const parentNodeId = member ? node_id : parent_node_id;
     if (!member) {
       if (!parent_node_id) return false; // bad request
-      [member] = await execQuery
-        .member.find.inCircle([parent_node_id, member_node_id]);
+      [member] = await execQuery.member.find.inCircle([
+        parent_node_id,
+        member_node_id,
+      ]);
       if (!member) return false; // bad request
     }
     const memberStatus = getMemberStatus(member);
@@ -42,23 +46,27 @@ set.responseSchema = Joi.boolean();
 set.checkNet = true;
 
 export const unSet: THandler<IMemberConfirmParams, boolean> = async (
-  { member: m }, { node_id, member_node_id }
+  { member: m },
+  { node_id, member_node_id },
 ) => {
   const { parent_node_id } = m!.get();
   let parentNodeId: number | null = node_id;
-  let [member] = await execQuery.member
-    .find.inTree([parentNodeId, member_node_id]);
+  let [member] = await execQuery.member.find.inTree([
+    parentNodeId,
+    member_node_id,
+  ]);
   if (!member) {
     parentNodeId = parent_node_id;
     if (!parentNodeId) return false; // bad request
-    [member] = await execQuery.member
-      .find.inCircle([parentNodeId, member_node_id]);
+    [member] = await execQuery.member.find.inCircle([
+      parentNodeId,
+      member_node_id,
+    ]);
     if (!member) return false; // bad request
   }
   const memberStatus = getMemberStatus(member);
   if (memberStatus !== 'ACTIVE') return false; // bad request
-  await execQuery.member.data
-    .unsetDislike([node_id, member_node_id]);
+  await execQuery.member.data.unsetDislike([node_id, member_node_id]);
   return true;
 };
 unSet.paramsSchema = MemberConfirmParamsSchema;

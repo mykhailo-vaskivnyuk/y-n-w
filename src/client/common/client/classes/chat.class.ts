@@ -38,8 +38,11 @@ export class Chat {
     try {
       await this.app.setStatus(AppStatus.LOADING);
       const { node_id: nodeId } = this.app.getState().net!;
-      const messages = await this.app.api.chat
-        .getMessages({ node_id: nodeId, chatId, index });
+      const messages = await this.app.api.chat.getMessages({
+        node_id: nodeId,
+        chatId,
+        index,
+      });
       this.setAllMessages(chatId, messages);
       this.app.setStatus(AppStatus.READY);
     } catch (e: any) {
@@ -52,8 +55,12 @@ export class Chat {
       await this.app.setStatus(AppStatus.LOADING);
       const { net } = this.app.getState();
       const { node_id: nodeId } = net!;
-      chatId && await this.app.api.chat
-        .sendMessage({ node_id: nodeId, chatId, message });
+      chatId &&
+        (await this.app.api.chat.sendMessage({
+          node_id: nodeId,
+          chatId,
+          message,
+        }));
       this.app.setStatus(AppStatus.READY);
       return true;
     } catch (e: any) {
@@ -79,16 +86,13 @@ export class Chat {
     this.app.emit('message', chatId);
   }
 
-  setMessage<T extends T.MessageTypeKeys>(
-    messageData: OmitNull<T.IChatResponseMessage>,
-  ) {
+  setMessage<T extends T.MessageTypeKeys>(messageData: OmitNull<T.IChatResponseMessage>) {
     const { chatId } = messageData;
     const chatMessages = this.messages.get(chatId);
     if (chatMessages) {
       const lastMessage = chatMessages.at(-1);
       const { index = 1 } = lastMessage || {};
-      if (messageData.index > index + 1)
-        this.getMessages(chatId, index + 1);
+      if (messageData.index > index + 1) this.getMessages(chatId, index + 1);
       chatMessages.push(messageData as T.IChatMessage);
     } else this.messages.set(chatId, [messageData as T.IChatMessage]);
     this.app.emit('message', chatId);

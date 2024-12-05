@@ -1,7 +1,9 @@
 import { IAppThis } from './types';
 import { DatabaseError } from '../db/errors';
 import {
-  ControllerError, ControllerErrorCode, TControllerErrorDetails,
+  ControllerError,
+  ControllerErrorCode,
+  TControllerErrorDetails,
 } from '../controller/errors';
 import { ServerError } from '../server/errors';
 
@@ -42,20 +44,20 @@ export const setUncaughtErrorHandlers = (parent: IAppThis) => {
 
 export const handleAppInitError = async (e: any, parent: IAppThis) => {
   const { env } = parent.config;
-  if (!parent.logger) return await parent.shutdown('CAN\'T START APP');
+  if (!parent.logger) return await parent.shutdown("CAN'T START APP");
   if (!KNOWN_ERRORS_MAP.includes(e.name)) logger.error(e);
   if (e.name === AppError.name) logger.error(e);
   env.RUN_ONCE && process.exit();
   env.API_UNAVAILABLE = true;
   try {
-    parent.logger.fatal('CAN\'T START API SERVICE');
+    parent.logger.fatal("CAN'T START API SERVICE");
     if (!parent.server) throw e;
     await parent.server.start();
     logger.info('SERVER IS RUNNING');
   } catch (e: any) {
     if (!KNOWN_ERRORS_MAP.includes(e.name)) logger.error(e);
     if (e.name === AppError.name) logger.error(e);
-    await parent.shutdown('CAN\'T START APP');
+    await parent.shutdown("CAN'T START APP");
   }
 };
 

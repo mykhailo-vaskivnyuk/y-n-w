@@ -28,10 +28,7 @@ const runProcess = (commandString: string, options = defaultOptions) => {
   });
 };
 
-export const runScript = async (
-  script: string,
-  options?: IOptions,
-) => {
+export const runScript = async (script: string, options?: IOptions) => {
   const commands = script.split('\n');
   for (const command of commands) {
     await runProcess(command, options);

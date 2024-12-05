@@ -1,10 +1,10 @@
-import { EventEmitter } from "./event.emitter";
+import { EventEmitter } from './event.emitter';
 
 export class Store<T extends object> extends EventEmitter {
   public state: T;
 
   constructor(initialState: T) {
-    super()
+    super();
     this.state = { ...initialState };
   }
 

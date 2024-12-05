@@ -1,12 +1,16 @@
 /* eslint-disable max-lines */
 import { format } from 'node:util';
-import { IEventRecord, INetResponse,
+import {
+  IEventRecord,
+  INetResponse,
 } from '../../client/common/server/types/types';
 import { ITransaction } from '../../db/types/types';
 import { IMember } from '../types/member.types';
 import { INetEventTo } from '../../domain/types/net.event.types';
 import {
-  INSTANT_EVENTS, NET_MESSAGES_MAP, SET_NET_ID_FOR,
+  INSTANT_EVENTS,
+  NET_MESSAGES_MAP,
+  SET_NET_ID_FOR,
 } from '../../constants/constants';
 import { NetEvent } from './event';
 
@@ -59,8 +63,10 @@ export class EventMessages {
     const toFacilitator = this.eventToMessages.FACILITATOR;
     const toCircleMember = this.eventToMessages.CIRCLE;
     if (!toFacilitator && !toCircleMember) return;
-    const members = await (t?.execQuery || execQuery)
-      .net.circle.getMembers([node_id, parent_node_id]);
+    const members = await (t?.execQuery || execQuery).net.circle.getMembers([
+      node_id,
+      parent_node_id,
+    ]);
     for (const member of members) {
       const { node_id: member_node_id, confirmed: member_confirmed } = member;
       if (member_node_id === parent_node_id)
@@ -82,8 +88,7 @@ export class EventMessages {
       message,
     };
     const { event_type } = this.event;
-    if (INSTANT_EVENTS.includes(event_type))
-      this.instantRecords.push(record);
+    if (INSTANT_EVENTS.includes(event_type)) this.instantRecords.push(record);
     else this.records.push(record);
   }
 
@@ -99,8 +104,7 @@ export class EventMessages {
       message,
     };
     const { event_type } = this.event;
-    if (INSTANT_EVENTS.includes(event_type))
-      this.instantRecords.push(record);
+    if (INSTANT_EVENTS.includes(event_type)) this.instantRecords.push(record);
     else this.records.push(record);
   }
 
@@ -108,8 +112,9 @@ export class EventMessages {
     const message = this.eventToMessages.TREE;
     if (message === undefined) return;
     const { node_id: from_node_id } = this.member!;
-    const members = await (t?.execQuery || execQuery)
-      .net.tree.getMembers([from_node_id]);
+    const members = await (t?.execQuery || execQuery).net.tree.getMembers([
+      from_node_id,
+    ]);
     for (const { user_id } of members) {
       this.records.push({
         user_id,

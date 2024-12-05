@@ -11,10 +11,8 @@ export const allowCors: THttpReqModule = () =>
       res.end();
       return null;
     }
-    Object
-      .keys(HEADERS)
-      .forEach((key) =>
-        res.setHeader(key, HEADERS[key as keyof typeof HEADERS])
-      );
+    Object.keys(HEADERS).forEach((key) =>
+      res.setHeader(key, HEADERS[key as keyof typeof HEADERS]),
+    );
     return context;
   };

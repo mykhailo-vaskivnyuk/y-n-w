@@ -1,27 +1,21 @@
 import {
-  INetResponse, OmitNull,
+  INetResponse,
+  OmitNull,
 } from '../../../client/common/server/types/types';
 import { ITableNets, ITableNodes } from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNetFind {
-  byToken: TQuery<[
-    ['token', string]
-  ],
-    ITableNodes &
-    Pick<ITableNets, 'parent_net_id'>
+  byToken: TQuery<
+    [['token', string]],
+    ITableNodes & Pick<ITableNets, 'parent_net_id'>
   >;
-  byUser: TQuery<[
-    ['net_id', number],
-    ['user_id', number],
-  ], OmitNull<INetResponse>>;
-  byNetLink: TQuery<[
-    ['token', string]
-  ], ITableNets>;
-  byWaitingUser: TQuery<[
-    ['net_id', number],
-    ['user_id', number],
-  ], ITableNets>;
+  byUser: TQuery<
+    [['net_id', number], ['user_id', number]],
+    OmitNull<INetResponse>
+  >;
+  byNetLink: TQuery<[['token', string]], ITableNets>;
+  byWaitingUser: TQuery<[['net_id', number], ['user_id', number]], ITableNets>;
 }
 
 export const byToken = `

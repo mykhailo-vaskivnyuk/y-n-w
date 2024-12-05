@@ -12,7 +12,8 @@
     "debug": "nodemon --inspect js/src/index.js",
     "test": "cross-env NODE_ENV=test node js/tests/app.test.js",
     "tsc": "npm run rmjs && tsc --watch",
-    "lint": "eslint src",
+    "lint": "eslint .",
+    "format": "prettier --write .",
     "db:setup": "cd src/db/setup && sh ./setup.sh",
     "db:restore": "cd src/db/setup && sh ./restore.sh",
     "db:migration": "cd src/db/setup && sh ./migration.sh",
@@ -52,7 +53,8 @@
     "eslint": "^8.24.0",
     "eslint-plugin-import": "^2.26.0",
     "ngrok": "^5.0.0-beta.2",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "prettier": "^3.4.2"
   },
   "dependencies": {
     "@types/node": "^22.5.0",

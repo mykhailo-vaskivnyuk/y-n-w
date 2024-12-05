@@ -1,7 +1,8 @@
 import { IOperationData, TTestUnit } from '../../types/types';
 
-const getUnit = (user: Record<string, any>): TTestUnit => (state: any) => (
-  {
+const getUnit =
+  (user: Record<string, any>): TTestUnit =>
+  (state: any) => ({
     title: 'update user data',
     operations: [
       {

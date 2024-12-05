@@ -1,13 +1,14 @@
 import {
-  ISignupParams, IUserResponse, UserStatusKeys,
+  ISignupParams,
+  IUserResponse,
+  UserStatusKeys,
 } from '../../client/common/server/types/types';
 import { THandler } from '../../controller/types';
-import {
-  SignupParamsSchema, UserResponseSchema,
-} from '../schema/schema';
+import { SignupParamsSchema, UserResponseSchema } from '../schema/schema';
 
 const signup: THandler<ISignupParams, IUserResponse> = async (
-  { session }, { name, email },
+  { session },
+  { name, email },
 ) => {
   const [userExists] = await execQuery.user.findByEmail([email]);
   if (userExists) return null;

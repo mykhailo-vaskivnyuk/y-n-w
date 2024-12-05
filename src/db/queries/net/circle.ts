@@ -3,14 +3,14 @@ import { TQuery } from '../../types/types';
 import { IMember } from '../../../domain/types/member.types';
 
 export interface IQueriesNetCircle {
-  getData: TQuery<[
-    ['node_id', number],
-    ['parent_node_id', number],
-  ], IMemberResponse>;
-  getMembers: TQuery<[
-    ['node_id', number],
-    ['parent_node_id', number],
-  ], IMember>;
+  getData: TQuery<
+    [['node_id', number], ['parent_node_id', number]],
+    IMemberResponse
+  >;
+  getMembers: TQuery<
+    [['node_id', number], ['parent_node_id', number]],
+    IMember
+  >;
 }
 
 export const getData = `

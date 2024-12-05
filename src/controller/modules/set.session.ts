@@ -1,4 +1,4 @@
-
+/* eslint-disable indent */
 import { ISessionContent, TInputModule } from '../types';
 import { getService } from '../../services/session/session';
 
@@ -11,7 +11,8 @@ export class SessionError extends Error {
 
 const { createSession } = getService<ISessionContent>();
 
-const setSession: TInputModule = () =>
+const setSession: TInputModule =
+  () =>
   async ({ ...operation }, context) => {
     const { options } = operation;
     const { sessionKey } = options;

@@ -1,7 +1,8 @@
 import { TTestUnit } from '../../types/types';
 
-export const tMember = (m: number): TTestUnit => (state) => (
-  {
+export const tMember =
+  (m: number): TTestUnit =>
+  (state) => ({
     title: `invite confirm tree[${m}]`,
     operations: [
       {

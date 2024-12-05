@@ -5,7 +5,6 @@ import { IClientAppThis } from '../types';
 import { AppStatus } from '../constants';
 import { EventStore } from './event.store.class';
 
-
 type IApp = IClientAppThis & {
   onNewEvents: (events: T.IEvents) => void;
 };
@@ -32,8 +31,7 @@ export class Events {
       const eventStore = new EventStore(net_id);
       this.netEventsMap.set(net_id, eventStore);
       parent!.setChild(eventStore);
-      const events = this.events.filter(
-        (event) => event.net_view && event.net_id === net_id);
+      const events = this.events.filter((event) => event.net_view && event.net_id === net_id);
       eventStore.addEvents(events);
     }
   }
@@ -70,9 +68,7 @@ export class Events {
     return this.isEvent(messageData) || this.isNewEvents(messageData);
   }
 
-  private isEvent(
-    messageData: T.IMessage<T.MessageTypeKeys>,
-  ): messageData is T.IMessage<'EVENT'> {
+  private isEvent(messageData: T.IMessage<T.MessageTypeKeys>): messageData is T.IMessage<'EVENT'> {
     return messageData?.type === 'EVENT';
   }
 
@@ -90,10 +86,9 @@ export class Events {
 
   async read(inChain = false) {
     try {
-      !inChain && await this.app.setStatus(AppStatus.LOADING);
+      !inChain && (await this.app.setStatus(AppStatus.LOADING));
       const { event_id } = this.lastEvent || {};
-      const newEvents = await this.app.api
-        .events.read({ event_id });
+      const newEvents = await this.app.api.events.read({ event_id });
       if (newEvents.length) this.setNewEvents(newEvents);
       !inChain && this.app.setStatus(AppStatus.READY);
     } catch (e: any) {

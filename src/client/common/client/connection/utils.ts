@@ -3,9 +3,7 @@ export const logData = (data: any, message?: string) => {
   let password;
   if (log && typeof log === 'object') {
     password = 'password' in log ? { password: '*****' } : undefined;
-    log = data.data ?
-      { ...data, data: { ...log, ...password } } :
-      { ...log, ...password };
+    log = data.data ? { ...data, data: { ...log, ...password } } : { ...log, ...password };
   } else if (typeof data === 'object') {
     log = { ...data };
   }

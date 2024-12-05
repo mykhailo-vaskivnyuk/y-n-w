@@ -1,16 +1,28 @@
-
+/* eslint-disable indent */
 import fs from 'node:fs';
 import path from 'node:path';
 import { IRequest } from '../../types';
 import {
-  IHeaders, IHttpConfig, IHttpContext,
-  IPreparedFile, IResponse, THttpReqModule } from '../types';
+  IHeaders,
+  IHttpConfig,
+  IHttpContext,
+  IPreparedFile,
+  IResponse,
+  THttpReqModule,
+} from '../types';
 import {
-  INDEX, NOT_FOUND, ResMimeTypeKeys,
-  RES_MIME_TYPES_MAP, UNAVAILABLE } from '../constants';
+  INDEX,
+  NOT_FOUND,
+  ResMimeTypeKeys,
+  RES_MIME_TYPES_MAP,
+  UNAVAILABLE,
+} from '../constants';
 import {
-  ErrorStatusCode, ErrorStatusCodeMap,
-  ServerError, ServerErrorMap } from '../../errors';
+  ErrorStatusCode,
+  ErrorStatusCodeMap,
+  ServerError,
+  ServerErrorMap,
+} from '../../errors';
 import { makeIsApiPathname, getLog, getUrlInstance } from '../methods/utils';
 
 export const staticServer: THttpReqModule = (config: IHttpConfig) => {
@@ -18,26 +30,29 @@ export const staticServer: THttpReqModule = (config: IHttpConfig) => {
   const IsApiPathname = makeIsApiPathname(apiPathname);
   const httpStaticServer = createStaticServer(staticPath);
 
-  return async function staticServer(
-    req, res, { ...context },
-  ) {
+  return async function staticServer(req, res, { ...context }) {
     if (IsApiPathname(req.url)) return context;
     await httpStaticServer(req, res, context);
     return null;
   };
 };
 
-export const createStaticServer = (staticPath: string) =>
+export const createStaticServer =
+  (staticPath: string) =>
   async (
-    req: IRequest, res: IResponse, context: IHttpContext,
+    req: IRequest,
+    res: IResponse,
+    context: IHttpContext,
   ): Promise<void> => {
     const { unavailable } = context.contextParams;
     const { url, headers } = req;
     const { pathname } = getUrlInstance(url, headers.host);
     const path = pathname.replace(/\/$/, '');
-    const {
-      found, ext, stream,
-    } = await prepareFile(staticPath, path, unavailable);
+    const { found, ext, stream } = await prepareFile(
+      staticPath,
+      path,
+      unavailable,
+    );
     let errCode = '' as ErrorStatusCode;
     let resHeaders = {
       'Content-Type': RES_MIME_TYPES_MAP[ext] || RES_MIME_TYPES_MAP.default,
@@ -72,8 +87,7 @@ const prepareFile = async (
     const file = await fs.promises.stat(filePath);
     if (!file || !file.isFile()) throw new ServerError('NOT_FOUND');
     found = true;
-    if (staticUnavailable)
-      filePath = path.join(staticPath, UNAVAILABLE);
+    if (staticUnavailable) filePath = path.join(staticPath, UNAVAILABLE);
   } catch (e) {
     filePath = path.join(staticPath, NOT_FOUND);
   }

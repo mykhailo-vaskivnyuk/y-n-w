@@ -1,8 +1,9 @@
 import assert from 'node:assert';
 import { IOperationData, TTestUnit } from '../../types/types';
 
-export const tMember = (m: number): TTestUnit => (state: any) => (
-  {
+export const tMember =
+  (m: number): TTestUnit =>
+  (state: any) => ({
     title: `Set dislike for tree[${m}]`,
     operations: [
       {
@@ -23,8 +24,9 @@ export const tMember = (m: number): TTestUnit => (state: any) => (
     ] as IOperationData[],
   });
 
-export const cMember = (m: number): TTestUnit => (state: any) => (
-  {
+export const cMember =
+  (m: number): TTestUnit =>
+  (state: any) => ({
     title: `Set dislike for circle[${m}]`,
     operations: [
       {

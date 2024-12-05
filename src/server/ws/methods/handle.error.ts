@@ -4,7 +4,9 @@ import { ServerError, ServerErrorMap } from '../../errors';
 import { getLog } from './utils';
 
 export const handleError = (
-  e: any, options: IOperation['options'], connection: WebSocket,
+  e: any,
+  options: IOperation['options'],
+  connection: WebSocket,
 ) => {
   let error = e;
   if (e.name !== ServerError.name) {

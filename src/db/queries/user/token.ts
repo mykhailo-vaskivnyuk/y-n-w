@@ -1,13 +1,8 @@
 import { TQuery } from '../../types/types';
 
 export interface IQueriesUserToken {
-  create: TQuery<[
-    ['user_id', number],
-    ['token', string],
-  ]>;
-  remove: TQuery<[
-    ['user_id', number],
-  ]>;
+  create: TQuery<[['user_id', number], ['token', string]]>;
+  remove: TQuery<[['user_id', number]]>;
 }
 
 export const create = `
