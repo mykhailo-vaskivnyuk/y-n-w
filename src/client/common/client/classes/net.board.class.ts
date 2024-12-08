@@ -17,6 +17,7 @@ export class NetBoard {
 
   private setBoardMessages(messages: ITableBoardMessages[] = []) {
     this.boardMessages = messages;
+    this.app.emit('board', this.boardMessages);
   }
 
   async persist(args: Omit<IBoardSaveParams, 'node_id'>) {
@@ -40,6 +41,7 @@ export class NetBoard {
           node_id: nodeId,
         });
       }
+      this.read();
       this.app.setStatus(AppStatus.READY);
       return success;
     } catch (e: any) {

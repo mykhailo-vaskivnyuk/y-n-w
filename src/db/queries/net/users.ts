@@ -44,13 +44,13 @@ export const toSendNewEvents = `
   LEFT JOIN events ON
     events.net_id = nodes.net_id AND
     events.user_id = users.user_id AND
-    events.event_type = $3 AND
-    events.event_id ISNULL
+    events.event_type = $3
   WHERE
     nodes.net_id = $1 AND (
-    $2::int ISNULL OR
-    nodes.node_id <> $2
-  )
+      $2::int ISNULL OR
+      nodes.node_id <> $2
+    ) AND 
+    events.event_id ISNULL
 `;
 
 export const toSendWaitingEvents = `
@@ -68,10 +68,10 @@ export const toSendWaitingEvents = `
   LEFT JOIN events ON
     events.net_id = nodes.net_id AND
     events.user_id = users.user_id AND
-    events.event_type = $2 AND
-    events.event_id ISNULL
+    events.event_type = $2
   WHERE
-    nodes.net_id = $1
+    nodes.net_id = $1 AND
+    events.event_id ISNULL
 `;
 
 export const toNotifyOnTg = `
