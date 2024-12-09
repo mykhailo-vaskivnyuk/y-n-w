@@ -70,7 +70,7 @@ export class Net {
     if (this.userNet === userNet) return;
     this.userNet = userNet;
     if (userNet) {
-      await this.getUserData();
+      await this.getUserData(true);
       const { confirmed } = this.userNetData!;
       confirmed && (await this.board.read());
       await this.getCircle();

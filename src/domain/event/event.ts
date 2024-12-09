@@ -37,11 +37,11 @@ export class NetEvent {
     //   records: this.messages.records,
     //   instant: this.messages.instantRecords,
     // });
-    const { messages, net_id, event_type } = this;
+    const { messages, event_type } = this;
     for (const record of messages.records) {
-      const { user_id, net_view, from_node_id, message } = record;
+      const { user_id, net_id, net_view, from_node_id, message } = record;
       const params = [
-        net_id,
+        net_id === undefined ? this.net_id : net_id,
         net_view,
         from_node_id,
         event_type,

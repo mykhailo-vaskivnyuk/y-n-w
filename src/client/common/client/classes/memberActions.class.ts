@@ -52,16 +52,16 @@ export class MemberActions {
     try {
       await this.app.setStatus(AppStatus.LOADING);
       const { net } = this.app.getState();
-      const success = await this.app.api.member.data.vote.set({
+      const voted = await this.app.api.member.data.vote.set({
         ...net!,
         member_node_id,
       });
-      if (success) {
+      if (voted === false) {
         await this.net.onMemberChanged();
         await this.net.onUserNetDataChanged();
       }
       this.app.setStatus(AppStatus.READY);
-      return success;
+      return voted !== null;
     } catch (e: any) {
       this.app.setError(e);
     }

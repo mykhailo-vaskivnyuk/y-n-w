@@ -21,6 +21,7 @@ export type TMemberDisconnectNotVote = {
 export type TMemberDisconnectUnactive = {
   monthAgo: number;
 };
+export type TMemberDataVoteSetResponse = boolean | null;
 export type TMemberInviteCreateResponse = string | null;
 export type TNetBoardClear = {
   weekAgo: number;

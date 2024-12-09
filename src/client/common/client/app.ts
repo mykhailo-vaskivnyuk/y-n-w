@@ -89,7 +89,7 @@ export class ClientApp extends EventEmitter {
   }
 
   private async setStatus(status: AppStatus): Promise<void> {
-    if (this.status === status) return;
+    if (status !== AppStatus.LOADING && this.status === status) return;
     if (status === AppStatus.ERROR) {
       this.status = status;
       const e = new Error('break');
@@ -105,21 +105,21 @@ export class ClientApp extends EventEmitter {
     }
     if (this.status === AppStatus.INITING) return;
     if (status === AppStatus.READY) {
-      if (this.loadingQueue.length) {
-        const [rv] = this.loadingQueue.shift()!;
+      const entry = this.loadingQueue.shift();
+      if (entry) {
+        const [rv] = entry;
         return rv();
       }
       this.status = status;
       return this.emit('statuschanged', this.status);
     }
-    const executor: TPromiseExecutor<void> = (rv, rj) => {
-      if (this.loadingQueue.length) {
-        this.loadingQueue.push([rv, rj]);
-        return;
-      }
+    if (this.status !== AppStatus.LOADING) {
       this.status = status;
       this.emit('statuschanged', this.status);
-      rv();
+      return;
+    }
+    const executor: TPromiseExecutor<void> = (rv, rj) => {
+      this.loadingQueue.push([rv, rj]);
     };
     return new Promise(executor);
   }
@@ -180,14 +180,24 @@ export class ClientApp extends EventEmitter {
     let updateNet = false;
     for (const event of events) {
       const { net_id: eventNetId, net_view: netView, message } = event;
-      if (!netView) {
+      if (!eventNetId) {
         updateUser = true;
         break;
       }
-      if (eventNetId === net_id) updateNet = true;
+      if (net_id === eventNetId || !netView) updateNet = true;
       if (!message) this.userEvents.drop(event);
     }
-    if (updateUser) await this.onNewUser(false).catch(console.log);
+    if (updateUser) {
+      if (net_id) {
+        try {
+          await this.net.enter(net_id, true);
+        } catch {
+          window.location.href = window.location.origin;
+          return;
+        }
+      }
+      await this.onNewUser(false).catch(console.log);
+    }
     if (updateNet) await this.net.enter(net_id!, true).catch(console.log);
     this.emit('events', this.userEvents.getEvents());
   }

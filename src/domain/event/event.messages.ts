@@ -129,16 +129,17 @@ export class EventMessages {
     const { event_type } = this.event;
     let message = this.eventToMessages.MEMBER;
     if (message === undefined) return;
-    const { user_id, net_id } = this.member!;
-    const net_view = SET_NET_ID_FOR.includes(event_type) ? 'net' : null;
-    if (!net_view) {
-      const [net] = await execQuery.net.data.get([net_id]);
+    const { user_id } = this.member!;
+    const isNet = SET_NET_ID_FOR.includes(event_type);
+    if (!isNet) {
+      const net = await this.getNet();
       const { name } = net!;
       message = format(message, name);
     }
     this.records.push({
       user_id,
-      net_view,
+      net_id: isNet ? undefined : null,
+      net_view: isNet ? 'net' : null,
       from_node_id: null,
       message,
     });

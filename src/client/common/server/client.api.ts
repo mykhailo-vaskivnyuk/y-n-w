@@ -102,7 +102,7 @@ export const getApi = (
       },
       'vote': {
         'set': (options: P.IMemberConfirmParams) =>
-          fetch<boolean>('/member/data/vote/set', options),
+          fetch<Q.TMemberDataVoteSetResponse>('/member/data/vote/set', options),
 
         'unSet': (options: P.IMemberConfirmParams) =>
           fetch<boolean>('/member/data/vote/unSet', options),

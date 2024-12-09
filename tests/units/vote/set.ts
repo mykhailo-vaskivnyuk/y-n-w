@@ -10,7 +10,7 @@ export const self: TTestUnit = (state: any) => ({
         node_id: state.net.node_id,
         member_node_id: state.net.node_id,
       },
-      expected: true,
+      expected: false,
     },
     {
       name: '/net/getCircle',

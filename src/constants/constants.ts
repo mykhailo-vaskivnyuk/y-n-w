@@ -118,8 +118,4 @@ export const SET_NET_ID_FOR: NetEventKeys[] = [
   'TIGHTEN',
 ];
 
-export const INSTANT_EVENTS: NetEventKeys[] = [
-  // 'CONNECT',
-  'VOTE',
-  // 'BOARD_MESSAGE',
-];
+export const INSTANT_EVENTS: NetEventKeys[] = ['VOTE'];
