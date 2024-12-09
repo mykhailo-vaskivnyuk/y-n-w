@@ -12,12 +12,13 @@ const TEST_URL =
 class TgConnection implements IInputConnection {
   private exec?: THandleOperation;
   private server: ITgServer;
-  private origin = process.env.ORIGIN || 'https://example.com';
+  private origin: string;
 
   constructor(private config: ITgConfig) {
     this.server = new Bot(config.token);
     this.server.on('message', this.handleRequest.bind(this));
     this.server.catch(this.handleError.bind(this));
+    this.origin = this.config.origin || 'https://example.com';
     // this.server.api.setChatMenuButton();
     // this.server.callbackQuery('open-app', () => console.log('HERE'));
   }
@@ -77,7 +78,7 @@ class TgConnection implements IInputConnection {
 
     const testBtn = [{ text: 'Open TestApp', web_app: { url: TEST_URL } }];
     const btns = [[{ text: this.origin, web_app: { url: this.origin } }]];
-    if (process.env.NODE_ENV === 'development') btns.push(testBtn);
+    if (this.config.dev) btns.push(testBtn);
     const inlineKyeboard = new InlineKeyboard(btns);
     return ctx.reply('MENU', { reply_markup: inlineKyeboard });
   }
