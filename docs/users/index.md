@@ -15,7 +15,9 @@
 
 Структурована комунікація з набором правил для її реорганізації та оптимальне розподілення інформаційних потоків забезпечує прийняття ефективних рішень задля реалізації мети.
 
-[Тут розміщені деякі презентаційні матеріали](https://github.com/mykhailo-vaskivnyuk/u-n-w-back/tree/feat/presentation/docs/presentation)
+[Приклад правил у спільноті](rules.md)
+
+[Презентаційні матеріали](https://github.com/mykhailo-vaskivnyuk/u-n-w-back/tree/feat/presentation/docs/presentation)
 
 ## [Поняття](concepts.md)
 
