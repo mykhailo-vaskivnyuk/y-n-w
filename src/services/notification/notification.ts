@@ -38,10 +38,9 @@ export class NotificationService {
     for await (const data of this.messageStream) {
       const { user_id, connectionIds, message } = data;
       // logger.warn('SEND TO CLIENT', { user_id, net_id });
-      const success = await this.connection
-        .sendMessage(message, connectionIds);
+      const success = await this.connection.sendMessage(message, connectionIds);
       if (success) continue;
-      logger.warn('CANT\'T SEND TO CLIENT', user_id);
+      logger.warn("CANT'T SEND TO CLIENT", user_id);
       let userId = user_id;
       if (!user_id) {
         const [connection] = connectionIds;
@@ -51,8 +50,7 @@ export class NotificationService {
           continue;
         }
       }
-      this.sendToTgOrEmail(userId!)
-        .catch(logger.error.bind(logger));
+      this.sendToTgOrEmail(userId!).catch(logger.error.bind(logger));
     }
   }
 
@@ -61,14 +59,13 @@ export class NotificationService {
       const { user_id, chat_id } = user;
       // logger.warn('SEND TO TELEGRAM', user_id);
       const date = new Date().toUTCString();
-      const success = await this.tg!
-        .sendNotification(chat_id!);
+      const success = await this.tg!.sendNotification(chat_id!);
       if (success) {
-        await execQuery
-          .user.events.write([user_id, date])
+        await execQuery.user.events
+          .write([user_id, date])
           .catch(logger.error.bind(logger));
       } else {
-        logger.warn('CANT\'T SEND TO TELEGRAM', user_id);
+        logger.warn("CANT'T SEND TO TELEGRAM", user_id);
         this.sendToEmail(user).catch(logger.error.bind(logger));
       }
     }
@@ -84,10 +81,11 @@ export class NotificationService {
         success = await mailService.notify(email!);
       }
       if (success) {
-        await execQuery.user.events.write([user_id, date])
+        await execQuery.user.events
+          .write([user_id, date])
           .catch(logger.error.bind(logger));
       } else {
-        logger.warn('CAN\'T SEND TO EMAIL', user_id, email);
+        logger.warn("CAN'T SEND TO EMAIL", user_id, email);
       }
     }
   }
@@ -98,8 +96,7 @@ export class NotificationService {
       const message: T.INewEventsMessage = { type: 'NEW_EVENTS' };
       this.messageStream.push({ user_id, connectionIds, message });
     } else {
-      this.sendToTgOrEmail(user_id)
-        .catch(logger.error.bind(logger));
+      this.sendToTgOrEmail(user_id).catch(logger.error.bind(logger));
     }
   }
 
@@ -129,20 +126,22 @@ export class NotificationService {
   }
 
   sendNetEventOrNotif(net_id: number, from_node_id: number | null) {
-    this.sendNetEventOrNotifToTg(net_id, from_node_id)
-      .catch(logger.error.bind(logger));
-    this.sendNetEventOrNotifToEmail(net_id, from_node_id)
-      .catch(logger.error.bind(logger));
+    this.sendNetEventOrNotifToTg(net_id, from_node_id).catch(
+      logger.error.bind(logger),
+    );
+    this.sendNetEventOrNotifToEmail(net_id, from_node_id).catch(
+      logger.error.bind(logger),
+    );
   }
 
-  async sendNetEventOrNotifToTg(
-    net_id: number,
-    from_node_id: number | null,
-  ) {
+  async sendNetEventOrNotifToTg(net_id: number, from_node_id: number | null) {
     const prevNotifDate = new Date().getTime() - this.tgInterval;
     const prevNotifDateStr = new Date(prevNotifDate).toUTCString();
-    const users = await execQuery
-      .net.users.toNotifyOnTg([net_id, from_node_id, prevNotifDateStr]);
+    const users = await execQuery.net.users.toNotifyOnTg([
+      net_id,
+      from_node_id,
+      prevNotifDateStr,
+    ]);
 
     for (const user of users) {
       const { user_id } = user!;
@@ -160,8 +159,11 @@ export class NotificationService {
   ) {
     const prevNotifDate = new Date().getTime() - this.emailInterval;
     const prevNotifDateStr = new Date(prevNotifDate).toUTCString();
-    const users = await execQuery
-      .net.users.toNotifyOnEmail([net_id, from_node_id, prevNotifDateStr]);
+    const users = await execQuery.net.users.toNotifyOnEmail([
+      net_id,
+      from_node_id,
+      prevNotifDateStr,
+    ]);
 
     for (const user of users) {
       const { user_id } = user!;
@@ -169,16 +171,19 @@ export class NotificationService {
       if (connectionIds) {
         const message: T.INewEventsMessage = { type: 'NEW_EVENTS' };
         this.messageStream.push({ user_id, connectionIds, message });
-      } this.mailStream.push(user);
+      }
+      this.mailStream.push(user);
     }
   }
 
   async sendEvent(event: IInstantEvent) {
     const { user_id, net_id } = event;
     let connectionIds: Set<number> | undefined;
-    if (user_id) { // for user
+    if (user_id) {
+      // for user
       connectionIds = this.chat.getUserConnections(user_id);
-    } else if (net_id) { // for users in net
+    } else if (net_id) {
+      // for users in net
       connectionIds = chatService.getNetConnections(net_id);
     }
     if (!connectionIds) return;

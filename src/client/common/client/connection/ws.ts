@@ -2,7 +2,8 @@
 import { TPromiseExecutor } from '../../types';
 import { IWsResponse, TFetch } from './types';
 import {
-  CONNECTION_ATTEMPT_COUNT, CONNECTION_ATTEMPT_DELAY,
+  CONNECTION_ATTEMPT_COUNT,
+  CONNECTION_ATTEMPT_DELAY,
   CONNECTION_TIMEOUT,
 } from '../constants';
 import { PING_INTERVAL } from '../../server/constants';
@@ -103,11 +104,7 @@ class WsConnection extends EventEmitter {
     handleResponse(response);
   }
 
-  async sendRequest(
-    pathname: string,
-    data: Record<string, any> = {},
-    doLog = true,
-  ): Promise<any> {
+  async sendRequest(pathname: string, data: Record<string, any> = {}, doLog = true): Promise<any> {
     await this.checkConnection();
     const requestId = this.genId();
     const request = { requestId, pathname, data };
@@ -142,7 +139,6 @@ class WsConnection extends EventEmitter {
       this.socket.send(message);
     };
   }
-
 }
 
 export const getConnection = (

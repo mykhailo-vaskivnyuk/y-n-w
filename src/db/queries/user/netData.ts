@@ -1,24 +1,17 @@
 /* eslint-disable max-lines */
 import { TQuery } from '../../types/types';
-import {
-  IUserNetDataResponse,
-} from '../../../client/common/server/types/types';
+// eslint-disable-next-line max-len
+import { IUserNetDataResponse } from '../../../client/common/server/types/types';
 import { IMember } from '../../../domain/types/member.types';
 import { userInSubnets } from '../../utils';
 
 export interface IQueriesUserNetData {
-  findByNode: TQuery<[
-    ['user_id', number],
-    ['node_id', number],
-  ], IMember>
-  getFurthestSubnet: TQuery<[
-    ['user_id', number],
-    ['net_id', number | null],
-  ], IMember>;
-  get: TQuery<[
-    ['user_id', number],
-    ['net_id', number],
-  ], IUserNetDataResponse>;
+  findByNode: TQuery<[['user_id', number], ['node_id', number]], IMember>;
+  getFurthestSubnet: TQuery<
+    [['user_id', number], ['net_id', number | null]],
+    IMember
+  >;
+  get: TQuery<[['user_id', number], ['net_id', number]], IUserNetDataResponse>;
 }
 
 export const findByNode = `

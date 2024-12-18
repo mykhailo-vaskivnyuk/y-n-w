@@ -23,9 +23,7 @@ export const copyDir = async (
         await fsp.mkdir(nextDirTo);
         created = true;
       }
-      const count = await copyDir(
-        nextDirFrom, nextDirTo, include, exclude,
-      );
+      const count = await copyDir(nextDirFrom, nextDirTo, include, exclude);
       if (!count && created) {
         console.log('[-] remove dir:', nextDirTo);
         await fsp.rmdir(nextDirTo);

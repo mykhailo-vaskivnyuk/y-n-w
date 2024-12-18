@@ -2,38 +2,26 @@
 import { TQuery } from '../../types/types';
 
 export interface IQueriesMemberData {
-  setDislike: TQuery<[
-    ['branch_id', number],
-    ['from_member_id', number],
-    ['to_member_id', number],
-  ]>;
-  unsetDislike: TQuery<[
-    ['from_member_id', number],
-    ['to_member_id', number],
-  ]>;
-  setVote: TQuery<[
-    ['branch_id', number],
-    ['from_member_id', number],
-    ['to_member_id', number],
-  ]>;
-  unsetVote: TQuery<[
-    ['branch_id', number],
-    ['from_member_id', number],
-  ]>;
-  clearVotes: TQuery<[
-    ['branch_id', number],
-  ]>;
-  removeFromCircle: TQuery<[
-    ['node_id', number],
-    ['branch_id', number | null],
-  ]>;
-  removeFromTree: TQuery<[
-    ['node_id', number],
-  ]>;
-  replace: TQuery<[
-    ['node_id', number],
-    ['parent_node_id', number],
-  ]>;
+  setDislike: TQuery<
+    [
+      ['branch_id', number],
+      ['from_member_id', number],
+      ['to_member_id', number],
+    ]
+  >;
+  unsetDislike: TQuery<[['from_member_id', number], ['to_member_id', number]]>;
+  setVote: TQuery<
+    [
+      ['branch_id', number],
+      ['from_member_id', number],
+      ['to_member_id', number],
+    ]
+  >;
+  unsetVote: TQuery<[['branch_id', number], ['from_member_id', number]]>;
+  clearVotes: TQuery<[['branch_id', number]]>;
+  removeFromCircle: TQuery<[['node_id', number], ['branch_id', number | null]]>;
+  removeFromTree: TQuery<[['node_id', number]]>;
+  replace: TQuery<[['node_id', number], ['parent_node_id', number]]>;
 }
 
 export const setDislike = `

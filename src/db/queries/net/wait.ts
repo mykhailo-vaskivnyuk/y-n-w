@@ -3,18 +3,12 @@ import { ITableNets } from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNetWait {
-  get: TQuery<[
-    ['net_id', number],
-  ], INetWaiting>;
-  create: TQuery<[
-    ['net_id', number],
-    ['user_id', number],
-    ['comment', string],
-  ], ITableNets>;
-  remove: TQuery<[
-    ['net_id', number],
-    ['user_id', number],
-  ], ITableNets>;
+  get: TQuery<[['net_id', number]], INetWaiting>;
+  create: TQuery<
+    [['net_id', number], ['user_id', number], ['comment', string]],
+    ITableNets
+  >;
+  remove: TQuery<[['net_id', number], ['user_id', number]], ITableNets>;
 }
 
 export const get = `

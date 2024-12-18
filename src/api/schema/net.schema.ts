@@ -1,7 +1,13 @@
 import Joi from 'joi';
 import {
-  IMemberResponse, INetCreateParams, INetResponse,
-  INetsResponse, INetUpdateParams, INetWaiting, IWaitNets, OmitNull,
+  IMemberResponse,
+  INetCreateParams,
+  INetResponse,
+  INetsResponse,
+  INetUpdateParams,
+  INetWaiting,
+  IWaitNets,
+  OmitNull,
 } from '../../client/common/server/types/types';
 import { TJoiSchema } from '../../controller/types';
 import { JOI_NULL } from '../../controller/constants';
@@ -20,20 +26,25 @@ export const NetUpdateParamsSchema = {
   goal: Joi.string(),
 } as Record<keyof INetUpdateParams, TJoiSchema>;
 
-export const NetResponseSchema = [JOI_NULL, {
-  net_id: Joi.number(),
-  net_level: Joi.number(),
-  parent_net_id: [Joi.number(), JOI_NULL],
-  name: Joi.string(),
-  goal: [Joi.string(), JOI_NULL],
-  net_link: [Joi.string(), JOI_NULL],
-  node_id: Joi.number(),
-  parent_node_id: [Joi.number(), JOI_NULL],
-  total_count_of_members: Joi.number(),
-} as Record<keyof OmitNull<INetResponse>, TJoiSchema>];
+export const NetResponseSchema = [
+  JOI_NULL,
+  {
+    net_id: Joi.number(),
+    net_level: Joi.number(),
+    parent_net_id: [Joi.number(), JOI_NULL],
+    name: Joi.string(),
+    goal: [Joi.string(), JOI_NULL],
+    net_link: [Joi.string(), JOI_NULL],
+    node_id: Joi.number(),
+    parent_node_id: [Joi.number(), JOI_NULL],
+    total_count_of_members: Joi.number(),
+  } as Record<keyof OmitNull<INetResponse>, TJoiSchema>,
+];
 
-export const NetsResponseSchema =
-  NetResponseSchema[1] as Record<keyof INetsResponse[number], TJoiSchema>;
+export const NetsResponseSchema = NetResponseSchema[1] as Record<
+  keyof INetsResponse[number],
+  TJoiSchema
+>;
 
 export const MemberResponseSchema = {
   node_id: Joi.number(),
@@ -50,10 +61,13 @@ export const MemberResponseSchema = {
 
 export const NetViewResponseSchema = { ...MemberResponseSchema };
 
-export const NetConnectByTokenSchema = [JOI_NULL, {
-  net_id: Joi.number().required(),
-  error: Joi.string(),
-}];
+export const NetConnectByTokenSchema = [
+  JOI_NULL,
+  {
+    net_id: Joi.number().required(),
+    error: Joi.string(),
+  },
+];
 
 export const WaitCreateParamsSchema = {
   token: Joi.string().required(),

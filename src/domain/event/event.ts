@@ -1,6 +1,5 @@
-import {
-  NetEventKeys,
-} from '../../client/common/server/types/types';
+/* eslint-disable max-lines */
+import { NetEventKeys } from '../../client/common/server/types/types';
 import { ITransaction } from '../../db/types/types';
 import { IMember } from '../types/member.types';
 import { EventMessages } from './event.messages';
@@ -38,28 +37,44 @@ export class NetEvent {
     //   records: this.messages.records,
     //   instant: this.messages.instantRecords,
     // });
-    for (const record of this.messages.records) {
+    const { messages, net_id, event_type } = this;
+    for (const record of messages.records) {
+      const { user_id, net_view, from_node_id, message } = record;
       const params = [
-        this.net_id,
-        record.net_view,
-        record.from_node_id,
-        this.event_type,
-        record.message,
+        net_id,
+        net_view,
+        from_node_id,
+        event_type,
+        message,
       ] as const;
-      const { user_id, from_node_id } = record;
       if (user_id) {
         await (t?.execQuery || execQuery).events.create([user_id, ...params]);
       } else {
-        if (!this.net_id) return; // throw error
-        const users = await (t?.execQuery || execQuery)
-          .net.users.toSendNewEvents(
-            [this.net_id, from_node_id, this.event_type],
-          );
+        const users = await this.getUsers(from_node_id, t);
         for (const { user_id } of users) {
           await (t?.execQuery || execQuery).events.create([user_id, ...params]);
         }
       }
     }
+  }
+
+  private async getUsers(from_node_id: number | null, t?: ITransaction) {
+    const { net_id, event_type } = this;
+    if (!net_id) return []; // throw error
+    let users;
+    if (event_type === 'WAIT') {
+      users = await (t?.execQuery || execQuery).net.users.toSendWaitingEvents([
+        net_id,
+        this.event_type,
+      ]);
+    } else {
+      users = await (t?.execQuery || execQuery).net.users.toSendNewEvents([
+        net_id,
+        from_node_id,
+        event_type,
+      ]);
+    }
+    return users;
   }
 
   send() {
@@ -77,9 +92,11 @@ export class NetEvent {
     /* send events or notifications */
     for (const record of this.messages.records) {
       const { user_id, from_node_id } = record;
-      if (user_id) { // for user
+      if (user_id) {
+        // for user
         this.notifService.sendEventOrNotif(user_id);
-      } else if (this.net_id) { // for users in net
+      } else if (this.net_id) {
+        // for users in net
         this.notifService.sendNetEventOrNotif(this.net_id, from_node_id);
       } else {
         logger.warn('Unknown event record', record);

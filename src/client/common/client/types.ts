@@ -7,8 +7,7 @@ import { IClientApi } from '../server/client.api';
 import { EventEmitter } from './lib/event.emitter';
 import { ClientApp } from './app';
 
-export type IClientAppThis =
-  EventEmitter &
+export type IClientAppThis = EventEmitter &
   Pick<ClientApp, 'getState'> & {
     api: IClientApi;
     setStatus: (status: AppStatus) => void;
@@ -16,9 +15,9 @@ export type IClientAppThis =
   };
 
 export interface INetThis {
-  onNetChanged: () => void,
-  onMemberChanged: () => void,
-  onUserNetDataChanged: () => void,
+  onNetChanged: () => void;
+  onMemberChanged: () => void;
+  onUserNetDataChanged: () => void;
 }
 
 export interface INets {

@@ -1,7 +1,8 @@
 import { logData } from './utils';
 import { HttpResponseErrorCode, HttpResponseError } from './errors';
 
-export const getConnection = (baseUrl: string) =>
+export const getConnection =
+  (baseUrl: string) =>
   async (url: string, data: Record<string, any> = {}) => {
     logData(data, 'REQ');
     const options: RequestInit = {

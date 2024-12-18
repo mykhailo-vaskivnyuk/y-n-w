@@ -1,6 +1,10 @@
 import {
-  ITableUsers, ITableMembersInvites, OuterJoin,
-  ITableMembersToMembers, ITableMembers, ITableNodes,
+  ITableUsers,
+  ITableMembersInvites,
+  OuterJoin,
+  ITableMembersToMembers,
+  ITableMembers,
+  ITableNodes,
 } from '../../../local/imports';
 
 export type IMemberInviteParams = {
@@ -11,10 +15,13 @@ export type IMemberInviteParams = {
 
 export type IMemberConfirmParams = Omit<IMemberInviteParams, 'member_name'>;
 
-export type IMemberResponse =
-  Pick<ITableNodes, 'node_id' | 'count_of_members'> &
-  OuterJoin<Pick<ITableMembers, 'user_id'| 'confirmed'>> &
+export type IMemberResponse = Pick<
+  ITableNodes,
+  'node_id' | 'count_of_members'
+> &
+  OuterJoin<Pick<ITableMembers, 'user_id' | 'confirmed'>> &
   OuterJoin<Pick<ITableUsers, 'name'>> &
   OuterJoin<Pick<ITableMembersInvites, 'token' | 'member_name'>> &
-  OuterJoin<Pick<ITableMembersToMembers, 'dislike' | 'vote'>> &
-  { vote_count: number };
+  OuterJoin<Pick<ITableMembersToMembers, 'dislike' | 'vote'>> & {
+    vote_count: number;
+  };

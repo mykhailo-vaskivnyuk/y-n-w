@@ -29,8 +29,8 @@ export const loader = (
   const __dirname = path.dirname(__filename);
   const script = fs.readFileSync(__filename).toString();
   const module = { exports: {} };
-  const nextRequire = ((modulePath: string) =>
-    loader(modulePath, __dirname, modulesContext));
+  const nextRequire = (modulePath: string) =>
+    loader(modulePath, __dirname, modulesContext);
   const context = {
     require: nextRequire,
     module,

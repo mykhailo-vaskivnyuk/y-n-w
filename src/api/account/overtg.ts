@@ -1,12 +1,14 @@
 import Joi from 'joi';
 import { THandler } from '../../controller/types';
 import {
-  IUserResponse, UserStatusKeys,
+  IUserResponse,
+  UserStatusKeys,
 } from '../../client/common/server/types/types';
 import { UserResponseSchema } from '../schema/schema';
 
 const overtg: THandler<{ initData: string }, IUserResponse> = async (
-  { session }, { initData },
+  { session },
+  { initData },
 ) => {
   const tgUser = cryptoService.verifyTgData(initData);
   if (!tgUser) return null;
@@ -16,9 +18,7 @@ const overtg: THandler<{ initData: string }, IUserResponse> = async (
   if (!user) return null;
 
   const { user_id, confirmed } = user;
-  const user_status: UserStatusKeys = confirmed ?
-    'LOGGEDIN' :
-    'NOT_CONFIRMED';
+  const user_status: UserStatusKeys = confirmed ? 'LOGGEDIN' : 'NOT_CONFIRMED';
   session.write('user_id', user_id);
   session.write('user_status', user_status);
   return { ...user, user_status };

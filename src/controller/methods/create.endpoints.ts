@@ -24,8 +24,7 @@ export const createRoutes = async (dirPath: string): Promise<IEndpoints> => {
     const filePath = path.join(routePath, item.name);
     let moduleExport = require(filePath);
     moduleExport =
-      moduleExport.default ||
-      moduleExport as THandler | IEndpoints;
+      moduleExport.default || (moduleExport as THandler | IEndpoints);
 
     if (name !== 'index') {
       route[name] = moduleExport;

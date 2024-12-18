@@ -3,15 +3,9 @@ import { INet, IUserNet } from '../../../domain/types/net.types';
 import { IMember } from '../../../domain/types/member.types';
 
 export interface IQueriesUserNets {
-  getAll: TQuery<[
-    ['user_id', number],
-  ], IUserNet>;
-  getWait: TQuery<[
-    ['user_id', number],
-  ], INet>;
-  getTop: TQuery<[
-    ['user_id', number],
-  ], IMember>,
+  getAll: TQuery<[['user_id', number]], IUserNet>;
+  getWait: TQuery<[['user_id', number]], INet>;
+  getTop: TQuery<[['user_id', number]], IMember>;
 }
 
 export const getAll = `

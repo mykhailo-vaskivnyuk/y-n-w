@@ -1,6 +1,8 @@
 import pg, { QueryResultRow } from 'pg';
 import {
-  ITransactionConnection, IDatabaseConfig, IDatabaseConnection,
+  ITransactionConnection,
+  IDatabaseConfig,
+  IDatabaseConnection,
 } from '../types/types';
 
 class Connection implements IDatabaseConnection {
@@ -29,7 +31,8 @@ class Connection implements IDatabaseConnection {
     let closed = false;
 
     const query = async (
-      sql: string, params: any[],
+      sql: string,
+      params: any[],
     ): Promise<QueryResultRow> => {
       if (closed) throw new Error('Connection is closed');
       try {

@@ -14,9 +14,11 @@ export type IChatSendMessage = {
   chatId: number;
   message: string;
 };
-export type IChatResponseMessage = {
-  type: Extract<MessageTypeKeys, 'CHAT'>;
-} & IChatMessage | null;
+export type IChatResponseMessage =
+  | ({
+      type: Extract<MessageTypeKeys, 'CHAT'>;
+    } & IChatMessage)
+  | null;
 
 export type IChatGetMessages = {
   node_id: number;

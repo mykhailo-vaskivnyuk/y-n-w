@@ -27,10 +27,7 @@ const addExt = (moduleFullPath: string) => {
 };
 
 export const getScriptInContext = (__filename: string) => {
-  const script = fs
-    .readFileSync(__filename)
-    .toString()
-    .replace(use_strict, '');
+  const script = fs.readFileSync(__filename).toString().replace(use_strict, '');
   return `
   'use strict';
   ({ global, require, module, exports, __filename, __dirname }) => {

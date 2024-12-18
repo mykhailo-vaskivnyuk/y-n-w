@@ -5,13 +5,21 @@ import { TPromiseExecutor } from '../../../src/client/common/types';
 import { IOperation, TOperationResponse } from '../../types/operation.types';
 import { IInputConnection, IRequest } from '../types';
 import {
-  IResponse, IHttpServer,
-  THttpReqModule, THttpResModule, IHttpConfig } from './types';
+  IResponse,
+  IHttpServer,
+  THttpReqModule,
+  THttpResModule,
+  IHttpConfig,
+} from './types';
 import { ServerError } from '../errors';
 import { handleError } from './methods/handle.error';
 import {
-  applyReqModules, applyResModules,
-  getLog, runReqModules, runResModules } from './methods/utils';
+  applyReqModules,
+  applyResModules,
+  getLog,
+  runReqModules,
+  runResModules,
+} from './methods/utils';
 
 class HttpConnection implements IInputConnection {
   private config: IHttpConfig;
@@ -66,7 +74,10 @@ class HttpConnection implements IInputConnection {
     const contextParams = { unavailable: this.unavailable };
     try {
       const context = await runReqModules(
-        req, res, this.reqModules, contextParams,
+        req,
+        res,
+        this.reqModules,
+        contextParams,
       );
       if (!context) return; // ???
       if (!this.exec) throw new ServerError('SERVICE_UNAVAILABLE');
@@ -74,10 +85,12 @@ class HttpConnection implements IInputConnection {
       let response = await this.exec!(operation);
 
       if (!(response instanceof Readable)) response = JSON.stringify(response);
-      const { data: { params } } = operation;
+      const {
+        data: { params },
+      } = operation;
       const password = 'password' in params ? '*****' : undefined;
-      res.on('finish',
-        () => logger.info({ ...params, password }, getLog(req, 'OK')),
+      res.on('finish', () =>
+        logger.info({ ...params, password }, getLog(req, 'OK')),
       );
 
       await runResModules(res, response, this.resModules);

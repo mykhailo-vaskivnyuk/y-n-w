@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import {
-  IMemberConfirmParams, IMemberInviteParams,
+  IMemberConfirmParams,
+  IMemberInviteParams,
 } from '../../client/common/server/types/types';
 import { TJoiSchema } from '../../controller/types';
 

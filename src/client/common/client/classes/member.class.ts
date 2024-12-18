@@ -8,12 +8,7 @@ type IApp = IClientAppThis;
 type INet = INetThis;
 
 export class Member {
-
-  constructor(
-    private member: IMember,
-    private app: IApp,
-    private net: INet,
-  ) {}
+  constructor(private member: IMember, private app: IApp, private net: INet) {}
 
   getMember() {
     return this.member;
@@ -40,8 +35,10 @@ export class Member {
     try {
       await this.app.setStatus(AppStatus.LOADING);
       const { net } = this.app.getState();
-      const success = await this.app.api.member.invite
-        .cancel({ member_node_id: this.member.node_id, ...net! });
+      const success = await this.app.api.member.invite.cancel({
+        member_node_id: this.member.node_id,
+        ...net!,
+      });
       if (success) await this.net.onMemberChanged();
       this.app.setStatus(AppStatus.READY);
       return success;
@@ -54,8 +51,10 @@ export class Member {
     try {
       await this.app.setStatus(AppStatus.LOADING);
       const { net } = this.app.getState();
-      const success = await this.app.api.member.invite
-        .confirm({ member_node_id: this.member.node_id, ...net! });
+      const success = await this.app.api.member.invite.confirm({
+        member_node_id: this.member.node_id,
+        ...net!,
+      });
       if (success) await this.net.onMemberChanged();
       this.net.onNetChanged();
       this.app.setStatus(AppStatus.READY);
@@ -70,8 +69,10 @@ export class Member {
     try {
       await this.app.setStatus(AppStatus.LOADING);
       const { net } = this.app.getState();
-      const success = await this.app.api.member.invite
-        .refuse({ member_node_id: this.member.node_id, ...net! });
+      const success = await this.app.api.member.invite.refuse({
+        member_node_id: this.member.node_id,
+        ...net!,
+      });
       if (success) await this.net.onMemberChanged();
       this.app.setStatus(AppStatus.READY);
       return success;

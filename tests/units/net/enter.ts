@@ -1,7 +1,8 @@
 import { TTestUnit } from '../../types/types';
 
-const getUnit = (net_id: number): TTestUnit => (state: any) => (
-  {
+const getUnit =
+  (net_id: number): TTestUnit =>
+  (state: any) => ({
     title: `enter net net_id: ${net_id}`,
     operations: [
       {
@@ -14,12 +15,12 @@ const getUnit = (net_id: number): TTestUnit => (state: any) => (
       {
         name: '/net/getCircle',
         params: () => ({ node_id: state.net.node_id }),
-        setToState: (actual) => state.circle = actual,
+        setToState: (actual) => (state.circle = actual),
       },
       {
         name: '/net/getTree',
         params: () => ({ node_id: state.net.node_id }),
-        setToState: (actual) => state.tree = actual,
+        setToState: (actual) => (state.tree = actual),
       },
     ],
   });

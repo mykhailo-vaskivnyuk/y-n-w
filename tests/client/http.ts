@@ -6,7 +6,7 @@ const getConnection = (baseUrl: string): TFetch => {
   const Cookie = `sessionKey=${sessionKey}`;
 
   return async (url: string, data: Record<string, any> = {}) => {
-  // logData(data, 'REQ');
+    // logData(data, 'REQ');
     const options: RequestInit = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Cookie },

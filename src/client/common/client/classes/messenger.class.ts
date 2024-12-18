@@ -10,7 +10,7 @@ export class Messenger {
   constructor(private app: IApp) {}
 
   async init() {
-    this.botName = await this.getBotName() || '';
+    this.botName = (await this.getBotName()) || '';
   }
 
   getState() {

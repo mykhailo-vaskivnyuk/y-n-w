@@ -10,8 +10,8 @@ export const member = { ...memberImport };
 export const utils = { ...comUtils };
 
 export type IDomain = {
-  net: typeof net,
-  event: typeof event,
-  member: typeof member,
-  utils: typeof utils,
+  net: typeof net;
+  event: typeof event;
+  member: typeof member;
+  utils: typeof utils;
 };

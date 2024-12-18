@@ -5,7 +5,8 @@ import { IWsConfig, IWsConnection, IWsServer, TWsResModule } from './types';
 import { IOperation, TOperationResponse } from '../../types/operation.types';
 import { IHttpServer } from '../http/types';
 import {
-  IMessage, MessageTypeKeys,
+  IMessage,
+  MessageTypeKeys,
 } from '../../client/common/server/types/types';
 import { PING_INTERVAL } from '../../client/common/server/constants';
 import { MAX_CHAT_INDEX } from '../../constants/constants';
@@ -113,7 +114,7 @@ class WsConnection implements IInputConnection {
   }
 
   private getConnectionId(connection: IWsConnection) {
-    const connectionId = this.counter = (this.counter % MAX_CHAT_INDEX) + 1;
+    const connectionId = (this.counter = (this.counter % MAX_CHAT_INDEX) + 1);
     this.connections.set(connectionId, connection);
     return connectionId;
   }
@@ -123,7 +124,8 @@ class WsConnection implements IInputConnection {
   }
 
   private getRequestParams(
-    connection: IWsConnection, req: IRequest,
+    connection: IWsConnection,
+    req: IRequest,
   ): IOperation['options'] {
     const { origin = '' } = req.headers;
     const options: IOperation['options'] = {
@@ -135,12 +137,12 @@ class WsConnection implements IInputConnection {
   }
 
   private async getOperation(
-    message: Buffer, { ...options }: IOperation['options'],
+    message: Buffer,
+    { ...options }: IOperation['options'],
   ) {
     const request = JSON.parse(message.toString());
     const { requestId, pathname, data: params } = request;
-    const names = ((pathname as string)
-      .slice(1) || 'index')
+    const names = ((pathname as string).slice(1) || 'index')
       .split('/')
       .filter((path) => Boolean(path));
     options.requestId = requestId;
@@ -172,7 +174,8 @@ class WsConnection implements IInputConnection {
   }
 
   private async sendMessage<T extends MessageTypeKeys>(
-    data: IMessage<T>, connectionIds?: Set<number>,
+    data: IMessage<T>,
+    connectionIds?: Set<number>,
   ) {
     try {
       if (!connectionIds) return false;

@@ -7,7 +7,8 @@ export const netVote = (units: ITestUnitsMap): ITestCase[] => [
     title: 'Test VOTES IN NET 1 over WS',
     dbDataFile: 'restore.sh',
     connection: 'ws',
-    caseUnits: [ //                           01  02
+    caseUnits: [
+      //                           01  02
       [units.account.login.user(1), 0], //     x   0
       [units.account.login.user(2), 1], //     1   x
       [units.account.login.user(3), 2], //     3   3

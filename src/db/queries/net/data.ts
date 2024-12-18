@@ -2,18 +2,12 @@ import { ITableNetsData } from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNetData {
-  get: TQuery<[
-    ['net_id', number],
-  ], ITableNetsData>;
-  create: TQuery<[
-    ['net_id', number],
-    ['name', string],
-    ['token', string],
-  ], ITableNetsData>;
-  update: TQuery<[
-    ['net_id', number],
-    ['goal', string],
-  ]>;
+  get: TQuery<[['net_id', number]], ITableNetsData>;
+  create: TQuery<
+    [['net_id', number], ['name', string], ['token', string]],
+    ITableNetsData
+  >;
+  update: TQuery<[['net_id', number], ['goal', string]]>;
 }
 
 export const get = `

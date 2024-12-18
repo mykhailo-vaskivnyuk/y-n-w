@@ -19,17 +19,13 @@ exports.fromFrontToBack = [
   'common/client/connection',
 ].map((i) => join(exports.frontPath, i));
 
-exports.excludeFromBack = [
-  'local',
-].map((i) => join(exports.backPath, i));
+exports.excludeFromBack = ['local'].map((i) => join(exports.backPath, i));
 
-exports.excludeFromFront = [
-  'local',
-].map((i) => join(exports.frontPath, i));
+exports.excludeFromFront = ['local'].map((i) => join(exports.frontPath, i));
 
-exports.excludeStatic = [
-  'assets/icons',
-].map((i) => join(exports.frontStaticPath, i));
+exports.excludeStatic = ['assets/icons'].map((i) =>
+  join(exports.frontStaticPath, i),
+);
 
 exports.filesToCopyFromBackToFront = [
   ['src/domain/types/db.types.ts', 'local/db.types.ts'],

@@ -12,31 +12,35 @@ import { IOperationData, TTestUnit } from '../../../types/types';
   user_id: state.user.user_id,
 */
 
-export const getEvent = (
-  event_type: string,
-  net_view: string | null,
-  message: string,
-): TTestUnit => (state: any) => (
-  {
+export const getEvent =
+  (event_type: string, net_view: string | null, message: string): TTestUnit =>
+  (state: any) => ({
     title: `read event ${event_type}`,
     operations: [
       {
         name: '/events/read',
         params: {},
-        setToState: (actual) => state.events = actual,
+        setToState: (actual) => (state.events = actual),
         expected: (actual) => {
           const event = actual[0];
-          assert.deepEqual([{
-            event_type: event.event_type,
-            message: event.message,
-            net_view: event.net_view,
-            user_id: event.user_id,
-          }], [{
-            event_type,
-            message,
-            net_view,
-            user_id: state.user.user_id,
-          }]);
+          assert.deepEqual(
+            [
+              {
+                event_type: event.event_type,
+                message: event.message,
+                net_view: event.net_view,
+                user_id: event.user_id,
+              },
+            ],
+            [
+              {
+                event_type,
+                message,
+                net_view,
+                user_id: state.user.user_id,
+              },
+            ],
+          );
         },
       },
       {
@@ -61,11 +65,7 @@ export const confirmInCircle = getEvent(
   'У колі новий учасник',
 );
 
-export const connect = getEvent(
-  'CONNECT',
-  'tree',
-  'У дереві новий учасник',
-);
+export const connect = getEvent('CONNECT', 'tree', 'У дереві новий учасник');
 
 export const connectAndConfirmInTree = getEvent(
   'CONNECT_AND_CONFIRM',
@@ -79,11 +79,7 @@ export const connectAndConfirmInCircle = getEvent(
   'У колі новий учасник',
 );
 
-export const boardMessage = getEvent(
-  'BOARD_MESSAGE',
-  'net',
-  'Зміни на дошці',
-);
+export const boardMessage = getEvent('BOARD_MESSAGE', 'net', 'Зміни на дошці');
 
 export const tightenInTree = getEvent(
   'TIGHTEN',

@@ -1,7 +1,11 @@
 import Joi from 'joi';
 import {
-  IChatGetMessages, IChatMessage, OmitNull,
-  IChatResponseMessage, IChatSendMessage, NET_VIEW_MAP,
+  IChatGetMessages,
+  IChatMessage,
+  OmitNull,
+  IChatResponseMessage,
+  IChatSendMessage,
+  NET_VIEW_MAP,
 } from '../../client/common/server/types/types';
 import { TJoiSchema } from '../../controller/types';
 import { JOI_NULL } from '../../controller/constants';
@@ -24,11 +28,14 @@ export const ChatSendMessageSchema = {
   node_id: Joi.number().required(),
 } as Record<keyof IChatSendMessage, TJoiSchema>;
 
-export const ChatResponseMessageSchema = [JOI_NULL, {
-  ...ChatMessageSchema,
-  user_id: Joi.number(),
-  index: Joi.number(),
-} as Record<keyof OmitNull<IChatResponseMessage>, TJoiSchema>];
+export const ChatResponseMessageSchema = [
+  JOI_NULL,
+  {
+    ...ChatMessageSchema,
+    user_id: Joi.number(),
+    index: Joi.number(),
+  } as Record<keyof OmitNull<IChatResponseMessage>, TJoiSchema>,
+];
 
 export const ChatGetMessagesSchema = {
   node_id: Joi.number().required(),

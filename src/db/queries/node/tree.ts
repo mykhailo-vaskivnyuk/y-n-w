@@ -2,14 +2,10 @@ import { ITableNodes } from '../../../domain/types/db.types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesNodeTree {
-  create: TQuery<[
-    ['node_level', number],
-    ['parent_node_id', number],
-    ['net_id', number],
-  ]>;
-  remove: TQuery<[
-    ['parent_node_id', number],
-  ], Pick<ITableNodes, 'node_id'>>;
+  create: TQuery<
+    [['node_level', number], ['parent_node_id', number], ['net_id', number]]
+  >;
+  remove: TQuery<[['parent_node_id', number]], Pick<ITableNodes, 'node_id'>>;
 }
 
 export const create = `

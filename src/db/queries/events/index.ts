@@ -1,31 +1,26 @@
 /* eslint-disable max-lines */
 import {
-  IEvent, NetEventKeys, NetViewKeys,
+  IEvent,
+  NetEventKeys,
+  NetViewKeys,
 } from '../../../client/common/server/types/types';
 import { TQuery } from '../../types/types';
 
 export interface IQueriesEvents {
-  create: TQuery<[
-    ['user_id', number],
-    ['net_id', number | null],
-    ['net_view', NetViewKeys | null],
-    ['from_node_id', number | null],
-    ['event_type', NetEventKeys],
-    ['message', string],
-  ]>;
+  create: TQuery<
+    [
+      ['user_id', number],
+      ['net_id', number | null],
+      ['net_view', NetViewKeys | null],
+      ['from_node_id', number | null],
+      ['event_type', NetEventKeys],
+      ['message', string],
+    ]
+  >;
   readAll: TQuery<[], IEvent>;
-  read: TQuery<[
-    ['user_id', number],
-    ['event_id', number],
-  ], IEvent>;
-  confirm: TQuery<[
-    ['user_id', number],
-    ['event_id', number],
-  ]>;
-  removeFromNet: TQuery<[
-    ['user_id', number],
-    ['net_id', number | null],
-  ]>;
+  read: TQuery<[['user_id', number], ['event_id', number]], IEvent>;
+  confirm: TQuery<[['user_id', number], ['event_id', number]]>;
+  removeFromNet: TQuery<[['user_id', number], ['net_id', number | null]]>;
 }
 
 export const create = `

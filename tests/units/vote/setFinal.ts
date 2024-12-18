@@ -1,30 +1,30 @@
 import assert from 'node:assert';
 import { IOperationData, TTestUnit } from '../../types/types';
 
-export const self: TTestUnit = (state: any) => (
-  {
-    title: 'Set final vote for self',
-    operations: [
-      {
-        name: '/member/data/vote/set',
-        params: {
-          node_id: state.net.node_id,
-          member_node_id: state.net.node_id,
-        },
-        expected: true,
+export const self: TTestUnit = (state: any) => ({
+  title: 'Set final vote for self',
+  operations: [
+    {
+      name: '/member/data/vote/set',
+      params: {
+        node_id: state.net.node_id,
+        member_node_id: state.net.node_id,
       },
-      {
-        name: '/user/net/getData',
-        params: { net_id: state.net.net_id },
-        expected: (actual) => {
-          assert.strictEqual(false, actual.vote);
-        },
+      expected: true,
+    },
+    {
+      name: '/user/net/getData',
+      params: { net_id: state.net.net_id },
+      expected: (actual) => {
+        assert.strictEqual(false, actual.vote);
       },
-    ] as IOperationData[],
-  });
+    },
+  ] as IOperationData[],
+});
 
-export const cMember = (m: number): TTestUnit => (state: any) => (
-  {
+export const cMember =
+  (m: number): TTestUnit =>
+  (state: any) => ({
     title: `Set final vote for circle[${m}]`,
     operations: [
       {

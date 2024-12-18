@@ -1,11 +1,17 @@
+/* eslint-disable indent */
 import { format } from 'node:util';
 import { Readable } from 'node:stream';
 import { join } from 'node:path';
 import { IOperation } from '../../../types/operation.types';
 import { IRequest } from '../../types';
 import {
-  IHttpConfig, IHttpContext, IHttpContextParams,
-  IResponse, THttpReqModule, THttpResModule } from '../types';
+  IHttpConfig,
+  IHttpContext,
+  IHttpContextParams,
+  IResponse,
+  THttpReqModule,
+  THttpResModule,
+} from '../types';
 import { HTTP_REQ_MODULES, HTTP_RES_MODULES } from '../constants';
 
 export const getUrlInstance = (
@@ -25,29 +31,29 @@ export const getJson = async (stream: Readable) => {
   return JSON.parse(data);
 };
 
-export const makeIsApiPathname = (api: string) => (url = '') => {
-  const regExp = new RegExp(`^/${api}(/.*)?$`);
-  return regExp.test(url);
-};
+export const makeIsApiPathname =
+  (api: string) =>
+  (url = '') => {
+    const regExp = new RegExp(`^/${api}(/.*)?$`);
+    return regExp.test(url);
+  };
 
 export const applyReqModules = (config: IHttpConfig) => {
   const { reqModules, modulesPath } = config;
-  return reqModules.map(
-    (moduleName) => {
-      const moduleFileName = HTTP_REQ_MODULES[moduleName];
-      const modulePath = join(modulesPath, moduleFileName);
-      return require(modulePath)[moduleName](config);
-    });
+  return reqModules.map((moduleName) => {
+    const moduleFileName = HTTP_REQ_MODULES[moduleName];
+    const modulePath = join(modulesPath, moduleFileName);
+    return require(modulePath)[moduleName](config);
+  });
 };
 
 export const applyResModules = (config: IHttpConfig) => {
   const { resModules, modulesPath } = config;
-  return resModules.map(
-    (moduleName) => {
-      const moduleFileName = HTTP_RES_MODULES[moduleName];
-      const modulePath = join(modulesPath, moduleFileName);
-      return require(modulePath)[moduleName](config);
-    });
+  return resModules.map((moduleName) => {
+    const moduleFileName = HTTP_RES_MODULES[moduleName];
+    const modulePath = join(modulesPath, moduleFileName);
+    return require(modulePath)[moduleName](config);
+  });
 };
 
 export const runReqModules = async (
@@ -57,7 +63,8 @@ export const runReqModules = async (
   contextParams: IHttpContextParams,
 ): Promise<IHttpContext | null> => {
   const operation = {
-    options: {}, data: { params: {} },
+    options: {},
+    data: { params: {} },
   } as IOperation;
   let context: IHttpContext | null = { ...operation, contextParams };
   for (const module of reqModules) {

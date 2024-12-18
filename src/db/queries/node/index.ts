@@ -4,38 +4,28 @@ import { TQuery } from '../../types/types';
 import { IQueriesNodeTree } from './tree';
 
 export interface IQueriesNode {
-  create: TQuery<[
-    ['net_id', number],
-  ], ITableNodes>;
-  remove: TQuery<[
-    ['node_id', number],
-  ]>;
-  updateCountOfMembers: TQuery<[
-    ['node_id', number],
-    ['addCount', number]
-  ], ITableNodes>;
-  getIfEmpty: TQuery<[
-    ['node_id', number],
-  ], ITableNodes>;
-  getChild: TQuery<[
-    ['parent_node_id', number],
-    ['node_position', number]
-  ], ITableNodes>;
-  move: TQuery<[
-    ['node_id', number],
-    ['new_parent_node_id', number | null],
-    ['new_node_position', number],
-    ['new_count_of_members', number],
-  ]>;
-  changeLevel: TQuery<[
-    ['node_id', number],
-  ]>;
-  changeLevelAll: TQuery<[
-    ['net_id', number],
-  ]>;
-  findFreeByDate: TQuery<[
-    ['strDate', string]
-  ], ITableNodes>;
+  create: TQuery<[['net_id', number]], ITableNodes>;
+  remove: TQuery<[['node_id', number]]>;
+  updateCountOfMembers: TQuery<
+    [['node_id', number], ['addCount', number]],
+    ITableNodes
+  >;
+  getIfEmpty: TQuery<[['node_id', number]], ITableNodes>;
+  getChild: TQuery<
+    [['parent_node_id', number], ['node_position', number]],
+    ITableNodes
+  >;
+  move: TQuery<
+    [
+      ['node_id', number],
+      ['new_parent_node_id', number | null],
+      ['new_node_position', number],
+      ['new_count_of_members', number],
+    ]
+  >;
+  changeLevel: TQuery<[['node_id', number]]>;
+  changeLevelAll: TQuery<[['net_id', number]]>;
+  findFreeByDate: TQuery<[['strDate', string]], ITableNodes>;
   tree: IQueriesNodeTree;
 }
 

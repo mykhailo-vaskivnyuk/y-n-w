@@ -1,8 +1,9 @@
 import assert from 'node:assert';
 import { TTestUnit } from '../../types/types';
 
-export const tMember = (m: number): TTestUnit => (state) => (
-  {
+export const tMember =
+  (m: number): TTestUnit =>
+  (state) => ({
     title: `invite create for tree[${m}]`,
     operations: [
       {
@@ -13,7 +14,7 @@ export const tMember = (m: number): TTestUnit => (state) => (
           member_name: `member ${m}`,
         }),
         expected: (actual) => assert.equal(actual.length > 10, true),
-        setToState: (actual) => state.global.invite = actual,
+        setToState: (actual) => (state.global.invite = actual),
       },
     ],
   });

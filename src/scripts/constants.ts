@@ -18,17 +18,13 @@ export const FROM_FRONT_TO_BACK = [
   'common/client/connection',
 ].map((i) => join(FRONT_PATH, i));
 
-export const EXCLUDE_FROM_BACK = [
-  'local',
-].map((i) => join(BACK_PATH, i));
+export const EXCLUDE_FROM_BACK = ['local'].map((i) => join(BACK_PATH, i));
 
-export const EXCLUDE_FROM_FRONT = [
-  'local',
-].map((i) => join(FRONT_PATH, i));
+export const EXCLUDE_FROM_FRONT = ['local'].map((i) => join(FRONT_PATH, i));
 
-export const EXCLUDE_STATIC = [
-  'assets/icons',
-].map((i) => join(FRONT_STATIC_PATH, i));
+export const EXCLUDE_STATIC = ['assets/icons'].map((i) =>
+  join(FRONT_STATIC_PATH, i),
+);
 
 export const FILES_TO_COPY_FROM_BACK_TO_FRONT: [string, string][] = [
   ['src/domain/types/db.types.ts', 'local/db.types.ts'],

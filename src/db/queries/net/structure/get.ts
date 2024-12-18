@@ -3,12 +3,8 @@ import { TQuery } from '../../../types/types';
 import { INetMember } from '../../../../domain/types/member.types';
 
 export interface IQueriesNetStructure {
-  root: TQuery<[
-    ['net_id', number],
-  ], INetMember>;
-  tree: TQuery<[
-    ['node_id', number],
-  ], INetMember>;
+  root: TQuery<[['net_id', number]], INetMember>;
+  tree: TQuery<[['node_id', number]], INetMember>;
 }
 
 export const root = `

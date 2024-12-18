@@ -167,7 +167,7 @@
 
 # TESTING
 
-----
+---
 
 # BUGs
 
@@ -179,16 +179,16 @@
 - ‌use chatId different from nodeId, send req for separate endpoint with nodeId and netView tree l circle l net, use two Maps for net end tree+circle,
 - save chatId counter, add onOpen to ws.client, run operation to clear chat
 - ‌‌add to chat if request Id is, at first check if connection is
-‌- chatService removeNetNode
-‌- ‌ws server on error
-‌- ‌index of chat mess can be reseted on connection reconnect
-‌- ‌reset chat connection on user remove or leave
-‌- ‌front chatIds if logout or reconnect
+  ‌- chatService removeNetNode
+  ‌- ‌ws server on error
+  ‌- ‌index of chat mess can be reseted on connection reconnect
+  ‌- ‌reset chat connection on user remove or leave
+  ‌- ‌front chatIds if logout or reconnect
 - ‌‌remove await
-‌- ‌load all chat with single request
-‌- ‌connected in circle as empty! Connected circle!!!
-‌- ‌if chatId no available or circle is not
-‌- ‌disvote myself and on vote if empty node is available
-‌- ‌use count of members infront of confirmed
-‌- ‌get events from date
-‌- ‌set blocking on net if leave dislike or vote
+  ‌- ‌load all chat with single request
+  ‌- ‌connected in circle as empty! Connected circle!!!
+  ‌- ‌if chatId no available or circle is not
+  ‌- ‌disvote myself and on vote if empty node is available
+  ‌- ‌use count of members infront of confirmed
+  ‌- ‌get events from date
+  ‌- ‌set blocking on net if leave dislike or vote

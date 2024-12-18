@@ -10,6 +10,6 @@ export const MEMBER_STATUS = [
   'ACTIVE',
 ] as const;
 
-export type MemberStatusKeys = typeof MEMBER_STATUS[number];
+export type MemberStatusKeys = (typeof MEMBER_STATUS)[number];
 
 export const PING_INTERVAL = 5000;

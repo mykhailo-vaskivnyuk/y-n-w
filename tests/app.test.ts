@@ -7,10 +7,7 @@ import { createUnitsTypes } from './utils/create.units.types';
 import { prepareTest } from './utils/test.utils';
 import { runTest } from './utils/test.runner';
 
-const getCasesAll = () => Object
-  .values(casesMap)
-  .map(Object.values)
-  .flat();
+const getCasesAll = () => Object.values(casesMap).map(Object.values).flat();
 
 const getUnitsMap = async () => {
   const { unitsPath } = config;

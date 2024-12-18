@@ -7,8 +7,10 @@ import { IDatabase } from '../db/types/types';
 import { IController } from '../controller/types';
 import { IInputConnection } from '../server/types';
 import {
-  AppError, handleAppInitError,
-  handleOperationError, setUncaughtErrorHandlers,
+  AppError,
+  handleAppInitError,
+  handleOperationError,
+  setUncaughtErrorHandlers,
 } from './errors';
 import { setToGlobal } from './methods/utils';
 import { createSetInputConnection } from './methods/set.input.connection';
@@ -27,8 +29,7 @@ export default class App {
   constructor(config: IConfig) {
     this.config = config;
     setUncaughtErrorHandlers(this as any);
-    this.setInputConnection =
-      createSetInputConnection(this as any);
+    this.setInputConnection = createSetInputConnection(this as any);
   }
 
   async start() {
@@ -47,7 +48,7 @@ export default class App {
       logger.info('CONTROLLER IS READY');
       await this.messenger!.start();
       logger.info('MESSENGER IS RUNNING');
-      this.apiServer && await this.apiServer.start();
+      this.apiServer && (await this.apiServer.start());
       await this.server!.start();
       logger.info('SERVER IS RUNNING');
       env.RUN_ONCE && process.exit();
@@ -57,9 +58,9 @@ export default class App {
   }
 
   async shutdown(message?: string) {
-    const shutdownLogger = this.logger ?
-      (message: string) => logger.fatal(message) :
-      (message: string) => console.error(message);
+    const shutdownLogger = this.logger
+      ? (message: string) => logger.fatal(message)
+      : (message: string) => console.error(message);
     message && shutdownLogger(message);
     shutdownLogger('APP SHUTDOWN...');
     process.nextTick(() => process.exit());
@@ -88,12 +89,10 @@ export default class App {
 
   private async setController() {
     const execQuery = this.db?.getQueries();
-    if (!execQuery)
-      throw new AppError('INIT_ERROR', 'DB is not INITIALIZED');
+    if (!execQuery) throw new AppError('INIT_ERROR', 'DB is not INITIALIZED');
 
     const server = this.apiServer || this.server;
-    if (!server)
-      throw new AppError('INIT_ERROR', 'SERVER is not INITIALIZED');
+    if (!server) throw new AppError('INIT_ERROR', 'SERVER is not INITIALIZED');
 
     if (!this.messenger)
       throw new AppError('INIT_ERROR', 'MESSENGER is not INITIALIZED');

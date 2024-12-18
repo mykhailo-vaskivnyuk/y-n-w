@@ -23,7 +23,7 @@ export class Session<T extends IObject = IObject> implements ISession<T> {
 
   write<K extends keyof T>(key: K, value: T[K]): T[K] {
     !this.session && (this.session = {});
-    return this.session[key] = value;
+    return (this.session[key] = value);
   }
 
   delete<K extends keyof T>(key: K) {
@@ -61,8 +61,8 @@ export class Session<T extends IObject = IObject> implements ISession<T> {
     const userId = this.session.user_id as number;
     if (this.persisted)
       await execQuery.session.update([this.sessionKey, sessionValue]);
-    else await execQuery.session
-      .create([userId, this.sessionKey, sessionValue]);
+    else
+      await execQuery.session.create([userId, this.sessionKey, sessionValue]);
   }
 }
 
@@ -81,9 +81,8 @@ export const getService = <T extends IObject = IObject>() => {
 
   const createSession = async (sessionKey: string): Promise<Session<T>> => {
     let [session, count = 0] = activeSessions.get(sessionKey) || [];
-    if (!session) session =
-      new Session<T>(sessionKey, clearSession).init();
-    activeSessions.set(sessionKey,  [session, ++count]);
+    if (!session) session = new Session<T>(sessionKey, clearSession).init();
+    activeSessions.set(sessionKey, [session, ++count]);
     return session;
   };
 

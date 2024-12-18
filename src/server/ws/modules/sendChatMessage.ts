@@ -1,8 +1,7 @@
 import { TWsResModule } from '../types';
 
 export const sendChatMessage: TWsResModule = () =>
-  async function sendChatMessage(
-    connections, _, data) {
+  async function sendChatMessage(connections, _, data) {
     if (!Array.isArray(connections)) return true;
     const response = {
       status: 200,

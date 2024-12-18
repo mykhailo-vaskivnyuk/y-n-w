@@ -1,26 +1,26 @@
 import { Readable } from 'node:stream';
 import {
-  JSON_TRANSFORM_LENGTH, ReqMimeTypesKeys, REQ_MIME_TYPES_MAP,
+  JSON_TRANSFORM_LENGTH,
+  ReqMimeTypesKeys,
+  REQ_MIME_TYPES_MAP,
 } from '../constants';
 import { IOperation, IParams } from '../../../types/operation.types';
 import { IRequest } from '../../types';
 import { IHttpConfig, IHttpContext, THttpReqModule } from '../types';
 import { ServerError } from '../../errors';
 
-
 import { getJson, getUrlInstance } from '../methods/utils';
 import { pathToArray } from '../../../utils/utils';
 
 let thisConfig: IHttpConfig;
 
-export const getOperation: THttpReqModule = (
-  config: IHttpConfig,
-) => {
+export const getOperation: THttpReqModule = (config: IHttpConfig) => {
   thisConfig = config;
   return async (req, res, context) => {
-    const {
-      options, names, params, contextParams,
-    } = getRequestParams(req, context);
+    const { options, names, params, contextParams } = getRequestParams(
+      req,
+      context,
+    );
     const data = { params } as IOperation['data'];
     const { headers } = req;
     const contentType = headers['content-type'] as ReqMimeTypesKeys | undefined;
@@ -36,8 +36,7 @@ export const getOperation: THttpReqModule = (
     }
 
     const isNotJson =
-      contentType !== 'application/json' ||
-      length > JSON_TRANSFORM_LENGTH;
+      contentType !== 'application/json' || length > JSON_TRANSFORM_LENGTH;
 
     if (isNotJson) {
       const content = Readable.from(req);

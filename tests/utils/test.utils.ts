@@ -79,8 +79,8 @@ export const prepareTest = async (testCase: ITestCase) => {
     if (Array.isArray(item)) return item;
     return [item, 0] as const;
   });
-  const connCount = testUnits
-    .reduce((a, [_, b]) => {
+  const connCount =
+    testUnits.reduce((a, [, b]) => {
       if (b > a) return b;
       return a;
     }, 0) + 1;
@@ -92,10 +92,11 @@ export const prepareTest = async (testCase: ITestCase) => {
   for (let i = 0; i < connCount; i++) {
     const onMessageMock = mock.fn(() => undefined);
     onMessage.push(onMessageMock);
-    const [
-      connection,
-      closeConnection,
-    ] = getConnection(transport, port, onMessageMock);
+    const [connection, closeConnection] = getConnection(
+      transport,
+      port,
+      onMessageMock,
+    );
     connections.push(connection);
     closeConnections.push(closeConnection);
   }

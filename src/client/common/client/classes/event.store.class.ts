@@ -5,7 +5,7 @@ import { Store } from '../lib/store';
 
 export class EventStore extends Store<INetEvents> {
   private childMap = new Map<number, EventStore>();
-  private childCountMap = new Map<number, number>;
+  private childCountMap = new Map<number, number>();
 
   constructor(netId: number) {
     super({
@@ -53,7 +53,7 @@ export class EventStore extends Store<INetEvents> {
       this.childCountMap.set(netId, prevChildCount);
     }
     this.childCountMap.set(netId, child.getAllCount());
- 
+
     const diff = child.getAllCount() - prevChildCount;
     const childEventsCount = this.getChildCount() + diff;
     this.setState({ childEventsCount });

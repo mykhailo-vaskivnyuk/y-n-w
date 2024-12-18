@@ -2,9 +2,7 @@ import crypto from 'node:crypto';
 import { URLSearchParams } from 'node:url';
 import { TPromiseExecutor } from '../../src/client/common/types';
 
-export const createUnicCode = (
-  length: number,
-): string => {
+export const createUnicCode = (length: number): string => {
   const byteLenth = Math.ceil(length / 2);
   const codeBuffer = crypto.randomBytes(byteLenth);
   const codeHexString = codeBuffer.toString('hex');
@@ -40,23 +38,19 @@ export const verifyTgData = (initData: string): WebAppUser | null => {
 
   const initDataMap = new URLSearchParams(initData);
   const initDataObj: any = {};
-  initDataMap.forEach((value, key) => initDataObj[key] = value);
+  initDataMap.forEach((value, key) => (initDataObj[key] = value));
 
   const { hash, ...restData } = initDataObj;
   const checkString = Object.entries(restData)
     .sort(([a], [b]) => (a > b ? 1 : -1))
-    .map(([key, val]) => (`${key}=${val}`))
+    .map(([key, val]) => `${key}=${val}`)
     .join('\n');
 
   const { createHmac } = crypto;
   const algorithm = 'sha256';
   const key1 = 'WebAppData';
-  const key2 = createHmac(algorithm, key1)
-    .update(env.TG_BOT_TOKEN)
-    .digest();
-  const result = createHmac(algorithm, key2)
-    .update(checkString)
-    .digest('hex');
+  const key2 = createHmac(algorithm, key1).update(env.TG_BOT_TOKEN).digest();
+  const result = createHmac(algorithm, key2).update(checkString).digest('hex');
 
   if (result !== hash) return null;
 

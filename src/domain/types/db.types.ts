@@ -14,7 +14,7 @@ export const TABLES_MAP = {
   SESSIONS: 'sessions',
 };
 
-export type OuterJoin<T> = { [key in keyof T]: T[key] | null }
+export type OuterJoin<T> = { [key in keyof T]: T[key] | null };
 
 export type ITableNodes = {
   node_id: number;
@@ -24,7 +24,7 @@ export type ITableNodes = {
   node_position: number;
   count_of_members: number;
   updated: string;
-}
+};
 
 export type ITableNets = {
   net_id: number;
@@ -33,7 +33,7 @@ export type ITableNets = {
   root_net_id: number; // | null
   count_of_nets: number;
   blocked: boolean;
-}
+};
 
 export type ITableUsers = {
   user_id: number;
@@ -43,7 +43,7 @@ export type ITableUsers = {
   password: string | null;
   confirmed: boolean;
   chat_id: string | null;
-}
+};
 
 export type ITableNetsData = {
   net_id: number;
@@ -51,13 +51,13 @@ export type ITableNetsData = {
   goal: string | null;
   resource_name: string | null;
   net_link: string | null;
-}
+};
 
 export type ITableNetsGuests = {
   net_id: number;
   user_id: number;
   comment: string;
-}
+};
 
 export type ITableMembers = {
   member_id: number;
@@ -66,25 +66,25 @@ export type ITableMembers = {
   name_show: boolean;
   mobile_show: boolean;
   confirmed: boolean;
-}
+};
 
 export type ITableMembersInvites = {
   member_id: number;
   node_id: number;
   member_name: string;
   token: string;
-}
+};
 
 export type ITableEvents = {
   event_id: number;
   user_id: number;
   net_id: number | null;
-  net_view: 'net' | 'tree' | 'circle' | null; /* NetViewKeys */
+  net_view: 'net' | 'tree' | 'circle' | null /* NetViewKeys */;
   from_node_id: number | null;
-  event_type: string; /* NetEventKeys */
+  event_type: string /* NetEventKeys */;
   message: string;
   date: string;
-}
+};
 
 export type ITableBoardMessages = {
   message_id: number;
@@ -92,17 +92,17 @@ export type ITableBoardMessages = {
   member_id: number;
   message: string;
   date: string;
-}
+};
 
 export type ITableUsersEvents = {
   user_id: number;
   notification_date: string;
-}
+};
 
 export type ITableUsersTokens = {
   user_id: number;
   token: string;
-}
+};
 
 export type ITableMembersToMembers = {
   branch_id: number;
@@ -110,7 +110,7 @@ export type ITableMembersToMembers = {
   to_member_id: number;
   dislike: boolean;
   vote: boolean;
-}
+};
 
 export type ITableSessions = {
   session_id: number;
@@ -118,4 +118,4 @@ export type ITableSessions = {
   session_key: string;
   session_value: string;
   updated: string;
-}
+};

@@ -2,9 +2,7 @@ import { mock } from 'node:test';
 import { TFetch } from '../../src/client/common/client/connection/types';
 import { TTransport } from '../../src/server/types';
 import { IConfig } from '../../src/types/config.types';
-import {
-  IParams, TOperationResponse,
-} from '../../src/types/operation.types';
+import { IParams, TOperationResponse } from '../../src/types/operation.types';
 
 export interface ITestCase {
   title: string;
@@ -28,14 +26,10 @@ export interface ITestUnits {
 export interface IOperationData {
   name: string;
   params?: IParams | (() => IParams);
-  expected?:
-    | TOperationResponse
-    | ((actual: any) => void);
+  expected?: TOperationResponse | ((actual: any) => void);
   setToState?: (actual: any) => void;
   query?: () => Promise<Record<string, any>[]>;
-  expectedQueryResult?:
-    | TOperationResponse
-    | ((actual: any) => void);
+  expectedQueryResult?: TOperationResponse | ((actual: any) => void);
 }
 
 export interface ITestRunnerData {

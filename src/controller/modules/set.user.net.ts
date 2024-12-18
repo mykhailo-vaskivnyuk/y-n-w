@@ -1,8 +1,10 @@
+/* eslint-disable indent */
 import { TInputModule } from '../types';
 import { USER_STATUS_MAP } from '../../client/common/server/types/types';
 import { HandlerError } from '../errors';
 
-const setUserNet: TInputModule = () =>
+const setUserNet: TInputModule =
+  () =>
   async ({ ...operation }, context, handler) => {
     const { node_id } = operation.data.params;
     if (!handler.checkNet && !node_id) return operation;

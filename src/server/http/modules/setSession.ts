@@ -8,5 +8,3 @@ export const setSession: THttpReqModule = () =>
     options.sessionKey = sessionKey;
     return { ...context, options };
   };
-
-

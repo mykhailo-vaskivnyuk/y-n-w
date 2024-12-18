@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { TInputModule } from '../types';
 import { Buffer } from 'node:buffer';
 
@@ -8,11 +9,12 @@ export class GetStreamError extends Error {
   }
 }
 
-const getStream: TInputModule = () =>
+const getStream: TInputModule =
+  () =>
   async ({ ...operation }) => {
     const { params, stream } = operation.data;
     if (!stream) return operation;
-    const { type,  content } = stream;
+    const { type, content } = stream;
 
     if (type === 'application/octet-stream') {
       params.stream = stream;
