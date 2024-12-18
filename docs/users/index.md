@@ -17,6 +17,8 @@
 
 [Приклад правил у спільноті](rules.md)
 
+[Презентації](https://drive.google.com/file/d/1X1UfurNd4xwgco1Lvvm0PgWwHt2zOtOg/view?usp=sharing)
+
 [Презентаційні матеріали](https://github.com/mykhailo-vaskivnyuk/u-n-w-back/tree/feat/presentation/docs/presentation)
 
 ## [Поняття](concepts.md)
