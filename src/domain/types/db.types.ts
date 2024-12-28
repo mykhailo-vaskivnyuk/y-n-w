@@ -110,6 +110,7 @@ export type ITableMembersToMembers = {
   to_member_id: number;
   dislike: boolean;
   vote: boolean;
+  replacing: boolean;
 };
 
 export type ITableSessions = {

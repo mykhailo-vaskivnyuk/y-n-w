@@ -129,8 +129,9 @@ Table "members_to_members" {
   "to_member_id" bigint [not null]
   "dislike" boolean [not null, default: false]
   "vote" boolean [not null, default: false]
+  "replacing" boolean [not null, default: false]
   Indexes {
-    (from_member_id, to_member_id) [pk]
+    (from_member_id, to_member_id, replacing) [pk]
     branch_id [name: "sk_members_to_members_branch"]
   }
 }
