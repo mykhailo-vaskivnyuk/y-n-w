@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.5
--- Dumped by pg_dump version 14.5
+-- Dumped from database version 16.6
+-- Dumped by pg_dump version 16.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -121,7 +121,8 @@ CREATE TABLE public.members_to_members (
     from_member_id bigint NOT NULL,
     to_member_id bigint NOT NULL,
     dislike boolean DEFAULT false NOT NULL,
-    vote boolean DEFAULT false NOT NULL
+    vote boolean DEFAULT false NOT NULL,
+    replacing boolean DEFAULT false NOT NULL
 );
 
 
@@ -348,14 +349,14 @@ COPY public.members_invites (member_id, node_id, member_name, token) FROM stdin;
 -- Data for Name: members_to_members; Type: TABLE DATA; Schema: public; Owner: merega
 --
 
-COPY public.members_to_members (branch_id, from_member_id, to_member_id, dislike, vote) FROM stdin;
-1	5	3	f	f
-39	41	40	f	f
-20	21	22	f	f
-1	3	5	f	t
-20	22	21	f	f
-39	40	41	f	t
-58	60	59	f	t
+COPY public.members_to_members (branch_id, from_member_id, to_member_id, dislike, vote, replacing) FROM stdin;
+1	5	3	f	f	f
+39	41	40	f	f	f
+20	21	22	f	f	f
+1	3	5	f	t	f
+20	22	21	f	f	f
+39	40	41	f	t	f
+58	60	59	f	t	f
 \.
 
 
@@ -590,7 +591,7 @@ ALTER TABLE ONLY public.members_invites
 --
 
 ALTER TABLE ONLY public.members_to_members
-    ADD CONSTRAINT pk_members_to_members PRIMARY KEY (from_member_id, to_member_id);
+    ADD CONSTRAINT pk_members_to_members PRIMARY KEY (from_member_id, to_member_id, replacing);
 
 
 --

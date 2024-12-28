@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.5
--- Dumped by pg_dump version 14.5
+-- Dumped from database version 16.6
+-- Dumped by pg_dump version 16.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -15,22 +15,6 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
---
-
-CREATE SCHEMA public;
-
-
-ALTER SCHEMA public OWNER TO pg_database_owner;
-
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
---
-
-COMMENT ON SCHEMA public IS 'standard public schema';
-
 
 SET default_tablespace = '';
 
@@ -137,7 +121,8 @@ CREATE TABLE public.members_to_members (
     from_member_id bigint NOT NULL,
     to_member_id bigint NOT NULL,
     dislike boolean DEFAULT false NOT NULL,
-    vote boolean DEFAULT false NOT NULL
+    vote boolean DEFAULT false NOT NULL,
+    replacing boolean DEFAULT false NOT NULL
 );
 
 
@@ -352,7 +337,7 @@ ALTER TABLE ONLY public.members_invites
 --
 
 ALTER TABLE ONLY public.members_to_members
-    ADD CONSTRAINT pk_members_to_members PRIMARY KEY (from_member_id, to_member_id);
+    ADD CONSTRAINT pk_members_to_members PRIMARY KEY (from_member_id, to_member_id, replacing);
 
 
 --

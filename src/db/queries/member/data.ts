@@ -21,6 +21,7 @@ export interface IQueriesMemberData {
   clearVotes: TQuery<[['branch_id', number]]>;
   removeFromCircle: TQuery<[['node_id', number], ['branch_id', number | null]]>;
   removeFromTree: TQuery<[['node_id', number]]>;
+  setReplacing: TQuery<[['node_id', number], ['parent_node_id', number]]>;
   replace: TQuery<[['node_id', number], ['parent_node_id', number]]>;
 }
 
@@ -32,7 +33,7 @@ export const setDislike = `
     dislike
   )
   VALUES ($1, $2, $3, true)
-  ON CONFLICT (from_member_id, to_member_id)
+  ON CONFLICT (from_member_id, to_member_id, replacing)
     DO UPDATE
     SET
       dislike = true
@@ -57,7 +58,7 @@ export const setVote = `
     vote
   )
   VALUES ($1, $2, $3, true)
-  ON CONFLICT (from_member_id, to_member_id)
+  ON CONFLICT (from_member_id, to_member_id, replacing)
   DO UPDATE
     SET
       vote = true
@@ -98,6 +99,14 @@ export const removeFromTree = `
   )
 `;
 
+export const setReplacing = `
+  UPDATE members_to_members AS mtm
+  SET replacing = true
+  WHERE
+    branch_id = $2 AND 
+    from_member_id IN ($1, $2) OR to_member_id IN ($1, $2)
+`;
+
 export const replace = `
   UPDATE members_to_members AS mtm
   SET
@@ -118,6 +127,7 @@ export const replace = `
             THEN $1
             ELSE to_member_id
           END
-      END
+      END,
+    replacing = false
   WHERE branch_id = $2
 `;

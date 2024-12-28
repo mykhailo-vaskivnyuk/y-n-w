@@ -264,6 +264,7 @@ export class NetArrange {
       await t.execQuery.member.create([parent_node_id, user_id]);
       await t.execQuery.member.confirm([parent_node_id]);
     }
+    await t.execQuery.member.data.setReplacing([node_id, parent_node_id]);
     await t.execQuery.member.data.replace([node_id, parent_node_id]);
     /* replace users */
     if (parentUserId) {
