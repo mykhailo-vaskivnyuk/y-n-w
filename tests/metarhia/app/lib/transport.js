@@ -1,6 +1,8 @@
+const { COUNT } = require('../constants');
+
 exports.Transport = class Transport {
   #onrequest;
-  #counter = 100;
+  #counter = COUNT;
 
   onRequest(cb) {
     this.#onrequest = cb;

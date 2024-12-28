@@ -1,8 +1,9 @@
 const { Adapter } = require('../lib/adapter');
+const { COUNT } = require('../constants');
 
 exports.ModuleController = class ModuleController extends Adapter {
   #transport;
-  #counter = 100;
+  #counter = COUNT;
   #startTime = 0;
 
   constructor(bus) {
