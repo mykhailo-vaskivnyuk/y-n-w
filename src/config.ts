@@ -26,7 +26,7 @@ const connection = {
     ssl: { rejectUnauthorized: false },
   },
   local: {
-    host,
+    host: 'postgres',
     port: 5432,
     database: 'merega',
     user: 'merega',

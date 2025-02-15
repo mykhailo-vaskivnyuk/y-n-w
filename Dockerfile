@@ -1,16 +1,16 @@
-FROM node
+FROM node:20-alpine
+
+RUN apk add --no-cache postgresql-client
 
 WORKDIR /app
 
-COPY package.json .
-
+COPY package.json package-lock.json ./
 RUN npm install
 
 COPY . .
 
-EXPOSE 3000
-EXPOSE 5432
+EXPOSE 8000
 
-RUN npx tsc
+RUN npm run build
 
-CMD ["node", "./js/index.js"]
+CMD ["npm", "run", "start"]
